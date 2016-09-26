@@ -200,6 +200,10 @@ void InitializeEvents()
 	al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
 	al_register_event_source(engine.event_queue, al_get_timer_event_source(engine.timer));
 
+#if 0 // enable once we're happy with everything else.
+	al_hide_mouse_cursor(engine.display);
+#endif
+
 	al_start_timer(engine.timer);
 }
 
@@ -243,6 +247,18 @@ int main()
 				"ERROR",
 				"A serious fault occurred",
 				"Failed to initialize allegro library!",
+				NULL,
+				ALLEGRO_MESSAGEBOX_ERROR
+		);
+		return -1;
+	}
+	else if(!al_install_mouse())
+	{
+		al_show_native_message_box(
+				NULL,
+				"ERROR",
+				"A serious fault occured",
+				"Failed to initialize mouse!",
 				NULL,
 				ALLEGRO_MESSAGEBOX_ERROR
 		);

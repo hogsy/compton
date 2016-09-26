@@ -2,9 +2,12 @@
 
 #include "shared.h"
 
+#include "alife.h"
+
 /*	Game logic and other crap goes here!	*/
 
 enum GameState {
+	GAME_STATE_DEFAULT,
 	GAME_STATE_MENU,
 	GAME_STATE_PAUSED,
 } GameState;
@@ -293,10 +296,11 @@ void DrawGameMenu()
 			DrawCenteredString(
 					game.font_gothic_medium,
 					DISPLAY_WIDTH / 2, 250,
-					al_map_rgb(
-							(byte)(std::cos(game.counter / 30) * 127 + 127),
-							(byte)(std::cos(game.counter / 30) * 127 + 127),
-							(byte)(std::cos(game.counter / 30) * 127 + 127)
+					al_map_rgba(
+							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
+							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
+							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
+							(byte)(std::cos(game.counter / 30) * 50 + 127)
 					),
 					"PRESS ANY KEY TO START"
 			);
@@ -335,8 +339,8 @@ void InitializeGame()
 {
 	memset(&game, 0, sizeof(GameVars));
 
-	game.state = GAME_STATE_MENU;
-	game.menu_state = GAME_MENU_START;
+	game.state = GAME_STATE_DEFAULT;
+	game.menu_state = GAME_MENU_GAME;
 
 	//LoadFont("pacifico/Pacifico-Regular", 24);
 	//LoadFont("chunk/Chunk", 24);

@@ -8,7 +8,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
-set(SOURCE_FILES engine.cpp game.cpp math.cpp math.h)
+set(SOURCE_FILES engine.cpp game.cpp math.cpp math.h alife.cpp alife.h)
 add_executable(VCritters ${SOURCE_FILES})
 
 set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)

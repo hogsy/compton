@@ -38,6 +38,8 @@ typedef struct EngineVars {
 	unsigned int window_width, window_height;
 	int scalex, scaley, scalew, scaleh;
 
+	double counter;
+
 	ALLEGRO_BITMAP *buffer;
 } EngineVars;
 

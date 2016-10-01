@@ -200,7 +200,8 @@ void InitializeEvents()
 	al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
 	al_register_event_source(engine.event_queue, al_get_timer_event_source(engine.timer));
 
-#if 0 // enable once we're happy with everything else.
+	al_install_mouse();
+#if 1 // enable once we're happy with everything else.
 	al_hide_mouse_cursor(engine.display);
 #endif
 
@@ -211,6 +212,8 @@ void EventsFrame()
 {
 	ALLEGRO_EVENT event;
 	al_wait_for_event(engine.event_queue, &event);
+
+	al_get_mouse_state(&engine.mouse_state);
 
 	switch(event.type)
 	{

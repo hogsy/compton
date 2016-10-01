@@ -62,6 +62,47 @@ private:
 	float _damping, _jiggle;
 };
 
+#define ROTATION 0.01f	//0.0001f
+
+class Moon : public SpriteObject
+{
+public:
+	Moon() : SpriteObject(LoadImage("moon"))
+	{
+		origin.x = al_get_bitmap_width(GetSprite()) / 2;
+		origin.y = 420;
+		position.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
+
+		angle = 0;
+	}
+
+	void Simulate()
+	{
+		angle += ROTATION;
+	}
+
+protected:
+private:
+};
+
+class Sun : public SpriteObject
+{
+public:
+	Sun() : SpriteObject(LoadImage("sun"))
+	{
+		origin.x = al_get_bitmap_width(GetSprite()) / 2;
+		origin.y = -420;
+		position.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
+
+		angle = 0;
+	}
+
+	void Simulate()
+	{
+		angle += ROTATION;
+	}
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct SkyColourCycle
@@ -107,6 +148,7 @@ SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0),
 	_sky_target_top 	= //sky_colourcycle[1].top;
 	_sky_bottom 		= //sky_colourcycle[0].bottom;
 	_sky_target_bottom 	= al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
+	_sky_background		= LoadImage("night_background");
 
 	// Make initial set of clouds.
 	for(int i = 0; i < 8; i++)
@@ -114,6 +156,9 @@ SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0),
 		ALLEGRO_BITMAP *sprite = _cloud_sprites[rand()%10];
 		_clouds.emplace(_clouds.end(), Cloud(sprite));
 	}
+
+	_moon = new Moon();
+	_sun = new Sun();
 }
 
 SkyManager::~SkyManager()
@@ -121,6 +166,8 @@ SkyManager::~SkyManager()
 	for(int i = 0; i < _cloud_sprites.size(); i++)
 		al_destroy_bitmap(_cloud_sprites[i]);
 	_cloud_sprites.clear();
+
+	delete _moon;
 }
 
 void SkyManager::Simulate()
@@ -150,11 +197,10 @@ void SkyManager::Simulate()
 			_clouds.erase(_clouds.begin() + i);
 	}
 
-	_time++; _second = 70;
-	if(_second > 60)
-	{
-		_minute += 1; _second = 0;
-	}
+	static double difference = 1;
+
+	_time++; _second = 70; //++;
+	if(_second > 60) { _minute += 1; _second = 0; }
 	if(_minute > 60)
 	{
 		_hour += 1; _minute = 0; _second = 0;
@@ -164,18 +210,17 @@ void SkyManager::Simulate()
 			{
 				_sky_target_top 	= sky_colourcycle[i].top;
 				_sky_target_bottom 	= sky_colourcycle[i].bottom;
+
+				difference = sky_colourcycle[i].hour / _hour;
 			}
 		}
 	}
 	if(_hour > 24) { _day += 1; _hour = 0; _minute = 0; _second = 0; }
 	if(_day > 6) { _day = 0; _hour = 0; _minute = 0; _second = 0; }
-}
 
-void SkyManager::Draw()
-{
 	// Sky gradient
-	//int difference = std::abs(FLOATTOBYTE(_sky_bottom.r) - FLOATTOBYTE(_sky_target_bottom.r));
-#define INTERP (float)(_time / 60) / 4
+	//int difference =
+#define INTERP (float)((_time / 60) / 4)
 
 	_sky_bottom.r = CosineInterpolate(
 			_sky_bottom.r, _sky_target_bottom.r,
@@ -190,6 +235,7 @@ void SkyManager::Draw()
 			INTERP
 	);
 
+#if 1
 	_sky_top.r = CosineInterpolate(
 			_sky_top.r, _sky_target_top.r,
 			INTERP
@@ -202,14 +248,32 @@ void SkyManager::Draw()
 			_sky_top.b, _sky_target_top.b,
 			INTERP
 	);
+#endif
+
+	_moon->Simulate();
+	_sun->Simulate();
 
 	printf("(%f) %f\n", _time, _sky_bottom.r);
+}
 
+void SkyManager::Draw()
+{
+#if 0
 	DrawVerticalGradientRectangle(
 			0, 0,
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
 			_sky_top, _sky_bottom
 	);
+#endif
+
+	static float alpha = 0;
+	if(_hour < 6 || _hour > 18) {
+		if(_hour) if(alpha < 0.5f) alpha += 0.01f;
+		al_draw_tinted_bitmap(_sky_background, al_map_rgba_f(1, 1, 1, alpha), 0, 0, 0);
+	} else alpha = 0;
+
+	_moon->Draw();
+	_sun->Draw();
 
 	// Clouds
 	DrawBitmap(

@@ -71,17 +71,39 @@ bool SpriteObject::InsideBounds()
 
 // Hand
 
+enum HandState {
+	HAND_STATE_DEFAULT,	// Point
+	HAND_STATE_OPEN,
+};
+
 class Hand : public SpriteObject
 {
 public:
-	Hand() : SpriteObject(LoadImage("hand_sheet"))
+	Hand() : SpriteObject(LoadImage("point"))
 	{
 		// todo, set this in position of cursor on creation.
+		origin.Set(0, 0);
+	}
+
+	void Simulate()
+	{
+		position.Set(
+				engine.mouse_state.x,
+				engine.mouse_state.y
+		);
+
+		angle = 0;
+		if(engine.mouse_state.buttons) {
+			position.y += 5;
+			angle -= 0.2f;
+		}
 	}
 
 protected:
 private:
 };
+
+Hand *game_userhand = nullptr;
 
 // Menu (includes HUD etc.)
 
@@ -191,6 +213,8 @@ void DrawGameMenu()
 		{}
 		break;
 	}
+
+	game_userhand->Draw();
 }
 
 // Everything Else
@@ -211,6 +235,8 @@ void InitializeGame()
 
 	game.menu_earth = LoadImage("clouds/earth");
 
+
+	game_userhand = new Hand();
 	game_skymanager = new SkyManager();
 }
 
@@ -221,6 +247,8 @@ void GameDisplayFrame()
 
 void GameTimerFrame()
 {
+	game_userhand->Simulate();
+
 	switch(game.state)
 	{
 		case GAME_STATE_MENU:

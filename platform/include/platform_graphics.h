@@ -17,7 +17,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #pragma once
 
 #include "platform.h"
-#include "platform_math_legacy.h"
+#include "platform_math.h"
 
 #define		VL_MODE_OPENGL
 //			VL_MODE_OPENGL_CORE
@@ -327,10 +327,10 @@ typedef enum PLPrimitive
 
 typedef struct PLVertex
 {
-	plVector3f_t position;
-	plVector3f_t normal;
+	PLVector3f position;
+	PLVector3f normal;
 
-	plVector2f_t ST[16];
+	PLVector2f ST[16];
 
 	PLColour colour;
 } PLVertex;
@@ -379,7 +379,7 @@ PL_EXTERN_C
 
 PL_EXTERN void plSetClearColour3f(PLfloat r, PLfloat g, PLfloat b);
 PL_EXTERN void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a);
-PL_EXTERN void plSetClearColour4fv(PLColour rgba);
+PL_EXTERN void plSetClearColour4fv(const PLColour *rgba);
 
 PL_EXTERN void plClearBuffers(PLuint buffers);
 

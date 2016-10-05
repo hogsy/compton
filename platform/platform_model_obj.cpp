@@ -95,22 +95,22 @@ PLStaticModel *plLoadOBJModel(const PLchar *path)
 		{
 			if (line[1] == OBJ_SYNTAX_VERTEX_NORMAL)
 			{
-				plVector3f_t normal;
+				PLVector3f normal;
 				std::sscanf(line.c_str() + 2, "%f %f %f", &normal[0], &normal[1], &normal[2]);
 				
 				float *vnormal = new float[3];
-				memcpy(vnormal, normal, sizeof(plVector3f_t));
+				memcpy(vnormal, normal, sizeof(PLVector3f));
 				normals.push_back(vnormal);
 			}
 			else if (line[1] == OBJ_SYNTAX_VERTEX_ST)
 			{ }
 			else // Vertex coords
 			{
-				plVector3f_t position;
+				PLVector3f position;
 				std::sscanf(line.c_str() + 2, "%f %f %f", &position[0], &position[1], &position[2]);
 				
 				float *vposition = new float[3];
-				memcpy(vposition, position, sizeof(plVector3f_t));
+				memcpy(vposition, position, sizeof(PLVector3f));
 				vertices.push_back(vposition);
 			}
 		}

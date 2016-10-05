@@ -18,8 +18,8 @@
 
 #pragma once
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 plAnimatedModel_t *plLoadU3DModel(const char *path);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

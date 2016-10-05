@@ -281,17 +281,17 @@ void plSetClearColour3f(PLfloat r, PLfloat g, PLfloat b)
 {
 	_PL_GRAPHICS_TRACK();
 
-	plSetClearColour4f(r, g, b, pl_graphics_state.current_clearcolour[PL_ALPHA]);
+	plSetClearColour4f(r, g, b, pl_graphics_state.current_clearcolour.a);
 }
 
 void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a)
 {
 	_PL_GRAPHICS_TRACK();
 
-	if ((r == pl_graphics_state.current_clearcolour[PL_RED]) &&
-		(g == pl_graphics_state.current_clearcolour[PL_GREEN]) &&
-		(b == pl_graphics_state.current_clearcolour[PL_BLUE]) &&
-		(a == pl_graphics_state.current_clearcolour[PL_ALPHA]))
+	if ((r == pl_graphics_state.current_clearcolour.r) &&
+		(g == pl_graphics_state.current_clearcolour.g) &&
+		(b == pl_graphics_state.current_clearcolour.b) &&
+		(a == pl_graphics_state.current_clearcolour.a))
 		return;
 
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -300,17 +300,17 @@ void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a)
 	// Don't need to do anything specific here, colour is set on clear call.
 #endif
 
-	plColourSetf(pl_graphics_state.current_clearcolour, r, g, b, a);
+	pl_graphics_state.current_clearcolour.Set(r, g, b, a);
 }
 
-void plSetClearColour4fv(PLColour rgba)
+void plSetClearColour4fv(const PLColour *rgba)
 {
 	plSetClearColour4f
 	(
-		rgba[PL_RED],
-		rgba[PL_GREEN],
-		rgba[PL_BLUE],
-		rgba[PL_ALPHA]
+		rgba->r,
+		rgba->g,
+		rgba->b,
+		rgba->a
 	);
 }
 
@@ -618,7 +618,7 @@ void plDraw(PLDraw *draw)
 
         PLVertex *vert = &draw->vertices[0];
         glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), vert->position);
-        glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
+//      glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
         glNormalPointer(GL_FLOAT, sizeof(PLVertex), vert->normal);
         for(PLint i = 0; i < plGetMaxTextureUnits(); i++)
             if(pl_graphics_state.tmu[i].active)
@@ -657,7 +657,7 @@ void plDrawVertexNormals(PLDraw *draw)
 {
     if(draw->primitive == VL_PRIMITIVE_LINES)
         return;
-
+#if 0
     PLVector3f endpos = { 0 };
     for(PLuint i = 0; i < draw->numverts; i++)
     {
@@ -667,6 +667,7 @@ void plDrawVertexNormals(PLDraw *draw)
 
         //plDrawLine blah
     }
+#endif
 }
 
 /*===========================
@@ -1094,6 +1095,7 @@ void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode)
 
 void plApplyLighting(PLDraw *object, PLLight *light, PLVector3f position)
 {
+#if 0
     // Calculate the distance.
     PLVector3f distvec = { 0 };
     plVectorSubtract3fv(position, light->position, distvec);
@@ -1107,7 +1109,7 @@ void plApplyLighting(PLDraw *object, PLLight *light, PLVector3f position)
 
         float angle = (distance * ((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
         if(angle < 0)
-            plVectorClear(object->vertices[i].colour);
+	        object->vertices[i].colour.Clear();
         else
         {
             object->vertices[i].colour[PL_RED]      = light->colour[PL_RED] * angle;
@@ -1135,6 +1137,7 @@ void plApplyLighting(PLDraw *object, PLLight *light, PLVector3f position)
         }
         */
     }
+#endif
 }
 
 /*===========================

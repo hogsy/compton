@@ -304,7 +304,7 @@ plSetErrorFunction(PL_FUNCTION);
 	plResetError(); plSetErrorFunction(PL_FUNCTION)
 #define plFunctionEnd()
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
 extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
@@ -315,7 +315,7 @@ extern const PLchar *plGetResultString(PLresult result);
 extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
 extern char	*plGetError(void);			// Returns the last recorded error.
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 //////////////////////////////////////////////////////////////////
 

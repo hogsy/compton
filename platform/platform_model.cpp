@@ -18,13 +18,13 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	PLATFORM MODEL LOADER	*/
 
-std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t c)
+std::vector<float> plGenerateNormal(PLVector3f a, PLVector3f b, PLVector3f c)
 {
-	plVector3f_t x, y;
+	PLVector3f x, y;
 	plVectorSubtract3fv(c, b, x);
 	plVectorSubtract3fv(a, b, y);
 
-	plVector3f_t normal;
+	PLVector3f normal;
 	plVectorClear(normal);
 	plCrossProduct(x, y, normal);
 	plVectorNormalize(normal);
@@ -95,9 +95,6 @@ PLStaticModel *plCreateStaticModel(void)
 	plSetErrorFunction("plCreateStaticModel");
 
 	PLStaticModel *model = new PLStaticModel;
-	if (!model)
-		return nullptr;
-
 	memset(model, 0, sizeof(PLStaticModel));
 
 	return model;
@@ -143,9 +140,6 @@ plAnimatedModel_t *plCreateAnimatedModel(void)
 	plSetErrorFunction("plCreateAnimatedModel");
 
 	plAnimatedModel_t *model = new plAnimatedModel_t;
-	if (!model)
-		return nullptr;
-	
 	memset(model, 0, sizeof(plAnimatedModel_t));
 
 	return model;

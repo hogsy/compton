@@ -17,7 +17,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #pragma once
 
 #include "platform.h"
-#include "platform_math_legacy.h"
+#include "platform_math.h"
 #include "platform_graphics.h"
 
 enum
@@ -33,16 +33,16 @@ enum
 
 typedef struct plVertex_s
 {
-	plVector3f_t position, normal;
+	PLVector3f position, normal;
 
-	plVector2f_t ST;
+	PLVector2f ST;
 
 	PLColour colour;
 } plVertex_t;
 
 typedef struct plTriangle_s
 {
-	plVector3f_t normal;
+	PLVector3f normal;
 
 	unsigned int indices[3];
 } plTriangle_t;
@@ -52,7 +52,7 @@ typedef struct plModelFrame_s
 	plTriangle_t	*triangles;
 	plVertex_t		*vertices;
 
-	plVector3f_t mins, maxs; // Bounds
+	PLVector3f mins, maxs; // Bounds
 } PLModelFrame;
 
 /*	Static animated mesh.
@@ -95,7 +95,7 @@ typedef struct plSkeletalModel_s
 #include "platform_model_u3d.h"
 #include "platform_model_obj.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 // Static
 PLStaticModel *plCreateStaticModel(void);
@@ -114,4 +114,4 @@ void plGenerateStaticModelNormals(PLStaticModel *model);
 void plGenerateAnimatedModelNormals(plAnimatedModel_t *model);
 void plGenerateSkeletalModelNormals(plSkeletalModel_t *model);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

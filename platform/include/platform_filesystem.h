@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern void	plGetUserName(PLchar *out);
 extern void	plGetWorkingDirectory(PLchar *out);
@@ -42,4 +42,4 @@ extern time_t plGetFileModifiedTime(const PLchar *path);
 extern PLint plGetLittleShort(FILE *fin);
 extern PLint plGetLittleLong(FILE *fin);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

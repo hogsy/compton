@@ -40,6 +40,12 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 // Vectors
 
+typedef PLint       PLVector2i[2], PLVector3i[3], PLVector4i[4];
+typedef PLfloat     PLVector2f[2], PLVector3f[3], PLVector4f[4];
+typedef PLdouble    PLVector2d[2], PLVector3d[3], PLVector4d[4];
+
+#ifdef __cplusplus
+
 typedef struct PLVector2D
 {
 	PLVector2D(PLfloat a, PLfloat b) : x(a), y(b) {}
@@ -56,11 +62,66 @@ typedef struct PLVector2D
 	void operator/=(PLVector2D a)           { x /= a.x; y /= a.y; }
 	void operator/=(const PLVector2D *a)    { x /= a->x; y /= a->y; }
 	void operator/=(PLfloat a)              { x /= a; y /= a; }
+	void operator+=(PLVector2D a)           { x += a.x; y += a.y; }
+	void operator+=(const PLVector2D *a)    { x += a->x; y += a->y; }
+
+	PLbool operator==(PLVector2D a) const           { return ((x == a.x) && (y == a.y)); }
+	PLbool operator==(const PLVector2D *a) const    { return ((x == a->x) && (y == a->y)); }
+
+	PLVector2D operator*(PLVector2D a)          { return PLVector2D(x * a.x, y * a.y); }
+	PLVector2D operator*(const PLVector2D *a)   { return PLVector2D(x * a->x, y * a->y); }
 
 	void PL_INLINE Set(PLfloat a, PLfloat b)    { x = a; y = b; }
+	void PL_INLINE Clear()                      { x = 0; y = 0; }
 } PLVector2D;
 
+#else
+
+#endif
+
+// Colour
+
+#define PL_COLOUR_WHITE 255, 255, 255, 255
+#define PL_COLOUR_BLACK 0, 0, 0, 255
+#define PL_COLOUR_RED   255, 0, 0, 255
+#define PL_COLOUR_GREEN 0, 255, 0, 255
+#define PL_COLOUR_BLUE  0, 0, 255, 255
+
+struct PLColour
+{
+	PLColour() : PLColour(PL_COLOUR_WHITE) {}
+	PLColour(PLuchar _r, PLuchar _g, PLuchar _b, PLuchar _a = 255) : r(_r), g(_g), b(_b), a(_a) {}
+
+	PLuchar r, g, b, a;
+
+	PLbool operator==(PLColour in) const
+	{ return ((r == in.r) && (g == in.g) && (b == in.b) && (a == in.a)); }
+	PLbool operator==(const PLColour *in) const
+	{ return ((r == in->r) && (g == in->g) && (b == in->b) && (a == in->a)); }
+
+	PLColour operator*(PLColour in)         { return PLColour(r * in.r, g * in.g, b * in.b, a * in.a); }
+	PLColour operator*(const PLColour *in)  { return PLColour(r * in->r, g * in->g, b * in->b, a * in->a); }
+	PLColour operator/(PLColour in)         { return PLColour(r / in.r, g / in.g, b / in.b, a / in.a); }
+	PLColour operator/(const PLColour *in)  { return PLColour(r / in->r, g / in->g, b / in->b, a / in->a); }
+
+	void PL_INLINE Set(PLfloat _r, PLfloat _g, PLfloat _b, PLfloat _a = 1)
+	{
+		r = (PLuchar)(_r / 255); g = (PLuchar)(_g / 255); b = (PLuchar)(_b / 255); a = (PLuchar)(_a / 255);
+	}
+	void PL_INLINE Clear()  { r = 0; g = 0; b = 0; a = 0; }
+};
+
+// Matrices
+
+typedef PLfloat     PLMatrix3x3f[3][3], PLMatrix4x4f[4][4];
+typedef PLdouble    PLMatrix3x3d[3][3], PLMatrix4x4d[4][4];
+
 // Quaternion
+
+typedef PLfloat     PLQuaternionf[4];
+typedef PLdouble    PLQuaterniond[4];
+
+#ifdef __cplusplus
 
 typedef struct PLQuaternion
 {
@@ -76,6 +137,19 @@ typedef struct PLQuaternion
 	void operator*=(PLQuaternion a)         { x *= a.x; y *= a.y; z *= a.z; w *= a.w; }
 	void operator*=(const PLQuaternion *a)  { x *= a->x; y *= a->y; z *= a->z; w *= a->w; }
 
+	PLbool operator==(PLQuaternion a) const
+	{
+		return ((x == a.x) && (y == a.y) && (z == a.z) && (w == a.w));
+	}
+	PLbool operator==(const PLQuaternion *a) const
+	{
+		return ((x == a->x) && (y == a->y) && (z == a->z) && (w == a->w));
+	}
+
+	PLQuaternion operator*(PLfloat a)
+	{
+		return PLQuaternion(x * a, y * a, z * a, w * a);
+	}
 	PLQuaternion operator*(PLQuaternion a)
 	{
 		return PLQuaternion(x * a.x, y * a.y, z * a.z, w * a.w);
@@ -87,17 +161,60 @@ typedef struct PLQuaternion
 
 	void PL_INLINE Set(PLfloat a, PLfloat b, PLfloat c, PLfloat d)  { x = a; y = b; z = c; w = d; }
 	void PL_INLINE Set(PLfloat a, PLfloat b, PLfloat c)             { x = a; y = b; z = c; }
+	void PL_INLINE Clear()                                          { x = 0; y = 0; z = 0; w = 0; }
 
-	PLQuaternion PL_INLINE Inverse()
+	const PL_INLINE PLchar *String()
 	{
-		return PLQuaternion(-x, -y, -z, w);
+		static PLchar s[32] = { 0 };
+		snprintf(s, 32, "%i %i %i %i", (PLint)x, (PLint)y, (PLint)z, (PLint)w);
+		return s;
 	}
 
 	PLfloat PL_INLINE Length()
 	{
 		return sqrtf((x * x + y * y + z * z + w * w));
 	}
+
+	PLQuaternion PL_INLINE Scale(PLfloat a)
+	{
+		return PLQuaternion(x * a, y * a, z * a, w * a);
+	}
+	PLQuaternion PL_INLINE Inverse()
+	{
+		return PLQuaternion(-x, -y, -z, w);
+	}
+	PLQuaternion PL_INLINE Normalize()
+	{
+		PLfloat l = Length();
+		if(l)
+		{
+			float i = 1 / l;
+			return Scale(i);
+		}
+	}
 } PLQuaternion;
+
+#else
+
+#endif
+
+// Randomisation
+
+// http://stackoverflow.com/questions/7978759/generate-float-random-values-also-negative
+static PL_INLINE PLdouble plUniform0To1Random(void)
+{
+	return (random()) / ((double)RAND_MAX + 1);
+}
+
+static PL_INLINE PLdouble plGenerateRandomd(PLdouble max)
+{
+	return (PLdouble)(rand()) / (RAND_MAX / max);
+}
+
+static PL_INLINE PLfloat plGenerateRandomf(PLfloat max)
+{
+	return (PLfloat)(rand()) / (RAND_MAX / max);
+}
 
 // Interpolation
 // http://paulbourke.net/miscellaneous/interpolation/
@@ -112,3 +229,182 @@ static PL_INLINE PLfloat plCosineInterpolate(PLfloat y1, PLfloat y2, PLfloat mu)
 	PLfloat mu2 = (1 - std::cos(mu * (PLfloat)PL_PI)) / 2;
 	return (y1 * (1 - mu2) + y2 * mu2);
 }
+
+// http://probesys.blogspot.co.uk/2011/10/useful-math-functions.html
+
+static PL_INLINE PLfloat plOutPow(PLfloat x, PLfloat p)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	PLint sign = (PLint)p % 2 == 0 ? -1 : 1;
+	return (sign * (powf(x - 1.0f, p) + sign));
+}
+
+static PL_INLINE PLfloat plLinear(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return x;
+}
+
+static PL_INLINE PLfloat plInPow(PLfloat x, PLfloat p)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return powf(x, p);
+}
+
+static PL_INLINE PLfloat plInSin(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return -cosf(x * ((float)PL_PI / 2.0f)) + 1.0f;
+}
+
+static PL_INLINE PLfloat plOutSin(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return sinf(x * ((float)PL_PI / 2.0f));
+}
+
+static PL_INLINE PLfloat plInExp(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return powf(2.0f, 10.0f * (x - 1.0f));
+}
+
+static PL_INLINE PLfloat plOutExp(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return -powf(2.0f, -1.0f * x) + 1.0f;
+}
+
+static PL_INLINE PLfloat plInOutExp(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return x < 0.5f ? 0.5f * powf(2.0f, 10.0f * (2.0f*x - 1.0f)) :
+	       0.5f * (-powf(2.0f, 10.0f * (-2.0f*x + 1.0f)) + 1.0f);
+}
+
+static PL_INLINE PLfloat plInCirc(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return -(sqrtf(1.0f - x *x) - 1.0f);
+}
+
+static PL_INLINE PLfloat plOutBack(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return (x - 1.0f) * (x - 1.0f) * ((1.70158f + 1.0f) * (x - 1.0f) + 1.70158f) + 1.0f;
+}
+
+// The variable, k, controls the stretching of the function.
+static PL_INLINE PLfloat plImpulse(PLfloat x, PLfloat k)
+{
+	PLfloat h = k*x;
+	return h*expf(1.0f - h);
+}
+
+static PL_INLINE PLfloat plRebound(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	if (x < (1.0f / 2.75f)) return 1.0f - 7.5625f * x * x;
+	else if (x < (2.0f / 2.75f)) return 1.0f - (7.5625f * (x - 1.5f / 2.75f) *
+	                                            (x - 1.5f / 2.75f) + 0.75f);
+	else if (x < (2.5f / 2.75f)) return 1.0f - (7.5625f * (x - 2.25f / 2.75f) *
+	                                            (x - 2.25f / 2.75f) + 0.9375f);
+	else return 1.0f - (7.5625f * (x - 2.625f / 2.75f) * (x - 2.625f / 2.75f) +
+	                    0.984375f);
+}
+
+static PL_INLINE PLfloat plExpPulse(PLfloat x, PLfloat k, PLfloat n)
+{
+	return expf(-k*powf(x, n));
+}
+
+static PL_INLINE PLfloat plInOutBack(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return x < 0.5f ? 0.5f * (4.0f * x * x * ((2.5949f + 1.0f) * 2.0f * x - 2.5949f)) :
+	       0.5f * ((2.0f * x - 2.0f) * (2.0f * x - 2.0f) * ((2.5949f + 1.0f) * (2.0f * x - 2.0f) +
+	                                                        2.5949f) + 2.0f);
+}
+
+static PL_INLINE PLfloat plInBack(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return x * x * ((1.70158f + 1.0f) * x - 1.70158f);
+}
+
+static PL_INLINE PLfloat plInOutCirc(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return x < 1.0f ? -0.5f * (sqrtf(1.0f - x*x) - 1.0f) :
+	       0.5f * (sqrtf(1.0f - ((1.0f * x) - 2.0f) * ((2.0f * x) - 2.0f)) + 1.0f);
+}
+
+static PL_INLINE PLfloat plOutCirc(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return sqrtf(1.0f - (x - 1.0f)*(x - 1.0f));
+}
+
+static PL_INLINE PLfloat plInOutSin(PLfloat x)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	return -0.5f * (cosf((PLfloat)PL_PI * x) - 1.0f);
+}
+
+static PL_INLINE PLfloat plInOutPow(PLfloat x, PLfloat p)
+{
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
+
+	int sign = (int)p % 2 == 0 ? -1 : 1;
+	return (sign / 2.0f * (powf(x - 2.0f, p) + sign * 2.0f));
+}
+
+// GLM
+
+#   ifndef PLATFORM_EXCLUDE_GLM
+#       ifdef _MSC_VER
+#           pragma warning(disable: 4201)
+#       endif
+#       include <glm/gtc/type_ptr.hpp>
+#       include <glm/vec2.hpp>
+#       include <glm/vec3.hpp>
+#       include <glm/vec4.hpp>
+#       include <glm/mat4x4.hpp>
+#       include <glm/gtc/matrix_transform.hpp>
+#       ifdef _MSC_VER
+#           pragma warning(default: 4201)
+#       endif
+#   endif

@@ -42,7 +42,7 @@ typedef struct PLImage
 #define PLIMAGE_EXTENSION_TGA	".tga"
 #define PLIMAGE_EXTENSION_PNG	".png"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern void plFreeImage(PLImage *image);
 
@@ -50,4 +50,4 @@ extern PLresult plLoadFTXImage(FILE *fin, PLImage *out);	// Ritual's FTX image f
 extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Portable Pixel Map format.
 extern PLresult plLoadDTXImage(FILE *fin, PLImage *out);	// Lithtech's DTX image format.
 
-plEXTERN_C_END
+PL_EXTERN_C_END

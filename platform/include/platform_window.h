@@ -44,7 +44,7 @@ typedef struct
 #endif
 } plWindow_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 PL_EXTERN PLvoid plMessageBox(const char *title, const char *msg, ...);
 PL_EXTERN PLvoid plShowCursor(PLbool show);	// Shows or hides the cursor for the active window.
@@ -60,4 +60,4 @@ PL_EXTERN PLint plGetScreenCount(void);	// Returns number of avaliable screens.
 // Rendering
 PL_EXTERN PLvoid plSwapBuffers(plWindow_t *window);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

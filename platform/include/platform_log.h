@@ -18,9 +18,9 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void plWriteLog(const char *path, const char *msg, ...);
 void plClearLog(const char *path);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

@@ -70,9 +70,9 @@ void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y,	ALLEGRO_COLOR co
 	al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_CENTER, message.c_str());
 }
 
-void DrawFilledRectangle(const Vector2D *position, float w, float h, ALLEGRO_COLOR colour)
+void DrawFilledRectangle(PLVector2D position, float w, float h, ALLEGRO_COLOR colour)
 {
-	al_draw_filled_rectangle(position->x, position->y, w, h, colour);
+	al_draw_filled_rectangle(position.x, position.y, w, h, colour);
 }
 
 void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom)

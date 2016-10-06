@@ -303,15 +303,9 @@ void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a)
 	pl_graphics_state.current_clearcolour.Set(r, g, b, a);
 }
 
-void plSetClearColour4fv(const PLColour *rgba)
+void plSetClearColour4fv(PLColour rgba)
 {
-	plSetClearColour4f
-	(
-		rgba->r,
-		rgba->g,
-		rgba->b,
-		rgba->a
-	);
+	plSetClearColour4f(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
 void plClearBuffers(PLuint buffers)
@@ -576,7 +570,7 @@ void _plDrawElements(PLPrimitive mode, PLuint count, PLuint type, const PLvoid *
 void plDraw(PLDraw *draw)
 {
     _PL_GRAPHICS_TRACK();
-
+#if 0 // update this :(
     if(!draw)
         return;
     else if(draw->numverts == 0)
@@ -618,7 +612,7 @@ void plDraw(PLDraw *draw)
 
         PLVertex *vert = &draw->vertices[0];
         glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), vert->position);
-//      glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
+        glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
         glNormalPointer(GL_FLOAT, sizeof(PLVertex), vert->normal);
         for(PLint i = 0; i < plGetMaxTextureUnits(); i++)
             if(pl_graphics_state.tmu[i].active)
@@ -651,23 +645,20 @@ void plDraw(PLDraw *draw)
 #endif
     }
 #endif
+#endif
 }
 
 void plDrawVertexNormals(PLDraw *draw)
 {
     if(draw->primitive == VL_PRIMITIVE_LINES)
         return;
-#if 0
-    PLVector3f endpos = { 0 };
+
+	PLVector3D endpos;
     for(PLuint i = 0; i < draw->numverts; i++)
     {
-        plVectorClear(endpos);
-        plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
-        plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);
-
+	    endpos = (draw->vertices[i].normal * 2.0f) + draw->vertices[i].position;
         //plDrawLine blah
     }
-#endif
 }
 
 /*===========================

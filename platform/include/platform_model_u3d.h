@@ -20,6 +20,6 @@
 
 PL_EXTERN_C
 
-plAnimatedModel_t *plLoadU3DModel(const char *path);
+PLAnimatedModel *plLoadU3DModel(const char *path);
 
 PL_EXTERN_C_END

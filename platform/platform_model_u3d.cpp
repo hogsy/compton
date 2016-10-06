@@ -95,7 +95,7 @@ void _plUnloadU3DModel()
 		std::fclose(pl_u3d_dataf);
 }
 
-plAnimatedModel_t *plLoadU3DModel(const char *path)
+PLAnimatedModel *plLoadU3DModel(const char *path)
 {
 	plSetErrorFunction("plLoadU3DModel");
 
@@ -163,7 +163,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 		return nullptr;
 	}
 
-	plAnimatedModel_t *model = plCreateAnimatedModel();
+	PLAnimatedModel *model = plCreateAnimatedModel();
 	if (!model)
 	{
 		plSetError("Failed to allocate animated model!\n");
@@ -181,8 +181,8 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	model->frames = new PLModelFrame[model->num_frames];
 	for (unsigned int i = 0; i < model->num_frames; i++)
 	{
-		model->frames[i].vertices = new plVertex_t[model->num_vertices];
-		model->frames[i].triangles = new plTriangle_t[model->num_triangles];
+		model->frames[i].vertices = new PLVertex[model->num_vertices];
+		model->frames[i].triangles = new PLTriangle[model->num_triangles];
 	}
 
 	// Skip unused header data.

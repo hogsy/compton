@@ -18,8 +18,15 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	PLATFORM MODEL LOADER	*/
 
-std::vector<float> plGenerateNormal(PLVector3f a, PLVector3f b, PLVector3f c)
+PLVector3D plGenerateNormal(PLVector3D a, PLVector3D b, PLVector3D c)
 {
+#if 1
+	PLVector3D x = c - b;
+	PLVector3D y = a - b;
+
+	PLVector3D normal = x.CrossProduct(y);
+	return normal.Normalize();
+#else // legacy
 	PLVector3f x, y;
 	plVectorSubtract3fv(c, b, x);
 	plVectorSubtract3fv(a, b, y);
@@ -28,9 +35,10 @@ std::vector<float> plGenerateNormal(PLVector3f a, PLVector3f b, PLVector3f c)
 	plVectorClear(normal);
 	plCrossProduct(x, y, normal);
 	plVectorNormalize(normal);
-	
+
 	std::vector<float> vnorm = { normal[0], normal[1], normal[2] };
 	return vnorm;
+#endif
 }
 
 void plGenerateStaticModelNormals(PLStaticModel *model)
@@ -49,9 +57,9 @@ void plGenerateStaticModelNormals(PLStaticModel *model)
 		frame->triangles[i].normal[PL_Z] = normal[PL_Z];
 	}
 #else // per vertex...
-	for (plVertex_t *vertex = &frame->vertices[0]; vertex; ++vertex)
+	for (PLVertex *vertex = &frame->vertices[0]; vertex; ++vertex)
 	{
-		for (plTriangle_t *triangle = &frame->triangles[0]; triangle; ++triangle)
+		for (PLTriangle *triangle = &frame->triangles[0]; triangle; ++triangle)
 		{
 
 		}
@@ -59,7 +67,7 @@ void plGenerateStaticModelNormals(PLStaticModel *model)
 #endif
 }
 
-void plGenerateAnimatedModelNormals(plAnimatedModel_t *model)
+void plGenerateAnimatedModelNormals(PLAnimatedModel *model)
 {
 	if (!model)
 		return;
@@ -70,17 +78,17 @@ void plGenerateAnimatedModelNormals(plAnimatedModel_t *model)
 	// surely we could figure that out.
 	for (PLModelFrame *frame = &model->frames[0]; frame; ++frame)
 	{
-		for (plVertex_t *vertex = &frame->vertices[0]; vertex; ++vertex)
+		for (PLVertex *vertex = &frame->vertices[0]; vertex; ++vertex)
 		{
-			for (plTriangle_t *triangle = &frame->triangles[0]; triangle; ++triangle)
+			for (PLTriangle *triangle = &frame->triangles[0]; triangle; ++triangle)
 			{
-				
+
 			}
 		}
 	}
 }
 
-void plGenerateSkeletalModelNormals(plSkeletalModel_t *model)
+void plGenerateSkeletalModelNormals(PLSkeletalModel *model)
 {
 	if (!model)
 		return;
@@ -135,18 +143,18 @@ void plDeleteStaticModel(PLStaticModel *model)
 	Animated Model
 */
 
-plAnimatedModel_t *plCreateAnimatedModel(void)
+PLAnimatedModel *plCreateAnimatedModel(void)
 {
 	plSetErrorFunction("plCreateAnimatedModel");
 
-	plAnimatedModel_t *model = new plAnimatedModel_t;
-	memset(model, 0, sizeof(plAnimatedModel_t));
+	PLAnimatedModel *model = new PLAnimatedModel;
+	memset(model, 0, sizeof(PLAnimatedModel));
 
 	return model;
 }
 
 // Less direct implementation to load a model (less efficient too).
-plAnimatedModel_t *plLoadAnimatedModel(const char *path)
+PLAnimatedModel *plLoadAnimatedModel(const char *path)
 {
 	plSetErrorFunction("plLoadAnimatedModel");
 
@@ -159,7 +167,7 @@ plAnimatedModel_t *plLoadAnimatedModel(const char *path)
 	return nullptr;
 }
 
-void plDeleteAnimatedModel(plAnimatedModel_t *model)
+void plDeleteAnimatedModel(PLAnimatedModel *model)
 {
 	plSetErrorFunction("plDeleteAnimatedModel");
 

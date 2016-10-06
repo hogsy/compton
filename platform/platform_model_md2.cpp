@@ -84,7 +84,7 @@ typedef struct
 	PLint	ofs_end;		// End of file.
 } MD2_t;
 
-plAnimatedModel_t *plLoadMD2Model(const PLchar *path)
+PLAnimatedModel *plLoadMD2Model(const PLchar *path)
 {
 	if (!path || path[0] == ' ')
 		return nullptr;

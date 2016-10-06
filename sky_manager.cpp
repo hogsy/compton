@@ -9,7 +9,7 @@ SkyManager *game_skymanager = nullptr;
 
 /*	Clouds	*/
 
-#define DAMP 	((w * h) / (GenerateRandom(0.05f) + 5)) / 100;
+#define DAMP 	((w * h) / ((float)plGenerateUniformRandom(0.05f) + 5)) / 100;
 #define JIGGLE	0.05f
 
 class Cloud : public SpriteObject
@@ -22,7 +22,7 @@ public:
 
 		position.Set(rand()%DISPLAY_WIDTH, rand()%(DISPLAY_HEIGHT/2));
 		_damping = DAMP;
-		_jiggle = GenerateRandom(JIGGLE);
+		_jiggle = (float)plGenerateUniformRandom(JIGGLE);
 	}
 
 	Cloud(ALLEGRO_BITMAP *sprite, bool direction) : SpriteObject(sprite)
@@ -32,7 +32,7 @@ public:
 
 		position.Set((direction ? -(float)w : DISPLAY_WIDTH ), rand()%(DISPLAY_HEIGHT / 2));
 		_damping = DAMP;
-		_jiggle = GenerateRandom(JIGGLE);
+		_jiggle = (float)plGenerateUniformRandom(JIGGLE);
 	}
 
 	virtual ~Cloud()
@@ -49,7 +49,7 @@ public:
 
 	virtual void Draw()
 	{
-		Vector2D oldpos = position;
+		PLVector2D oldpos = position;
 		position.y = (std::sin((float)engine.counter / (120 / _jiggle)) * 5 + 5) + position.y;
 		SpriteObject::Draw();
 		position = oldpos;
@@ -222,29 +222,29 @@ void SkyManager::Simulate()
 	//int difference =
 #define INTERP (float)((_time / 60) / 4)
 
-	_sky_bottom.r = CosineInterpolate(
+	_sky_bottom.r = plCosineInterpolate(
 			_sky_bottom.r, _sky_target_bottom.r,
 			INTERP
 	);
-	_sky_bottom.g = CosineInterpolate(
+	_sky_bottom.g = plCosineInterpolate(
 			_sky_bottom.g, _sky_target_bottom.g,
 			INTERP
 	);
-	_sky_bottom.b = CosineInterpolate(
+	_sky_bottom.b = plCosineInterpolate(
 			_sky_bottom.b, _sky_target_bottom.b,
 			INTERP
 	);
 
 #if 1
-	_sky_top.r = CosineInterpolate(
+	_sky_top.r = plCosineInterpolate(
 			_sky_top.r, _sky_target_top.r,
 			INTERP
 	);
-	_sky_top.g = CosineInterpolate(
+	_sky_top.g = plCosineInterpolate(
 			_sky_top.g, _sky_target_top.g,
 			INTERP
 	);
-	_sky_top.b = CosineInterpolate(
+	_sky_top.b = plCosineInterpolate(
 			_sky_top.b, _sky_target_top.b,
 			INTERP
 	);

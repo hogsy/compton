@@ -33,8 +33,8 @@ public:
 
 	bool InsideBounds();
 
-	Vector2D position;
-	Vector2D origin;
+	PLVector2D position;
+	PLVector2D origin;
 	float angle;
 
 protected:

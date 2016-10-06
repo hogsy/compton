@@ -327,10 +327,9 @@ typedef enum PLPrimitive
 
 typedef struct PLVertex
 {
-	PLVector3f position;
-	PLVector3f normal;
+	PLVector3D position, normal;
 
-	PLVector2f ST[16];
+	PLVector2D ST[16];
 
 	PLColour colour;
 } PLVertex;
@@ -379,7 +378,7 @@ PL_EXTERN_C
 
 PL_EXTERN void plSetClearColour3f(PLfloat r, PLfloat g, PLfloat b);
 PL_EXTERN void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a);
-PL_EXTERN void plSetClearColour4fv(const PLColour *rgba);
+PL_EXTERN void plSetClearColour4fv(PLColour rgba);
 
 PL_EXTERN void plClearBuffers(PLuint buffers);
 

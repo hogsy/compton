@@ -39,8 +39,8 @@ typedef struct OBJFace_s
 
 } OBJFace_t;
 
-std::vector<float*> vertices;
-std::vector<float*> normals;
+std::vector<PLVector3D> vertices;
+std::vector<PLVector3D> normals;
 
 std::ifstream pl_obj_data;
 
@@ -48,12 +48,6 @@ void _plUnloadOBJModel()
 {
 	if (pl_obj_data.is_open())
 		pl_obj_data.close();
-
-	// Clear out all the allocated memory.
-	for (unsigned int i = 0; i < vertices.size(); i++)
-		if (vertices[i]) delete vertices[i];
-	for (unsigned int i = 0; i < normals.size(); i++)
-		if (normals[i]) delete normals[i];
 
 	// Shrink our vectors down.
 	vertices.empty();
@@ -95,23 +89,17 @@ PLStaticModel *plLoadOBJModel(const PLchar *path)
 		{
 			if (line[1] == OBJ_SYNTAX_VERTEX_NORMAL)
 			{
-				PLVector3f normal;
+				PLVector3f normal = { 0, 0, 0 };
 				std::sscanf(line.c_str() + 2, "%f %f %f", &normal[0], &normal[1], &normal[2]);
-				
-				float *vnormal = new float[3];
-				memcpy(vnormal, normal, sizeof(PLVector3f));
-				normals.push_back(vnormal);
+				normals.push_back(PLVector3D(normal[0], normal[1], normal[2]));
 			}
 			else if (line[1] == OBJ_SYNTAX_VERTEX_ST)
 			{ }
 			else // Vertex coords
 			{
-				PLVector3f position;
+				PLVector3f position = { 0, 0, 0 };
 				std::sscanf(line.c_str() + 2, "%f %f %f", &position[0], &position[1], &position[2]);
-				
-				float *vposition = new float[3];
-				memcpy(vposition, position, sizeof(PLVector3f));
-				vertices.push_back(vposition);
+				vertices.push_back(PLVector3D(position[0], position[1], position[2]));
 			}
 		}
 		break;
@@ -140,15 +128,15 @@ PLStaticModel *plLoadOBJModel(const PLchar *path)
 	}
 
 	model->num_triangles	= 0;
-	model->num_vertices		= vertices.size();
+	model->num_vertices		= (unsigned int)vertices.size();
 	model->primitive		= VL_PRIMITIVE_POINTS;
 
 	// Allocate vertex/triangle arrays.
-	model->frame.vertices = new plVertex_t[model->num_vertices];
+	model->frame.vertices = new PLVertex[model->num_vertices];
 	for (unsigned int i = 0; i < model->num_vertices; i++)
 	{
-		plVertex_t *vertex = &model->frame.vertices[0];
-		plVectorCopy(vertices[i], vertex->position);
+		PLVertex *vertex = &model->frame.vertices[0];
+		vertex->position = vertices[i];
 	}
 
 	_plUnloadOBJModel();

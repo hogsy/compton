@@ -261,6 +261,8 @@ typedef double					PLdouble;
 typedef short					PLshort;
 typedef unsigned short			PLushort;
 
+#define PL_FLOATTOBYTE(a)   (PLbyte)(a / 255)
+
 //////////////////////////////////////////////////////////////////
 
 /*	Error Management Functionality	*/

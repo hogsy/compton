@@ -16,7 +16,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_native_dialog.h>
 
-#include "math.h"
+#include "platform_math.h"
 
 #define DEBUG_BUILD
 
@@ -58,7 +58,7 @@ ALLEGRO_BITMAP *LoadImage(std::string path);
 void DrawBitmap(ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h);
 void DrawString(const ALLEGRO_FONT *font, int x, int y,	ALLEGRO_COLOR colour, std::string message);
 void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y,	ALLEGRO_COLOR colour, std::string message);
-void DrawFilledRectangle(const Vector2D *position, float w, float h, ALLEGRO_COLOR colour);
+void DrawFilledRectangle(PLVector2D position, float w, float h, ALLEGRO_COLOR colour);
 void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom);
 
 /*	Game	*/

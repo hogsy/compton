@@ -119,6 +119,10 @@ void InitializeDisplay()
 #endif
 	);
 
+#if defined(DEBUG_BUILD)
+
+#endif
+
 	// Check to see how much we need to scale the buffer.
 	engine.buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 	int sx = engine.window_width / DISPLAY_WIDTH;
@@ -244,28 +248,22 @@ void ShutdownEvents()
 
 int main()
 {
+	plClearLog(VC_LOG);
+
+	plWriteLog(VC_LOG, "Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
+
+	PLuint32 version = al_get_allegro_version();
+	PLuint32 major = version >> 24;
+	PLuint32 minor = (version >> 16) & 255;
+	plWriteLog(VC_LOG, "Initializing Allegro %i.%i...\n", major, minor);
 	if(!al_init())
 	{
-		al_show_native_message_box(
-				NULL,
-				"ERROR",
-				"A serious fault occurred",
-				"Failed to initialize allegro library!",
-				NULL,
-				ALLEGRO_MESSAGEBOX_ERROR
-		);
+		plMessageBox(VC_TITLE, "Failed to initialize Allegro library!\n");
 		return -1;
 	}
 	else if(!al_install_mouse())
 	{
-		al_show_native_message_box(
-				NULL,
-				"ERROR",
-				"A serious fault occured",
-				"Failed to initialize mouse!",
-				NULL,
-				ALLEGRO_MESSAGEBOX_ERROR
-		);
+		plMessageBox(VC_TITLE, "Failed to install mouse through Allegro!\n");
 		return -1;
 	}
 
@@ -273,14 +271,7 @@ int main()
 	al_init_primitives_addon();
 	if(!al_init_image_addon())
 	{
-		al_show_native_message_box(
-				NULL,
-				"ERROR",
-				"A serious fault occurred",
-				"Failed to initialize allegro image library!",
-				NULL,
-				ALLEGRO_MESSAGEBOX_ERROR
-		);
+		plMessageBox(VC_TITLE, "Failed to initialize Allegro image library!\n");
 		return -1;
 	}
 	al_init_font_addon();

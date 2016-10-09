@@ -39,7 +39,7 @@ SpriteObject::SpriteObject(ALLEGRO_BITMAP *sprite, float x, float y) :
 
 SpriteObject::~SpriteObject()
 {
-	if(_sprite) al_destroy_bitmap(_sprite);
+	//if(_sprite) al_destroy_bitmap(_sprite);
 }
 
 void SpriteObject::SetSprite(ALLEGRO_BITMAP *sprite)
@@ -68,6 +68,13 @@ bool SpriteObject::InsideBounds()
 
 	return true;
 }
+
+// Particles
+
+class Particle : public SpriteObject
+{
+
+};
 
 // Hand
 

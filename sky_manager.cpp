@@ -35,11 +35,6 @@ public:
 		_jiggle = (float)plGenerateUniformRandom(JIGGLE);
 	}
 
-	virtual ~Cloud()
-	{
-		SetSprite(nullptr);
-	}
-
 	void Move(float speed)
 	{
 		position.x += speed / _damping;

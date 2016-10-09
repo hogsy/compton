@@ -17,8 +17,18 @@
 #include <allegro5/allegro_native_dialog.h>
 
 #include "platform_math.h"
+#include "platform_log.h"
+#include "platform_window.h"
 
 #define DEBUG_BUILD
+
+#define VC_LOG      "debug"
+#define VC_TITLE    "Virtual Critters"
+#if defined(DEBUG_BUILD)
+#   define VC_VERSION "PRE-ALPHA DEBUG"
+#else
+#   define VC_VERSION "PRE-ALPHA"
+#endif
 
 /*	Types	*/
 

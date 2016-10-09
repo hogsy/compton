@@ -64,6 +64,9 @@ typedef struct PLVector2D
 	PLbool operator==(PLVector2D a) const           { return ((x == a.x) && (y == a.y)); }
 
 	PLVector2D operator*(PLVector2D a)          { return PLVector2D(x * a.x, y * a.y); }
+	PLVector2D operator*(PLfloat a)             { return PLVector2D(x * a, y * a); }
+	PLVector2D operator/(PLVector2D a)          { return PLVector2D(x / a.x, y / a.y); }
+	PLVector2D operator/(PLfloat a)             { return PLVector2D(x / a, y / a); }
 
 	PLfloat Length()    { return std::sqrt(x * x + y * y); }
 
@@ -98,7 +101,9 @@ typedef struct PLVector3D
 	PLVector3D operator*(PLVector3D a) const            { return PLVector3D(x * a.x, y * a.y, z * a.z); }
 	PLVector3D operator*(PLfloat a) const               { return PLVector3D(x * a, y * a, z * a); }
 	PLVector3D operator-(PLVector3D a) const            { return PLVector3D(x - a.x, y - a.y, z - a.z); }
+	PLVector3D operator-(PLfloat a) const               { return PLVector3D(x - a, y - a, z - a); }
 	PLVector3D operator+(PLVector3D a) const            { return PLVector3D(x + a.x, y + a.y, z + a.z); }
+	PLVector3D operator+(PLfloat a) const               { return PLVector3D(x + a, y + a, z + a); }
 
 	PLfloat Length()                    { return std::sqrt(x * x + y * y + z * z); }
 	PLfloat DotProduct(PLVector3D a)    { return (x * a.x + y * a.y + z * a.z); }

@@ -17,4 +17,4 @@ add_subdirectory(platform)
 
 set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 
-target_link_libraries(VCritters platform allegro allegro_dialog allegro_font allegro_ttf allegro_image allegro_primitives)
+target_link_libraries(VCritters platform X11 dl allegro allegro_dialog allegro_font allegro_ttf allegro_image allegro_primitives)

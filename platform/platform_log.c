@@ -33,8 +33,7 @@ void plWriteLog(const char *path, const char *msg, ...)
 	vsnprintf(buffer, sizeof(buffer), msg, args);
 	va_end(args);
 
-	unsigned int size = strlen(buffer);
-
+	size_t size = strlen(buffer);
 	FILE *file = fopen(newpath, "a");
 	if (fwrite(buffer, sizeof(char), size, file) != size)
 		plSetError("Failed to write to log! (%s)", newpath);

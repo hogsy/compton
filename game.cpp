@@ -76,6 +76,18 @@ class Particle : public SpriteObject
 
 };
 
+// Text Prompt
+
+class SubtitleSystem
+{
+public:
+	SubtitleSystem() {};
+	~SubtitleSystem() {};
+
+protected:
+private:
+};
+
 // Hand
 
 enum HandState {

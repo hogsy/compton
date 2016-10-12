@@ -44,17 +44,18 @@ PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function)
 // Frees library instance.
 PLvoid _plFreeLibrary(PL_INSTANCE instance)
 {
+	plFunctionStart();
 #ifdef _WIN32
 	FreeLibrary(instance);
 #else   // Linux
 	dlclose(instance);
 #endif
+	plFunctionEnd();
 }
 
 PLvoid plUnloadLibrary(PL_INSTANCE instance)
 {
 	plFunctionStart();
-
 	if(instance)
 	{
 		_plFreeLibrary(instance);
@@ -62,6 +63,7 @@ PLvoid plUnloadLibrary(PL_INSTANCE instance)
 		// Set the instance to null.
 		instance = NULL;
 	}
+	plFunctionEnd();
 }
 
 /*	Function to allow direct loading of an external module.
@@ -84,6 +86,8 @@ PL_INSTANCE plLoadLibrary(const PLchar *path)
 		plSetError("Failed to load module! (%s)\n%s\n", newpath, plGetSystemError());
 		return NULL;
 	}
+
+	plFunctionEnd();
 
 	return instance;
 }

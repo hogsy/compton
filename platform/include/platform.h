@@ -219,9 +219,6 @@ support.
 
 #include "platform_system.h"
 
-// Helper to allow us to determine the type of CPU; this is used for the module interfaces.
-#define PL_CPU_ID   "x86"
-
 // These are usually expected to be defined already, but in-case they're not then we define them here.
 #ifndef BOOL
 #	define BOOL	bool

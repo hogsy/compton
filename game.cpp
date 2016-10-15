@@ -78,11 +78,28 @@ class Particle : public SpriteObject
 
 // Text Prompt
 
+class SubtitleSentence
+{
+public:
+protected:
+private:
+	std::string _sentence;
+};
+
 class SubtitleSystem
 {
 public:
-	SubtitleSystem() {};
+	SubtitleSystem() {}
 	~SubtitleSystem() {};
+
+	void Draw()
+	{
+
+	}
+	void Simulate()
+	{
+
+	}
 
 protected:
 private:

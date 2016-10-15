@@ -100,7 +100,7 @@ PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const P
 	if(!instance)
 		return NULL;
 
-	PLvoid*(*EntryFunction)(PLvoid*) = (PLvoid*)plFindLibraryFunction(instance, entry);
+	PLvoid*(*EntryFunction)(PLvoid*) = plFindLibraryFunction(instance, entry);
 	if (!EntryFunction)
 	{
 		plSetError("Failed to find entry function! (%s)\n", entry);

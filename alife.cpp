@@ -35,3 +35,10 @@ ALIFE::Neuron::Neuron(unsigned int numinputs) : inputs(numinputs)
 //	for(unsigned int i = 0; i < numinputs + 1; ++i)
 //		weight.push_back()
 }
+
+class Creature
+{
+public:
+protected:
+private:
+};

@@ -135,6 +135,8 @@ void InitializeDisplay()
 
 	al_inhibit_screensaver(true);
 
+	al_set_clipping_rectangle(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
 	engine.redraw = true;
 }
 

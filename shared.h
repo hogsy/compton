@@ -19,6 +19,7 @@
 #include "platform_math.h"
 #include "platform_log.h"
 #include "platform_window.h"
+#include "platform_filesystem.h"
 
 #define DEBUG_BUILD
 

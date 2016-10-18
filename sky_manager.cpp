@@ -62,7 +62,7 @@ private:
 class Moon : public SpriteObject
 {
 public:
-	Moon() : SpriteObject(LoadImage("moon"))
+	Moon() : SpriteObject(LoadImage("environment/objects/moon"))
 	{
 		origin.x = al_get_bitmap_width(GetSprite()) / 2;
 		origin.y = 420;
@@ -83,7 +83,7 @@ private:
 class Sun : public SpriteObject
 {
 public:
-	Sun() : SpriteObject(LoadImage("sun"))
+	Sun() : SpriteObject(LoadImage("environment/objects/sun"))
 	{
 		origin.x = al_get_bitmap_width(GetSprite()) / 2;
 		origin.y = -420;
@@ -99,6 +99,63 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+
+class EnvironmentBackground
+{
+public:
+	EnvironmentBackground()
+	{
+		plScanDirectory("./bin/sprites/environment/backgrounds/", "night.png", EnvironmentBackground::LoadNightBackground);
+
+		current_background = nullptr;
+	}
+
+	static void LoadNightBackground(PLchar *path)
+	{
+		printf("FOUND BACKGROUND LEL!\n");
+
+		std::string properpath = path + 6;
+
+	}
+
+	void AddNightBackground(ALLEGRO_BITMAP *bitmap)
+	{
+		night.push_back(bitmap);
+		if(night[night.size()])
+		{}
+	}
+
+	void Draw()
+	{
+		// Bleh, but only do this if a background is set...
+		if(!current_background) return;
+
+		al_draw_tinted_scaled_rotated_bitmap(
+				current_background,
+		        al_map_rgb(255, 255, 255),
+				256, 256,
+		        DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
+				1024, 1024,
+				(float)engine.counter / 100,
+		        0
+		);
+	}
+
+	void Simulate()
+	{
+
+	}
+
+protected:
+private:
+
+	std::vector<ALLEGRO_BITMAP*> night;
+	std::vector<ALLEGRO_BITMAP*> day;
+
+	ALLEGRO_BITMAP *current_background;
+};
+
+EnvironmentBackground *env_background;
 
 typedef struct SkyColourCycle
 {
@@ -135,6 +192,8 @@ std::string sky_days[]= {
 
 SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0), _minute(0), _second(0)
 {
+	env_background = new EnvironmentBackground();
+
 	_cloud_sprites.reserve(10);
 	for(int i = 0; i < 10; i++)
 		_cloud_sprites[i] = LoadImage("clouds/" + std::to_string(i));
@@ -143,7 +202,7 @@ SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0),
 	_sky_target_top 	= //sky_colourcycle[1].top;
 	_sky_bottom 		= //sky_colourcycle[0].bottom;
 	_sky_target_bottom 	= al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
-	_sky_background		= LoadImage("night_background");
+	_sky_background		= LoadImage("environment/backgrounds/00night");//"environment/backgrounds/00night");
 
 	// Make initial set of clouds.
 	for(int i = 0; i < 8; i++)
@@ -194,7 +253,7 @@ void SkyManager::Simulate()
 
 	static double difference = 1;
 
-	_time++; _second = 70; //++;
+	_time++; _second++;
 	if(_second > 60) { _minute += 1; _second = 0; }
 	if(_minute > 60)
 	{
@@ -261,10 +320,17 @@ void SkyManager::Draw()
 	);
 #endif
 
-	static float alpha = 0;
+	static float alpha = 1;
 	if(_hour < 6 || _hour > 18) {
 		if(_hour) if(alpha < 0.5f) alpha += 0.01f;
-		al_draw_tinted_bitmap(_sky_background, al_map_rgba_f(1, 1, 1, alpha), 0, 0, 0);
+		al_draw_tinted_rotated_bitmap(
+				_sky_background,
+				al_map_rgba_f(1, 1, 1, 1),
+		        512, 512,
+		        DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
+				(float)engine.counter / 1000,
+		        0
+		);
 	} else alpha = 0;
 
 	_moon->Draw();

@@ -115,7 +115,7 @@ enum HandState {
 class Hand : public SpriteObject
 {
 public:
-	Hand() : SpriteObject(LoadImage("point"))
+	Hand() : SpriteObject(LoadImage("cursor/point"))
 	{
 		// todo, set this in position of cursor on creation.
 		origin.Set(0, 0);
@@ -269,7 +269,7 @@ void InitializeGame()
 	game.font_gothic_medium = LoadFont("league_gothic/LeagueGothic-Regular", 32);
 	game.font_chunk = LoadFont("chunk/Chunk", 24);
 
-	game.menu_earth = LoadImage("clouds/earth");
+	game.menu_earth = LoadImage("environment/objects/earth");
 
 
 	game_userhand = new Hand();

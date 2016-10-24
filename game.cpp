@@ -69,13 +69,6 @@ bool SpriteObject::InsideBounds()
 	return true;
 }
 
-// Particles
-
-class Particle : public SpriteObject
-{
-
-};
-
 // Text Prompt
 
 class SubtitleSentence
@@ -211,14 +204,18 @@ void DrawGameMenu()
 					"Virtual Critters Inc., Copyright (C) 2016 Mark Elsworth Sowden"
 			);
 #endif
+
+#define HANDYBLEND (std::cos((float)engine.counter / 50) * 0.8f)
 			DrawCenteredString(
 					game.font_gothic_medium,
 					DISPLAY_WIDTH / 2, 250,
-					al_map_rgba(
-							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
-							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
-							0, //(byte)(std::cos(game.counter / 30) * 127 + 127),
-							(byte)(std::cos(engine.counter / 30) * 50 + 127)
+					// We have to fade ALL the channels here, otherwise
+					// we don't fade properly (yay Allegro).
+					al_map_rgba_f(
+							HANDYBLEND,
+							HANDYBLEND,
+							HANDYBLEND,
+							HANDYBLEND
 					),
 					"PRESS ANY KEY TO START"
 			);
@@ -246,7 +243,16 @@ void DrawGameMenu()
 		break;
 
 		case GAME_MENU_GAME:
-		{}
+		{
+			// Time counter
+			DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), game_skymanager->GetDayString());
+			char timestr[10] = { 0 };
+			snprintf(timestr, 10, "%02u:%02u:%02u",
+			         game_skymanager->GetHour(),
+			         game_skymanager->GetMinute(),
+			         game_skymanager->GetSecond());
+			DrawString(game.font_small, 20, 440, al_map_rgb(255, 255, 255), timestr);
+		}
 		break;
 	}
 
@@ -270,7 +276,6 @@ void InitializeGame()
 	game.font_chunk = LoadFont("chunk/Chunk", 24);
 
 	game.menu_earth = LoadImage("environment/objects/earth");
-
 
 	game_userhand = new Hand();
 	game_skymanager = new SkyManager();

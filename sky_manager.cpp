@@ -183,6 +183,23 @@ std::string sky_days[]= {
 		"Sunday"
 };
 
+typedef struct Month
+{
+	unsigned int days;
+
+	std::string name;
+} Month;
+
+Month months[]={
+		{ 29, "Januarius" },
+		{ 28, "Febriarius" },
+		{ 27, "Martius" },
+		{ 30, "Aprilis" },
+		{ 31, "Maius" },
+		{ 30, "Junius" },
+		{ }
+};
+
 /*	todo
  * 	leap year stuff... formula
  * 		https://www.timeanddate.com/date/leapyear.html
@@ -190,7 +207,11 @@ std::string sky_days[]= {
 
 #define WIND_SPEED 10.5f
 
-SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0), _minute(0), _second(0)
+SkyManager::SkyManager() :
+		_wind_speed(WIND_SPEED),
+		_time(0), _year(0), _month(0), _day(0), _hour(0), _minute(0), _second(0),
+        _cloud_density(8),
+        _temperature(20)
 {
 	env_background = new EnvironmentBackground();
 
@@ -202,10 +223,10 @@ SkyManager::SkyManager() : _wind_speed(WIND_SPEED), _time(0), _day(0), _hour(0),
 	_sky_target_top 	= //sky_colourcycle[1].top;
 	_sky_bottom 		= //sky_colourcycle[0].bottom;
 	_sky_target_bottom 	= al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
-	_sky_background		= LoadImage("environment/backgrounds/00night");//"environment/backgrounds/00night");
+	_sky_background		= LoadImage("environment/backgrounds/00night");
 
 	// Make initial set of clouds.
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < _cloud_density; i++)
 	{
 		ALLEGRO_BITMAP *sprite = _cloud_sprites[rand()%10];
 		_clouds.emplace(_clouds.end(), Cloud(sprite));
@@ -224,9 +245,14 @@ SkyManager::~SkyManager()
 	delete _moon;
 }
 
+std::string SkyManager::GetDayString()
+{
+	return sky_days[_day];
+}
+
 void SkyManager::Simulate()
 {
-	if(_clouds.size() < 8)
+	if(_clouds.size() < _cloud_density)
 	{
 		ALLEGRO_BITMAP *sprite = _cloud_sprites[rand()%10];
 		_clouds.emplace(
@@ -307,7 +333,7 @@ void SkyManager::Simulate()
 	_moon->Simulate();
 	_sun->Simulate();
 
-	printf("(%f) %f\n", _time, _sky_bottom.r);
+	//printf("(%f) %f\n", _time, _sky_bottom.r);
 }
 
 void SkyManager::Draw()
@@ -344,10 +370,4 @@ void SkyManager::Draw()
 			al_get_bitmap_height(_cloud_sprites[2])
 	);
 	for(Cloud &cloud : _clouds)	cloud.Draw();
-
-	// Time counter
-	DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), sky_days[_day]);
-	char timestr[10] = { 0 };
-	snprintf(timestr, 10, "%02u:%02u:%02u", _hour, _minute, _second);
-	DrawString(game.font_small, 20, 440, al_map_rgb(255, 255, 255), timestr);
 }

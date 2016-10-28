@@ -6,11 +6,11 @@ class Cloud;
 class Moon;
 class Sun;
 
-class SkyManager
+class WorldManager
 {
 public:
-	SkyManager();
-	~SkyManager();
+	WorldManager();
+	~WorldManager();
 
 	void Simulate();
 	void Draw();
@@ -20,6 +20,8 @@ public:
 	unsigned int GetHour() { return _hour; }
 	unsigned int GetDay() { return _day; }
 
+	float GetWindSpeed() { return _wind_speed; }
+
 	unsigned int GetTotalHours() { }
 	// Get the total number of days...
 	// We can't do this by month, because months aren't always the same length
@@ -28,6 +30,8 @@ public:
 	unsigned int GetTotalMonths() { return _month + ((_year - 1) * 12); }
 
 	std::string GetDayString();
+
+	ALLEGRO_BITMAP *cloud_droplet;
 
 protected:
 private:
@@ -51,4 +55,4 @@ private:
 	unsigned int _cloud_density;
 };
 
-extern SkyManager *game_skymanager;
+extern WorldManager *game_skymanager;

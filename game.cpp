@@ -5,7 +5,7 @@
 #include "game.h"
 
 #include "alife.h"
-#include "sky_manager.h"
+#include "world.h"
 
 /*	Game logic and other crap goes here!	*/
 
@@ -205,7 +205,7 @@ void DrawGameMenu()
 			);
 #endif
 
-#define HANDYBLEND (std::cos((float)engine.counter / 50) * 0.8f)
+#define HANDYBLEND -(std::cos((float)engine.counter / 50) * 0.8f)
 			DrawCenteredString(
 					game.font_gothic_medium,
 					DISPLAY_WIDTH / 2, 250,
@@ -265,8 +265,8 @@ void InitializeGame()
 {
 	memset(&game, 0, sizeof(GameVars));
 
-	game.state = GAME_STATE_DEFAULT;
-	game.menu_state = GAME_MENU_GAME;
+	game.state = GAME_STATE_MENU;
+	game.menu_state = GAME_MENU_START;
 
 	//LoadFont("pacifico/Pacifico-Regular", 24);
 	//LoadFont("chunk/Chunk", 24);
@@ -278,7 +278,7 @@ void InitializeGame()
 	game.menu_earth = LoadImage("environment/objects/earth");
 
 	game_userhand = new Hand();
-	game_skymanager = new SkyManager();
+	game_skymanager = new WorldManager();
 }
 
 void GameDisplayFrame()

@@ -15,12 +15,12 @@ bool FileExists(const std::string path)
 ALLEGRO_FONT *LoadFont(const std::string path, unsigned int size)
 {
 	std::string cpath = "./fonts/" + path + ".ttf";
-	if(!FileExists(cpath)) cpath = "./fonts/" + path + ".otf";
+	if(!plFileExists(cpath.c_str())) cpath = "./fonts/" + path + ".otf";
 
 	ALLEGRO_FONT *font = al_load_ttf_font(cpath.c_str(), size, 0);
 	if(!font)
 	{
-		al_append_native_text_log(engine.log, "Failed to load font %s!\n", cpath.c_str());
+		plWriteLog(VC_LOG, "Failed to load font %s!\n", cpath.c_str());
 		exit(-1);
 	}
 
@@ -30,12 +30,12 @@ ALLEGRO_FONT *LoadFont(const std::string path, unsigned int size)
 ALLEGRO_BITMAP *LoadImage(const std::string path)
 {
 	std::string cpath = "./sprites/" + path + ".png";
-	if(!FileExists(cpath)) cpath = "./sprites/" + path + ".bmp";
+	if(!plFileExists(cpath.c_str())) cpath = "./sprites/" + path + ".bmp";
 
 	ALLEGRO_BITMAP *bitmap = al_load_bitmap(cpath.c_str());
 	if(!bitmap)
 	{
-		al_append_native_text_log(engine.log, "Failed to load bitmap %s!\n", cpath.c_str());
+		plWriteLog(VC_LOG, "Failed to load bitmap %s!\n", cpath.c_str());
 		exit(-1);
 	}
 
@@ -91,7 +91,7 @@ void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_C
 
 void InitializeDisplay()
 {
-	al_append_native_text_log(engine.log, "Initializing display...\n");
+	plWriteLog(VC_LOG, "Initializing display...\n");
 
 	engine.window_width		= WINDOW_WIDTH;
 	engine.window_height 	= WINDOW_HEIGHT;
@@ -175,6 +175,8 @@ void ShutdownDisplay()
 
 void InitializeEvents()
 {
+	plWriteLog(VC_LOG, "Initializing input...\n");
+
 	engine.timer = al_create_timer(1.0 / 60);
 	if(!engine.timer)
 	{

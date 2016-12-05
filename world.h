@@ -15,19 +15,21 @@ public:
 	void Simulate();
 	void Draw();
 
-	unsigned int GetSecond() { return _second; }
-	unsigned int GetMinute() { return _minute; }
-	unsigned int GetHour() { return _hour; }
-	unsigned int GetDay() { return _day; }
+	unsigned int GetSecond()    { return _second; }
+	unsigned int GetMinute()    { return _minute; }
+	unsigned int GetHour()      { return _hour; }
+	unsigned int GetDay()       { return _day; }
+	unsigned int GetWeek()      { return 0; }
+	unsigned int GetMonth()     { return _month; }
+	unsigned int GetYear()      { return _year; }
 
 	float GetWindSpeed() { return _wind_speed; }
 
-	unsigned int GetTotalHours() { }
-	// Get the total number of days...
-	// We can't do this by month, because months aren't always the same length
-	// We know there's 365 days in a year...
-	unsigned int GetTotalDays() { return 0; }
-	unsigned int GetTotalMonths() { return _month + ((_year - 1) * 12); }
+	unsigned int GetTotalSeconds()  { return static_cast<unsigned int>(_time); }
+	unsigned int GetTotalHours()    { return static_cast<unsigned int>(std::floor(_time / 60)); }
+	unsigned int GetTotalDays()     { return static_cast<unsigned int>(std::floor(_time / 86400)); }
+	unsigned int GetTotalWeeks()    { return static_cast<unsigned int>(std::floor(_time / 604800)); }
+	unsigned int GetTotalMonths()   { return _month + ((_year - 1) * 12); } // Months are a special case...
 
 	std::string GetDayString();
 

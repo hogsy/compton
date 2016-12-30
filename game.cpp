@@ -1,11 +1,11 @@
 // Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
 
-#include "shared.h"
+#include "Shared.h"
 
 #include "game.h"
 
-#include "alife.h"
-#include "world.h"
+#include "CreatureBrain.h"
+#include "WorldManager.h"
 
 /*	Game logic and other crap goes here!	*/
 

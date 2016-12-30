@@ -1,6 +1,6 @@
 // Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
 
-#include "shared.h"
+#include "Shared.h"
 
 EngineVars engine;
 
@@ -137,7 +137,9 @@ void InitializeDisplay() {
 }
 
 void DisplayFrame() {
-    if (!engine.redraw) return;
+    if (!engine.redraw) {
+        return;
+    }
 
     // Buffer scaling.
     al_set_target_bitmap(engine.buffer);
@@ -162,7 +164,9 @@ void DisplayFrame() {
 }
 
 void ShutdownDisplay() {
-    if (engine.display) al_destroy_display(engine.display);
+    if (engine.display) {
+        al_destroy_display(engine.display);
+    }
 }
 
 // Events
@@ -228,8 +232,9 @@ void EventsFrame() {
             break;
     }
 
-    if (!al_is_event_queue_empty(engine.event_queue))
+    if (!al_is_event_queue_empty(engine.event_queue)) {
         engine.redraw = false;
+    }
 }
 
 void ShutdownEvents() {
@@ -243,6 +248,8 @@ int main() {
     plClearLog(VC_LOG);
 
     plWriteLog(VC_LOG, "Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
+
+    memset(&engine, 0, sizeof(EngineVars));
 
     PLuint32 version = al_get_allegro_version();
     PLuint32 major = version >> 24;
@@ -275,8 +282,6 @@ int main() {
     srand((unsigned) time(NULL));
 
     //engine.log = al_open_native_text_log("Virtual Critters Console", 0);
-
-    memset(&engine, 0, sizeof(EngineVars));
 
     engine.running = true;
 

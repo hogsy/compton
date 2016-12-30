@@ -12,7 +12,7 @@ file(GLOB SOURCE_FILES *.cpp *.c *.h)
 
 add_executable(VCritters ${SOURCE_FILES})
 
-include_directories(${CMAKE_SOURCE_DIR}/platform/include/)
+include_directories(${CMAKE_SOURCE_DIR}/platform/include/ ${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
 
 add_subdirectory(platform)
 add_subdirectory(external/OpenNN-master)

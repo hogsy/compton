@@ -21,91 +21,79 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Library management	*/
 
-PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function)
-{
-	plFunctionStart();
+PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function) {
+    plFunctionStart();
 
-	if(instance)
-	{
-		PL_FARPROC address;
+    if (instance) {
+        PL_FARPROC address;
 
 #ifdef _WIN32
-		address = GetProcAddress(instance, function);
+        address = GetProcAddress(instance, function);
 #else   // Linux
-		address = dlsym(instance, function);
+        address = dlsym(instance, function);
 #endif
-		if (address)
-			return address;
-	}
+        if (address)
+            return address;
+    }
 
-	return (NULL);
+    return (NULL);
 }
 
 // Frees library instance.
-PLvoid _plFreeLibrary(PL_INSTANCE instance)
-{
-	plFunctionStart();
+PLvoid _plFreeLibrary(PL_INSTANCE instance) {
+    plFunctionStart();
 #ifdef _WIN32
-	FreeLibrary(instance);
+    FreeLibrary(instance);
 #else   // Linux
-	dlclose(instance);
+    dlclose(instance);
 #endif
-	plFunctionEnd();
+    plFunctionEnd();
 }
 
-PLvoid plUnloadLibrary(PL_INSTANCE instance)
-{
-	plFunctionStart();
-	if(instance)
-	{
-		_plFreeLibrary(instance);
-		
-		// Set the instance to null.
-		instance = NULL;
-	}
-	plFunctionEnd();
+PLvoid plUnloadLibrary(PL_INSTANCE instance) {
+    plFunctionStart();
+    if (instance) {
+        _plFreeLibrary(instance);
+
+        // Set the instance to null.
+        instance = NULL;
+    }
 }
 
 /*	Function to allow direct loading of an external module.
 */
-PL_INSTANCE plLoadLibrary(const PLchar *path)
-{
-	plFunctionStart();
-	
-	PLchar newpath[PL_MAX_PATH];
-	sprintf(newpath, "%s"PL_MODULE_EXTENSION, path);
+PL_INSTANCE plLoadLibrary(const PLchar *path) {
+    plFunctionStart();
 
-	PL_INSTANCE instance =
+    PLchar newpath[PL_SYSTEM_MAX_PATH];
+    sprintf(newpath, "%s"PL_SYSTEM_LIBRARY_EXTENSION, path);
+
+    PL_INSTANCE instance =
 #ifdef _WIN32
-		LoadLibrary(newpath);
+    LoadLibrary(newpath);
 #else
-		dlopen(newpath, RTLD_NOW);
+    dlopen(newpath, RTLD_NOW);
 #endif
-	if (!instance)
-	{
-		plSetError("Failed to load module! (%s)\n%s\n", newpath, plGetSystemError());
-		return NULL;
-	}
+    if (!instance) {
+        plSetError("Failed to load module! (%s)\n%s\n", newpath, plGetSystemError());
+        return NULL;
+    }
 
-	plFunctionEnd();
-
-	return instance;
+    return instance;
 }
 
 /*	Generic interface to allow loading of an external module.
 */
-PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const PLchar *entry, PLvoid *handle)
-{
-	instance = plLoadLibrary(path);
-	if(!instance)
-		return NULL;
+PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const PLchar *entry, PLvoid *handle) {
+    instance = plLoadLibrary(path);
+    if (!instance)
+        return NULL;
 
-	PLvoid*(*EntryFunction)(PLvoid*) = plFindLibraryFunction(instance, entry);
-	if (!EntryFunction)
-	{
-		plSetError("Failed to find entry function! (%s)\n", entry);
-		return NULL;
-	}
+    PLvoid *(*EntryFunction)(PLvoid *) = plFindLibraryFunction(instance, entry);
+    if (!EntryFunction) {
+        plSetError("Failed to find entry function! (%s)\n", entry);
+        return NULL;
+    }
 
-	return (EntryFunction(handle));
+    return (EntryFunction(handle));
 }

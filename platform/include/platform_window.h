@@ -20,44 +20,46 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef _WIN32
 #else	// Linux
+
 #	include <X11/Xlib.h>
+
 #endif
 
-typedef struct
-{
-	char	*title,	*classname;
+typedef struct PLWindow {
+    char *title, *classname;
 
-	unsigned int width, height;
+    unsigned int width, height;
 
-	int		x, y;
+    int x, y;
 
-	bool is_active, is_fullscreen;
-	bool is_unlocked;
+    bool is_active, is_fullscreen;
+    bool is_unlocked;
 
-	int vsync_interval;
+    int vsync_interval;
 
 #ifdef _WIN32
-	HWND	instance;
-	HDC		dc;
+    HWND	instance;
+    HDC		dc;
 #else	// Linux
-	Window  instance;
+    Window instance;
 #endif
-} plWindow_t;
+} PLWindow;
 
 PL_EXTERN_C
 
 PL_EXTERN PLvoid plMessageBox(const char *title, const char *msg, ...);
-PL_EXTERN PLvoid plShowCursor(PLbool show);	// Shows or hides the cursor for the active window.
+
+PL_EXTERN PLvoid plShowCursor(PLbool show);    // Shows or hides the cursor for the active window.
 PL_EXTERN PLvoid plGetCursorPosition(int *x, int *y);
 
 // Window Management
-PL_EXTERN PLvoid plCreateWindow(plWindow_t *window);
+PL_EXTERN PLvoid plCreateWindow(PLWindow *window);
 
-PL_EXTERN PLuint plGetScreenWidth(void);	// Returns width of current screen.
-PL_EXTERN PLuint plGetScreenHeight(void);	// Returns height of current screen.
-PL_EXTERN PLint plGetScreenCount(void);	// Returns number of avaliable screens.
+PL_EXTERN PLuint plGetScreenWidth(void);    // Returns width of current screen.
+PL_EXTERN PLuint plGetScreenHeight(void);    // Returns height of current screen.
+PL_EXTERN PLint plGetScreenCount(void);    // Returns number of avaliable screens.
 
 // Rendering
-PL_EXTERN PLvoid plSwapBuffers(plWindow_t *window);
+PL_EXTERN PLvoid plSwapBuffers(PLWindow *window);
 
 PL_EXTERN_C_END

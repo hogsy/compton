@@ -3,7 +3,7 @@
 #pragma once
 
 typedef struct GameVars {
-	unsigned int state;
+	unsigned int state, oldstate;
 	unsigned int menu_state;
 
 	ALLEGRO_BITMAP *menu_earth;

@@ -18,6 +18,9 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 PL_EXTERN_C
 
-PLStaticModel *plLoadOBJModel(const PLchar *path);
+        PLStaticModel
+*
+
+plLoadOBJModel(const PLchar *path);
 
 PL_EXTERN_C_END

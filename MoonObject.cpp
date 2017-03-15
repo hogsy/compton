@@ -20,5 +20,5 @@ MoonObject::MoonObject() : SpriteObject(LoadImage("environment/objects/moon")) {
 }
 
 void MoonObject::Simulate() {
-    angle = game_skymanager->GetTotalSeconds() * 60 / 360;
+    angle = game_worldmanager->GetTotalSeconds() * 60 / 360;
 }

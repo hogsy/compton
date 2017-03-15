@@ -1,17 +1,28 @@
 /*
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-Version 2, December 2004
+This is free and unencumbered software released into the public domain.
 
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-0. You just DO WHAT THE FUCK YOU WANT TO.
+For more information, please refer to <http://unlicense.org>
 */
 
 #pragma once
@@ -35,20 +46,27 @@ support.
 
 // Shared headers
 #ifndef PL_IGNORE_SHARED_HEADERS
+
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <stdarg.h>
 #	include <stdlib.h>
+
 #	ifdef PL_INCLUDE_STD_BOOL
+
 #		include <stdbool.h>
+
 #	endif
-#	ifdef _MSC_VER	// MSVC doesn't support stdint...
+#	ifdef _MSC_VER    // MSVC doesn't support stdint...
 #		ifndef __cplusplus
 #			include "platform_inttypes.h"
 #		endif
 #	else
+
 #		include <stdint.h>
+
 #	endif
+
 #	include <string.h>
 #	include <ctype.h>
 #	include <math.h>
@@ -59,7 +77,7 @@ support.
 #	include <sys/stat.h>
 #	include <sys/types.h>
 
-	// C++
+// C++
 #	ifndef PL_IGNORE_STD_HEADERS
 #		ifdef __cplusplus
 #			include <stdint.h>
@@ -72,156 +90,26 @@ support.
 #			include <unordered_map>
 #			include <algorithm>
 
-			// istream
+// istream
 #			include <fstream>
 #			include <iostream>
 #		endif
 #	endif
 #endif
 
-// Windows
-#ifdef _WIN32
-	// Headers
-#	ifndef PL_IGNORE_PLATFORM_HEADERS
-#		include <Windows.h>
-#		include <WindowsX.h>
-#		include <CommCtrl.h>
-#		include <direct.h>
-#		include <lmcons.h>
-
-#		ifdef PlaySound
-#			undef PlaySound
-#		endif
-#		ifdef LoadImage
-#			undef LoadImage
-#		endif
-
-#		undef min
-#		undef max
-#	endif
-
-	// Information
-#	define	PL_NAME	"WINDOWS"	// Platform name.
-
-	// Limits
-#	define	PLATFORM_MAX_PATH	MAX_PATH-1	// Maximum path length.
-#	define	PL_MAX_USERNAME		UNLEN
-
-	// Other
-#	ifdef _MSC_VER
-#		pragma warning(disable : 4152)
-#		pragma warning(disable : 4800)	// 'type' : forcing value to bool 'true' or 'false' (performance warning)
-
-#		ifndef itoa
-#			define	itoa		_itoa
-#		endif
-#		ifndef getcwd
-#			define	getcwd		_getcwd
-#		endif
-#		ifndef snprintf
-#			define	snprintf	_snprintf
-#		endif
-#		ifndef unlink
-#			define	unlink		_unlink
-#		endif
-#		ifndef strcasecmp
-#			define	strcasecmp	_stricmp
-#		endif
-#		ifndef mkdir
-#			define	mkdir		_mkdir
-#		endif
-#		ifndef strncasecmp
-#			define	strncasecmp	_str
-#		endif
-#		ifdef __cplusplus
-#			ifndef nothrow
-//#				define nothrow __nothrow
-#			endif
-#		endif
-#	endif
-#elif __APPLE__	// Mac OS X
-	// Information
-#	define	PL_NAME	"APPLE"
-
-	// Limits
-#	define	PLATFORM_MAX_PATH	256	// Supposedly "unlimited", but we'll limit this anyway.
-
-	// Other
-#	ifndef st_mtime
-#		define	st_mtime st_mtimespec.tv_sec
-#	endif
-#else	// Linux
-	// Headers
-#	ifndef PL_IGNORE_PLATFORM_HEADERS
-#		include <dirent.h>
-#		include <unistd.h>
-#		include <dlfcn.h>
-#		include <strings.h>
-#	endif
-
-	// Information
-#	define	PL_NAME	"LINUX"
-
-	// Limits
-#	define	PLATFORM_MAX_PATH	256	// Maximum path length.
-#	define	PL_MAX_USERNAME		32
-#endif
-
-#ifndef PL_NAME
-#	define PL_NAME "Unknown"	// Platform name.
-#endif
-#ifndef PLATFORM_MAX_PATH
-#	define PLATFORM_MAX_PATH 256	// Max path supported on platform.
-#endif
-#ifndef PL_MAX_PATH
-#	ifdef PLATFORM_MAX_PATH
-#		define PL_MAX_PATH PLATFORM_MAX_PATH
-#	else
-#		define PL_MAX_PATH 256	// Max path supported on platform.
-#	endif
-#endif
-#ifndef PL_MAX_USERNAME
-#	define PL_MAX_USERNAME 256	// Maximum length allowed for a username.
-#endif
-
-// Other
-#ifndef PL_INSTANCE
-#	define	PL_INSTANCE	void *	// Instance definition.
-#endif
-#ifndef PL_FARPROC
-#	define	PL_FARPROC	void *	// Function pointer.
-#endif
-
-#if defined(_MSC_VER)
-#	define PL_EXTERN	extern
-#	define PL_CALL		__stdcall
-#	define PL_INLINE	__inline
-
-	// MSVC doesn't support __func__
-#	define PL_FUNCTION	__FUNCTION__    // Returns the active function.
-#else
-#	define PL_EXTERN	extern
-#	define PL_CALL		
-#	define PL_INLINE	inline
-
-#	define PL_FUNCTION	__FILE__	    // Returns the active function.
-// todo, we'll need to do some weird hacky shit on Linux for this, since __func__ isn't a string literal like it is
-// on MSVC
-#endif
-
 #ifdef __cplusplus
-#	define	PL_EXTERN_C			extern "C" {
-#	define	PL_EXTERN_C_END		}
+#	define	PL_EXTERN_C     extern "C" {
+#	define	PL_EXTERN_C_END }
 #else
-#	define	PL_EXTERN_C
-#	define	PL_EXTERN_C_END
+#	define  PL_EXTERN_C
+#	define  PL_EXTERN_C_END
 #endif
 
 #include "platform_system.h"
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
 #ifndef BOOL
-#	define BOOL	bool
+#	define BOOL    bool
 #endif
 #ifndef TRUE
 #	define TRUE true
@@ -229,90 +117,125 @@ support.
 #ifndef FALSE
 #	define FALSE false
 #endif
-#define PL_BOOL		BOOL
-#define PL_TRUE		TRUE
-#define PL_FALSE	FALSE
+#define PL_BOOL     BOOL
+#define PL_TRUE     TRUE
+#define PL_FALSE    FALSE
 
-#define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
-
-typedef int						PLint;
-typedef char					PLint8;
-typedef short int				PLint16;
-typedef long int				PLint32;
-typedef long long int			PLint64;
-typedef unsigned int			PLuint;
-typedef unsigned char			PLuint8;
-typedef unsigned short int		PLuint16;
-typedef unsigned long int		PLuint32;
-typedef unsigned long long int	PLuint64;
-typedef char					PLchar;
-typedef	unsigned char			PLuchar, PLbyte;
+typedef int                     PLint;
+typedef char                    PLint8;
+typedef short int               PLint16;
+typedef long int                PLint32;
+typedef long long int           PLint64;
+typedef unsigned int            PLuint;
+typedef unsigned char           PLuint8;
+typedef unsigned short int      PLuint16;
+typedef unsigned long int       PLuint32;
+typedef unsigned long long int  PLuint64;
+typedef char                    PLchar;
+typedef unsigned char           PLuchar, PLbyte;
 #ifdef __cplusplus
 typedef bool					PLbool;
 #else
-typedef unsigned char			PLbool;
+typedef unsigned char           PLbool;
 #endif
-typedef void					PLvoid;
-typedef float					PLfloat;
-typedef double					PLdouble;
-typedef short					PLshort;
-typedef unsigned short			PLushort;
+typedef void                    PLvoid;
+typedef float                   PLfloat;
+typedef double                  PLdouble;
+typedef short                   PLshort;
+typedef unsigned short          PLushort;
 
-#define PL_FLOATTOBYTE(a)   (PLbyte)(a / 255)
+#define plArrayElements(a)  (sizeof(a) / sizeof(*(a)))    // Returns the number of elements within an array.
+#define plIsValidString(a)  ((a[0] != '\0') && (a[0] != ' '))
 
 //////////////////////////////////////////////////////////////////
 
-/*	Error Management Functionality	*/
+// Error return values
+typedef enum {
+    PL_RESULT_SUCCESS,
 
-typedef enum
-{
-	PL_RESULT_SUCCESS,
+    // FILE I/O
+    PL_RESULT_FILEREAD,     // Failed to read file!
+    PL_RESULT_FILETYPE,     // Unexpected file type!
+    PL_RESULT_FILEVERSION,  // Unsupported version!
+    PL_RESULT_FILESIZE,     // Invalid file size!
+    PL_RESULT_FILEPATH,     // Invalid path!
 
-	// FILE I/O
-	PL_RESULT_FILEREAD,		// Failed to read file!
-	PL_RESULT_FILETYPE,		// Unexpected file type!
-	PL_RESULT_FILEVERSION,	// Unsupported version!
-	PL_RESULT_FILESIZE,		// Invalid file size!
-	PL_RESULT_FILEPATH,		// Invalid path!
+    // GRAPHICS
+    PL_RESULT_GRAPHICSINIT,     // Graphics failed to initialise!
+    PL_RESULT_SHADERTYPE,       // Unsupported shader type!
+    PL_RESULT_SHADERCOMPILE,    // Failed to compile shader!
 
-	// GRAPHICS
-	PL_RESULT_GRAPHICSINIT,	// Graphics failed to initialise!
+    // IMAGE
+    PL_RESULT_IMAGERESOLUTION,  // Invalid image resolution!
+    PL_RESULT_IMAGEFORMAT,      // Unsupported image format!
 
-	// IMAGE
-	PL_RESULT_IMAGERESOLUTION,	// Invalid image resolution!
-
-	// MEMORY
-	PL_RESULT_MEMORYALLOC,	// Ran out of memory!
+    // MEMORY
+    PL_RESULT_MEMORYALLOC,    // Ran out of memory!
 } PLresult;
 
-//static jmp_buf jbException;
+//////////////////////////////////////////////////////////////////
 
-#define	pFUNCTION_UPDATE()			\
-	plResetError();					\
-	plSetErrorFunction(PL_FUNCTION)
+enum {
+    PL_SUBSYSTEM_GRAPHICS   = (1 << 0), // Graphics/rendering
+    PL_SUBSYSTEM_IO         = (2 << 0), // Filesystem I/O
+    PL_SUBSYSTEM_IMAGE      = (3 << 0), // Image loaders
+    PL_SUBSYSTEM_LIBRARY    = (4 << 0), // Module/library management
+    PL_SUBSYSTEM_LOG        = (5 << 0), // Logging
+    PL_SUBSYSTEM_MODEL      = (6 << 0), // Model loaders
+    PL_SUBSYSTEM_WINDOW     = (7 << 0), // Windowing
+};
+
+#if defined(PL_INTERNAL)
+
+#define PL_DLL  PL_EXPORT
+
 #ifndef __cplusplus
-#define	pFUNCTION_START		plSetErrorFunction(PL_FUNCTION); {
+#define pFUNCTION_START  plSetErrorFunction(PL_FUNCTION); {
 #else
 #define	pFUNCTION_START	\
 plSetErrorFunction(PL_FUNCTION);
 // TRY whatever
 #endif
-#define pFUNCTION_END 		}
+#define pFUNCTION_END   }
 
-#define plFunctionStart()	\
-	plResetError(); plSetErrorFunction(PL_FUNCTION)
+#define plFunctionStart()    \
+    plResetError(); plSetErrorFunction(PL_FUNCTION)
 #define plFunctionEnd()
 
 PL_EXTERN_C
 
-extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
-extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
-extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
+PLresult _plInitGraphics(void);
+void _plShutdownGraphics(void);
 
-extern const PLchar *plGetResultString(PLresult result);
+PLresult _plInitIO(void);
+void _plShutdownIO(void);
 
-extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
-extern char	*plGetError(void);			// Returns the last recorded error.
+PLresult _plInitWindow(void);
+void _plShutdownWindow(void);
+
+PL_EXTERN_C_END
+
+#else
+
+#define PL_DLL  PL_IMPORT
+
+#endif
+
+PL_EXTERN_C
+
+PL_EXTERN PLresult plInitialize(PLuint subsystems);
+PL_EXTERN void plShutdown(void);
+
+PL_EXTERN void plResetError(void); // Resets the error message to "null", so you can ensure you have the correct message from the library.
+PL_EXTERN void
+plSetError(const char *msg, ...);   // Sets the error message, so we can grab it outside the library.
+PL_EXTERN void
+plSetErrorFunction(const char *function, ...);  // Sets the currently active function, for error reporting.
+
+PL_EXTERN const PLchar *plGetResultString(PLresult result);
+
+PL_EXTERN const PLchar * plGetSystemError(void);  // Returns the error message currently given by the operating system.
+PL_EXTERN const PLchar * plGetError(void);        // Returns the last recorded error.
 
 PL_EXTERN_C_END
 
@@ -321,21 +244,24 @@ PL_EXTERN_C_END
 /*	Converts string to time.
 	http://stackoverflow.com/questions/1765014/convert-string-from-date-into-a-time-t
 */
-static PL_INLINE time_t plStringToTime(const char *ts)
-{
-	char s_month[5];
-	int day, year;
-	sscanf(ts, "%s %d %d", s_month, &day, &year);
+static PL_INLINE time_t plStringToTime(const PLchar *ts) {
+    PLchar s_month[5];
+    PLint day, year;
+    sscanf(ts, "%s %d %d", s_month, &day, &year);
 
-	static const char months[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
-	int month = (strstr(months, s_month) - months) / 3;
-	struct tm time = { 0 };
-	time.tm_mon = month;
-	time.tm_mday = day;
-	time.tm_year = year - 1900;
-	time.tm_isdst = -1;
+    static const PLchar months[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    PLint month = (PLint)((strstr(months, s_month) - months) / 3);
+    struct tm time = {0};
+    time.tm_mon = month;
+    time.tm_mday = day;
+    time.tm_year = year - 1900;
+    time.tm_isdst = -1;
 
-	return mktime(&time);
+    return mktime(&time);
+}
+
+static PL_INLINE PLbool plIsPowerOfTwo(PLuint num) {
+    return (PLbool)((num != 0) && ((num & (~num + 1)) == num));
 }
 
 //////////////////////////////////////////////////////////////////

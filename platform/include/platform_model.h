@@ -20,67 +20,51 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "platform_math.h"
 #include "platform_graphics.h"
 
-enum
-{
-	PL_MODELTYPE_START,
-
-	PL_MODELTYPE_STATIC,
-	PL_MODELTYPE_ANIMATED,
-	PL_MODELTYPE_SKELETAL,
-
-	PL_MODELTYPE_END
+enum {
+    PL_MODELTYPE_STATIC,
+    PL_MODELTYPE_ANIMATED,
+    PL_MODELTYPE_SKELETAL
 };
 
-typedef struct PLTriangle
-{
-	PLVector3D normal;
+typedef struct PLModelFrame {
+    PLTriangle  *triangles;
+    PLVertex    *vertices;
 
-	unsigned int indices[3];
-} PLTriangle;
-
-typedef struct PLModelFrame
-{
-	PLTriangle  *triangles;
-	PLVertex    *vertices;
-
-	PLVector3D mins, maxs; // Bounds
+    PLVector3D mins, maxs; // Bounds
 } PLModelFrame;
 
 /*	Static animated mesh.
 */
-typedef struct PLStaticModel
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
+typedef struct PLStaticModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	PLModelFrame	frame;
+    PLModelFrame frame;
 } PLStaticModel;
 
 /*	Per-vertex animated mesh.
 */
-typedef struct PLAnimatedModel
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
-	unsigned int num_frames;
+typedef struct PLAnimatedModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
+    unsigned int num_frames;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	PLModelFrame *frames;
+    PLModelFrame *frames;
 } PLAnimatedModel;
 
 /*	Mesh with bone structure.
 */
-typedef struct PLSkeletalModel
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
+typedef struct PLSkeletalModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	// Unfinished...
+    // Unfinished...
 } PLSkeletalModel;
 
 #include "platform_model_u3d.h"

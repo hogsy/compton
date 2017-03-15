@@ -4,11 +4,6 @@
 
 EngineVars engine;
 
-bool FileExists(const std::string path) {
-    struct stat buffer;
-    return (stat(path.c_str(), &buffer) == 0);
-}
-
 // Loaders
 
 ALLEGRO_FONT *LoadFont(const std::string path, unsigned int size) {
@@ -115,10 +110,6 @@ void InitializeDisplay() {
 #endif
     );
 
-#if defined(DEBUG_BUILD)
-
-#endif
-
     // Check to see how much we need to scale the buffer.
     engine.buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     int sx = engine.window_width / DISPLAY_WIDTH;
@@ -200,13 +191,16 @@ void InitializeEvents() {
         exit(-1);
     }
 
-    al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
-    al_register_event_source(engine.event_queue, al_get_timer_event_source(engine.timer));
-
     al_install_mouse();
+    al_install_keyboard();
+
 #if 1 // enable once we're happy with everything else.
     al_hide_mouse_cursor(engine.display);
 #endif
+
+    al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
+    al_register_event_source(engine.event_queue, al_get_timer_event_source(engine.timer));
+    al_register_event_source(engine.event_queue, al_get_keyboard_event_source());
 
     al_start_timer(engine.timer);
 }
@@ -216,10 +210,10 @@ void EventsFrame() {
     al_wait_for_event(engine.event_queue, &event);
 
     al_get_mouse_state(&engine.mouse_state);
+    al_get_keyboard_state(&engine.keyboard_state);
 
     switch (event.type) {
-        default:
-            break;
+        default:break;
 
         case ALLEGRO_EVENT_TIMER:
             engine.counter++;
@@ -230,6 +224,16 @@ void EventsFrame() {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             engine.running = false;
             break;
+
+        case ALLEGRO_EVENT_KEY_DOWN: {
+            GameKeyboardInput(event.keyboard.keycode, false);
+            break;
+        }
+
+        case ALLEGRO_EVENT_KEY_UP: {
+            GameKeyboardInput(event.keyboard.keycode, true);
+            break;
+        }
     }
 
     if (!al_is_event_queue_empty(engine.event_queue)) {
@@ -245,8 +249,9 @@ void ShutdownEvents() {
 // Main
 
 int main() {
-    plClearLog(VC_LOG);
+    plInitialize(PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_LOG);
 
+    plClearLog(VC_LOG);
     plWriteLog(VC_LOG, "Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
 
     memset(&engine, 0, sizeof(EngineVars));

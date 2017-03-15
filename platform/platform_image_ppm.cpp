@@ -18,48 +18,46 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	PPM Format	*/
 
-#define	PPM_HEADER_SIZE	70
+#define    PPM_HEADER_SIZE    70
 
-PLresult plLoadPPMImage(FILE *fin, PLImage *out)
-{
-	plSetErrorFunction("plLoadPPMImage");
+PLresult _plLoadPPMImage(FILE *fin, PLImage *out) {
+    plSetErrorFunction("_plLoadPPMImage");
 
-	char header[PPM_HEADER_SIZE];
-	memset(&header, 0, sizeof(header));
-	
-	fgets(header, PPM_HEADER_SIZE, fin);
-	if (strncmp(header, "P6", 2))
-	{
-		plSetError("Unsupported PPM type!\n");
-		return PL_RESULT_FILEVERSION;
-	}
+    char header[PPM_HEADER_SIZE];
+    memset(&header, 0, sizeof(header));
 
-	int i = 0, d;
-	unsigned int w, h;
-	while (i < 3)
-	{
-		fgets(header, PPM_HEADER_SIZE, fin);
-		if (header[0] == '#')
-			continue;
+    fgets(header, PPM_HEADER_SIZE, fin);
+    if (strncmp(header, "P6", 2)) {
+        plSetError("Unsupported PPM type!\n");
+        return PL_RESULT_FILEVERSION;
+    }
 
-		if (i == 0)
-			i += sscanf(header, "%d %d %d", &w, &h, &d);
-		else if (i == 1)
-			i += sscanf(header, "%d %d", &h, &d);
-		else if (i == 2)
-			i += sscanf(header, "%d", &d);
-	}
+    int i = 0, d;
+    unsigned int w = 0, h = 0;
+    while (i < 3) {
+        fgets(header, PPM_HEADER_SIZE, fin);
+        if (header[0] == '#')
+            continue;
 
-	PLuint size = w * h * 3;
-	uint8_t	*image = (uint8_t*)malloc(sizeof(uint8_t) * size);
-	fread(image, sizeof(uint8_t), size, fin);
+        if (i == 0)
+            i += sscanf(header, "%d %d %d", &w, &h, &d);
+        else if (i == 1)
+            i += sscanf(header, "%d %d", &h, &d);
+        else if (i == 2)
+            i += sscanf(header, "%d", &d);
+    }
 
-	memset(out, 0, sizeof(PLImage));
-	out->size = size;
-	out->width = w;
-	out->height = h;
-	out->data = image;
-	out->format = VL_TEXTUREFORMAT_RGB8;
+    memset(out, 0, sizeof(PLImage));
 
-	return PL_RESULT_SUCCESS;
+    out->size = w * h * 3;
+    out->data = new PLbyte*[1];
+    out->data[0] = new PLbyte[out->size];
+
+    fread(out->data[0], sizeof(uint8_t), out->size, fin);
+
+    out->width = w;
+    out->height = h;
+    out->format = PL_IMAGEFORMAT_RGB8;
+
+    return PL_RESULT_SUCCESS;
 }

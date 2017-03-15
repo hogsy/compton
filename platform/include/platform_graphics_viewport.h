@@ -29,34 +29,25 @@ For more information, please refer to <http://unlicense.org>
 
 #include "platform.h"
 
+typedef struct PLViewport {
+    PLint x, y;
+
+    PLuint width, height;
+
+    struct PLViewport *parent, **children;
+
+    PLuint num_children;
+} PLViewport;
+
 PL_EXTERN_C
 
-PL_EXTERN void plGetUserName(PLchar *out);
+PL_EXTERN void plSetupViewport(PLViewport *viewport, PLint x, PLint y, PLuint width, PLuint height);
 
-PL_EXTERN void plGetWorkingDirectory(PLchar *out);
-PL_EXTERN void plSetWorkingDirectory(const char *path);
+PL_EXTERN void plSetViewportSize(PLViewport *viewport, PLuint width, PLuint height);
+PL_EXTERN void plSetViewportPosition(PLViewport *viewport, PLint x, PLint y);
 
-PL_EXTERN void plStripExtension(PLchar *dest, const PLchar *in);
+PL_EXTERN void plSetCurrentViewport(PLViewport *viewport);
 
-PL_EXTERN const PLchar *plGetFileExtension(const PLchar *in);
-PL_EXTERN const PLchar *plGetFileName(const PLchar *path);
-
-PL_EXTERN void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
-
-PL_EXTERN void plLowerCasePath(PLchar *out);
-
-PL_EXTERN PLbool plCreateDirectory(const PLchar *path);
-
-// File I/O ...
-
-PL_EXTERN PLbool plFileExists(const PLchar *path);
-
-PL_EXTERN PLbool plIsFileModified(time_t oldtime, const PLchar *path);
-
-PL_EXTERN time_t plGetFileModifiedTime(const PLchar *path);
-
-PL_EXTERN PLint plGetLittleShort(FILE *fin);
-
-PL_EXTERN PLint plGetLittleLong(FILE *fin);
+PL_EXTERN void plScreenshot(PLViewport *viewport, const PLchar *path);
 
 PL_EXTERN_C_END

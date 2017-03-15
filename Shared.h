@@ -57,7 +57,9 @@ typedef struct EngineVars {
     ALLEGRO_EVENT_QUEUE 	*event_queue;
     ALLEGRO_TIMER			*timer;
     ALLEGRO_TEXTLOG			*log;
+
     ALLEGRO_MOUSE_STATE		mouse_state;
+    ALLEGRO_KEYBOARD_STATE  keyboard_state;
 
     bool redraw;
     bool running;
@@ -79,4 +81,6 @@ void ShutdownGame();
 
 void GameDisplayFrame();
 void GameTimerFrame();
+
+void GameKeyboardInput(int code, bool keyup);
 

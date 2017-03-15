@@ -57,4 +57,4 @@ private:
 	unsigned int _cloud_density;
 };
 
-extern WorldManager *game_skymanager;
+extern WorldManager *game_worldmanager;

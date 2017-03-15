@@ -25,38 +25,58 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#pragma once
+#include "platform_image.h"
 
-#include "platform.h"
+struct DDSPixelFormat {
+    uint32_t size;
+    uint32_t flags;
+    uint32_t fourcc;
+    uint32_t rgbbitcount;
+};
 
-PL_EXTERN_C
+struct DDSHeader {
+    uint32_t size;          // Should always be 124.
+    uint32_t flags;
+    uint32_t height, width;
+    uint32_t pitchlinear;
+    uint32_t depth;
+    uint32_t levels;
+    uint32_t reserved1[11];
 
-PL_EXTERN void plGetUserName(PLchar *out);
+    //
 
-PL_EXTERN void plGetWorkingDirectory(PLchar *out);
-PL_EXTERN void plSetWorkingDirectory(const char *path);
+    uint32_t caps, caps2, caps3, caps4;
+    uint32_t reserved2;
+};
 
-PL_EXTERN void plStripExtension(PLchar *dest, const PLchar *in);
+enum DDSFlag {
+    DDS_CAPS,
+};
 
-PL_EXTERN const PLchar *plGetFileExtension(const PLchar *in);
-PL_EXTERN const PLchar *plGetFileName(const PLchar *path);
+PLbool _plDDSFormatCheck(FILE *fin) {
+    plFunctionStart();
 
-PL_EXTERN void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
+    rewind(fin);
 
-PL_EXTERN void plLowerCasePath(PLchar *out);
+    PLchar ident[4];
+    fread(ident, sizeof(PLchar), 4, fin);
 
-PL_EXTERN PLbool plCreateDirectory(const PLchar *path);
+    return (strncmp(ident, "DDS", 3) == 0);
+}
 
-// File I/O ...
+PLresult _plLoadDDSImage(FILE *fin, PLImage *out) {
+    plFunctionStart();
 
-PL_EXTERN PLbool plFileExists(const PLchar *path);
+    DDSHeader header;
+    memset(&header, 0, sizeof(DDSHeader));
+    if(fread(&header, sizeof(DDSHeader), 1, fin) != 1) {
+        return PL_RESULT_FILEREAD;
+    }
 
-PL_EXTERN PLbool plIsFileModified(time_t oldtime, const PLchar *path);
+    memset(out, 0, sizeof(PLImage));
 
-PL_EXTERN time_t plGetFileModifiedTime(const PLchar *path);
+    out->width = header.width;
+    out->height = header.height;
 
-PL_EXTERN PLint plGetLittleShort(FILE *fin);
-
-PL_EXTERN PLint plGetLittleLong(FILE *fin);
-
-PL_EXTERN_C_END
+    return PL_RESULT_SUCCESS;
+}

@@ -6,7 +6,7 @@
 #include "WorldManager.h"
 #include "MoonObject.h"
 
-WorldManager *game_skymanager = nullptr;
+WorldManager *game_worldmanager = nullptr;
 
 #define WORLD_NIGHT_START   18  // Starting hour for night to roll in.
 #define WORLD_NIGHT_END     6   // Final hour that night starts rolling out.
@@ -18,7 +18,7 @@ WorldManager *game_skymanager = nullptr;
 
 class RainObject : public SpriteObject {
 public:
-    RainObject(PLVector2D pos) : SpriteObject(game_skymanager->cloud_droplet) {
+    RainObject(PLVector2D pos) : SpriteObject(game_worldmanager->cloud_droplet) {
         position = pos;
     }
 
@@ -27,8 +27,8 @@ public:
             delete this;
         }
         position.x += 0.5f;
-        position.y += (game_skymanager->GetWindSpeed() / 10.0f);
-        angle = -(game_skymanager->GetWindSpeed() / 100.0f);
+        position.y += (game_worldmanager->GetWindSpeed() / 10.0f);
+        angle = -(game_worldmanager->GetWindSpeed() / 100.0f);
     }
 
 protected:
@@ -88,7 +88,7 @@ public:
     }
 
     void Simulate() {
-        angle = game_skymanager->GetTotalSeconds() * 60 / 360;
+        angle = game_worldmanager->GetTotalSeconds() * 60 / 360;
     }
 };
 

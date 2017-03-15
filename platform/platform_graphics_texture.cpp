@@ -25,38 +25,4 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#pragma once
-
-#include "platform.h"
-
-PL_EXTERN_C
-
-PL_EXTERN void plGetUserName(PLchar *out);
-
-PL_EXTERN void plGetWorkingDirectory(PLchar *out);
-PL_EXTERN void plSetWorkingDirectory(const char *path);
-
-PL_EXTERN void plStripExtension(PLchar *dest, const PLchar *in);
-
-PL_EXTERN const PLchar *plGetFileExtension(const PLchar *in);
-PL_EXTERN const PLchar *plGetFileName(const PLchar *path);
-
-PL_EXTERN void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
-
-PL_EXTERN void plLowerCasePath(PLchar *out);
-
-PL_EXTERN PLbool plCreateDirectory(const PLchar *path);
-
-// File I/O ...
-
-PL_EXTERN PLbool plFileExists(const PLchar *path);
-
-PL_EXTERN PLbool plIsFileModified(time_t oldtime, const PLchar *path);
-
-PL_EXTERN time_t plGetFileModifiedTime(const PLchar *path);
-
-PL_EXTERN PLint plGetLittleShort(FILE *fin);
-
-PL_EXTERN PLint plGetLittleLong(FILE *fin);
-
-PL_EXTERN_C_END
+#include "platform_graphics.h"

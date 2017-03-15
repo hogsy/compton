@@ -146,7 +146,7 @@ enum GameMenuState {
 void DrawGameMenu() {
     al_clear_to_color(al_map_rgb(0, 0, 0));
 
-    game_skymanager->Draw();
+    game_worldmanager->Draw();
 
     switch (game.menu_state) {
         default:
@@ -213,39 +213,40 @@ void DrawGameMenu() {
                     ),
                     "PRESS ANY KEY TO START"
             );
-        }
+
             break;
+        }
 
         case GAME_MENU_MAIN: {
-        }
             break;
+        }
 
         case GAME_MENU_NEW: {
-        }
             break;
+        }
 
         case GAME_MENU_LOAD: {
-        }
             break;
+        }
 
         case GAME_MENU_OPTIONS: {
-        }
             break;
+        }
 
         case GAME_MENU_QUIT: {
-        }
             break;
+        }
 
         case GAME_MENU_DEFAULT: {
             // Time counter
-            DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), game_skymanager->GetDayString());
+            DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), game_worldmanager->GetDayString());
             char timestr[10] = {0};
             snprintf(timestr, 10, "%02u:%02u",
-                     game_skymanager->GetHour(),
-                     game_skymanager->GetMinute()); // Removed the second timer here...
+                     game_worldmanager->GetHour(),
+                     game_worldmanager->GetMinute()); // Removed the second timer here...
             DrawString(game.font_small, 20, 440, al_map_rgb(255, 255, 255), timestr);
-        }
             break;
+        }
     }
 
     game_userhand->Draw();
@@ -256,8 +257,8 @@ void DrawGameMenu() {
 void InitializeGame() {
     memset(&game, 0, sizeof(GameVars));
 
-    game.state = GAME_STATE_DEFAULT;
-    game.menu_state = GAME_MENU_DEFAULT;
+    game.state = GAME_STATE_MENU;
+    game.menu_state = GAME_MENU_START;
 
     game.font_title = LoadFont("pacifico/Pacifico-Bold", 80);
     game.font_small = LoadFont("league_gothic/LeagueGothic-Regular", 21);
@@ -267,7 +268,7 @@ void InitializeGame() {
     game.menu_earth = LoadImage("environment/objects/earth");
 
     game_userhand = new Hand();
-    game_skymanager = new WorldManager();
+    game_worldmanager = new WorldManager();
 }
 
 void GameDisplayFrame() {
@@ -278,18 +279,118 @@ void GameTimerFrame() {
     game_userhand->Simulate();
 
     switch (game.state) {
-        case GAME_STATE_MENU:
-            game_skymanager->Simulate();
-            break;
-
-        case GAME_STATE_PAUSED:
-            break;
-
         default:
-            game_skymanager->Simulate();
+        case GAME_STATE_MENU:
+            game_worldmanager->Simulate();
             break;
+
+        case GAME_STATE_PAUSED: break;
     }
 }
 
 void ShutdownGame() {}
+
+// Input...
+
+void GameDefaultKeyboardInput(int code, bool keyup) {
+    if(keyup) {
+        return;
+    }
+
+    switch(code) {
+        default: break;
+
+        case ALLEGRO_KEY_PAUSE:
+            // todo, play pause sound.
+            game.oldstate = game.state;
+            game.state = GAME_STATE_PAUSED;
+            break;
+
+        case ALLEGRO_KEY_UP:
+            // todo, move camera up.
+        case ALLEGRO_KEY_DOWN:
+            // todo, move camera down.
+        case ALLEGRO_KEY_LEFT:
+            // todo, move camera left.
+        case ALLEGRO_KEY_RIGHT:
+            // todo, move camera right.
+            break;
+
+        case ALLEGRO_KEY_ESCAPE:
+            // todo, play menu sound.
+            game.oldstate = game.state;
+            game.state = GAME_STATE_MENU;
+            game.menu_state = GAME_MENU_MAIN;
+            break;
+    }
+}
+
+void GamePauseKeyboardInput(int code, bool keyup) {
+    if(keyup) {
+        return;
+    }
+
+    switch(code) {
+        default:break;
+
+        case ALLEGRO_KEY_PAUSE:
+            // todo, play unpause sound.
+            game.state = game.oldstate;
+            break;
+    }
+}
+
+void GameMenuKeyboardInput(int code, bool keyup) {
+    if(keyup) {
+        return;
+    }
+
+    if(code == ALLEGRO_KEY_PAUSE) {
+        game.oldstate = game.state;
+        game.state = GAME_STATE_PAUSED;
+        return;
+    }
+
+    switch(game.menu_state) {
+        default:break;
+
+        case GAME_MENU_START:
+            // todo, play start sound.
+            game.menu_state = GAME_MENU_MAIN;
+            break;
+
+        case GAME_MENU_MAIN:
+            switch(code) {
+                default:break;
+
+                case ALLEGRO_KEY_ESCAPE:
+                    // todo, play menu sound.
+                    if(game.oldstate != GAME_STATE_MENU) {
+                        game.state = game.oldstate;
+                    } else {
+                        game.state = GAME_STATE_DEFAULT;
+                    }
+                    game.menu_state = GAME_MENU_DEFAULT;
+                    break;
+            }
+    }
+}
+
+void GameKeyboardInput(int code, bool keyup) {
+    switch(game.state) {
+        default: break;
+
+        case GAME_STATE_DEFAULT:
+            GameDefaultKeyboardInput(code, keyup);
+            break;
+
+        case GAME_STATE_MENU:
+            GameMenuKeyboardInput(code, keyup);
+            break;
+
+        case GAME_STATE_PAUSED:
+            GamePauseKeyboardInput(code, keyup);
+            break;
+    }
+}
 

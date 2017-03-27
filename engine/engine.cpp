@@ -1,35 +1,53 @@
 // Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
 
-#include "Shared.h"
+#include "../Shared.h"
 
-EngineVars engine;
+EngineVars engine_vars;
 
 // Loaders
 
-ALLEGRO_FONT *LoadFont(const std::string path, unsigned int size) {
-    std::string cpath = "./fonts/" + path + ".ttf";
-    if (!plFileExists(cpath.c_str())) cpath = "./fonts/" + path + ".otf";
+namespace engine {
+    std::unordered_map<std::string, ALLEGRO_BITMAP *> bitmaps;
 
-    ALLEGRO_FONT *font = al_load_ttf_font(cpath.c_str(), size, 0);
-    if (!font) {
-        plWriteLog(VC_LOG, "Failed to load font %s!\n", cpath.c_str());
-        exit(-1);
+    ALLEGRO_FONT *LoadFont(const char *path, unsigned int size) {
+        char path1[PL_SYSTEM_MAX_PATH] = { 0 };
+        sprintf(path1, "./fonts/%s.ttf", path);
+        if (!plFileExists(path1)) {
+            sprintf(path1, "./fonts/%s.otf", path);
+        }
+
+        ALLEGRO_FONT *font = al_load_ttf_font(path1, size, 0);
+        if (!font) {
+            plWriteLog(VC_LOG, "Failed to load font %s!\n", path1);
+            plMessageBox("Failed to load font %s!\n", path1);
+            exit(-1);
+        }
+
+        return font;
     }
 
-    return font;
-}
+    ALLEGRO_BITMAP *LoadImage(const char *path) {
+        char path1[PL_SYSTEM_MAX_PATH] = { 0 };
+        sprintf(path1, "./sprites/%s.png", path);
+        if (!plFileExists(path1)) {
+            sprintf(path1, "./fonts/%s.bmp", path);
+        }
 
-ALLEGRO_BITMAP *LoadImage(const std::string path) {
-    std::string cpath = "./sprites/" + path + ".png";
-    if (!plFileExists(cpath.c_str())) cpath = "./sprites/" + path + ".bmp";
+        auto i = bitmaps.find(path1);
+        if(i != bitmaps.end()) {
+            return i->second;
+        }
 
-    ALLEGRO_BITMAP *bitmap = al_load_bitmap(cpath.c_str());
-    if (!bitmap) {
-        plWriteLog(VC_LOG, "Failed to load bitmap %s!\n", cpath.c_str());
-        exit(-1);
+        ALLEGRO_BITMAP *bitmap = al_load_bitmap(path1);
+        if (!bitmap) {
+            plWriteLog(VC_LOG, "Failed to load bitmap %s!\n", path1);
+            plMessageBox("Failed to load bitmap %s!\n", path1);
+            exit(-1);
+        }
+        bitmaps.emplace(path1, bitmap);
+
+        return bitmap;
     }
-
-    return bitmap;
 }
 
 // Draw Routines
@@ -47,14 +65,18 @@ void DrawBitmap(ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h) {
     );
 }
 
-void DrawString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, std::string message) {
-    if (!font) return;
-    al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_LEFT, message.c_str());
+void DrawString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message) {
+    if (!font) {
+        return;
+    }
+    al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_LEFT, message);
 }
 
-void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, std::string message) {
-    if (!font) return;
-    al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_CENTER, message.c_str());
+void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message) {
+    if (!font) {
+        return;
+    }
+    al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_CENTER, message);
 }
 
 void DrawFilledRectangle(PLVector2D position, float w, float h, ALLEGRO_COLOR colour) {
@@ -85,12 +107,12 @@ void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_C
 void InitializeDisplay() {
     plWriteLog(VC_LOG, "Initializing display...\n");
 
-    engine.window_width = WINDOW_WIDTH;
-    engine.window_height = WINDOW_HEIGHT;
+    engine_vars.window_width = WINDOW_WIDTH;
+    engine_vars.window_height = WINDOW_HEIGHT;
 
     al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
-    engine.display = al_create_display(engine.window_width, engine.window_height);
-    if (!engine.display) {
+    engine_vars.display = al_create_display(engine_vars.window_width, engine_vars.window_height);
+    if (!engine_vars.display) {
         al_show_native_message_box(
                 NULL,
                 "ERROR",
@@ -102,7 +124,7 @@ void InitializeDisplay() {
         exit(-1);
     }
     al_set_window_title(
-            engine.display,
+            engine_vars.display,
 #ifdef DEBUG_BUILD
             "Virtual Critters Inc. [DEBUG]"
 #else
@@ -111,52 +133,53 @@ void InitializeDisplay() {
     );
 
     // Check to see how much we need to scale the buffer.
-    engine.buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    int sx = engine.window_width / DISPLAY_WIDTH;
-    int sy = engine.window_height / DISPLAY_HEIGHT;
-    int scale = std::min(sx, sy);
-    engine.scalew = DISPLAY_WIDTH * scale;
-    engine.scaleh = DISPLAY_HEIGHT * scale;
-    engine.scalex = (engine.window_width - engine.scalew) / 2;
-    engine.scaley = (engine.window_height - engine.scaleh) / 2;
+    engine_vars.buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    int sx = engine_vars.window_width / DISPLAY_WIDTH;
+    int sy = engine_vars.window_height / DISPLAY_HEIGHT;
+    int scale = (int)fmin(sx, sy);
+
+    engine_vars.scalew = DISPLAY_WIDTH * scale;
+    engine_vars.scaleh = DISPLAY_HEIGHT * scale;
+    engine_vars.scalex = (engine_vars.window_width - engine_vars.scalew) / 2;
+    engine_vars.scaley = (engine_vars.window_height - engine_vars.scaleh) / 2;
 
     al_inhibit_screensaver(true);
 
     al_set_clipping_rectangle(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-    engine.redraw = true;
+    engine_vars.redraw = true;
 }
 
 void DisplayFrame() {
-    if (!engine.redraw) {
+    if (!engine_vars.redraw) {
         return;
     }
 
     // Buffer scaling.
-    al_set_target_bitmap(engine.buffer);
+    al_set_target_bitmap(engine_vars.buffer);
 
     GameDisplayFrame();
 
     // Buffer scaling.
-    al_set_target_backbuffer(engine.display);
+    al_set_target_backbuffer(engine_vars.display);
     al_clear_to_color(al_map_rgb(0, 0, 0));
     al_draw_scaled_bitmap(
-            engine.buffer,
+            engine_vars.buffer,
             0, 0,
             DISPLAY_WIDTH, DISPLAY_HEIGHT,
-            engine.scalex, engine.scaley,
-            engine.scalew, engine.scaleh,
+            engine_vars.scalex, engine_vars.scaley,
+            engine_vars.scalew, engine_vars.scaleh,
             0
     );
 
     al_flip_display();
 
-    engine.redraw = false;
+    engine_vars.redraw = false;
 }
 
 void ShutdownDisplay() {
-    if (engine.display) {
-        al_destroy_display(engine.display);
+    if (engine_vars.display) {
+        al_destroy_display(engine_vars.display);
     }
 }
 
@@ -165,8 +188,8 @@ void ShutdownDisplay() {
 void InitializeEvents() {
     plWriteLog(VC_LOG, "Initializing input...\n");
 
-    engine.timer = al_create_timer(1.0 / 60);
-    if (!engine.timer) {
+    engine_vars.timer = al_create_timer(1.0 / 60);
+    if (!engine_vars.timer) {
         al_show_native_message_box(
                 NULL,
                 "ERROR",
@@ -178,8 +201,8 @@ void InitializeEvents() {
         exit(-1);
     }
 
-    engine.event_queue = al_create_event_queue();
-    if (!engine.event_queue) {
+    engine_vars.event_queue = al_create_event_queue();
+    if (!engine_vars.event_queue) {
         al_show_native_message_box(
                 NULL,
                 "ERROR",
@@ -195,34 +218,34 @@ void InitializeEvents() {
     al_install_keyboard();
 
 #if 1 // enable once we're happy with everything else.
-    al_hide_mouse_cursor(engine.display);
+    al_hide_mouse_cursor(engine_vars.display);
 #endif
 
-    al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
-    al_register_event_source(engine.event_queue, al_get_timer_event_source(engine.timer));
-    al_register_event_source(engine.event_queue, al_get_keyboard_event_source());
+    al_register_event_source(engine_vars.event_queue, al_get_display_event_source(engine_vars.display));
+    al_register_event_source(engine_vars.event_queue, al_get_timer_event_source(engine_vars.timer));
+    al_register_event_source(engine_vars.event_queue, al_get_keyboard_event_source());
 
-    al_start_timer(engine.timer);
+    al_start_timer(engine_vars.timer);
 }
 
 void EventsFrame() {
     ALLEGRO_EVENT event;
-    al_wait_for_event(engine.event_queue, &event);
+    al_wait_for_event(engine_vars.event_queue, &event);
 
-    al_get_mouse_state(&engine.mouse_state);
-    al_get_keyboard_state(&engine.keyboard_state);
+    al_get_mouse_state(&engine_vars.mouse_state);
+    al_get_keyboard_state(&engine_vars.keyboard_state);
 
     switch (event.type) {
         default:break;
 
         case ALLEGRO_EVENT_TIMER:
-            engine.counter++;
+            engine_vars.counter++;
             GameTimerFrame();
-            engine.redraw = true;
+            engine_vars.redraw = true;
             break;
 
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            engine.running = false;
+            engine_vars.running = false;
             break;
 
         case ALLEGRO_EVENT_KEY_DOWN: {
@@ -236,14 +259,14 @@ void EventsFrame() {
         }
     }
 
-    if (!al_is_event_queue_empty(engine.event_queue)) {
-        engine.redraw = false;
+    if (!al_is_event_queue_empty(engine_vars.event_queue)) {
+        engine_vars.redraw = false;
     }
 }
 
 void ShutdownEvents() {
-    if (engine.event_queue) al_destroy_event_queue(engine.event_queue);
-    if (engine.timer) al_destroy_timer(engine.timer);
+    if (engine_vars.event_queue) al_destroy_event_queue(engine_vars.event_queue);
+    if (engine_vars.timer) al_destroy_timer(engine_vars.timer);
 }
 
 // Main
@@ -254,7 +277,7 @@ int main() {
     plClearLog(VC_LOG);
     plWriteLog(VC_LOG, "Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
 
-    memset(&engine, 0, sizeof(EngineVars));
+    memset(&engine_vars, 0, sizeof(EngineVars));
 
     PLuint32 version = al_get_allegro_version();
     PLuint32 major = version >> 24;
@@ -286,15 +309,15 @@ int main() {
     // in the same places every time.
     srand((unsigned) time(NULL));
 
-    //engine.log = al_open_native_text_log("Virtual Critters Console", 0);
+    engine_vars.log = al_open_native_text_log("Virtual Critters Console", 0);
 
-    engine.running = true;
+    engine_vars.running = true;
 
     InitializeDisplay();
     InitializeEvents();
     InitializeGame();
 
-    while (engine.running) {
+    while (engine_vars.running) {
         EventsFrame();
         DisplayFrame();
     }

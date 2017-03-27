@@ -1,13 +1,12 @@
+// Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
+//  GLORY TO THE MOON MEN!
 
-#include "Shared.h"
+#include "../Shared.h"
 
-#include "game.h"
 #include "WorldManager.h"
 #include "MoonObject.h"
 
-//  GLORY TO THE MOON MEN!
-
-MoonObject::MoonObject() : SpriteObject(LoadImage("environment/objects/moon")) {
+MoonObject::MoonObject() : Sprite(engine::LoadImage("environment/objects/moon")) {
     angle = 0;
 
     // Grab the x and y, then position us in the middle
@@ -20,5 +19,5 @@ MoonObject::MoonObject() : SpriteObject(LoadImage("environment/objects/moon")) {
 }
 
 void MoonObject::Simulate() {
-    angle = game_worldmanager->GetTotalSeconds() * 60 / 360;
+    angle = game_worldmanager->GetHour();
 }

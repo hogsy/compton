@@ -2,11 +2,13 @@
 
 #pragma once
 
+#ifdef __cplusplus
 #include <cstdio>
 #include <vector>
 #include <string>
 #include <cmath>
 #include <unordered_map>
+#endif
 #include <sys/stat.h>
 
 #include <allegro5/allegro.h>
@@ -43,12 +45,14 @@ typedef unsigned char byte;
 #define WINDOW_WIDTH	DISPLAY_WIDTH
 #define WINDOW_HEIGHT	DISPLAY_HEIGHT
 
-ALLEGRO_FONT *LoadFont(std::string path, unsigned int size);
-ALLEGRO_BITMAP *LoadImage(std::string path);
+namespace engine {
+    ALLEGRO_FONT *LoadFont(const char *path, unsigned int size);
+    ALLEGRO_BITMAP *LoadImage(const char *path);
+}
 
 void DrawBitmap(ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h);
-void DrawString(const ALLEGRO_FONT *font, int x, int y,	ALLEGRO_COLOR colour, std::string message);
-void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y,	ALLEGRO_COLOR colour, std::string message);
+void DrawString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message);
+void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message);
 void DrawFilledRectangle(PLVector2D position, float w, float h, ALLEGRO_COLOR colour);
 void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom);
 
@@ -72,7 +76,7 @@ typedef struct EngineVars {
     ALLEGRO_BITMAP *buffer;
 } EngineVars;
 
-extern EngineVars engine;
+extern EngineVars engine_vars;
 
 /*	Game	*/
 

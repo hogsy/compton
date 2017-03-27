@@ -1,11 +1,12 @@
 // Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
 
-#include "Shared.h"
+#include "../Shared.h"
 
 #include "game.h"
 
 #include "CreatureBrain.h"
 #include "WorldManager.h"
+#include "Sprite.hpp"
 
 /*	Game logic and other crap goes here!	*/
 
@@ -16,59 +17,6 @@ enum GameState {
 } GameState;
 
 GameVars game;
-
-// Object
-
-SpriteObject::SpriteObject() :
-        _sprite(nullptr), origin(0, 0), position(0, 0), angle(0), _w(0), _h(0),
-        currentframe(0), framecount(0), framedelay(0) {}
-
-SpriteObject::SpriteObject(ALLEGRO_BITMAP *sprite) :
-        _sprite(sprite), origin(0, 0), position(0, 0), angle(0),
-        currentframe(0), framecount(0), framedelay(0) {
-    framew = _w = al_get_bitmap_width(sprite);
-    frameh = _h = al_get_bitmap_height(sprite);
-    origin.Set(_w / 2, _h / 2);
-}
-
-SpriteObject::SpriteObject(ALLEGRO_BITMAP *sprite, float x, float y) :
-        _sprite(sprite), origin(0, 0), position(x, y), angle(0),
-        currentframe(0), framecount(0), framedelay(0) {
-    framew = _w = al_get_bitmap_width(sprite);
-    frameh = _h = al_get_bitmap_height(sprite);
-    origin.Set(_w / 2, _h / 2);
-}
-
-SpriteObject::~SpriteObject() {
-    //if(_sprite) al_destroy_bitmap(_sprite);
-}
-
-void SpriteObject::SetSprite(ALLEGRO_BITMAP *sprite) {
-    _sprite = sprite;
-    if (_sprite) {
-        _w = al_get_bitmap_width(sprite);
-        _h = al_get_bitmap_height(sprite);
-    }
-}
-
-void SpriteObject::Draw() {
-    if (!InsideBounds()) return;
-    al_draw_scaled_rotated_bitmap(
-            _sprite,
-            origin.x, origin.y,
-            position.x, position.y,
-            1, 1,
-            angle,
-            0
-    );
-}
-
-bool SpriteObject::InsideBounds() {
-    if (position.x < -(float) _w || position.x > DISPLAY_WIDTH + _w)
-        return false;
-
-    return true;
-}
 
 // Text Prompt
 
@@ -99,26 +47,39 @@ private:
 
 // Hand
 
-enum HandState {
-    HAND_STATE_DEFAULT,    // Point
-    HAND_STATE_OPEN,
-};
 
-class Hand : public SpriteObject {
+
+class Hand : public Sprite {
 public:
-    Hand() : SpriteObject(LoadImage("cursor/point")) {
+    enum HandState {
+        HAND_STATE_DEFAULT,    // Point
+        HAND_STATE_OPEN,
+
+        HAND_STATE_NONE
+    };
+
+    Hand() : Sprite(engine::LoadImage("cursor/point")) {
         // todo, set this in position of cursor on creation.
         origin.Set(0, 0);
+
+        hand_state[HAND_STATE_DEFAULT] = GetSprite();
+    }
+
+    void SetState(HandState state) {
+        if(state == HAND_STATE_NONE) {
+            return;
+        }
+        SetSprite(hand_state[state]);
     }
 
     void Simulate() {
         position.Set(
-                engine.mouse_state.x,
-                engine.mouse_state.y
+                engine_vars.mouse_state.x,
+                engine_vars.mouse_state.y
         );
 
         angle = 0;
-        if (engine.mouse_state.buttons) {
+        if (engine_vars.mouse_state.buttons) {
             position.y += 5;
             angle -= 0.2f;
         }
@@ -126,6 +87,7 @@ public:
 
 protected:
 private:
+    ALLEGRO_BITMAP *hand_state[HAND_STATE_NONE];
 };
 
 Hand *game_userhand = nullptr;
@@ -140,6 +102,8 @@ enum GameMenuState {
     GAME_MENU_OPTIONS,    // Options
     GAME_MENU_QUIT,        // Quit
 
+    GAME_MENU_PAUSED,   // Paused screen
+
     GAME_MENU_DEFAULT            // in-game?
 } GameMenuState;
 
@@ -149,17 +113,28 @@ void DrawGameMenu() {
     game_worldmanager->Draw();
 
     switch (game.menu_state) {
-        default:
+        default:break;
+
+        case GAME_MENU_PAUSED: {
+            DrawCenteredString(
+                    game.font_title,
+                    DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4,
+                    /*230, 80, 20*/ al_map_rgb(255, 255, 255),
+                    "... PAUSED ..."
+            );
+
             break;
+        }
 
         case GAME_MENU_START: {
+            // todo, interpolate this up at the beginning of this menu state.
             al_draw_rotated_bitmap(
                     game.menu_earth,
                     al_get_bitmap_width(game.menu_earth) / 2,
                     al_get_bitmap_height(game.menu_earth) / 2,
                     (DISPLAY_WIDTH / 2),
                     850,
-                    (float) (engine.counter / 1000),
+                    (float) (engine_vars.counter / 1000),
                     0
             );
 
@@ -199,7 +174,7 @@ void DrawGameMenu() {
             );
 #endif
 
-#define HANDYBLEND -(std::cos((float)engine.counter / 50) * 0.8f)
+#define HANDYBLEND -(std::cos((float)engine_vars.counter / 50) * 0.8f)
             DrawCenteredString(
                     game.font_gothic_medium,
                     DISPLAY_WIDTH / 2, 250,
@@ -260,12 +235,12 @@ void InitializeGame() {
     game.state = GAME_STATE_MENU;
     game.menu_state = GAME_MENU_START;
 
-    game.font_title = LoadFont("pacifico/Pacifico-Bold", 80);
-    game.font_small = LoadFont("league_gothic/LeagueGothic-Regular", 21);
-    game.font_gothic_medium = LoadFont("league_gothic/LeagueGothic-Regular", 32);
-    game.font_chunk = LoadFont("chunk/Chunk", 24);
+    game.font_title = engine::LoadFont("pacifico/Pacifico-Bold", 80);
+    game.font_small = engine::LoadFont("league_gothic/LeagueGothic-Regular", 21);
+    game.font_gothic_medium = engine::LoadFont("league_gothic/LeagueGothic-Regular", 32);
+    game.font_chunk = engine::LoadFont("chunk/Chunk", 24);
 
-    game.menu_earth = LoadImage("environment/objects/earth");
+    game.menu_earth = engine::LoadImage("environment/objects/earth");
 
     game_userhand = new Hand();
     game_worldmanager = new WorldManager();
@@ -304,6 +279,7 @@ void GameDefaultKeyboardInput(int code, bool keyup) {
             // todo, play pause sound.
             game.oldstate = game.state;
             game.state = GAME_STATE_PAUSED;
+            game.menu_state = GAME_MENU_PAUSED;
             break;
 
         case ALLEGRO_KEY_UP:
@@ -357,6 +333,7 @@ void GameMenuKeyboardInput(int code, bool keyup) {
         case GAME_MENU_START:
             // todo, play start sound.
             game.menu_state = GAME_MENU_MAIN;
+            game.state = GAME_STATE_DEFAULT;
             break;
 
         case GAME_MENU_MAIN:

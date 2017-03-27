@@ -31,7 +31,7 @@ public:
 	unsigned int GetTotalWeeks()    { return static_cast<unsigned int>(std::floor(_time / 604800)); }
 	unsigned int GetTotalMonths()   { return _month + ((_year - 1) * 12); } // Months are a special case...
 
-	std::string GetDayString();
+	const char * GetDayString();
 
 	ALLEGRO_BITMAP *cloud_droplet;
 

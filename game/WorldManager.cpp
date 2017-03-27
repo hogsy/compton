@@ -1,6 +1,6 @@
-// Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
+// Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
 
-#include "Shared.h"
+#include "../Shared.h"
 
 #include "game.h"
 #include "WorldManager.h"
@@ -14,11 +14,11 @@ WorldManager *game_worldmanager = nullptr;
 /*	Clouds	*/
 
 #define DAMP    ((w * h) / ((float)plGenerateUniformRandom(0.05f) + 5)) / 100;
-#define JIGGLE    0.05f
+#define JIGGLE  0.05f
 
-class RainObject : public SpriteObject {
+class RainObject : public Sprite {
 public:
-    RainObject(PLVector2D pos) : SpriteObject(game_worldmanager->cloud_droplet) {
+    RainObject(PLVector2D pos) : Sprite(game_worldmanager->cloud_droplet) {
         position = pos;
     }
 
@@ -35,9 +35,9 @@ protected:
 private:
 };
 
-class CloudObject : public SpriteObject {
+class CloudObject : public Sprite {
 public:
-    CloudObject(ALLEGRO_BITMAP *sprite) : SpriteObject(sprite) {
+    CloudObject(ALLEGRO_BITMAP *sprite) : Sprite(sprite) {
         w = al_get_bitmap_width(sprite);
         h = al_get_bitmap_height(sprite);
 
@@ -46,7 +46,7 @@ public:
         _jiggle = (float) plGenerateUniformRandom(JIGGLE);
     }
 
-    CloudObject(ALLEGRO_BITMAP *sprite, bool direction) : SpriteObject(sprite) {
+    CloudObject(ALLEGRO_BITMAP *sprite, bool direction) : Sprite(sprite) {
         w = al_get_bitmap_width(sprite);
         h = al_get_bitmap_height(sprite);
 
@@ -63,8 +63,8 @@ public:
 
     virtual void Draw() {
         PLVector2D oldpos = position;
-        position.y = (std::sin((float) engine.counter / (120 / _jiggle)) * 5 + 5) + position.y;
-        SpriteObject::Draw();
+        position.y = (std::sin((float) engine_vars.counter / (120 / _jiggle)) * 5 + 5) + position.y;
+        Sprite::Draw();
         position = oldpos;
     }
 
@@ -77,9 +77,9 @@ private:
 
 #include "MoonObject.h"
 
-class Sun : public SpriteObject {
+class Sun : public Sprite {
 public:
-    Sun() : SpriteObject(LoadImage("environment/objects/sun")) {
+    Sun() : Sprite(engine::LoadImage("environment/objects/sun")) {
         origin.x = al_get_bitmap_width(GetSprite()) / 2;
         origin.y = -420;
         position.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
@@ -119,15 +119,27 @@ public:
         // Bleh, but only do this if a background is set...
         if (!current_background) return;
 
+#if 0
         al_draw_tinted_scaled_rotated_bitmap(
                 current_background,
                 al_map_rgb(255, 255, 255),
                 256, 256,
                 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
+
+
+
+
                 1024, 1024,
                 (float) engine.counter / 100,
                 0
         );
+#else
+        al_draw_bitmap(
+                current_background,
+                0, 0,
+                0
+        );
+#endif
     }
 
     void Simulate() {
@@ -160,7 +172,7 @@ SkyColourCycle sky_colourcycle[] =
                 {{99,  166, 253}, {0.87, 142, 109}, 18},    // SUNSET
         };
 
-std::string sky_days[] = {
+const char *sky_days[] = {
         "Monday",
         "Tuesday",
         "Wednesday",
@@ -173,7 +185,7 @@ std::string sky_days[] = {
 typedef struct Month {
     unsigned int start;
 
-    std::string name;
+    const char *name;
 } Month;
 
 Month months[] = {
@@ -199,16 +211,17 @@ WorldManager::WorldManager() :
     env_background = new EnvironmentBackground();
 
     _cloud_sprites.reserve(10);
-    for (int i = 0; i < 10; i++)
-        _cloud_sprites[i] = LoadImage("clouds/" + std::to_string(i));
+    for (int i = 0; i < 10; i++) {
+        _cloud_sprites[i] = engine::LoadImage(std::string("clouds/" + std::to_string(i)).c_str());
+    }
 
-    _sky_top =  //sky_colourcycle[0].top;
-    _sky_target_top = //sky_colourcycle[1].top;
-    _sky_bottom = //sky_colourcycle[0].bottom;
+    _sky_top =  sky_colourcycle[0].top;
+    _sky_target_top = sky_colourcycle[1].top;
+    _sky_bottom = sky_colourcycle[0].bottom;
     _sky_target_bottom = al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
-    _sky_background = LoadImage("environment/backgrounds/00night");
+    _sky_background = engine::LoadImage("environment/backgrounds/00night");
 
-    cloud_droplet = LoadImage("environment/objects/rain");
+    cloud_droplet = engine::LoadImage("environment/objects/rain");
 
     // Make initial set of clouds.
     for (int i = 0; i < _cloud_density; i++) {
@@ -228,7 +241,7 @@ WorldManager::~WorldManager() {
     delete _moon;
 }
 
-std::string WorldManager::GetDayString() {
+const char *WorldManager::GetDayString() {
     return sky_days[_day];
 }
 
@@ -325,7 +338,7 @@ void WorldManager::Draw() {
                 _sky_background,
                 512, 512,
                 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
-                (float) engine.counter / 1000,
+                (float) engine_vars.counter / 1000,
                 0
         );
     }

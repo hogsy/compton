@@ -8,7 +8,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
-file(GLOB SOURCE_FILES *.cpp *.c *.h)
+file(GLOB SOURCE_FILES
+        *.cpp *.c *.h
+        engine/*.*
+        game/*.*
+        )
 
 add_executable(VCritters ${SOURCE_FILES})
 

@@ -2,15 +2,24 @@
 
 #pragma once
 
+#include "../engine/Sprite.hpp"
+
 class Entity {
 public:
-    Entity() {}
-    ~Entity() {}
+    Entity();
+    ~Entity();
+
+    virtual void SetPosition(PLVector2D position);
+    virtual void SetRotation(float angle);
+
+    virtual void Draw();
+
+    void SetSprite(std::string path);
+
+    Sprite *sprite;
 
 protected:
 private:
-    PLVector3D position;
-    PLVector3D rotation;
-
-    PLVector3D forward, right, up;
+    PLVector2D position_;
+    float angle_;
 };

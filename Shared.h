@@ -22,6 +22,7 @@
 #include "platform_log.h"
 #include "platform_window.h"
 #include "platform_filesystem.h"
+#include "platform_graphics.h"
 
 #define DEBUG_BUILD
 
@@ -65,6 +66,8 @@ typedef struct EngineVars {
     ALLEGRO_MOUSE_STATE		mouse_state;
     ALLEGRO_KEYBOARD_STATE  keyboard_state;
 
+    bool key_status[ALLEGRO_KEY_MAX];
+
     bool redraw;
     bool running;
 
@@ -86,5 +89,5 @@ void ShutdownGame();
 void GameDisplayFrame();
 void GameTimerFrame();
 
-void GameKeyboardInput(int code, bool keyup);
+void KeyboardEvent(int code, bool keyup);
 

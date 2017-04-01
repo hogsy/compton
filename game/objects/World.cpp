@@ -1,12 +1,13 @@
 // Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
 
-#include "../Shared.h"
+#include "../../Shared.h"
 
-#include "game.h"
-#include "WorldManager.h"
-#include "MoonObject.h"
+#include "../game.h"
+#include "World.h"
+#include "Moon.h"
+#include "../Entity.hpp"
 
-WorldManager *game_worldmanager = nullptr;
+World *game_worldmanager = nullptr;
 
 #define WORLD_NIGHT_START   18  // Starting hour for night to roll in.
 #define WORLD_NIGHT_END     6   // Final hour that night starts rolling out.
@@ -18,7 +19,7 @@ WorldManager *game_worldmanager = nullptr;
 
 class RainObject : public Sprite {
 public:
-    RainObject(PLVector2D pos) : Sprite(game_worldmanager->cloud_droplet) {
+    RainObject(PLVector2D pos) : Sprite(World::GetInstance()->cloud_droplet) {
         position = pos;
     }
 
@@ -27,8 +28,8 @@ public:
             delete this;
         }
         position.x += 0.5f;
-        position.y += (game_worldmanager->GetWindSpeed() / 10.0f);
-        angle = -(game_worldmanager->GetWindSpeed() / 100.0f);
+        position.y += (World::GetInstance()->GetWindSpeed() / 10.0f);
+        angle = -(World::GetInstance()->GetWindSpeed() / 100.0f);
     }
 
 protected:
@@ -64,6 +65,10 @@ public:
     virtual void Draw() {
         PLVector2D oldpos = position;
         position.y = (std::sin((float) engine_vars.counter / (120 / _jiggle)) * 5 + 5) + position.y;
+
+        position.x -= game.camera_x;
+        position.y -= game.camera_y;
+
         Sprite::Draw();
         position = oldpos;
     }
@@ -75,7 +80,7 @@ private:
     float _damping, _jiggle;
 };
 
-#include "MoonObject.h"
+#include "Moon.h"
 
 class Sun : public Sprite {
 public:
@@ -88,7 +93,7 @@ public:
     }
 
     void Simulate() {
-        angle = game_worldmanager->GetTotalSeconds() * 60 / 360;
+        angle = World::GetInstance()->GetTotalSeconds() * 60 / 360;
     }
 };
 
@@ -203,9 +208,10 @@ Month months[] = {
 
 #define WIND_SPEED 10.5f
 
-WorldManager::WorldManager() :
+World::World() :
         _wind_speed(WIND_SPEED),
         _time(0), _year(0), _month(0), _day(0), _hour(0), _minute(0), _second(0),
+        _world_width(4000), _world_height(4000),
         _cloud_density(8),
         _temperature(20) {
     env_background = new EnvironmentBackground();
@@ -229,11 +235,11 @@ WorldManager::WorldManager() :
         _clouds.emplace(_clouds.end(), CloudObject(sprite));
     }
 
-    _moon = new MoonObject();
+    _moon = new Moon();
     _sun = new Sun();
 }
 
-WorldManager::~WorldManager() {
+World::~World() {
     for (int i = 0; i < _cloud_sprites.size(); i++)
         al_destroy_bitmap(_cloud_sprites[i]);
     _cloud_sprites.clear();
@@ -241,11 +247,11 @@ WorldManager::~WorldManager() {
     delete _moon;
 }
 
-const char *WorldManager::GetDayString() {
+const char *World::GetDayString() {
     return sky_days[_day];
 }
 
-void WorldManager::Simulate() {
+void World::Simulate() {
     // CloudObject generation...
     if (_clouds.size() < _cloud_density) {
         ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % 10];
@@ -332,7 +338,7 @@ void WorldManager::Simulate() {
     _sun->Simulate();
 }
 
-void WorldManager::Draw() {
+void World::Draw() {
     if (_hour > WORLD_NIGHT_START || _hour < WORLD_NIGHT_END) {
         al_draw_rotated_bitmap(
                 _sky_background,
@@ -355,7 +361,7 @@ void WorldManager::Draw() {
     // Clouds
     DrawBitmap(
             _cloud_sprites[2],
-            10, 10,
+            10 - game.camera_x / 4, 10 - game.camera_y,
             al_get_bitmap_width(_cloud_sprites[2]),
             al_get_bitmap_height(_cloud_sprites[2])
     );

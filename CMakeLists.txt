@@ -12,6 +12,7 @@ file(GLOB SOURCE_FILES
         *.cpp *.c *.h
         engine/*.*
         game/*.*
+        game/objects/*.*
         )
 
 add_executable(VCritters ${SOURCE_FILES})

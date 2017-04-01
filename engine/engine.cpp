@@ -236,7 +236,7 @@ void EventsFrame() {
     al_get_keyboard_state(&engine_vars.keyboard_state);
 
     switch (event.type) {
-        default:break;
+        default: break;
 
         case ALLEGRO_EVENT_TIMER:
             engine_vars.counter++;
@@ -249,12 +249,16 @@ void EventsFrame() {
             break;
 
         case ALLEGRO_EVENT_KEY_DOWN: {
-            GameKeyboardInput(event.keyboard.keycode, false);
+            engine_vars.key_status[event.keyboard.keycode] = true;
+
+            KeyboardEvent(event.keyboard.keycode, false);
             break;
         }
 
         case ALLEGRO_EVENT_KEY_UP: {
-            GameKeyboardInput(event.keyboard.keycode, true);
+            engine_vars.key_status[event.keyboard.keycode] = false;
+
+            KeyboardEvent(event.keyboard.keycode, true);
             break;
         }
     }

@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Sprite.hpp"
+#include "../../engine/Sprite.hpp"
 
 // todo, need to do the difference phases of the moon etc.
-class MoonObject : public Sprite {
+class Moon : public Sprite {
 public:
-    MoonObject();
-    ~MoonObject() {}
+    Moon();
+    ~Moon() {}
 
     void Simulate();
+
+    virtual void Draw();
 
 protected:
 private:

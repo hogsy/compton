@@ -20,16 +20,16 @@ World *game_worldmanager = nullptr;
 class RainObject : public Sprite {
 public:
     RainObject(PLVector2D pos) : Sprite(World::GetInstance()->cloud_droplet) {
-        position = pos;
+        m_LocalPosition = pos;
     }
 
     void Simulate() {
         if (!InsideBounds()) {
             delete this;
         }
-        position.x += 0.5f;
-        position.y += (World::GetInstance()->GetWindSpeed() / 10.0f);
-        angle = -(World::GetInstance()->GetWindSpeed() / 100.0f);
+        m_LocalPosition.x += 0.5f;
+        m_LocalPosition.y += (World::GetInstance()->GetWindSpeed() / 10.0f);
+        m_Angle = -(World::GetInstance()->GetWindSpeed() / 100.0f);
     }
 
 protected:
@@ -42,7 +42,7 @@ public:
         w = al_get_bitmap_width(sprite);
         h = al_get_bitmap_height(sprite);
 
-        position.Set(rand() % DISPLAY_WIDTH, rand() % (DISPLAY_HEIGHT / 2));
+        m_LocalPosition.Set(rand() % DISPLAY_WIDTH, rand() % (DISPLAY_HEIGHT / 2));
         _damping = DAMP;
         _jiggle = (float) plGenerateUniformRandom(JIGGLE);
     }
@@ -51,26 +51,26 @@ public:
         w = al_get_bitmap_width(sprite);
         h = al_get_bitmap_height(sprite);
 
-        position.Set((direction ? -(float) w : DISPLAY_WIDTH), rand() % (DISPLAY_HEIGHT / 2));
+        m_LocalPosition.Set((direction ? -(float) w : DISPLAY_WIDTH), rand() % (DISPLAY_HEIGHT / 2));
         _damping = DAMP;
         _jiggle = (float) plGenerateUniformRandom(JIGGLE);
     }
 
     void Move(float speed) {
-        position.x += speed / _damping;
+        m_LocalPosition.x += speed / _damping;
         static double s = rand() % 100;
-        angle = std::cos((float) s++ / 1000) * 0.05f;
+        m_Angle = std::cos((float) s++ / 1000) * 0.05f;
     }
 
     virtual void Draw() {
-        PLVector2D oldpos = position;
-        position.y = (std::sin((float) engine_vars.counter / (120 / _jiggle)) * 5 + 5) + position.y;
+        PLVector2D oldpos = m_LocalPosition;
+        m_LocalPosition.y = (std::sin((float) engine_vars.counter / (120 / _jiggle)) * 5 + 5) + m_LocalPosition.y;
 
-        position.x -= game.camera_x;
-        position.y -= game.camera_y;
+        m_LocalPosition.x -= game.camera_x;
+        m_LocalPosition.y -= game.camera_y;
 
         Sprite::Draw();
-        position = oldpos;
+        m_LocalPosition = oldpos;
     }
 
     int w, h;
@@ -85,15 +85,15 @@ private:
 class Sun : public Sprite {
 public:
     Sun() : Sprite(engine::LoadImage("environment/objects/sun")) {
-        origin.x = al_get_bitmap_width(GetSprite()) / 2;
-        origin.y = -420;
-        position.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
+        m_Origin.x = al_get_bitmap_width(GetBitmap()) / 2;
+        m_Origin.y = -420;
+        m_LocalPosition.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
 
-        angle = 0;
+        m_Angle = 0;
     }
 
     void Simulate() {
-        angle = World::GetInstance()->GetTotalSeconds() * 60 / 360;
+        m_Angle = World::GetInstance()->GetTotalSeconds() * 60 / 360;
     }
 };
 
@@ -208,6 +208,8 @@ Month months[] = {
 
 #define WIND_SPEED 10.5f
 
+#define CLOUD_BITMAPS 3
+
 World::World() :
         _wind_speed(WIND_SPEED),
         _time(0), _year(0), _month(0), _day(0), _hour(0), _minute(0), _second(0),
@@ -217,7 +219,7 @@ World::World() :
     env_background = new EnvironmentBackground();
 
     _cloud_sprites.reserve(10);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < CLOUD_BITMAPS; i++) {
         _cloud_sprites[i] = engine::LoadImage(std::string("clouds/" + std::to_string(i)).c_str());
     }
 
@@ -231,7 +233,7 @@ World::World() :
 
     // Make initial set of clouds.
     for (int i = 0; i < _cloud_density; i++) {
-        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % 10];
+        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % CLOUD_BITMAPS];
         _clouds.emplace(_clouds.end(), CloudObject(sprite));
     }
 
@@ -254,7 +256,7 @@ const char *World::GetDayString() {
 void World::Simulate() {
     // CloudObject generation...
     if (_clouds.size() < _cloud_density) {
-        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % 10];
+        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % CLOUD_BITMAPS];
         _clouds.emplace(
                 _clouds.end(),
                 CloudObject(
@@ -359,11 +361,13 @@ void World::Draw() {
     _sun->Draw();
 
     // Clouds
+#if 0
     DrawBitmap(
             _cloud_sprites[2],
             10 - game.camera_x / 4, 10 - game.camera_y,
             al_get_bitmap_width(_cloud_sprites[2]),
             al_get_bitmap_height(_cloud_sprites[2])
     );
+#endif
     for (CloudObject &cloud : _clouds) cloud.Draw();
 }

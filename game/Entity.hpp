@@ -4,7 +4,7 @@
 
 #include "../engine/Sprite.hpp"
 
-class Entity {
+class Entity : public Sprite {
 public:
     Entity();
     ~Entity();
@@ -13,13 +13,7 @@ public:
     virtual void SetRotation(float angle);
 
     virtual void Draw();
+    virtual void Simulate();
 
-    void SetSprite(std::string path);
-
-    Sprite *sprite;
-
-protected:
-private:
-    PLVector2D position_;
-    float angle_;
+    virtual bool IsInteractive() { return false; }
 };

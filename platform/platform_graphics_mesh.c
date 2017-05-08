@@ -282,7 +282,7 @@ void plDrawMesh(PLMesh *mesh) {
 #if 0
         glBegin(_plTranslatePrimitiveMode(mesh->primitive));
         for(unsigned int i = 0; i < mesh->numverts; i++) {
-            glVertex3f(mesh->vertices[i].position.x, mesh->vertices[i].position.y, mesh->vertices[i].position.z);
+            glVertex3f(mesh->vertices[i].m_LocalPosition.x, mesh->vertices[i].m_LocalPosition.y, mesh->vertices[i].m_LocalPosition.z);
             glTexCoord2f(mesh->vertices[i].st[0].x, mesh->vertices[i].st[0].y);
             glColor3ub(mesh->vertices[i].colour.r, mesh->vertices[i].colour.g, mesh->vertices[i].colour.b);
         }
@@ -293,7 +293,7 @@ void plDrawMesh(PLMesh *mesh) {
         glEnableClientState(GL_NORMAL_ARRAY);
 
         PLVertex *vert = &mesh->vertices[0];
-        glVertexPointer(3, GL_FLOAT, 0, &vert->position);
+        glVertexPointer(3, GL_FLOAT, 0, &vert->m_LocalPosition);
         glColorPointer(4, GL_FLOAT, 0, &vert->colour);
         glNormalPointer(GL_FLOAT, 0, &vert->normal);
         for(PLint i = 0; i < plGetMaxTextureUnits(); i++) {
@@ -337,7 +337,7 @@ void plDrawMeshNormals(PLMesh *mesh) {
 #if 0
     PLVector3D endpos;
     for (PLuint i = 0; i < mesh->numverts; i++) {
-        endpos = (mesh->vertices[i].normal * 2.0f) + mesh->vertices[i].position;
+        endpos = (mesh->vertices[i].normal * 2.0f) + mesh->vertices[i].m_LocalPosition;
         //plDrawLine blah
     }
 #endif

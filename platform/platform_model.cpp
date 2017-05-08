@@ -45,9 +45,9 @@ void plGenerateStaticModelNormals(PLStaticModel *model) {
     for (int i = 0; i < model->num_triangles; i++)
     {
         std::vector<float> normal = plGenerateNormal(
-            frame->vertices[frame->triangles[i].indices[0]].position,
-            frame->vertices[frame->triangles[i].indices[1]].position,
-            frame->vertices[frame->triangles[i].indices[2]].position);
+            frame->vertices[frame->triangles[i].indices[0]].m_LocalPosition,
+            frame->vertices[frame->triangles[i].indices[1]].m_LocalPosition,
+            frame->vertices[frame->triangles[i].indices[2]].m_LocalPosition);
 
         frame->triangles[i].normal[PL_X] = normal[PL_X];
         frame->triangles[i].normal[PL_Y] = normal[PL_Y];

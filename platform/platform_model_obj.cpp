@@ -122,7 +122,7 @@ PLStaticModel *plLoadOBJModel(const PLchar *path) {
     model->frame.vertices = new PLVertex[model->num_vertices];
     for (unsigned int i = 0; i < model->num_vertices; i++) {
         PLVertex *vertex = &model->frame.vertices[0];
-        //vertex->position = vertices[i];
+        //vertex->m_LocalPosition = vertices[i];
     }
 
     _plUnloadOBJModel();

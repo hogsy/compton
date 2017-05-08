@@ -8,25 +8,25 @@
 #include "../game.h"
 
 Moon::Moon() : Sprite(engine::LoadImage("environment/objects/moon")) {
-    angle = 0;
+    m_Angle = 0;
 
-    // Grab the x and y, then position us in the middle
+    // Grab the x and y, then m_LocalPosition us in the middle
     // of the screen.
-    origin.x = al_get_bitmap_width(GetSprite()) / 2;
-    origin.y = 420;
-    position.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
+    m_Origin.x = al_get_bitmap_width(GetBitmap()) / 2;
+    m_Origin.y = 420;
+    m_LocalPosition.Set(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT);
 
     cycle_ = 0;
 }
 
 void Moon::Simulate() {
-    angle = engine_vars.counter / 86400;
+    m_Angle = engine_vars.counter / 86400;
 }
 
 void Moon::Draw() {
-    PLVector2D oldpos = position;
-    position.x -= game.camera_x / 2;
-    position.y -= game.camera_y / 2;
+    PLVector2D oldpos = m_LocalPosition;
+    m_LocalPosition.x -= game.camera_x / 2;
+    m_LocalPosition.y -= game.camera_y / 2;
     Sprite::Draw();
-    position = oldpos;
+    m_LocalPosition = oldpos;
 }

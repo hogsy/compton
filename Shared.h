@@ -67,6 +67,7 @@ typedef struct EngineVars {
     ALLEGRO_KEYBOARD_STATE  keyboard_state;
 
     bool key_status[ALLEGRO_KEY_MAX];
+    bool mouse_status[2]; // left, right, middle
 
     bool redraw;
     bool running;
@@ -89,5 +90,6 @@ void ShutdownGame();
 void GameDisplayFrame();
 void GameTimerFrame();
 
+void MouseEvent(void);
 void KeyboardEvent(int code, bool keyup);
 

@@ -66,10 +66,10 @@ public:
     };
 
     Hand() : Sprite(engine::LoadImage("cursor/point")), target_angle(0) {
-        // todo, set this in position of cursor on creation.
-        origin.Set(0, 0);
+        // todo, set this in m_LocalPosition of cursor on creation.
+        m_Origin.Set(0, 0);
 
-        hand_state[HAND_STATE_DEFAULT]      = GetSprite();
+        hand_state[HAND_STATE_DEFAULT]      = GetBitmap();
         hand_state[HAND_STATE_CLOSED]       = engine::LoadImage("cursor/closed");
         hand_state[HAND_STATE_FLAT]         = engine::LoadImage("cursor/flat1");
         hand_state[HAND_STATE_FLAT_BACK]    = engine::LoadImage("cursor/flat0");
@@ -81,18 +81,18 @@ public:
         if(state == HAND_STATE_NONE) {
             return;
         }
-        SetSprite(hand_state[state]);
+        SetBitmap(hand_state[state]);
     }
 
     void Simulate() {
-        position.Set(
+        m_LocalPosition.Set(
                 engine_vars.mouse_state.x,
                 engine_vars.mouse_state.y
         );
 
         move_time++;
         if (engine_vars.mouse_state.buttons) {
-          //  position.y += 5;
+          //  m_LocalPosition.y += 5;
             if(target_angle != 0.2f) {
                 move_time = 0;
             }
@@ -104,8 +104,8 @@ public:
             target_angle = 0;
         }
 
-        if(angle != target_angle) {
-            angle = plCosineInterpolate(angle, target_angle, move_time / 6);
+        if(m_Angle != target_angle) {
+            m_Angle = plCosineInterpolate(m_Angle, target_angle, move_time / 6);
         }
     }
 
@@ -135,7 +135,7 @@ enum GameMenuState {
 
 // Everything Else
 
-ALLEGRO_BITMAP *background0, *background1, *background2;
+//ALLEGRO_BITMAP *background0, *background1, *background2;
 
 void InitializeGame() {
     memset(&game, 0, sizeof(GameVars));
@@ -150,9 +150,12 @@ void InitializeGame() {
 
     game.menu_earth = engine::LoadImage("environment/objects/earth");
 
-    background0 = engine::LoadImage("placeholder/skill-desc_0000_foreground");
-    background1 = engine::LoadImage("placeholder/skill-desc_0001_buildings");
-    background2 = engine::LoadImage("placeholder/skill-desc_0002_far-buildings");
+    // Editor Icons
+    game.entity_icon = engine::LoadImage("default_entity");
+
+    //background0 = engine::LoadImage("placeholder/skill-desc_0000_foreground");
+    //background1 = engine::LoadImage("placeholder/skill-desc_0001_buildings");
+    //background2 = engine::LoadImage("placeholder/skill-desc_0002_far-buildings");
 
     game_userhand = new Hand();
     World::GetInstance();
@@ -247,9 +250,9 @@ void draw_menu() {
         }
 
         case GAME_MENU_DEFAULT: {
-            DrawBitmap(background2, 0 - game.camera_x / 3, 128 - game.camera_y, 1088, 416);
-            DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);
-            DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
+            //DrawBitmap(background2, 0 - game.camera_x / 3, 128 - game.camera_y, 1088, 416);
+            //DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);
+            //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
 
             DrawVerticalGradientRectangle(
                     0, DISPLAY_HEIGHT - 128,
@@ -283,7 +286,7 @@ void draw_menu() {
                 DISPLAY_WIDTH / 2,
                 DISPLAY_HEIGHT - 42,
                 al_map_rgb(255, 255, 255),
-                "Virtual Critters Inc., Copyright (C) 2016 Mark Elsworth Sowden"
+                "Virtual Critters Inc., Copyright (C) 2017 Mark Elsworth Sowden"
         );
 #endif
     }
@@ -316,8 +319,8 @@ void GameTimerFrame() {
 
             if(engine_vars.key_status[ALLEGRO_KEY_LEFT]) {
 
-                if(camera_movement.x > 0) {
-                    camera_movement.x = 0;
+                if(camera_movement.x > 1024) {
+                    camera_movement.x = 1024;
                 }
 
                 if(camera_movement.x > -CAMERA_MAXSPEED) {
@@ -329,8 +332,8 @@ void GameTimerFrame() {
                 }
             } else if(engine_vars.key_status[ALLEGRO_KEY_RIGHT]) {
 
-                if(camera_movement.x < 0) {
-                    camera_movement.x = 0;
+                if(camera_movement.x < -1024) {
+                    camera_movement.x = -1024;
                 }
 
                 if(camera_movement.x < CAMERA_MAXSPEED) {
@@ -350,7 +353,7 @@ void GameTimerFrame() {
 
             if(engine_vars.key_status[ALLEGRO_KEY_DOWN]) {
 
-                if(camera_movement.y < 0) {
+                if(camera_movement.y < -512) {
                     camera_movement.y = 0;
                 }
 
@@ -363,8 +366,8 @@ void GameTimerFrame() {
                 }
             } else if(engine_vars.key_status[ALLEGRO_KEY_UP]) {
 
-                if(camera_movement.y > 0) {
-                    camera_movement.y = 0;
+                if(camera_movement.y > 2048) {
+                    camera_movement.y = 2048;
                 }
 
                 if(camera_movement.y > -CAMERA_MAXSPEED) {
@@ -393,6 +396,10 @@ void GameTimerFrame() {
 
         case GAME_STATE_PAUSED: break;
     }
+}
+
+void MouseEvent(void) {
+
 }
 
 void KeyboardEvent(int code, bool keyup) {

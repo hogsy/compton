@@ -209,7 +209,7 @@ PLvoid plShowCursor(PLbool show) {
     _cursorvisible = show;
 }
 
-/*	Gets the position of the cursor.
+/*	Gets the m_LocalPosition of the cursor.
 	TODO:
 		Move into platform_input.
 */

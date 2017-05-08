@@ -4,42 +4,38 @@
 #include "Entity.hpp"
 #include "game.h"
 
-Entity::Entity() {
-
+Entity::Entity() : Sprite(game.entity_icon) {
+    m_Angle = 0;
+    m_LocalPosition.Set(0, 0);
 }
 
 Entity::~Entity() {
-    if(sprite) {
-        delete sprite;
-    }
-}
-
-void Entity::SetSprite(std::string path) {
-    if(sprite) {
-        delete sprite;
-    }
-
-    
 }
 
 void Entity::SetPosition(PLVector2D position) {
-    if(position == position_) {
-        return;
-    }
-
-    sprite->position = position;
+    m_LocalPosition = position;
 }
 
 void Entity::SetRotation(float angle) {
-    if(angle == angle_) {
-        return;
-    }
-
-    sprite->angle = angle;
+    m_Angle = angle;
 }
 
 void Entity::Draw() {
-    sprite->position.x = position_.x - game.camera_x;
-    sprite->position.y = position_.y - game.camera_y;
-    sprite->Draw();
+    // Transform for camera m_LocalPosition...
+    PLVector2D oposition = m_LocalPosition;
+    m_LocalPosition.x -= game.camera_x;
+    m_LocalPosition.y -= game.camera_y;
+
+    if(!InsideBounds()) {
+        return;
+    }
+
+    Sprite::Draw();
+
+    // Restore the original m_LocalPosition...
+    m_LocalPosition = oposition;
+}
+
+void Entity::Simulate() {
+
 }

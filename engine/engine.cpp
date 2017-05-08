@@ -30,7 +30,7 @@ namespace engine {
         char path1[PL_SYSTEM_MAX_PATH] = { 0 };
         sprintf(path1, "./sprites/%s.png", path);
         if (!plFileExists(path1)) {
-            sprintf(path1, "./fonts/%s.bmp", path);
+            sprintf(path1, "./sprites/%s.bmp", path);
         }
 
         auto i = bitmaps.find(path1);
@@ -248,13 +248,29 @@ void EventsFrame() {
             engine_vars.running = false;
             break;
 
+        case ALLEGRO_EVENT_MOUSE_BUTTON_UP: {
+            engine_vars.mouse_status[event.mouse.button] = true;
+
+            MouseEvent();
+            break;
+        }
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN: {
+            engine_vars.mouse_status[event.mouse.button] = false;
+
+            MouseEvent();
+            break;
+        }
+        case ALLEGRO_EVENT_MOUSE_AXES: {
+            MouseEvent();
+            break;
+        }
+
         case ALLEGRO_EVENT_KEY_DOWN: {
             engine_vars.key_status[event.keyboard.keycode] = true;
 
             KeyboardEvent(event.keyboard.keycode, false);
             break;
         }
-
         case ALLEGRO_EVENT_KEY_UP: {
             engine_vars.key_status[event.keyboard.keycode] = false;
 

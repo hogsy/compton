@@ -18,11 +18,11 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_native_dialog.h>
 
-#include "platform_math.h"
-#include "platform_log.h"
-#include "platform_window.h"
-#include "platform_filesystem.h"
-#include "platform_graphics.h"
+#include <PL/platform_math.h>
+#include <PL/platform_log.h>
+#include <PL/platform_window.h>
+#include <PL/platform_filesystem.h>
+#include <PL/platform_graphics.h>
 
 #define DEBUG_BUILD
 

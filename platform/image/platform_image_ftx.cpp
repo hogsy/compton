@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,40 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#include "PL/platform_image.h"
+#include "PL/platform_filesystem.h"
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+/*	Ritual's FTX Format	*/
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+typedef struct FTXHeader {
+    uint32_t width;
+    uint32_t height;
+    uint32_t alpha;
+} FTXHeader;
 
-        include/*.h
-        include/PL/*.h
-        )
+PLresult _plLoadFTXImage(FILE *fin, PLImage *out) {
+    plFunctionStart();
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+    FTXHeader header;
+    memset(&header, 0, sizeof(FTXHeader));
+    header.width = (unsigned int)plGetLittleLong(fin);
+    header.height = (unsigned int)plGetLittleLong(fin);
+    header.alpha = (unsigned int)plGetLittleLong(fin);
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+    memset(out, 0, sizeof(PLImage));
+    out->size = (unsigned int)(header.width * header.height * 4);
+    out->data = new PLbyte*[1];
+    out->data[0] = new PLbyte[out->size];
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+    if (fread(out->data[0], sizeof(uint8_t), out->size, fin) != out->size) {
+        return PL_RESULT_FILEREAD;
+    }
+
+    out->format = PL_IMAGEFORMAT_RGBA8;
+    out->colour_format = PL_COLOURFORMAT_RGBA;
+    out->width = (PLuint)header.width;
+    out->height = (PLuint)header.height;
+    return PL_RESULT_SUCCESS;
+}

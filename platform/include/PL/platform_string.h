@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,33 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#if 0
+PL_INLINE static void plGetStringExtension(char *out, const char *in, unsigned int length) {
+    const char *s = strrchr(in, '.');type
+    if(!s || s[0] == '\0') {
+        return;
+    }
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+    strncpy(out, s + 1, length);
+}
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+PL_INLINE static void plStripStringExtension(char *out, const char *in, unsigned int length) {
+    const char *s = strrchr(in, '.');
+    while(in < s) {
+        *out++ = *in++;
+    }
+    *out = 0;
+}
+#endif
 
-        include/*.h
-        include/PL/*.h
-        )
+char *pl_strtolower(char *s);
+char *pl_strntolower(char *s, size_t n);
+char *pl_strtoupper(char *s);
+char *pl_strntoupper(char *s, size_t n);
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+char *pl_strcasestr(const char *s, const char *find);
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
-
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+int pl_strcasecmp(const char *s1, const char *s2);
+int pl_strncasecmp(const char *s1, const char *s2, size_t n);

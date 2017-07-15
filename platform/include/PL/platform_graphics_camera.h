@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,35 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#pragma once
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+#include "platform.h"
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+enum {
+    PLCAMERA_MODE_PERSPECTIVE,
+    PLCAMERA_MODE_ORTHOGRAPHIC,
+    PLCAMERA_MODE_ISOMETRIC
+};
 
-        include/*.h
-        include/PL/*.h
-        )
+typedef struct PLCamera {
+    double fov;
+    double near, far;
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+    unsigned int mode;
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+    // Viewport
+    PLRectangle viewport;
+    PLVector3D angles, position;
+    PLBBox3D bounds;
+} PLCamera;
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+PL_EXTERN_C
+
+PL_EXTERN PLCamera *plCreateCamera(void);
+PL_EXTERN void plDeleteCamera(PLCamera *camera);
+
+PL_EXTERN void plSetupCamera(PLCamera *camera);
+
+PL_EXTERN_C_END

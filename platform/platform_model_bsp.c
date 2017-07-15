@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,71 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#include <PL/platform_model.h>
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+// todo, http://www.gamers.org/dEngine/quake/spec/quake-spec34/qkspec_4.htm
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+/* Quake II BSP Support */
 
-        include/*.h
-        include/PL/*.h
-        )
+typedef struct BSPVector {
+    float x;
+    float y;
+    float z;
+} BSPVector;
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+typedef struct BSPEntry {
+    int32_t offset;
+    int32_t size;
+} BSPEntry;
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+typedef struct BSPHeader {
+    int32_t version;
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+    BSPEntry entities;
+    BSPEntry planes;
+    BSPEntry miptex;
+    BSPEntry vertices;
+    BSPEntry visilist;
+    BSPEntry nodes;
+    BSPEntry texinfo;
+    BSPEntry faces;
+    BSPEntry lightmaps;
+    BSPEntry clipnodes;
+    BSPEntry leaves;
+    BSPEntry lface;
+    BSPEntry edges;
+    BSPEntry ledges;
+    BSPEntry models;
+} BSPHeader;
+
+typedef struct BSPBoundBox {
+    BSPVector min;
+    BSPVector max;
+} BSPBoundBox;
+
+typedef struct BSPBoundBoxShort {
+    int16_t min;
+    int16_t max;
+} BSPBoundBoxShort;
+
+typedef struct BSPModel {
+    BSPBoundBox bound;
+    BSPVector origin;
+
+    int16_t node[4];
+
+    int16_t num_leafs;
+
+    int16_t face_id;
+    int16_t num_faces;
+} BSPModel;
+
+typedef struct BSPEdge {
+    uint16_t vertices[2];
+} BSPEdge;
+
+/* Source BSP Support */
+
+// etc etc etc

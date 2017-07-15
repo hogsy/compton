@@ -300,17 +300,17 @@ void Shutdown() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main
 
-int main() {
-    plInitialize(PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_LOG);
+int main(int argc, char **argv) {
+    plInitialize(argc, argv, PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_LOG);
 
     plClearLog(VC_LOG);
     plWriteLog(VC_LOG, "Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
 
     memset(&engine_vars, 0, sizeof(EngineVars));
 
-    PLuint32 version = al_get_allegro_version();
-    PLuint32 major = version >> 24;
-    PLuint32 minor = (version >> 16) & 255;
+    uint32_t version = al_get_allegro_version();
+    uint32_t major = version >> 24;
+    uint32_t minor = (version >> 16) & 255;
     plWriteLog(VC_LOG, "Initializing Allegro %i.%i...\n", major, minor);
     if (!al_init()) {
         plMessageBox(VC_TITLE, "Failed to initialize Allegro library!\n");

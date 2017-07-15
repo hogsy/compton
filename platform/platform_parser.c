@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,28 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#include <PL/platform.h>
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+struct _PLParseBlock {
+    char *buffer, *line_buffer;
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+    unsigned int buffer_size, line_size;
+    unsigned int line_length;
 
-        include/*.h
-        include/PL/*.h
-        )
+    unsigned int position;
+    unsigned int line, line_position;
+} _plparser_block;
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+void plSetupParser(const char *buffer, unsigned int length) {
+    plAssert(length);
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+    _plparser_block.buffer_size = length;
+    _plparser_block.buffer = (char*)malloc(_plparser_block.buffer_size);
+    if(!_plparser_block.buffer) {
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+    }
+}
+
+

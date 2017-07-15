@@ -108,7 +108,7 @@ public:
         current_background = nullptr;
     }
 
-    static void LoadNightBackground(PLchar *path) {
+    static void LoadNightBackground(const char *path) {
         printf("FOUND BACKGROUND LEL!\n");
 
         std::string properpath = path + 6;

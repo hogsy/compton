@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "platform_filesystem.h"
+#include "PL/platform_filesystem.h"
 
 /*	File System	*/
 
@@ -32,24 +32,24 @@ void _plShutdownIO(void) {
 }
 
 // Checks whether a file has been modified or not.
-PLbool plIsFileModified(time_t oldtime, const PLchar *path) {
+bool plIsFileModified(time_t oldtime, const char *path) {
     plFunctionStart();
     if (!oldtime) {
-        plSetError("Invalid time, skipping check!\n");
-        return PL_FALSE;
+        _plSetErrorMessage("Invalid time, skipping check!\n");
+        return false;
     }
 
     struct stat attributes;
     if (stat(path, &attributes) == -1) {
-        plSetError("Failed to get file stats!\n");
-        return PL_FALSE;
+        _plSetErrorMessage("Failed to get file stats!\n");
+        return false;
     }
 
     if (attributes.st_mtime > oldtime) {
-        return PL_TRUE;
+        return true;
     }
 
-    return PL_FALSE;
+    return false;
     plFunctionEnd();
 }
 
@@ -57,14 +57,15 @@ time_t plGetFileModifiedTime(const PLchar *path) {
     plFunctionStart();
     struct stat attributes;
     if (stat(path, &attributes) == -1) {
-        plSetError("Failed to get modification time!\n");
+        _plSetErrorMessage("Failed to get modification time!\n");
         return 0;
     }
     return attributes.st_mtime;
     plFunctionEnd();
 }
 
-void plLowerCasePath(PLchar *out) {
+// todo, move into platform_string and make safer
+void plLowerCasePath(char *out) {
     plFunctionStart();
     for (int i = 0; out[i]; i++) {
         out[i] = (PLchar) tolower(out[i]);
@@ -73,11 +74,11 @@ void plLowerCasePath(PLchar *out) {
 }
 
 // Creates a folder at the given path.
-PLbool plCreateDirectory(const PLchar *path) {
+bool plCreateDirectory(const char *path) {
     plFunctionStart();
 #ifdef _WIN32
     if(CreateDirectory(path, NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
-        return PL_TRUE;
+        return true;
     else if(GetLastError() == ERROR_PATH_NOT_FOUND)
         plSetError("Failed to find an intermediate directory! (%s)\n", path);
     else    // Assume it already exists.
@@ -87,31 +88,30 @@ PLbool plCreateDirectory(const PLchar *path) {
         struct stat buffer;
         if (stat(path, &buffer) == -1) {
             if (mkdir(path, 0777) == 0)
-                return PL_TRUE;
+                return true;
             else {
                 switch (errno) {
                     case EACCES:
-                        plSetError("Failed to get permission! (%s)\n", path);
+                        _plSetErrorMessage("Failed to get permission! (%s)\n", path);
                     case EROFS:
-                        plSetError("File system is read only! (%s)\n", path);
+                        _plSetErrorMessage("File system is read only! (%s)\n", path);
                     case ENAMETOOLONG:
-                        plSetError("Path is too long! (%s)\n", path);
+                        _plSetErrorMessage("Path is too long! (%s)\n", path);
                     default:
-                        plSetError("Failed to create directory! (%s)\n", path);
+                        _plSetErrorMessage("Failed to create directory! (%s)\n", path);
                 }
             }
         } else
             // Path already exists, so this is fine.
-            return PL_TRUE;
+            return true;
     }
 #endif
 
-    return PL_FALSE;
-    plFunctionEnd();
+    return false;
 }
 
 // Returns the extension for the file.
-const PLchar *plGetFileExtension(const PLchar *in) {
+const char *plGetFileExtension(const char *in) {
     plFunctionStart();
     if (!plIsValidString(in)) {
         return "";
@@ -127,33 +127,30 @@ const PLchar *plGetFileExtension(const PLchar *in) {
 }
 
 // Strips the extension from the filename.
-void plStripExtension(PLchar *dest, const PLchar *in) {
+void plStripExtension(char *dest, const char *in) {
     plFunctionStart();
     if (!plIsValidString(in)) {
         *dest = 0;
         return;
     }
 
-    const PLchar *s = strrchr(in, '.');
+    const char *s = strrchr(in, '.');
     while (in < s) *dest++ = *in++;
     *dest = 0;
     plFunctionEnd();
 }
 
 // Returns a pointer to the last component in the given filename. 
-const PLchar *plGetFileName(const PLchar *path) {
-    const PLchar *lslash = strrchr(path, '/');
+const char *plGetFileName(const char *path) {
+    const char *lslash = strrchr(path, '/');
     if (lslash != NULL) {
         path = lslash + 1;
     }
     return path;
 }
 
-/*	Returns the name of the systems	current user.
-	TODO:
-		Move this into platform_system
-*/
-void plGetUserName(PLchar *out) {
+// Returns the name of the systems current user.
+void plGetUserName(char *out) {
     plFunctionStart();
 #ifdef _WIN32
     PLchar userstring[PL_MAX_USERNAME];
@@ -164,7 +161,7 @@ void plGetUserName(PLchar *out) {
         // If it fails, just set it to user.
         sprintf(userstring, "user");
 #else   // Linux
-    PLchar *userstring = getenv("LOGNAME");
+    char *userstring = getenv("LOGNAME");
     if (userstring == NULL) {
         // If it fails, just set it to user.
         userstring = "user";
@@ -186,12 +183,8 @@ void plGetUserName(PLchar *out) {
 /*	Scans the given directory.
 	On each found file it calls the given function to handle the file.
 */
-void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath)) {
+void plScanDirectory(const char *path, const char *extension, void(*Function)(const char *filepath)) {
     plFunctionStart();
-    if (path[0] == ' ') {
-        plSetError("Invalid path!\n");
-        return;
-    }
 
     char filestring[PL_SYSTEM_MAX_PATH];
 #ifdef _WIN32
@@ -216,21 +209,17 @@ void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function
         } while(FindNextFile(find, &finddata));
     }
 #else
-    {
-        DIR *dDirectory;
-        struct dirent *dEntry;
-
-        dDirectory = opendir(path);
-        if (dDirectory) {
-            while ((dEntry = readdir(dDirectory))) {
-                if (strstr(dEntry->d_name, extension)) {
-                    sprintf(filestring, "%s/%s", path, dEntry->d_name);
-                    Function(filestring);
-                }
+    DIR *directory = opendir(path);
+    if (directory) {
+        struct dirent *entry;
+        while ((entry = readdir(directory))) {
+            if (pl_strcasestr(entry->d_name, extension)) {
+                sprintf(filestring, "%s/%s", path, entry->d_name);
+                Function(filestring);
             }
-
-            closedir(dDirectory);
         }
+
+        closedir(directory);
     }
 #endif
     plFunctionEnd();
@@ -244,22 +233,22 @@ void plGetWorkingDirectory(PLchar *out) {
                 break;
 
             case EACCES:
-                plSetError("Permission to read or search a component of the filename was denied!\n");
+                _plSetErrorMessage("Permission to read or search a component of the filename was denied!\n");
                 break;
             case EFAULT:
-                plSetError("buf points to a bad address!\n");
+                _plSetErrorMessage("buf points to a bad address!\n");
                 break;
             case EINVAL:
-                plSetError("The size argument is zero and buf is not a null pointer!\n");
+                _plSetErrorMessage("The size argument is zero and buf is not a null pointer!\n");
                 break;
             case ENOMEM:
-                plSetError("Out of memory!\n");
+                _plSetErrorMessage("Out of memory!\n");
                 break;
             case ENOENT:
-                plSetError("The current working directory has been unlinked!\n");
+                _plSetErrorMessage("The current working directory has been unlinked!\n");
                 break;
             case ERANGE:
-                plSetError("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
+                _plSetErrorMessage("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
 						You need to allocate a bigger array and try again!\n");
                 break;
         }
@@ -276,43 +265,89 @@ void plSetWorkingDirectory(const char *path) {
             default: break;
 
             case EACCES:
-                plSetError("Search permission is denied for any component of pathname!\n");
+                _plSetErrorMessage("Search permission is denied for any component of pathname!\n");
                 break;
             case ELOOP:
-                plSetError("A loop exists in the symbolic links encountered during resolution of the path argument!\n");
+                _plSetErrorMessage(
+                        "A loop exists in the symbolic links encountered during resolution of the path argument!\n");
                 break;
             case ENAMETOOLONG:
-                plSetError("The length of the path argument exceeds PATH_MAX or a pathname component is longer than \
+                _plSetErrorMessage("The length of the path argument exceeds PATH_MAX or a pathname component is longer than \
                 NAME_MAX!\n");
                 break;
             case ENOENT:
-                plSetError("A component of path does not name an existing directory or path is an empty string!\n");
+                _plSetErrorMessage(
+                        "A component of path does not name an existing directory or path is an empty string!\n");
                 break;
             case ENOTDIR:
-                plSetError("A component of the pathname is not a directory!\n");
+                _plSetErrorMessage("A component of the pathname is not a directory!\n");
                 break;
         }
     }
 }
 
-/*	File I/O	*/
+/////////////////////////////////////////////////////////////////////////////////////
+// FILE I/O
 
 // Checks if a file exists or not.
-PLbool plFileExists(const PLchar *path) {
+bool plFileExists(const char *path) {
     struct stat buffer;
-    return (PLbool) (stat(path, &buffer) == 0);
+    return (bool) (stat(path, &buffer) == 0);
 }
 
-PLint plGetLittleShort(FILE *fin) {
-    PLint b1 = fgetc(fin);
-    PLint b2 = fgetc(fin);
-    return (PLshort) (b1 + b2 * 256);
+bool plPathExists(const char *path) {
+    DIR *dir = opendir(path);
+    if(dir) {
+        closedir(dir);
+        return true;
+    }
+    return false;
 }
 
-PLint plGetLittleLong(FILE *fin) {
-    PLint b1 = fgetc(fin);
-    PLint b2 = fgetc(fin);
-    PLint b3 = fgetc(fin);
-    PLint b4 = fgetc(fin);
+// todo, return plresult instead
+bool plCopyFile(const char *path, const char *dest) {
+    FILE *fold = fopen(path, "rb");
+    if(!fold) {
+        _plReportError(PL_RESULT_FILEREAD, "Failed to open %s!", path);
+        return false;
+    }
+
+    fseek(fold, 0, SEEK_END);
+    size_t file_size = (size_t)ftell(fold);
+    fseek(fold, 0, SEEK_SET);
+
+    uint8_t *data = calloc(file_size, 1);
+    if(!data) {
+        fclose(fold);
+
+        _plReportError(PL_RESULT_MEMORYALLOC, "Failed to allocate buffer for %s, with size %d!", path, file_size);
+        return false;
+    }
+
+    fread(data, 1, file_size, fold);
+
+    FILE *out = fopen(dest, "wb");
+    if(!out || (fwrite(data, 1, file_size, out) != file_size)) {
+        fclose(fold);
+
+        _plReportError(PL_RESULT_FILEREAD, "Failed to write %s!", dest);
+        return false;
+    }
+    fclose(out);
+
+    return true;
+}
+
+int16_t plGetLittleShort(FILE *fin) {
+    int b1 = fgetc(fin);
+    int b2 = fgetc(fin);
+    return (int16_t) (b1 + b2 * 256);
+}
+
+int32_t plGetLittleLong(FILE *fin) {
+    int b1 = fgetc(fin);
+    int b2 = fgetc(fin);
+    int b3 = fgetc(fin);
+    int b4 = fgetc(fin);
     return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
 }

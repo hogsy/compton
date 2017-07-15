@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,21 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#pragma once
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+#include "platform.h"
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+enum {
+    PLLOG_LEVEL_ERROR,
+    PLLOG_LEVEL_WARNING,
+    PLLOG_LEVEL_VERBOSE,
+};
 
-        include/*.h
-        include/PL/*.h
-        )
+PL_EXTERN_C
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+PL_EXTERN void plWriteLog(const PLchar *path, const PLchar *msg, ...);
+PL_EXTERN void plClearLog(const PLchar *path);
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
-
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+PL_EXTERN_C_END

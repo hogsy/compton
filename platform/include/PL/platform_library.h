@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,25 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#pragma once
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+#include "platform.h"
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+typedef struct PLModuleFunction {
+    const char *name;
 
-        include/*.h
-        include/PL/*.h
-        )
+    void **Function;
+} PLModuleFunction;
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+PL_EXTERN_C
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+PL_EXTERN PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const char *function);
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+PL_EXTERN void *plLoadLibraryInterface(PL_INSTANCE instance, const char *path, const char *entry, void *handle);
+
+PL_INSTANCE plLoadLibrary(const char *path);    // Loads new library instance.
+PL_EXTERN void plUnloadLibrary(PL_INSTANCE instance);    // Unloads library instance.
+
+PL_EXTERN_C_END

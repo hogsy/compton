@@ -50,7 +50,7 @@ private:
 class Hand : public Sprite {
 public:
     enum {
-        HAND_STATE_DEFAULT,    // Point
+        HAND_STATE_POINT,
         HAND_STATE_OPEN,
         //HAND_STATE_OPEN_UNDER,
         HAND_STATE_OPEN_BACK,
@@ -73,14 +73,14 @@ public:
         m_Origin.Set(0, 0);
         m_TransitionDelay = 0;
 
-        m_HandState[HAND_STATE_DEFAULT]      = GetBitmap();
-        m_HandState[HAND_STATE_CLOSED]       = engine::LoadImage("cursor/closed");
-        m_HandState[HAND_STATE_FLAT]         = engine::LoadImage("cursor/flat1");
-        m_HandState[HAND_STATE_FLAT_BACK]    = engine::LoadImage("cursor/flat0");
-        m_HandState[HAND_STATE_OPEN]         = engine::LoadImage("cursor/open");
-        m_HandState[HAND_STATE_OPEN_BACK]    = engine::LoadImage("cursor/open2");
+        m_HandState[HAND_STATE_POINT]       = GetBitmap();
+        m_HandState[HAND_STATE_CLOSED]      = engine::LoadImage("cursor/closed");
+        m_HandState[HAND_STATE_FLAT]        = engine::LoadImage("cursor/flat1");
+        m_HandState[HAND_STATE_FLAT_BACK]   = engine::LoadImage("cursor/flat0");
+        m_HandState[HAND_STATE_OPEN]        = engine::LoadImage("cursor/open");
+        m_HandState[HAND_STATE_OPEN_BACK]   = engine::LoadImage("cursor/open2");
 
-        m_CurrentState = m_OldState = HAND_STATE_DEFAULT;
+        m_CurrentState = m_OldState = HAND_STATE_POINT;
         m_CurrentMode = m_OldMode = HAND_MODE_DEFAULT;
     }
 
@@ -95,12 +95,14 @@ public:
         m_CurrentMode = mode;
     }
 
-    void Click() {
-        m_LocalPosition.y += 5;
-        if(m_TargetAngle != -0.2f) {
-            m_MoveTime = 0;
+    virtual void Draw() {
+        PLVector2D oldpos = m_LocalPosition;
+        if(m_CurrentState == HAND_STATE_CLOSED && m_CurrentMode == HAND_MODE_DRAG) {
+            m_LocalPosition.x -= game.camera_x;
+            m_LocalPosition.y -= game.camera_y;
         }
-        m_TargetAngle = -0.2f;
+        Sprite::Draw();
+        m_LocalPosition = oldpos;
     }
 
     void Simulate() {
@@ -117,7 +119,11 @@ public:
                 );
 
                 if (engine_vars.mouse_state.buttons & BUTTON_LMOUSE) {
-                    Click();
+                    m_LocalPosition.y += 5;
+                    if(m_TargetAngle != -0.2f) {
+                        m_MoveTime = 0;
+                    }
+                    m_TargetAngle = -0.2f;
                 } else {
                     if(m_TargetAngle != 0) {
                         m_MoveTime = 0;
@@ -125,9 +131,9 @@ public:
                     m_TargetAngle = 0;
                 }
 
-                if(m_CurrentState != HAND_STATE_DEFAULT) {
+                if(m_CurrentState != HAND_STATE_POINT) {
                     if(m_TransitionDelay == 0) {
-                        SetState(HAND_STATE_DEFAULT);
+                        SetState(HAND_STATE_POINT);
                     }
                     break;
                 }
@@ -147,20 +153,19 @@ public:
                     SetState(HAND_STATE_OPEN);
                     SetMode(HAND_MODE_DEFAULT);
                     m_TransitionDelay = 9;
-
-                    al_set_mouse_xy(engine_vars.display, old_x, old_y);
                 }
 
-
-                static int oldmpos[2] = { engine_vars.mouse_state.x, engine_vars.mouse_state.y };
-                int nxpos = engine_vars.mouse_state.x - oldmpos[0];
-                int nypos = engine_vars.mouse_state.y - oldmpos[1];
-                //float dir_angle = m_LocalPosition - (plCreateVector2D(nxpos, nypos));
-                if(m_TargetAngle != -1.5f) {
-                    m_MoveTime = 0;
-                }
-                m_TargetAngle = -1.5f;
                 if(m_CurrentState != HAND_STATE_CLOSED) {
+                    m_LocalPosition.Set(
+                            engine_vars.mouse_state.x,
+                            engine_vars.mouse_state.y
+                    );
+
+                    if(m_TargetAngle != -1.5f) {
+                        m_MoveTime = 0;
+                    }
+                    m_TargetAngle = -1.5f;
+
                     if(m_TransitionDelay == 0) {
                         SetState(HAND_STATE_CLOSED);
                         old_x = engine_vars.mouse_state.x;
@@ -169,15 +174,25 @@ public:
                     break;
                 }
 
-                //m_LocalPosition.x -= game.camera_x / 2;
-                //m_LocalPosition.y -= game.camera_y / 2;
+                int nxpos = engine_vars.mouse_state.x - old_x;
+                int nypos = engine_vars.mouse_state.y - old_y;
+#if 0
+                float dir = (plCreateVector2D(nxpos, nypos) -
+                        plCreateVector2D(m_LocalPosition.x, m_LocalPosition.y)).Length() * 180 / PL_PI;
 
+                float angle = -1.5f + dir;
+                if(m_TargetAngle != angle) {
+                    m_MoveTime = 0;
+                }
+                m_TargetAngle = angle;
+#endif
                 game.camera_x += (nxpos / 100);
                 game.camera_y += (nypos / 100);
 
-                // game.camera_x += camera_movement.x;
-                // game.camera_y += camera_movement.y;
-
+                m_LocalPosition.Set(
+                        old_x,
+                        old_y
+                );
                 break;
             }
 

@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,31 +23,42 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(platform)
+#pragma once
 
-file(
-        GLOB PLATFORM_SOURCE_FILES
-        *.cpp *.c
+#include "platform.h"
 
-        graphics/*.*
-        image/*.*
-        string/*.*
+PL_EXTERN_C
 
-        include/*.h
-        include/PL/*.h
-        )
+PL_EXTERN void plGetUserName(PLchar *out);
 
-add_library(platform SHARED ${PLATFORM_SOURCE_FILES})
+PL_EXTERN void plGetWorkingDirectory(PLchar *out);
+PL_EXTERN void plSetWorkingDirectory(const char *path);
 
-set_target_properties(platform PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/platform/lib/)
+PL_EXTERN void plStripExtension(PLchar *dest, const PLchar *in);
 
-target_compile_options(platform PUBLIC -fPIC -DPL_INTERNAL)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_link_libraries(platform "-framework OpenGL" -L/usr/X11/lib -L/usr/X11R6/lib)
-else()
-    target_link_libraries(platform GL GLU GLEW)
-endif()
-target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(platform dl tiff X11 SDL2)
+PL_EXTERN const PLchar *plGetFileExtension(const PLchar *in);
+PL_EXTERN const PLchar *plGetFileName(const PLchar *path);
+
+PL_EXTERN void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(const char *filepath));
+
+PL_EXTERN void plLowerCasePath(char *out);
+
+PL_EXTERN bool plCreateDirectory(const char *path);
+
+// File I/O ...
+
+PL_EXTERN bool plFileExists(const char *path);
+PL_EXTERN bool plPathExists(const char *path);
+
+PL_EXTERN bool plCopyFile(const char *path, const char *dest);
+
+PL_EXTERN bool plIsFileModified(time_t oldtime, const char *path);
+
+PL_EXTERN time_t plGetFileModifiedTime(const PLchar *path);
+
+PL_EXTERN int16_t plGetLittleShort(FILE *fin);
+PL_EXTERN int32_t plGetLittleLong(FILE *fin);
+
+PL_EXTERN_C_END

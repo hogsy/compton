@@ -17,66 +17,58 @@ public:
     ~World();
 
     void Simulate();
-
     void Draw();
 
+    void SetName(std::string name);
+    std::string GetName() { return m_Name; }
+
     unsigned int GetSecond() { return _second; }
-
     unsigned int GetMinute() { return _minute; }
-
     unsigned int GetHour() { return _hour; }
-
-    unsigned int GetDay() { return _day; }
-
+    unsigned int GetDay() { return m_Day; }
     unsigned int GetWeek() { return 0; }
+    unsigned int GetMonth() { return m_Month; }
+    unsigned int GetYear() { return m_Year; }
 
-    unsigned int GetMonth() { return _month; }
+    float GetWindSpeed() { return m_WindSpeed; }
 
-    unsigned int GetYear() { return _year; }
+    unsigned int GetTotalSeconds() { return static_cast<unsigned int>(m_Time); }
+    unsigned int GetTotalHours() { return static_cast<unsigned int>(std::floor(m_Time / 60)); }
+    unsigned int GetTotalDays() { return static_cast<unsigned int>(std::floor(m_Time / 86400)); }
+    unsigned int GetTotalWeeks() { return static_cast<unsigned int>(std::floor(m_Time / 604800)); }
+    unsigned int GetTotalMonths() { return m_Month + ((m_Year - 1) * 12); } // Months are a special case...
 
-    float GetWindSpeed() { return _wind_speed; }
-
-    unsigned int GetTotalSeconds() { return static_cast<unsigned int>(_time); }
-
-    unsigned int GetTotalHours() { return static_cast<unsigned int>(std::floor(_time / 60)); }
-
-    unsigned int GetTotalDays() { return static_cast<unsigned int>(std::floor(_time / 86400)); }
-
-    unsigned int GetTotalWeeks() { return static_cast<unsigned int>(std::floor(_time / 604800)); }
-
-    unsigned int GetTotalMonths() { return _month + ((_year - 1) * 12); } // Months are a special case...
-
-    unsigned int GetWidth() { return _world_width; }
-
-    unsigned int GetHeight() { return _world_height; }
+    unsigned int GetWidth() { return m_WorldWidth; }
+    unsigned int GetHeight() { return m_WorldHeight; }
 
     const char *GetDayString();
+    const char *GetMonthString();
 
-    ALLEGRO_BITMAP *cloud_droplet;
+    ALLEGRO_BITMAP *cloud_droplet; // todo, move to a global table...
 
 protected:
 private:
     World();
 
-    float _wind_speed;
+    double m_Time;
+    unsigned int m_Year, m_Month, m_Day, _hour, _minute, _second;
 
-    double _time;
-    unsigned int _year, _month, _day, _hour, _minute, _second;
+    ALLEGRO_COLOR m_SkyTop, m_SkyBottom;
+    ALLEGRO_COLOR m_SkyTargetTop, m_SkyTargetBottom;
+    ALLEGRO_BITMAP *m_SkyBackground;
 
-    ALLEGRO_COLOR _sky_top, _sky_bottom;
-    ALLEGRO_COLOR _sky_target_top, _sky_target_bottom;
+    unsigned int m_WorldWidth, m_WorldHeight;
 
-    ALLEGRO_BITMAP *_sky_background;
+    Moon *m_Moon;
+    Sun *m_Sun;
 
-    unsigned int _world_width, _world_height;
+    float m_Temperature;
+    float m_WindSpeed;
 
-    Moon *_moon;
-    Sun *_sun;
+    std::string m_Name; // The name of the planet.
 
-    float _temperature;
-
-    std::vector<CloudObject> _clouds;
-    std::vector<ALLEGRO_BITMAP *> _cloud_sprites;
+    std::vector<CloudObject> m_Clouds;
+    std::vector<ALLEGRO_BITMAP *> m_CloudSprites;
     unsigned int _cloud_density;
 
 public:

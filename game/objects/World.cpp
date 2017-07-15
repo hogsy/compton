@@ -5,7 +5,7 @@
 #include "../game.h"
 #include "World.h"
 #include "Moon.h"
-#include "../Entity.hpp"
+#include "../../engine/Entity.hpp"
 
 World *game_worldmanager = nullptr;
 
@@ -210,71 +210,79 @@ Month months[] = {
 
 #define CLOUD_BITMAPS 3
 
+#include "PlanetNames.h"
+
 World::World() :
-        _wind_speed(WIND_SPEED),
-        _time(0), _year(0), _month(0), _day(0), _hour(0), _minute(0), _second(0),
-        _world_width(4000), _world_height(4000),
+        m_WindSpeed(WIND_SPEED),
+        m_Time(0), m_Year(0), m_Month(0), m_Day(0), _hour(0), _minute(0), _second(0),
+        m_WorldWidth(4000), m_WorldHeight(4000),
         _cloud_density(8),
-        _temperature(20) {
+        m_Temperature(20) {
     env_background = new EnvironmentBackground();
 
-    _cloud_sprites.reserve(10);
+    m_Name = planet_names[rand() % plArrayElements(planet_names)];
+
+    m_CloudSprites.reserve(10);
     for (int i = 0; i < CLOUD_BITMAPS; i++) {
-        _cloud_sprites[i] = engine::LoadImage(std::string("clouds/" + std::to_string(i)).c_str());
+        m_CloudSprites[i] = engine::LoadImage(std::string("clouds/" + std::to_string(i)).c_str());
     }
 
-    _sky_top =  sky_colourcycle[0].top;
-    _sky_target_top = sky_colourcycle[1].top;
-    _sky_bottom = sky_colourcycle[0].bottom;
-    _sky_target_bottom = al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
-    _sky_background = engine::LoadImage("environment/backgrounds/00night");
+    m_SkyTop =  sky_colourcycle[0].top;
+    m_SkyTargetTop = sky_colourcycle[1].top;
+    m_SkyBottom = sky_colourcycle[0].bottom;
+    m_SkyTargetBottom = al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
+    m_SkyBackground = engine::LoadImage("environment/backgrounds/00night");
 
     cloud_droplet = engine::LoadImage("environment/objects/rain");
 
     // Make initial set of clouds.
     for (int i = 0; i < _cloud_density; i++) {
-        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % CLOUD_BITMAPS];
-        _clouds.emplace(_clouds.end(), CloudObject(sprite));
+        ALLEGRO_BITMAP *sprite = m_CloudSprites[rand() % CLOUD_BITMAPS];
+        m_Clouds.emplace(m_Clouds.end(), CloudObject(sprite));
     }
 
-    _moon = new Moon();
-    _sun = new Sun();
+    m_Moon = new Moon();
+    m_Sun = new Sun();
 }
 
 World::~World() {
-    for (int i = 0; i < _cloud_sprites.size(); i++)
-        al_destroy_bitmap(_cloud_sprites[i]);
-    _cloud_sprites.clear();
+    for (int i = 0; i < m_CloudSprites.size(); i++)
+        al_destroy_bitmap(m_CloudSprites[i]);
+    m_CloudSprites.clear();
 
-    delete _moon;
+    delete m_Moon;
 }
 
 const char *World::GetDayString() {
-    return sky_days[_day];
+    return sky_days[m_Day];
+}
+
+const char *World::GetMonthString() {
+    return months[m_Month].name;
 }
 
 void World::Simulate() {
     // CloudObject generation...
-    if (_clouds.size() < _cloud_density) {
-        ALLEGRO_BITMAP *sprite = _cloud_sprites[rand() % CLOUD_BITMAPS];
-        _clouds.emplace(
-                _clouds.end(),
+    if (m_Clouds.size() < _cloud_density) {
+        ALLEGRO_BITMAP *sprite = m_CloudSprites[rand() % CLOUD_BITMAPS];
+        m_Clouds.emplace(
+                m_Clouds.end(),
                 CloudObject(
                         sprite,
-                        (bool) _wind_speed
+                        (bool) m_WindSpeed
                 )
         );
     }
 
-    for (unsigned int i = 0; i < _clouds.size(); ++i) {
-        _clouds[i].Move(_wind_speed);
-        if (!_clouds[i].InsideBounds())
-            _clouds.erase(_clouds.begin() + i);
+    for (unsigned int i = 0; i < m_Clouds.size(); ++i) {
+        m_Clouds[i].Move(m_WindSpeed);
+        if (!m_Clouds[i].InsideBounds())
+            m_Clouds.erase(m_Clouds.begin() + i);
     }
 
     static double difference = 1;
 
-    _time++;
+    m_Time++;
     _second++;
     if (_second > 60) {
         _minute += 1;
@@ -286,21 +294,21 @@ void World::Simulate() {
         _second = 0;
         for (int i = 0; i < 4; i++) {
             if (_hour >= sky_colourcycle[i].hour) {
-                _sky_target_top = sky_colourcycle[i].top;
-                _sky_target_bottom = sky_colourcycle[i].bottom;
+                m_SkyTargetTop = sky_colourcycle[i].top;
+                m_SkyTargetBottom = sky_colourcycle[i].bottom;
 
                 difference = sky_colourcycle[i].hour / _hour;
             }
         }
     }
     if (_hour > 24) {
-        _day += 1;
+        m_Day += 1;
         _hour = 0;
         _minute = 0;
         _second = 0;
     }
-    if (_day > 6) {
-        _day = 0;
+    if (m_Day > 6) {
+        m_Day = 0;
         _hour = 0;
         _minute = 0;
         _second = 0;
@@ -308,42 +316,47 @@ void World::Simulate() {
 
     // Sky gradient
     //int difference =
-#define INTERP (float)((_time / 60) / 4)
+#define INTERP (float)((m_Time / 60) / 4)
     // BOTTOM
-    _sky_bottom.r = plCosineInterpolate(
-            _sky_bottom.r, _sky_target_bottom.r,
+    m_SkyBottom.r = plCosineInterpolate(
+            m_SkyBottom.r, m_SkyTargetBottom.r,
             INTERP
     );
-    _sky_bottom.g = plCosineInterpolate(
-            _sky_bottom.g, _sky_target_bottom.g,
+    m_SkyBottom.g = plCosineInterpolate(
+            m_SkyBottom.g, m_SkyTargetBottom.g,
             INTERP
     );
-    _sky_bottom.b = plCosineInterpolate(
-            _sky_bottom.b, _sky_target_bottom.b,
+    m_SkyBottom.b = plCosineInterpolate(
+            m_SkyBottom.b, m_SkyTargetBottom.b,
             INTERP
     );
     // TOP
-    _sky_top.r = plCosineInterpolate(
-            _sky_top.r, _sky_target_top.r,
+    m_SkyTop.r = plCosineInterpolate(
+            m_SkyTop.r, m_SkyTargetTop.r,
             INTERP
     );
-    _sky_top.g = plCosineInterpolate(
-            _sky_top.g, _sky_target_top.g,
+    m_SkyTop.g = plCosineInterpolate(
+            m_SkyTop.g, m_SkyTargetTop.g,
             INTERP
     );
-    _sky_top.b = plCosineInterpolate(
-            _sky_top.b, _sky_target_top.b,
+    m_SkyTop.b = plCosineInterpolate(
+            m_SkyTop.b, m_SkyTargetTop.b,
             INTERP
     );
 
-    _moon->Simulate();
-    _sun->Simulate();
+    m_Moon->Simulate();
+    m_Sun->Simulate();
 }
 
 void World::Draw() {
+    if(game.menu_state != GAME_MENU_DEFAULT) {
+        return;
+    }
+
+#if 1
     if (_hour > WORLD_NIGHT_START || _hour < WORLD_NIGHT_END) {
         al_draw_rotated_bitmap(
-                _sky_background,
+                m_SkyBackground,
                 512, 512,
                 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
                 (float) engine_vars.counter / 1000,
@@ -354,20 +367,29 @@ void World::Draw() {
     DrawVerticalGradientRectangle(
             0, 0,
             DISPLAY_WIDTH, DISPLAY_HEIGHT,
-            _sky_top, _sky_bottom
+            m_SkyTop, m_SkyBottom
     );
 
-    _moon->Draw();
-    _sun->Draw();
+    m_Moon->Draw();
+    m_Sun->Draw();
 
     // Clouds
 #if 0
     DrawBitmap(
-            _cloud_sprites[2],
+            m_CloudSprites[2],
             10 - game.camera_x / 4, 10 - game.camera_y,
-            al_get_bitmap_width(_cloud_sprites[2]),
-            al_get_bitmap_height(_cloud_sprites[2])
+            al_get_bitmap_width(m_CloudSprites[2]),
+            al_get_bitmap_height(m_CloudSprites[2])
     );
 #endif
-    for (CloudObject &cloud : _clouds) cloud.Draw();
+    for (CloudObject &cloud : m_Clouds) cloud.Draw();
+#else
+
+    for (CloudObject &cloud : m_Clouds) cloud.Draw();
+
+    al_draw_line(-1024, 400, 1024, 400, al_map_rgba(255, 255, 255, 30), 5);
+
+#endif
 }
+
+

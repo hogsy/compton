@@ -2,7 +2,7 @@
 
 #include "../Shared.h"
 #include "Entity.hpp"
-#include "game.h"
+#include "../game/game.h"
 
 Entity::Entity() : Sprite(game.entity_icon) {
     m_Angle = 0;

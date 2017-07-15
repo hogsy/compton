@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../engine/Sprite.hpp"
+#include "Sprite.hpp"
 
 class Entity : public Sprite {
 public:

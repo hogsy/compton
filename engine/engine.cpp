@@ -145,7 +145,7 @@ void InitializeDisplay() {
 
     al_inhibit_screensaver(true);
 
-    al_set_clipping_rectangle(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    al_set_clipping_rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     engine_vars.redraw = true;
 }
@@ -289,6 +289,15 @@ void ShutdownEvents() {
     if (engine_vars.timer) al_destroy_timer(engine_vars.timer);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Shutdown() {
+    ShutdownGame();
+    ShutdownDisplay();
+    ShutdownEvents();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main
 
 int main() {
@@ -342,9 +351,7 @@ int main() {
         DisplayFrame();
     }
 
-    ShutdownGame();
-    ShutdownDisplay();
-    ShutdownEvents();
+    Shutdown();
 
     return 0;
 }

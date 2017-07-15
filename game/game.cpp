@@ -47,11 +47,9 @@ private:
 
 // Hand
 
-
-
 class Hand : public Sprite {
 public:
-    enum HandState {
+    enum {
         HAND_STATE_DEFAULT,    // Point
         HAND_STATE_OPEN,
         //HAND_STATE_OPEN_UNDER,
@@ -65,89 +63,174 @@ public:
         HAND_STATE_NONE
     };
 
-    Hand() : Sprite(engine::LoadImage("cursor/point")), target_angle(0) {
+    enum {
+        HAND_MODE_DEFAULT,
+        HAND_MODE_DRAG,
+    };
+
+    Hand() : Sprite(engine::LoadImage("cursor/point")), m_TargetAngle(0) {
         // todo, set this in m_LocalPosition of cursor on creation.
         m_Origin.Set(0, 0);
+        m_TransitionDelay = 0;
 
-        hand_state[HAND_STATE_DEFAULT]      = GetBitmap();
-        hand_state[HAND_STATE_CLOSED]       = engine::LoadImage("cursor/closed");
-        hand_state[HAND_STATE_FLAT]         = engine::LoadImage("cursor/flat1");
-        hand_state[HAND_STATE_FLAT_BACK]    = engine::LoadImage("cursor/flat0");
-        hand_state[HAND_STATE_OPEN]         = engine::LoadImage("cursor/open");
-        hand_state[HAND_STATE_OPEN_BACK]    = engine::LoadImage("cursor/open2");
+        m_HandState[HAND_STATE_DEFAULT]      = GetBitmap();
+        m_HandState[HAND_STATE_CLOSED]       = engine::LoadImage("cursor/closed");
+        m_HandState[HAND_STATE_FLAT]         = engine::LoadImage("cursor/flat1");
+        m_HandState[HAND_STATE_FLAT_BACK]    = engine::LoadImage("cursor/flat0");
+        m_HandState[HAND_STATE_OPEN]         = engine::LoadImage("cursor/open");
+        m_HandState[HAND_STATE_OPEN_BACK]    = engine::LoadImage("cursor/open2");
+
+        m_CurrentState = m_OldState = HAND_STATE_DEFAULT;
+        m_CurrentMode = m_OldMode = HAND_MODE_DEFAULT;
     }
 
-    void SetState(HandState state) {
-        if(state == HAND_STATE_NONE) {
-            return;
+    void SetState(unsigned int state) {
+        m_OldState = m_CurrentState;
+        m_CurrentState = state;
+        SetBitmap(m_HandState[state]);
+    }
+
+    void SetMode(unsigned int mode) {
+        m_OldMode = m_CurrentMode;
+        m_CurrentMode = mode;
+    }
+
+    void Click() {
+        m_LocalPosition.y += 5;
+        if(m_TargetAngle != -0.2f) {
+            m_MoveTime = 0;
         }
-        SetBitmap(hand_state[state]);
+        m_TargetAngle = -0.2f;
     }
 
     void Simulate() {
-        m_LocalPosition.Set(
-                engine_vars.mouse_state.x,
-                engine_vars.mouse_state.y
-        );
-
-        move_time++;
-        if (engine_vars.mouse_state.buttons) {
-          //  m_LocalPosition.y += 5;
-            if(target_angle != 0.2f) {
-                move_time = 0;
-            }
-            target_angle = 0.2f;
-        } else {
-            if(target_angle != 0) {
-                move_time = 0;
-            }
-            target_angle = 0;
+        m_MoveTime++;
+        if(m_TransitionDelay != 0) {
+            m_TransitionDelay--;
         }
 
-        if(m_Angle != target_angle) {
-            m_Angle = plCosineInterpolate(m_Angle, target_angle, move_time / 6);
+        switch(m_CurrentMode) {
+            case HAND_MODE_DEFAULT: {
+                m_LocalPosition.Set(
+                        engine_vars.mouse_state.x,
+                        engine_vars.mouse_state.y
+                );
+
+                if (engine_vars.mouse_state.buttons & BUTTON_LMOUSE) {
+                    Click();
+                } else {
+                    if(m_TargetAngle != 0) {
+                        m_MoveTime = 0;
+                    }
+                    m_TargetAngle = 0;
+                }
+
+                if(m_CurrentState != HAND_STATE_DEFAULT) {
+                    if(m_TransitionDelay == 0) {
+                        SetState(HAND_STATE_DEFAULT);
+                    }
+                    break;
+                }
+
+                if(engine_vars.mouse_state.buttons & BUTTON_MMOUSE) {
+                    SetState(HAND_STATE_OPEN);
+                    SetMode(HAND_MODE_DRAG);
+                    m_TransitionDelay = 9;
+                }
+
+                break;
+            }
+
+            case HAND_MODE_DRAG: { // drag the camera around
+                static int old_x = engine_vars.mouse_state.x, old_y = engine_vars.mouse_state.y;
+                if(!(engine_vars.mouse_state.buttons & BUTTON_MMOUSE)) {
+                    SetState(HAND_STATE_OPEN);
+                    SetMode(HAND_MODE_DEFAULT);
+                    m_TransitionDelay = 9;
+
+                    al_set_mouse_xy(engine_vars.display, old_x, old_y);
+                }
+
+
+                static int oldmpos[2] = { engine_vars.mouse_state.x, engine_vars.mouse_state.y };
+                int nxpos = engine_vars.mouse_state.x - oldmpos[0];
+                int nypos = engine_vars.mouse_state.y - oldmpos[1];
+                //float dir_angle = m_LocalPosition - (plCreateVector2D(nxpos, nypos));
+                if(m_TargetAngle != -1.5f) {
+                    m_MoveTime = 0;
+                }
+                m_TargetAngle = -1.5f;
+                if(m_CurrentState != HAND_STATE_CLOSED) {
+                    if(m_TransitionDelay == 0) {
+                        SetState(HAND_STATE_CLOSED);
+                        old_x = engine_vars.mouse_state.x;
+                        old_y = engine_vars.mouse_state.y;
+                    }
+                    break;
+                }
+
+                //m_LocalPosition.x -= game.camera_x / 2;
+                //m_LocalPosition.y -= game.camera_y / 2;
+
+                game.camera_x += (nxpos / 100);
+                game.camera_y += (nypos / 100);
+
+                // game.camera_x += camera_movement.x;
+                // game.camera_y += camera_movement.y;
+
+                break;
+            }
+
+            default: break;
+        }
+
+        if(m_Angle != m_TargetAngle) {
+            m_Angle = plCosineInterpolate(m_Angle, m_TargetAngle, m_MoveTime / 6);
         }
     }
 
 protected:
 private:
-    float move_time, target_angle;
+    float m_MoveTime, m_TransitionDelay, m_TargetAngle;
 
-    ALLEGRO_BITMAP *hand_state[HAND_STATE_NONE];
+    unsigned int m_CurrentState, m_OldState;
+    ALLEGRO_BITMAP *m_HandState[HAND_STATE_NONE];
+
+    unsigned int m_CurrentMode, m_OldMode;
 };
 
 Hand *game_userhand = nullptr;
 
 // Menu (includes HUD etc.)
 
-enum GameMenuState {
-    GAME_MENU_START,    // "Press start to begin the game!"
-    GAME_MENU_MAIN,     // Main Menu
-    GAME_MENU_NEW,      // New Game
-    GAME_MENU_LOAD,     // Load Game
-    GAME_MENU_OPTIONS,  // Options
-    GAME_MENU_QUIT,     // Quit
 
-    GAME_MENU_PAUSED,   // Paused screen
-
-    GAME_MENU_DEFAULT   // in-game?
-} GameMenuState;
 
 // Everything Else
 
 //ALLEGRO_BITMAP *background0, *background1, *background2;
 
 void InitializeGame() {
+    PRINT("\nInitializing game sub-system...\n");
+
     memset(&game, 0, sizeof(GameVars));
 
-    game.state = GAME_STATE_MENU;
-    game.menu_state = GAME_MENU_START;
+    game.state = GAME_STATE_DEFAULT;
+    game.menu_state = GAME_MENU_MAIN;
 
-    game.font_title = engine::LoadFont("pacifico/Pacifico-Bold", 80);
-    game.font_small = engine::LoadFont("league_gothic/LeagueGothic-Regular", 21);
-    game.font_gothic_medium = engine::LoadFont("league_gothic/LeagueGothic-Regular", 32);
-    game.font_chunk = engine::LoadFont("chunk/Chunk", 24);
+    plGetUserName(game.profile);
+    if(game.profile[0] == '\0') {
+        PRINT("Failed to get base profile, using default...\n");
+        snprintf(game.profile, sizeof(game.profile), "default");
+    }
 
+    PRINT("Current profile %s\n", game.profile);
+
+    game.font_title             = engine::LoadFont("steps-mono-master/fonts/Steps-Mono-Thin", 50);
+    game.font_small             = engine::LoadFont("league_gothic/LeagueGothic-Regular", 21);
+    game.font_gothic_medium     = engine::LoadFont("league_gothic/LeagueGothic-Regular", 32);
+    game.font_chunk             = engine::LoadFont("chunk/Chunk", 24);
+
+    // Menu
     game.menu_earth = engine::LoadImage("environment/objects/earth");
 
     // Editor Icons
@@ -161,7 +244,7 @@ void InitializeGame() {
     World::GetInstance();
 }
 
-void draw_menu() {
+void DrawMenu() {
 
     switch (game.menu_state) {
         default:break;
@@ -178,6 +261,15 @@ void draw_menu() {
         }
 
         case GAME_MENU_START: {
+            srand(1);
+            for(unsigned int i = 0; i < 1024; ++i) {
+                al_draw_pixel(
+                rand()%DISPLAY_WIDTH,
+                rand()%DISPLAY_HEIGHT,
+                al_map_rgb(255, 255, 255));
+            }
+            srand((unsigned)time(NULL));
+
             // todo, interpolate this up at the beginning of this menu state.
             al_draw_rotated_bitmap(
                     game.menu_earth,
@@ -261,8 +353,23 @@ void draw_menu() {
                     al_map_rgba(0, 0, 0, 72)
             );
 
+            DrawString(game.font_small, 20, 20, al_map_rgb(255, 255, 255), World::GetInstance()->GetName().c_str());
+
             // Time counter
-            DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), World::GetInstance()->GetDayString());
+            char monthstr[256] = {0};
+            snprintf(monthstr, sizeof(monthstr), "%s, on the day of %s",
+                     World::GetInstance()->GetMonthString(),
+                     World::GetInstance()->GetDayString()
+            );
+            DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), monthstr);
+
+            snprintf(monthstr, sizeof(monthstr), "%04u/%02u/%02u",
+                     World::GetInstance()->GetYear(),
+                     World::GetInstance()->GetMonth(),
+                     World::GetInstance()->GetDay()
+            );
+            DrawString(game.font_small, 540, 420, al_map_rgb(255, 255, 255), monthstr);
+
             char timestr[10] = {0};
             snprintf(timestr, 10, "%02u:%02u",
                      World::GetInstance()->GetHour(),
@@ -277,7 +384,7 @@ void draw_menu() {
                 game.font_title,
                 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4,
                 /*230, 80, 20*/ al_map_rgb(255, 255, 255),
-                "Virtual Critters Inc."
+                "VIRTUAL CRITTERS INC."
         );
 
 #if 1
@@ -297,13 +404,13 @@ void GameDisplayFrame() {
 
     World::GetInstance()->Draw();
 
-    draw_menu();
+    DrawMenu();
 
     game_userhand->Draw();
 }
 
 #define CAMERA_MAXSPEED     10
-#define CAMERA_ACCELERATION 0.005f
+#define CAMERA_ACCELERATION 0.05f
 
 void GameTimerFrame() {
     game_userhand->Simulate();

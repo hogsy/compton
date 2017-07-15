@@ -1,4 +1,4 @@
-// Virtual Critters, Copyright (C) 2016 Mark Elsworth Sowden
+// Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
 
 #pragma once
 
@@ -34,6 +34,14 @@
 #   define VC_VERSION "PRE-ALPHA"
 #endif
 
+#define PRINT(...)       printf(__VA_ARGS__); plWriteLog(VC_LOG, __VA_ARGS__)
+#define PRINT_ERROR(...) PRINT(__VA_ARGS__); exit(-1)
+#if defined(DEBUG_BUILD)
+#   define DPRINT(...)      printf(__VA_ARGS__); plWriteLog(VC_LOG, __VA_ARGS__)
+#else
+#   define DPRINT(...)
+#endif
+
 /*	Types	*/
 
 typedef unsigned char byte;
@@ -43,13 +51,17 @@ typedef unsigned char byte;
 #define DISPLAY_WIDTH	640
 #define DISPLAY_HEIGHT	480
 
-#define WINDOW_WIDTH	DISPLAY_WIDTH
-#define WINDOW_HEIGHT	DISPLAY_HEIGHT
+#define WINDOW_WIDTH	1024    //DISPLAY_WIDTH
+#define WINDOW_HEIGHT	768     //DISPLAY_HEIGHT
+
+#ifdef __cplusplus
 
 namespace engine {
     ALLEGRO_FONT *LoadFont(const char *path, unsigned int size);
     ALLEGRO_BITMAP *LoadImage(const char *path);
 }
+
+#endif
 
 void DrawBitmap(ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h);
 void DrawString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message);
@@ -83,6 +95,10 @@ typedef struct EngineVars {
 extern EngineVars engine_vars;
 
 /*	Game	*/
+
+#define BUTTON_LMOUSE   1
+#define BUTTON_RMOUSE   2
+#define BUTTON_MMOUSE   4
 
 void InitializeGame();
 void ShutdownGame();

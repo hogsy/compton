@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Sprite.hpp"
+#include "sprite.h"
 
 class Entity : public Sprite {
 public:
@@ -16,4 +16,8 @@ public:
     virtual void Simulate();
 
     virtual bool IsInteractive() { return false; }
+
+protected:
+private:
+    PLVector2D _global_position;
 };

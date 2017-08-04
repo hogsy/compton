@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../engine/Sprite.hpp"
+#include "../../engine/sprite.h"
 
 // todo, need to do the difference phases of the moon etc.
 class Moon : public Sprite {

@@ -2,13 +2,16 @@
 
 #pragma once
 
-#ifdef __cplusplus
+#include <iostream>
+
+#include <opennn/opennn.h>
+
 #include <cstdio>
 #include <vector>
 #include <string>
 #include <cmath>
 #include <unordered_map>
-#endif
+
 #include <sys/stat.h>
 
 #include <allegro5/allegro.h>
@@ -51,8 +54,8 @@ typedef unsigned char byte;
 #define DISPLAY_WIDTH	640
 #define DISPLAY_HEIGHT	480
 
-#define WINDOW_WIDTH	1024    //DISPLAY_WIDTH
-#define WINDOW_HEIGHT	768     //DISPLAY_HEIGHT
+#define WINDOW_WIDTH	DISPLAY_WIDTH
+#define WINDOW_HEIGHT	DISPLAY_HEIGHT
 
 #ifdef __cplusplus
 

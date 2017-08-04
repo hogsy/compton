@@ -39,6 +39,6 @@ enum {
 
 ///////////////////////////////////////////
 
-#include "../engine/Entity.hpp"
-#include "../engine/EntityFactory.h"
+#include "../engine/entity.h"
+#include "../engine/entity_factory.h"
 

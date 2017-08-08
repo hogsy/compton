@@ -155,7 +155,7 @@ void InitializeDisplay() {
 
     // Check to see how much we need to scale the buffer.
     int flags = al_get_new_bitmap_flags();
-    al_add_new_bitmap_flag(ALLEGRO_MAG_LINEAR);
+    //al_add_new_bitmap_flag(ALLEGRO_MAG_LINEAR);
     engine_vars.buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     al_set_new_bitmap_flags(flags);
     int sx = engine_vars.window_width / DISPLAY_WIDTH;
@@ -229,7 +229,7 @@ void InitializeEvents() {
     al_install_mouse();
     al_install_keyboard();
 
-#if 1 // enable once we're happy with everything else.
+#if 0 // enable once we're happy with everything else.
     al_hide_mouse_cursor(engine_vars.display);
 #endif
 
@@ -314,14 +314,14 @@ void Shutdown() {
 
 int main(int argc, char **argv) {
 
-    std::printf("Virtual Critters " VC_VERSION " (" __DATE__ ")\n\n");
+    std::cout << "Virtual Critters " << VC_VERSION << " (" << __DATE__ << ")\n\n";
 
     memset(&engine_vars, 0, sizeof(EngineVars));
 
     uint32_t version = al_get_allegro_version();
     uint32_t major = version >> 24;
     uint32_t minor = (version >> 16) & 255;
-    std::printf("Initializing Allegro %i.%i...\n", major, minor);
+    std::cout << "Initializing Allegro " << major << "." << minor << "\n";
     if (!al_init()) {
         DisplayMessageBox("ERROR", "Failed to initialize Allegro library!", true);
         return -1;
@@ -360,8 +360,6 @@ int main(int argc, char **argv) {
     // otherwise, for example, clouds will always spawn
     // in the same places every time.
     srand((unsigned) time(nullptr));
-
-    engine_vars.log = al_open_native_text_log("Virtual Critters Console", 0);
 
     engine_vars.running = true;
 

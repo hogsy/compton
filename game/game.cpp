@@ -4,7 +4,6 @@
 
 #include "game.h"
 
-#include "objects/creature/creature.h"
 #include "objects/object_world.h"
 
 #include "../engine/sprite.h"
@@ -48,6 +47,7 @@ private:
 
 // Hand
 
+#if 0
 class Hand : public Sprite {
 public:
     enum {
@@ -211,8 +211,7 @@ private:
 
     unsigned int current_mode_, old_mode_;
 };
-
-Hand *game_userhand = nullptr;
+#endif
 
 // Menu (includes HUD etc.)
 
@@ -227,8 +226,8 @@ void InitializeGame() {
 
     memset(&game, 0, sizeof(GameVars));
 
-    game.state = GAME_STATE_MENU;
-    game.menu_state = GAME_MENU_START;
+    game.state = GAME_STATE_DEFAULT;
+    game.menu_state = GAME_MENU_DEFAULT;
 
     plGetUserName(game.profile);
     if(game.profile[0] == '\0') {
@@ -238,10 +237,10 @@ void InitializeGame() {
 
     std::printf("Current profile %s\n", game.profile);
 
-    game.font_title             = engine::LoadFont("steps-mono-master/fonts/Steps-Mono-Thin", 50);
-    game.font_small             = engine::LoadFont("league_gothic/LeagueGothic-Regular", 21);
-    game.font_gothic_medium     = engine::LoadFont("league_gothic/LeagueGothic-Regular", 32);
-    game.font_chunk             = engine::LoadFont("chunk/Chunk", 24);
+    game.font_title             = engine::LoadFont("ps2p/PressStart2P", 50);
+    game.font_small             = engine::LoadFont("ps2p/PressStart2P", 8);
+    game.font_gothic_medium     = engine::LoadFont("ps2p/PressStart2P", 32);
+    game.font_chunk             = engine::LoadFont("ps2p/PressStart2P", 24);
 
     // Menu
     game.menu_earth = engine::LoadImage("environment/objects/earth");
@@ -253,7 +252,6 @@ void InitializeGame() {
     //background1 = engine::LoadImage("placeholder/skill-desc_0001_buildings");
     //background2 = engine::LoadImage("placeholder/skill-desc_0002_far-buildings");
 
-    game_userhand = new Hand();
     World::GetInstance();
 }
 
@@ -277,8 +275,8 @@ void DrawMenu() {
             srand(1);
             for(unsigned int i = 0; i < 1024; ++i) {
                 al_draw_pixel(
-                std::rand()%DISPLAY_WIDTH,
-                std::rand()%DISPLAY_HEIGHT,
+                rand()%DISPLAY_WIDTH,
+                rand()%DISPLAY_HEIGHT,
                 al_map_rgb(255, 255, 255));
             }
             srand((unsigned)time(nullptr));
@@ -359,56 +357,37 @@ void DrawMenu() {
             //DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);
             //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
 
-            DrawVerticalGradientRectangle(
-                    0, DISPLAY_HEIGHT - 128,
-                    DISPLAY_WIDTH, 128,
-                    al_map_rgba(0, 0, 0, 0),
-                    al_map_rgba(0, 0, 0, 72)
-            );
-
-            DrawString(game.font_small, 20, 20, al_map_rgb(255, 255, 255), World::GetInstance()->GetName().c_str());
-
             // Time counter
-            char monthstr[256] = {0};
-            std::snprintf(monthstr, sizeof(monthstr), "%s, on the day of %s",
-                     World::GetInstance()->GetMonthString(),
-                     World::GetInstance()->GetDayString()
-            );
-            DrawString(game.font_small, 20, 420, al_map_rgb(255, 255, 255), monthstr);
 
-            std::snprintf(monthstr, sizeof(monthstr), "%04u/%02u/%02u",
+            static float x_scroll = 0;
+            if(x_scroll < -80) {
+                x_scroll = 80;
+            }
+            char monthstr[20] = {0};
+            snprintf(monthstr, sizeof(monthstr), "%04u/%02u/%02u",
                      World::GetInstance()->GetYear(),
                      World::GetInstance()->GetMonth(),
                      World::GetInstance()->GetDay()
             );
-            DrawString(game.font_small, 540, 420, al_map_rgb(255, 255, 255), monthstr);
+            DrawString(game.font_small, static_cast<int>(x_scroll -= 0.35f), 10, al_map_rgb(255, 255, 255), monthstr);
 
             char timestr[10] = {0};
-            std::snprintf(timestr, 10, "%02u:%02u",
-                     World::GetInstance()->GetHour(),
+            static char blink = ':', blink_delay = 0;
+            if(blink_delay == 50) {
+                if(blink == ':') {
+                    blink = ' ';
+                } else {
+                    blink = ':';
+                }
+                blink_delay = 0;
+            }
+            snprintf(timestr, 10, "%02u%c%02u",
+                     World::GetInstance()->GetHour(), blink,
                      World::GetInstance()->GetMinute()); // Removed the second timer here...
-            DrawString(game.font_small, 20, 440, al_map_rgb(255, 255, 255), timestr);
+            DrawString(game.font_small, 2, 2, al_map_rgb(255, 255, 255), timestr);
+            blink_delay++;
             break;
         }
-    }
-
-    if(game.state == GAME_STATE_MENU) {
-        DrawCenteredString(
-                game.font_title,
-                DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4,
-                /*230, 80, 20*/ al_map_rgb(255, 255, 255),
-                "VIRTUAL CRITTERS INC."
-        );
-
-#if 1
-        DrawCenteredString(
-                game.font_small,
-                DISPLAY_WIDTH / 2,
-                DISPLAY_HEIGHT - 42,
-                al_map_rgb(255, 255, 255),
-                "Virtual Critters Inc., Copyright (C) 2017 Mark Elsworth Sowden"
-        );
-#endif
     }
 }
 
@@ -418,91 +397,27 @@ void GameDisplayFrame() {
     World::GetInstance()->Draw();
 
     DrawMenu();
-
-    game_userhand->Draw();
 }
 
 #define CAMERA_MAXSPEED     10
 #define CAMERA_ACCELERATION 0.05f
 
 void GameTimerFrame() {
-    game_userhand->Simulate();
-
     switch (game.state) {
 
         default:
         case GAME_STATE_DEFAULT: {
-            static PLVector2D camera_movement(0, 0);
-
-            game.camera_x += camera_movement.x;
-            game.camera_y += camera_movement.y;
 
             if(engine_vars.key_status[ALLEGRO_KEY_LEFT]) {
 
-                if(camera_movement.x > 1024) {
-                    camera_movement.x = 1024;
-                }
-
-                if(camera_movement.x > -CAMERA_MAXSPEED) {
-                    camera_movement.x -= CAMERA_ACCELERATION;
-                }
-
-                if (game.camera_x <= 0) {
-                    game.camera_x = 0; camera_movement.x = 0;
-                }
             } else if(engine_vars.key_status[ALLEGRO_KEY_RIGHT]) {
 
-                if(camera_movement.x < -1024) {
-                    camera_movement.x = -1024;
-                }
-
-                if(camera_movement.x < CAMERA_MAXSPEED) {
-                    camera_movement.x += CAMERA_ACCELERATION;
-                }
-
-                if (game.camera_x > World::GetInstance()->GetHeight() - DISPLAY_HEIGHT) {
-                    game.camera_x = World::GetInstance()->GetHeight(); camera_movement.x = 0;
-                }
-            } else {
-                if(camera_movement.x > 0) {
-                    camera_movement.x -= CAMERA_ACCELERATION * 10.f;
-                } else if(camera_movement.x < 0) {
-                    camera_movement.x += CAMERA_ACCELERATION * 10.f;
-                }
             }
 
             if(engine_vars.key_status[ALLEGRO_KEY_DOWN]) {
 
-                if(camera_movement.y < -512) {
-                    camera_movement.y = 0;
-                }
-
-                if(camera_movement.y < CAMERA_MAXSPEED) {
-                    camera_movement.y += CAMERA_ACCELERATION;
-                }
-
-                if (game.camera_y > World::GetInstance()->GetWidth() - DISPLAY_WIDTH) {
-                    game.camera_y = World::GetInstance()->GetWidth(); camera_movement.y = 0;
-                }
             } else if(engine_vars.key_status[ALLEGRO_KEY_UP]) {
 
-                if(camera_movement.y > 2048) {
-                    camera_movement.y = 2048;
-                }
-
-                if(camera_movement.y > -CAMERA_MAXSPEED) {
-                    camera_movement.y -= CAMERA_ACCELERATION;
-                }
-
-                if (game.camera_y <= 0) {
-                    game.camera_y = 0; camera_movement.y = 0;
-                }
-            } else {
-                if(camera_movement.y > 0) {
-                    camera_movement.y -= CAMERA_ACCELERATION * 10.f;
-                } else if(camera_movement.y < 0) {
-                    camera_movement.y += CAMERA_ACCELERATION * 10.f;
-                }
             }
 
             World::GetInstance()->Simulate();
@@ -531,6 +446,7 @@ void KeyboardEvent(int code, bool keyup) {
         default: break;
 
         case ALLEGRO_KEY_PAUSE: {
+#if 0
             if(game.state == GAME_STATE_PAUSED) {
                 game.state = game.old_state;
                 game.menu_state = game.menu_old_state;
@@ -544,10 +460,12 @@ void KeyboardEvent(int code, bool keyup) {
 
             game.state = GAME_STATE_PAUSED;
             game.menu_state = GAME_MENU_PAUSED;
+#endif
             break;
         }
 
         case ALLEGRO_KEY_ESCAPE:
+#if 0
             if((game.state == GAME_STATE_MENU) && (game.old_state == GAME_STATE_DEFAULT)) {
                 game.state = GAME_STATE_DEFAULT;
                 game.menu_state = GAME_MENU_DEFAULT;
@@ -561,7 +479,8 @@ void KeyboardEvent(int code, bool keyup) {
 
             game.state = GAME_STATE_MENU;
             game.menu_state = GAME_MENU_MAIN;
-            break;
+#endif
+            exit(0);
     }
 }
 

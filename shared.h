@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include <opennn/opennn.h>
+//#include <opennn/opennn.h>
 
 #include <cstdio>
 #include <vector>
@@ -30,7 +30,7 @@
 #define DEBUG_BUILD
 
 #define VC_LOG      "debug"
-#define VC_TITLE    "Virtual Critters"
+#define VC_TITLE    "Critter"
 #if defined(DEBUG_BUILD)
 #   define VC_VERSION "PRE-ALPHA DEBUG"
 #else
@@ -51,11 +51,11 @@ typedef unsigned char byte;
 
 /*	Engine	*/
 
-#define DISPLAY_WIDTH	640
-#define DISPLAY_HEIGHT	480
+#define DISPLAY_WIDTH	64
+#define DISPLAY_HEIGHT	64
 
-#define WINDOW_WIDTH	DISPLAY_WIDTH
-#define WINDOW_HEIGHT	DISPLAY_HEIGHT
+#define WINDOW_WIDTH	512
+#define WINDOW_HEIGHT	512
 
 #ifdef __cplusplus
 

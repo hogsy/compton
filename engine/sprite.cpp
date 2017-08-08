@@ -57,7 +57,9 @@ bool Sprite::IsVisible() {
     PLVector2D cposition = position_ - origin_;
     if(((cposition.x + _w) < 0) || (cposition.x > DISPLAY_WIDTH)) {
         return false;
-    } else if(((cposition.y + _h) < 0) || (cposition.y > DISPLAY_HEIGHT)) {
+    }
+
+    if(((cposition.y + _h) < 0) || (cposition.y > DISPLAY_HEIGHT)) {
         return false;
     }
 

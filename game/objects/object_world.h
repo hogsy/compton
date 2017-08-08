@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "object_creature.h"
+
 class CloudObject;
 
 class Moon;
@@ -55,12 +57,12 @@ private:
 
     ALLEGRO_COLOR sky_top_, sky_bottom_;
     ALLEGRO_COLOR sky_toptarget_, sky_bottomtarget_;
-    ALLEGRO_BITMAP *m_SkyBackground;
+    ALLEGRO_BITMAP *sky_background_;
 
     unsigned int width_, height_;
 
-    Moon *moon_;
-    Sun *sun_;
+  //  Moon *moon_;
+  //  Sun *sun_;
 
     float temperature_;
     float wind_speed_;
@@ -70,6 +72,8 @@ private:
     std::vector<CloudObject> m_Clouds;
     std::vector<ALLEGRO_BITMAP *> cloud_sprites_;
     unsigned int cloud_density_;
+
+    Creature *creature_;
 
 public:
     static World *GetInstance() {

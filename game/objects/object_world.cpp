@@ -4,8 +4,6 @@
 
 #include "../game.h"
 #include "object_world.h"
-#include "object_moon.h"
-#include "../../engine/entity.h"
 
 World *game_worldmanager = nullptr;
 
@@ -211,6 +209,7 @@ Month months[] = {
 #define CLOUD_BITMAPS 3
 
 #include "names.h"
+#include "object_creature.h"
 
 World::World() :
         wind_speed_(DEFAULT_WIND_SPEED),
@@ -220,7 +219,7 @@ World::World() :
         temperature_(20) {
     env_background = new EnvironmentBackground();
 
-    name_ = planet_names[std::rand() % plArrayElements(planet_names)];
+    name_ = planet_names[rand() % plArrayElements(planet_names)];
 
     cloud_sprites_.reserve(10);
     for (int i = 0; i < CLOUD_BITMAPS; i++) {
@@ -231,26 +230,21 @@ World::World() :
     sky_toptarget_      = sky_colourcycle[1].top;
     sky_bottom_         = sky_colourcycle[0].bottom;
     sky_bottomtarget_   = al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
-    m_SkyBackground     = engine::LoadImage("environment/backgrounds/00night");
+    sky_background_     = engine::LoadImage("sprites");
 
     cloud_droplet = engine::LoadImage("environment/objects/rain");
 
     // Make initial set of clouds.
     for (int i = 0; i < cloud_density_; i++) {
-        ALLEGRO_BITMAP *sprite = cloud_sprites_[std::rand() % CLOUD_BITMAPS];
+        ALLEGRO_BITMAP *sprite = cloud_sprites_[rand() % CLOUD_BITMAPS];
         m_Clouds.emplace(m_Clouds.end(), CloudObject(sprite));
     }
 
-    moon_ = new Moon();
-    sun_ = new Sun();
+    creature_ = new Creature();
 }
 
 World::~World() {
-    for (auto &cloud_sprite : cloud_sprites_)
-        al_destroy_bitmap(cloud_sprite);
-    cloud_sprites_.clear();
 
-    delete moon_;
 }
 
 const char *World::GetDayString() {
@@ -267,8 +261,9 @@ void World::Simulate() {
     }
 
     // CloudObject generation...
+#if 0
     if (m_Clouds.size() < cloud_density_) {
-        ALLEGRO_BITMAP *sprite = cloud_sprites_[std::rand() % CLOUD_BITMAPS];
+        ALLEGRO_BITMAP *sprite = cloud_sprites_[rand() % CLOUD_BITMAPS];
         m_Clouds.emplace(
                 m_Clouds.end(),
                 CloudObject(
@@ -283,6 +278,7 @@ void World::Simulate() {
         if (!m_Clouds[i].IsVisible())
             m_Clouds.erase(m_Clouds.begin() + i);
     }
+#endif
 
     static double difference = 1;
 
@@ -296,12 +292,12 @@ void World::Simulate() {
         _hour += 1;
         _minute = 0;
         _second = 0;
-        for (int i = 0; i < 4; i++) {
-            if (_hour >= sky_colourcycle[i].hour) {
-                sky_toptarget_ = sky_colourcycle[i].top;
-                sky_bottomtarget_ = sky_colourcycle[i].bottom;
+        for (auto &i : sky_colourcycle) {
+            if (_hour >= i.hour) {
+                sky_toptarget_ = i.top;
+                sky_bottomtarget_ = i.bottom;
 
-                difference = sky_colourcycle[i].hour / _hour;
+                difference = i.hour / _hour;
             }
         }
     }
@@ -319,7 +315,6 @@ void World::Simulate() {
     }
 
     // Sky gradient
-    //int difference =
 #define INTERP (float)((time_ / 60) / 4)
     // BOTTOM
     sky_bottom_.r = plCosineInterpolate(
@@ -348,8 +343,10 @@ void World::Simulate() {
             INTERP
     );
 
-    moon_->Simulate();
-    sun_->Simulate();
+    creature_->Simulate();
+
+//    moon_->Simulate();
+ //   sun_->Simulate();
 }
 
 void World::Draw() {
@@ -357,43 +354,9 @@ void World::Draw() {
         return;
     }
 
-#if 1
-    if (_hour > WORLD_NIGHT_START || _hour < WORLD_NIGHT_END) {
-        al_draw_rotated_bitmap(
-                m_SkyBackground,
-                512, 512,
-                DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
-                (float) engine_vars.counter / 1000,
-                0
-        );
-    }
+    al_draw_bitmap_region(sky_background_, 0, 0, 64, 64, 0, 0, 0);
 
-    DrawVerticalGradientRectangle(
-            0, 0,
-            DISPLAY_WIDTH, DISPLAY_HEIGHT,
-            sky_top_, sky_bottom_
-    );
-
-    moon_->Draw();
-    sun_->Draw();
-
-    // Clouds
-#if 0
-    DrawBitmap(
-            cloud_sprites_[2],
-            10 - game.camera_x / 4, 10 - game.camera_y,
-            al_get_bitmap_width(cloud_sprites_[2]),
-            al_get_bitmap_height(cloud_sprites_[2])
-    );
-#endif
-    for (CloudObject &cloud : m_Clouds) cloud.Draw();
-#else
-
-    for (CloudObject &cloud : m_Clouds) cloud.Draw();
-
-    al_draw_line(-1024, 400, 1024, 400, al_map_rgba(255, 255, 255, 30), 5);
-
-#endif
+    creature_->Draw();
 }
 
 

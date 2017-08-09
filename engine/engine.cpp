@@ -260,12 +260,15 @@ void EventsFrame() {
             engine_vars.running = false;
             break;
 
+        case ALLEGRO_EVENT_TOUCH_END:
         case ALLEGRO_EVENT_MOUSE_BUTTON_UP: {
             engine_vars.mouse_status[event.mouse.button] = true;
 
             MouseEvent();
             break;
         }
+
+        case ALLEGRO_EVENT_TOUCH_BEGIN:
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN: {
             engine_vars.mouse_status[event.mouse.button] = false;
 

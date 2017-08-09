@@ -239,8 +239,6 @@ World::World() :
         ALLEGRO_BITMAP *sprite = cloud_sprites_[rand() % CLOUD_BITMAPS];
         m_Clouds.emplace(m_Clouds.end(), CloudObject(sprite));
     }
-
-    creature_ = new Creature();
 }
 
 World::~World() {
@@ -342,11 +340,6 @@ void World::Simulate() {
             sky_top_.b, sky_toptarget_.b,
             INTERP
     );
-
-    creature_->Simulate();
-
-//    moon_->Simulate();
- //   sun_->Simulate();
 }
 
 void World::Draw() {
@@ -355,8 +348,6 @@ void World::Draw() {
     }
 
     al_draw_bitmap_region(sky_background_, 0, 0, 64, 64, 0, 0, 0);
-
-    creature_->Draw();
 }
 
 

@@ -221,21 +221,16 @@ private:
 
 //ALLEGRO_BITMAP *background0, *background1, *background2;
 
+ALLEGRO_BITMAP *status_sprite;
+
+Creature *creature;
+
 void InitializeGame() {
-    std::printf("\nInitializing game sub-system...\n");
 
     memset(&game, 0, sizeof(GameVars));
 
     game.state = GAME_STATE_DEFAULT;
     game.menu_state = GAME_MENU_DEFAULT;
-
-    plGetUserName(game.profile);
-    if(game.profile[0] == '\0') {
-        std::printf("Failed to get base profile, using default...\n");
-        std::snprintf(game.profile, sizeof(game.profile), "default");
-    }
-
-    std::printf("Current profile %s\n", game.profile);
 
     game.font_title             = engine::LoadFont("ps2p/PressStart2P", 50);
     game.font_small             = engine::LoadFont("ps2p/PressStart2P", 8);
@@ -245,6 +240,8 @@ void InitializeGame() {
     // Menu
     game.menu_earth = engine::LoadImage("environment/objects/earth");
 
+    status_sprite = engine::LoadImage("sprites");
+
     // Editor Icons
     game.entity_icon = engine::LoadImage("default_entity");
 
@@ -253,6 +250,8 @@ void InitializeGame() {
     //background2 = engine::LoadImage("placeholder/skill-desc_0002_far-buildings");
 
     World::GetInstance();
+
+    creature = new Creature();
 }
 
 void DrawMenu() {
@@ -360,8 +359,17 @@ void DrawMenu() {
             // Time counter
 
             static float x_scroll = 0;
-            if(x_scroll < -80) {
-                x_scroll = 80;
+            static bool scroll_rotation = true;
+            if(scroll_rotation) {
+                x_scroll += 0.35f;
+                if(x_scroll > 3) {
+                    scroll_rotation = false;
+                }
+            } else {
+                x_scroll -= 0.35f;
+                if (x_scroll < -18) {
+                    scroll_rotation = true;
+                }
             }
             char monthstr[20] = {0};
             snprintf(monthstr, sizeof(monthstr), "%04u/%02u/%02u",
@@ -369,7 +377,7 @@ void DrawMenu() {
                      World::GetInstance()->GetMonth(),
                      World::GetInstance()->GetDay()
             );
-            DrawString(game.font_small, static_cast<int>(x_scroll -= 0.35f), 10, al_map_rgb(255, 255, 255), monthstr);
+            DrawString(game.font_small, static_cast<int>(x_scroll), 10, al_map_rgb(255, 255, 255), monthstr);
 
             char timestr[10] = {0};
             static char blink = ':', blink_delay = 0;
@@ -389,12 +397,31 @@ void DrawMenu() {
             break;
         }
     }
+
+    switch(creature->GetState()) {
+        default:
+        case Creature::CREATURE_STATE_SURPRISED:
+        case Creature::CREATURE_STATE_HAPPY:
+            al_draw_bitmap_region(status_sprite, 0, 64, 8, 8, 2, 55, 0);
+            break;
+
+        case Creature::CREATURE_STATE_INDIFFERENT:
+            al_draw_bitmap_region(status_sprite, 8, 64, 8, 8, 2, 55, 0);
+            break;
+
+        case Creature::CREATURE_STATE_SAD:
+        case Creature::CREATURE_STATE_ANGRY:
+            al_draw_bitmap_region(status_sprite, 16, 64, 8, 8, 2, 55, 0);
+            break;
+    }
 }
 
 void GameDisplayFrame() {
     al_clear_to_color(al_map_rgb(0, 0, 0));
 
     World::GetInstance()->Draw();
+
+    creature->Draw();
 
     DrawMenu();
 }
@@ -431,6 +458,8 @@ void GameTimerFrame() {
 
         case GAME_STATE_PAUSED: break;
     }
+
+    creature->Simulate();
 }
 
 void MouseEvent() {

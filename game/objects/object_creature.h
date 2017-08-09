@@ -32,15 +32,19 @@ public:
         current_mode_ = mode;
     }
 
+    unsigned int GetState() { return current_state_; }
+
     void Draw() override;
     void Simulate();
 
 protected:
 private:
     float move_time_{}, transition_delay_, target_angle_{};
-    float emotions_[CREATURE_STATE_END];
+    double emotions_[CREATURE_STATE_END];
 
     unsigned int current_state_, old_state_;
+
+    double delay_mouselook;
 
     PLVector2D velocity_;
     PLVector2D old_position_;

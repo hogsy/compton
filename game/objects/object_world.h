@@ -73,8 +73,6 @@ private:
     std::vector<ALLEGRO_BITMAP *> cloud_sprites_;
     unsigned int cloud_density_;
 
-    Creature *creature_;
-
 public:
     static World *GetInstance() {
         if (!game_worldmanager) {

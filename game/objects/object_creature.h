@@ -46,6 +46,8 @@ private:
 
     double delay_mouselook;
 
+    bool is_grabbed;
+
     PLVector2D velocity_;
     PLVector2D old_position_;
 

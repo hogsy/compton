@@ -247,6 +247,10 @@ void EventsFrame() {
     al_get_mouse_state(&engine_vars.mouse_state);
     al_get_keyboard_state(&engine_vars.keyboard_state);
 
+    engine_vars.mouse_status[BUTTON_LMOUSE] = (engine_vars.mouse_state.buttons & 1) != 0;
+    engine_vars.mouse_status[BUTTON_RMOUSE] = (engine_vars.mouse_state.buttons & 2) != 0;
+    engine_vars.mouse_status[BUTTON_MMOUSE] = (engine_vars.mouse_state.buttons & 3) != 0;
+
     switch (event.type) {
         default: break;
 
@@ -260,21 +264,6 @@ void EventsFrame() {
             engine_vars.running = false;
             break;
 
-        case ALLEGRO_EVENT_TOUCH_END:
-        case ALLEGRO_EVENT_MOUSE_BUTTON_UP: {
-            engine_vars.mouse_status[event.mouse.button] = true;
-
-            MouseEvent();
-            break;
-        }
-
-        case ALLEGRO_EVENT_TOUCH_BEGIN:
-        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN: {
-            engine_vars.mouse_status[event.mouse.button] = false;
-
-            MouseEvent();
-            break;
-        }
         case ALLEGRO_EVENT_MOUSE_AXES: {
             MouseEvent();
             break;

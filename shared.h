@@ -20,6 +20,8 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_native_dialog.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #include <PL/platform_math.h>
 #include <PL/platform_log.h>
@@ -61,6 +63,7 @@ typedef unsigned char byte;
 
 namespace engine {
     ALLEGRO_FONT *LoadFont(const char *path, unsigned int size);
+    ALLEGRO_SAMPLE *LoadSample(std::string name);
     ALLEGRO_BITMAP *LoadImage(const char *path);
 }
 

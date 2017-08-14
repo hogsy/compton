@@ -235,6 +235,12 @@ void InitializeGame() {
     game.font_gothic_medium     = engine::LoadFont("ps2p/PressStart2P", 32);
     game.font_chunk             = engine::LoadFont("ps2p/PressStart2P", 24);
 
+    game.sample_jump    = engine::LoadSample("00.wav");
+    game.sample_land    = engine::LoadSample("03.wav");
+    game.sample_charge  = engine::LoadSample("04.wav");
+    game.sample_pickup  = engine::LoadSample("05.wav");
+    game.sample_throw   = engine::LoadSample("06.wav");
+
     status_sprite = engine::LoadImage("sprites");
 
     game.is_grabbing = false;

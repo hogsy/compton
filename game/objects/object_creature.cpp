@@ -146,8 +146,6 @@ Creature::Creature() : Sprite(engine::LoadImage("sprites")) {
     delay_play_     =
     delay_drink_    = 10;
 
-    directive_ = DIR_NONE;
-
     ////////////////////////////////////////////
 
     thirst_ =
@@ -183,7 +181,7 @@ void Creature::Draw() {
     }
 
     static SnoozeCloud *cloud = nullptr;
-    if(directive_ == DIR_SLEEP) {
+    if(occupation_ == OCU_SLEEPING) {
         if (cloud == nullptr) {
             cloud = new SnoozeCloud();
             cloud->position_ = position_;
@@ -230,6 +228,7 @@ void Creature::Draw() {
                         s_x = 108; s_y = y_up;
                     }
                 }
+                break;
             }
 
             case LOO_OBJECT: {
@@ -250,6 +249,7 @@ void Creature::Draw() {
                 } else if (look_object_->position_.y < (position_.y - 8)) {
                     s_x = 108; s_y = y_up;
                 }
+                break;
             }
         }
     }
@@ -261,6 +261,10 @@ void Creature::Draw() {
             delete cloud;
             cloud = nullptr;
         }
+    }
+
+    if(directive_ == DIR_SHOCKED) {
+        s_x = 75; s_y = 55;
     }
 
     al_draw_bitmap_region(
@@ -277,8 +281,6 @@ void Creature::Draw() {
 void Creature::Simulate() {
 
     // PHYSICS ......................................................................
-
-    static bool is_onground = false;
 
     if(grabbed_object_ != nullptr) {
         grabbed_object_->position_ = position_;
@@ -328,7 +330,7 @@ void Creature::Simulate() {
         velocity_.x += 0.05f;
     }
 
-    if(is_onground) {
+    if(is_grounded_) {
         if (velocity_.x < 0.05f && velocity_.x > -0.05f) {
             velocity_.x = 0;
         }
@@ -336,29 +338,8 @@ void Creature::Simulate() {
 
     if((position_.x <= 0) || (position_.x >= 64)) {
         velocity_.x *= -1;
-    }
 
-    if(directive_ == DIR_NONE) {
-        if (delay_movement <= 0 && delay_lastmove <= 0) {
-            if(is_onground) {
-                velocity_.y = -0.8f;
-            }
-
-            if (position_.x > 54) {
-                velocity_.x -= 2;
-            } else if(position_.x < 10) {
-                velocity_.x += 2;
-            } else {
-                if(position_.x > 32) {
-                    velocity_.x -= 0.9f + (float)((rand() % 50) / 50);
-                } else {
-                    velocity_.x += 0.9f + (float)((rand() % 50) / 50);
-                }
-            }
-
-            delay_lastmove = 100;
-        }
-        delay_lastmove--;
+        Impact();
     }
 
     position_ += velocity_;
@@ -371,9 +352,12 @@ void Creature::Simulate() {
     if(position_.y >= GROUND_LEVEL) {
       //  velocity_.y *= -1;
         position_.y = GROUND_LEVEL;
-        is_onground = true;
+        if(!is_grounded_) {
+            Impact();
+            is_grounded_ = true;
+        }
     } else {
-        is_onground = false;
+        is_grounded_ = false;
     }
 
     if(position_.x < 0) {
@@ -401,6 +385,8 @@ void Creature::Simulate() {
         }
     }
 
+#if 0
+
     if(emotions_[EMO_HAPPINESS] > 50) {
         SetState(EMO_HAPPINESS);
     } else if(emotions_[EMO_SADNESS] > 50) {
@@ -411,9 +397,214 @@ void Creature::Simulate() {
         SetState(EMO_INDIFFERENT);
     }
 
+    CheckRage();
+
     switch(directive_) {
         default: {
 #if 1
+
+
+            delay_movement--;
+            if (delay_movement < -500) {
+                delay_movement = rand() % 500 + 500;
+            }
+#endif
+
+            if((thirst_ < 50) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
+                SetDirective(DIR_DRINK);
+                break;
+            } else if(((emotions_[EMO_BOREDOM] > 20) && (delay_sleep_ < World::GetInstance()->GetTotalSeconds()) ||
+                        delay_sleep_ < World::GetInstance()->GetTotalSeconds() - 50)) {
+                SetDirective(DIR_SLEEP);
+                break;
+            } else if((emotions_[EMO_HAPPINESS] < 50) && (delay_play_ < World::GetInstance()->GetTotalSeconds())) {
+                SetDirective(DIR_PLAY);
+                break;
+            }
+
+            emotions_[EMO_BOREDOM]      += 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.05f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+            break;
+        }
+
+        case DIR_RAGE: {
+            ClearLook();
+            target_look_ = LOO_CURSOR;
+
+            DropObject();
+
+            Jump(0.8f);
+            if((thirst_ < 50) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
+                directive_ = DIR_DRINK;
+                break;
+            } else if(emotions_[EMO_ANGER] <= 0) {
+                directive_ = DIR_NONE;
+                break;
+            }
+
+            emotions_[EMO_BOREDOM]      -= 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.05f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+            break;
+        }
+
+        case DIR_SHOCKED: {
+            ClearLook();
+
+            DropObject();
+
+            if((delay_play_ < World::GetInstance()->GetTotalSeconds())) {
+                break;
+            }
+
+            emotions_[EMO_BOREDOM]      -= 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.5f;
+            emotions_[EMO_SADNESS]      += 0.5f;
+            break;
+        }
+
+        case DIR_SLEEP: {
+            ClearLook();
+
+            static unsigned int sleep_start = 0, sleep_end = 0;
+            if(sleep_start == 0) {
+                if(is_grabbed) { // try again later...
+                    emotions_[EMO_ANGER] += 1.f;
+                    WakeUp();
+                    break;
+                }
+
+                sleep_start = World::GetInstance()->GetTotalSeconds();
+                sleep_end = sleep_start + 1500;
+            }
+
+            if((sleep_end > World::GetInstance()->GetTotalSeconds()) && is_grabbed) {
+                sleep_start = 0;
+                emotions_[EMO_ANGER] += 30.f;
+
+                WakeUp();
+                break;
+            }
+
+            if(((thirst_ < 20) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) ||
+                    (sleep_end < World::GetInstance()->GetTotalSeconds())) {
+                sleep_start = 0;
+
+                WakeUp();
+                break;
+            }
+
+            emotions_[EMO_BOREDOM]      -= 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.05f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+            break;
+        }
+    }
+
+#else
+
+    if(occupation_ == OCU_NONE) {
+        if ((thirst_ < 30) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
+            directive_ = DIR_DRINK;
+        } /*else if(delay_sleep_ < World::GetInstance()->GetTotalSeconds()) {
+            directive_ = DIR_SLEEP;
+        } */else {
+            if (emotions_[EMO_ANGER] > 50) {
+                SetState(EMO_ANGER);
+            }
+
+            if ((emotions_[EMO_BOREDOM] > 50) && (delay_play_ < World::GetInstance()->GetTotalSeconds())) {
+                directive_ = DIR_PLAY;
+                SetState(EMO_INDIFFERENT);
+            }
+
+            if (emotions_[EMO_HAPPINESS] > 50) {
+                SetState(EMO_HAPPINESS);
+            }
+
+            if (emotions_[EMO_SADNESS] > 50) {
+
+            }
+        }
+    }
+
+    switch (directive_) {
+
+        case DIR_PLAY: {
+            look_object_    = toy;
+            target_look_    = LOO_OBJECT;
+            occupation_     = OCU_PLAYING;
+
+            if((thirst_ < 30) || (emotions_[EMO_HAPPINESS] >= 100)) {
+                ClearLook();
+
+                directive_  = DIR_NONE;
+                occupation_ = OCU_NONE;
+
+                delay_play_ = World::GetInstance()->GetTotalSeconds() + 100;
+                break;
+            }
+
+            if(grabbed_object_ == toy) {
+                if (is_grounded_) {
+                    if (delay_throw_ < World::GetInstance()->GetTotalSeconds()) {
+                        ThrowObject();
+                        emotions_[EMO_HAPPINESS] += 10.f;
+                        delay_throw_ = World::GetInstance()->GetTotalSeconds() + 100;
+                        delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
+                    }
+                }
+                emotions_[EMO_ANGER] -= 0.05f;
+            } else if(toy->is_grabbed && (toy->parent_ != this)) {
+                emotions_[EMO_ANGER] += 10.f;
+            }
+
+            emotions_[EMO_BOREDOM]  -= 0.05f;
+            emotions_[EMO_SADNESS]  -= 0.05f;
+            break;
+        }
+
+        case DIR_DRINK: {
+            look_object_    = drink;
+            target_look_    = LOO_OBJECT;
+            occupation_     = OCU_DRINKING;
+
+            if(thirst_ >= 100) {
+                ClearLook();
+
+                directive_  = DIR_NONE;
+                occupation_ = OCU_NONE;
+
+                if (is_grounded_) {
+                    velocity_.y = -0.9f;
+                    if(position_.x < 32) {
+                        velocity_.x += 1.f;
+                    } else {
+                        velocity_.x -= 1.f;
+                    }
+                }
+
+                delay_drink_ = World::GetInstance()->GetTotalSeconds() + 100;
+                break;
+            }
+
+            if(grabbed_object_ == drink) {
+                thirst_ += 0.5f;
+            }
+
+            emotions_[EMO_BOREDOM]      += 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.05f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+            break;
+        }
+
+        default: {
             if(delay_look_ < World::GetInstance()->GetTotalSeconds()) {
                 if (toy->is_grabbed && (toy->parent_ == nullptr)) {
                     target_look_ = LOO_OBJECT;
@@ -429,204 +620,7 @@ void Creature::Simulate() {
                 delay_look_ = World::GetInstance()->GetTotalSeconds() + 50;
             }
 
-            delay_movement--;
-            if (delay_movement < -500) {
-                delay_movement = rand() % 500 + 500;
-            }
-#endif
-
-            if((thirst_ < 50) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
-                directive_ = DIR_DRINK;
-            } else if((emotions_[EMO_BOREDOM] > 20) && (delay_sleep_ < World::GetInstance()->GetTotalSeconds())) {
-                directive_ = DIR_SLEEP;
-            } else if((emotions_[EMO_HAPPINESS] < 50) && (delay_play_ < World::GetInstance()->GetTotalSeconds())) {
-                directive_ = DIR_PLAY;
-                delay_play_ = World::GetInstance()->GetTotalSeconds() + 2000;
-            }
-
             emotions_[EMO_BOREDOM]      += 0.05f;
-            emotions_[EMO_HAPPINESS]    -= 0.05f;
-            emotions_[EMO_ANGER]        -= 0.05f;
-            emotions_[EMO_SADNESS]      -= 0.05f;
-            break;
-        }
-
-        case DIR_DRINK: {
-            look_object_ = drink;
-            target_look_ = LOO_OBJECT;
-
-            // hop towards object
-            auto *cur_drink = dynamic_cast<CreatureDrink*>(grabbed_object_);
-            if(cur_drink == nullptr) {
-                if(grabbed_object_ != nullptr) {
-                    DropObject();
-                }
-
-                if (!(
-                        ((drink->position_.x - drink->origin_.x) > ((position_.x - origin_.x) - 9)) &&
-                        ((drink->position_.x - drink->origin_.x) < ((position_.x - origin_.x) + 9)) &&
-                        ((drink->position_.y - drink->origin_.y) > ((position_.y - origin_.y) - 9)) &&
-                        ((drink->position_.y - drink->origin_.y) < ((position_.y - origin_.y) + 9)))) {
-                    if (is_onground) {
-                        velocity_.y = -0.9f;
-                        if (position_.x < drink->position_.x) {
-                            velocity_.x += 0.8f;
-                        } else {
-                            velocity_.x -= 0.8f;
-                        }
-                    }
-                    break;
-                }
-
-                // pick it up
-                PickupObject(drink);
-            }
-
-            if(thirst_ >= 100) {
-                directive_ = DIR_NONE;
-
-                delay_drink_    = World::GetInstance()->GetTotalSeconds() + 50;
-                //delay_play_     = World::GetInstance()->GetTotalSeconds() + 4000;
-                delay_sleep_    = World::GetInstance()->GetTotalSeconds() + 100;
-
-                DropObject();
-                ClearLook();
-
-                if (is_onground) {
-                    velocity_.y = -0.9f;
-                    if(position_.x < 32) {
-                        velocity_.x += 1.f;
-                    } else {
-                        velocity_.x -= 1.f;
-                    }
-                }
-            }
-            thirst_ += 0.5f;
-
-            emotions_[EMO_BOREDOM]      -= 0.05f;
-            emotions_[EMO_HAPPINESS]    -= 0.05f;
-            emotions_[EMO_ANGER]        -= 0.05f;
-            emotions_[EMO_SADNESS]      -= 0.05f;
-            break;
-        }
-
-        case DIR_PLAY: {
-            look_object_ = toy;
-            target_look_ = LOO_OBJECT;
-
-            if((thirst_ < 30) || (emotions_[EMO_HAPPINESS] > 80)) {
-                DropObject();
-                ClearLook();
-
-                delay_sleep_    = World::GetInstance()->GetTotalSeconds() + 1000;
-                delay_drink_    = World::GetInstance()->GetTotalSeconds() + 100;
-                delay_play_     = World::GetInstance()->GetTotalSeconds() + 5000;
-
-                directive_ = DIR_NONE;
-                break;
-            }
-
-            if(delay_throw_ < 0) {
-                delay_throw_ -= 0.1f;
-                if(delay_throw_ < -5.f) {
-                    delay_throw_ = World::GetInstance()->GetTotalSeconds() + (10 + (rand() % 10));
-                }
-                break;
-            }
-
-            // hop towards object
-            auto *cur_toy = dynamic_cast<CreatureToy*>(grabbed_object_);
-            if(cur_toy == nullptr) {
-                if(grabbed_object_ != nullptr) {
-                    DropObject();
-                }
-
-                if (!(
-                        ((toy->position_.x - toy->origin_.x) > ((position_.x - origin_.x) - 9)) &&
-                        ((toy->position_.x - toy->origin_.x) < ((position_.x - origin_.x) + 9)) &&
-                        ((toy->position_.y - toy->origin_.y) > ((position_.y - origin_.y) - 9)) &&
-                        ((toy->position_.y - toy->origin_.y) < ((position_.y - origin_.y) + 9)))) {
-                    if (is_onground) {
-                        velocity_.y = -0.9f;
-                        if (position_.x < toy->position_.x) {
-                            velocity_.x += 0.8f;
-                        } else {
-                            velocity_.x -= 0.8f;
-                        }
-                    }
-                    break;
-                }
-
-                PickupObject(toy);
-
-                delay_throw_ = World::GetInstance()->GetTotalSeconds() + (10 + (rand() % 10));
-            }
-
-            if (is_onground) {
-                velocity_.y = -1.05f;
-                if(relative_mousepos(x) < position_.x) {
-                    if(position_.x > 54) {
-                        velocity_.x -= 1.5f;
-                    } else {
-                        velocity_.x += 0.7f;
-                    }
-                } else {
-                    if(position_.x < 10) {
-                        velocity_.x += 1.5f;
-                    } else {
-                        velocity_.x -= 0.7f;
-                    }
-                }
-
-                if(delay_throw_ < World::GetInstance()->GetTotalSeconds()) {
-#if 0
-                    if(relative_mousepos(x) < 0 || relative_mousepos(x) > 64) {
-#endif
-                        grabbed_object_->velocity_.y = -2.f;
-                        if(position_.x > 32) {
-                            grabbed_object_->velocity_.x -= 1.5f;
-                        } else {
-                            grabbed_object_->velocity_.x += 1.5f;
-                        }
-#if 0
-                    } else {
-                        PLVector2D mpos(relative_mousepos(x), relative_mousepos(y));
-                        grabbed_object_->velocity_ = ((position_ - mpos) * -1) / 100;
-                    }
-#endif
-
-                    DropObject();
-
-                    delay_throw_ = -1;
-                }
-            }
-
-            // todo, pick object up...
-            emotions_[EMO_BOREDOM]      -= 0.05f;
-            emotions_[EMO_HAPPINESS]    += 0.05f;
-            emotions_[EMO_ANGER]        -= 0.05f;
-            emotions_[EMO_SADNESS]      -= 0.05f;
-            break;
-        }
-
-        case DIR_SLEEP: {
-            static unsigned int sleep_start = 0, sleep_end = 0;
-            if(sleep_start == 0) {
-                sleep_start = World::GetInstance()->GetTotalSeconds();
-                sleep_end = sleep_start + 1500;
-            }
-
-            if(sleep_end < World::GetInstance()->GetTotalSeconds()) {
-                sleep_start = 0;
-
-                delay_sleep_    = World::GetInstance()->GetTotalSeconds() + 5000;
-                delay_drink_    = World::GetInstance()->GetTotalSeconds() + 2000;
-                delay_play_     = World::GetInstance()->GetTotalSeconds() + 4000;
-
-                directive_ = DIR_NONE;
-            }
-
-            emotions_[EMO_BOREDOM]      -= 0.05f;
             emotions_[EMO_HAPPINESS]    -= 0.05f;
             emotions_[EMO_ANGER]        -= 0.05f;
             emotions_[EMO_SADNESS]      -= 0.05f;
@@ -634,8 +628,99 @@ void Creature::Simulate() {
         }
     }
 
-    if(thirst_ < 1) {
+#define relative_pos_x(p) (p->position_.x - p->origin_.x)
+#define relative_pos_y(p) (p->position_.y - p->origin_.y)
+
+    if(delay_movement < World::GetInstance()->GetTotalSeconds()) { // movement
+        if(grabbed_object_ == nullptr && look_object_ != nullptr) {
+            if(!look_object_->is_grabbed) {
+                if (!(relative_pos_x(look_object_) > (relative_pos_x(this) - 9) &&
+                      (relative_pos_x(look_object_) < (relative_pos_x(this) + 9)) &&
+                      (relative_pos_y(look_object_) > (relative_pos_y(this) - 9)) &&
+                      (relative_pos_y(look_object_) < (relative_pos_y(this) + 9)))) {
+                    if (is_grounded_) {
+                        velocity_.y = -0.9f;
+                        if (position_.x < look_object_->position_.x) {
+                            velocity_.x += 0.8f;
+                        } else {
+                            velocity_.x -= 0.8f;
+                        }
+                    }
+                } else if (!PickupObject(look_object_)) { // attempt to pick it up
+                    ClearLook();
+                    //delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
+                } else {
+                    delay_throw_ = World::GetInstance()->GetTotalSeconds() + 50;
+                }
+            }
+        } else if (grabbed_object_ != nullptr && grabbed_object_ != look_object_) {
+            if ((delay_throw_ < World::GetInstance()->GetTotalSeconds()) && (emotions_[EMO_ANGER] > 50)) {
+                ThrowObject();
+            } else {
+                DropObject();
+            }
+
+            delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
+        } else {
+            static unsigned int move_dir = 0; // 0 - left, 1 - right, 2 - middle
+
+            switch(directive_) {
+
+                default: {
+                    if(delay_lastmove < World::GetInstance()->GetTotalSeconds()) {
+                        if(is_grounded_) {
+                            velocity_.y = -0.8f;
+                            if(move_dir == 0) {
+                                velocity_.x -= 0.9f;
+                                if(position_.x < 20) {
+                                    move_dir = 1;
+                                }
+                            } else if(move_dir == 1) {
+                                velocity_.x += 0.9f;
+                                if(position_.x > 40) {
+                                    move_dir = 0;
+                                }
+                            } else {
+                                if (position_.x > 54) {
+                                    velocity_.x -= 2;
+                                } else if (position_.x < 10) {
+                                    velocity_.x += 2;
+                                } else {
+                                    if (position_.x > 32) {
+                                        velocity_.x -= 0.9f + (float) ((rand() % 50) / 50);
+                                    } else {
+                                        velocity_.x += 0.9f + (float) ((rand() % 50) / 50);
+                                    }
+                                }
+                            }
+                        }
+                        delay_lastmove = World::GetInstance()->GetTotalSeconds() + 30;
+                    }
+                } break;
+
+                case DIR_DRINK:break;
+            }
+
+            if(delay_movement < World::GetInstance()->GetTotalSeconds() - 100) {
+                move_dir = static_cast<unsigned int>(rand() % 2);
+
+                delay_movement = World::GetInstance()->GetTotalSeconds() + 100;
+            }
+        }
+    }
+
+#endif
+
+    auto drinking = dynamic_cast<CreatureDrink*>(grabbed_object_);
+    if(drinking == nullptr) { // drinking from bowel
+        thirst_ -= 0.05f;
+    } else if(thirst_ < 1) { // dying of thirst
         health_ -= 0.05f;
+    }
+    if(thirst_ < 0) {
+        thirst_ = 0;
+    } else if(thirst_ > 100) {
+        thirst_ = 100;
     }
 
     if(health_ < 0) {
@@ -643,18 +728,9 @@ void Creature::Simulate() {
     } else if(health_ > 100) {
         health_ = 100;
     }
-
-    auto drinking = dynamic_cast<CreatureDrink*>(grabbed_object_);
-    if(drinking == nullptr) {
-        thirst_ -= 0.05f;
-    }
-
-    if(thirst_ < 0) {
-        thirst_ = 0;
-    } else if(thirst_ > 100) {
-        thirst_ = 100;
-    }
 }
+
+////////////////////////////////////////////////////////
 
 void Creature::DropObject() {
     if(grabbed_object_ == nullptr) {
@@ -664,12 +740,133 @@ void Creature::DropObject() {
     grabbed_object_->parent_ = nullptr;
     grabbed_object_->is_grabbed = false;
     grabbed_object_ = nullptr;
+
+    al_play_sample(game.sample_pickup, 0.5, ALLEGRO_AUDIO_PAN_NONE, 0.2, ALLEGRO_PLAYMODE_ONCE, NULL);
 }
 
-void Creature::PickupObject(CreatureObject *object) {
+void Creature::ThrowObject() {
+    if(grabbed_object_ == nullptr) {
+        return;
+    }
+
+#if 0
+    if(relative_mousepos(x) < 0 || relative_mousepos(x) > 64) {
+#endif
+    grabbed_object_->velocity_.y = -2.f;
+    if(position_.x > 32) {
+        grabbed_object_->velocity_.x -= 1.5f;
+    } else {
+        grabbed_object_->velocity_.x += 1.5f;
+    }
+#if 0
+    } else {
+                        PLVector2D mpos(relative_mousepos(x), relative_mousepos(y));
+                        grabbed_object_->velocity_ = ((position_ - mpos) * -1) / 100;
+    }
+#endif
+
+    delay_throw_ = World::GetInstance()->GetTotalSeconds() + 10;
+
+    DropObject();
+
+    al_play_sample(game.sample_throw, 1, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+}
+
+bool Creature::PickupObject(CreatureObject *object) {
+    // this should fix our grabby claws mixing with the creature's
+    if(object->is_grabbed && (object->parent_ != this)) {
+        return false;
+    } else if(object->is_grabbed && (object->parent_ == this)) {
+        return true;
+    }
+
     grabbed_object_ = object;
     grabbed_object_->parent_ = this;
     grabbed_object_->is_grabbed = true;
+
+    al_play_sample(game.sample_pickup, 1, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    if(grabbed_object_ == drink) {
+        al_play_sample(game.sample_charge, 0.3, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    }
+
+    return true;
+}
+
+////////////////////////////////////////////////////////
+
+void Creature::Jump(float velocity) {
+    if(!is_grounded_) {
+        return;
+    }
+    // need to inverse velocity, because negative is up (hindsight)
+    velocity_.y = -velocity;
+
+    al_play_sample(game.sample_jump, 1, ALLEGRO_AUDIO_PAN_NONE, ((rand() % 5) / 10) + 10, ALLEGRO_PLAYMODE_ONCE, NULL);
+}
+
+void Creature::Impact() {
+    if((velocity_.y < 0.5f) && (velocity_.y > -0.5f) && (velocity_.x < 0.5f) && (velocity_.x > -0.5f)) {
+        return;
+    }
+
+    al_play_sample(
+            game.sample_land,
+            (((velocity_.Length()) / 1000) + 0.5f),
+            ALLEGRO_AUDIO_PAN_NONE,
+            static_cast<float>(((rand() % 50) / 100) + 0.5),
+            ALLEGRO_PLAYMODE_ONCE,
+            NULL
+    );
+}
+
+void Creature::WakeUp() {
+    SetDirective(DIR_NONE);
+}
+
+void Creature::CheckRage() {
+    if(emotions_[EMO_ANGER] != 100 || (emotions_[EMO_BOREDOM] < 50 && emotions_[EMO_ANGER] < 50)) {
+        return;
+    }
+
+    SetDirective(DIR_RAGE);
+}
+
+void Creature::SetDirective(unsigned int dir) {
+    switch(directive_) {
+        default:break;
+
+        case DIR_SHOCKED: {
+
+        } break;
+
+        case DIR_PLAY: {
+            DropObject();
+            ClearLook();
+
+            delay_play_ = World::GetInstance()->GetTotalSeconds() + 100;
+        } break;
+
+        case DIR_RAGE: {
+
+        } break;
+
+        case DIR_SLEEP: {
+            if(occupation_ == OCU_SLEEPING) { // only do this if we're actually sleeping!
+                delay_sleep_ = World::GetInstance()->GetTotalSeconds() + 50;
+            }
+        } break;
+
+        case DIR_DRINK: {
+            ClearLook();
+
+            delay_drink_ = World::GetInstance()->GetTotalSeconds() + 35;
+        } break;
+    }
+    directive_ = dir;
+}
+
+void Creature::SetOccupation(unsigned int ocu) {
+    occupation_ = ocu;
 }
 
 Creature *creature = nullptr;

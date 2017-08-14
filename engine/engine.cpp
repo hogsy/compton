@@ -2,15 +2,12 @@
 
 #include "../shared.h"
 
-#include <allegro5/allegro_audio.h>
-#include <allegro5/allegro_acodec.h>
-
 EngineVars engine_vars;
 
 // Loaders
 
 namespace engine {
-    std::unordered_map<std::string, ALLEGRO_BITMAP *> bitmaps;
+
 
     ALLEGRO_FONT *LoadFont(const char *path, unsigned int size) {
         char path1[PL_SYSTEM_MAX_PATH] = { 0 };
@@ -29,6 +26,28 @@ namespace engine {
         return font;
     }
 
+    std::unordered_map<std::string, ALLEGRO_SAMPLE *> samples;
+    ALLEGRO_SAMPLE *LoadSample(std::string name) {
+        auto i = samples.find(name);
+        if(i != samples.end()) {
+            return i->second;
+        }
+
+        std::string path = "./snd/" + name;
+        if(!plFileExists(path.c_str())) {
+            PRINT_ERROR("Failed to load %s\n", path.c_str());
+        }
+
+        ALLEGRO_SAMPLE *sample = al_load_sample(path.c_str());
+        if(sample == nullptr) {
+            PRINT_ERROR("Failed to load %s\n", path.c_str());
+        }
+        samples.emplace(name, sample);
+
+        return sample;
+    }
+
+    std::unordered_map<std::string, ALLEGRO_BITMAP *> bitmaps;
     ALLEGRO_BITMAP *LoadImage(const char *path) {
         char path1[PL_SYSTEM_MAX_PATH] = { 0 };
         std::sprintf(path1, "./sprites/%s.png", path);
@@ -52,6 +71,8 @@ namespace engine {
         return bitmap;
     }
 }
+
+///////////////////////////////////////
 
 void DisplayMessageBox(const std::string &title, const std::string &message, bool error) {
     al_show_native_message_box(

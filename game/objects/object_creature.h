@@ -82,6 +82,15 @@ public:
         DIR_DRINK,
         DIR_PLAY,
         DIR_SLEEP,
+        DIR_RAGE,
+        DIR_SHOCKED,
+    };
+
+    enum {
+        OCU_NONE,
+        OCU_SLEEPING,
+        OCU_DRINKING,
+        OCU_PLAYING,
     };
 
     enum {
@@ -105,7 +114,18 @@ public:
     void Simulate();
 
     void DropObject();
-    void PickupObject(CreatureObject *object);
+    void ThrowObject();
+    bool PickupObject(CreatureObject *object);
+
+    void Jump(float velocity);
+    void Impact();
+
+    void WakeUp();
+
+    void CheckRage();
+
+    void SetDirective(unsigned int dir);
+    void SetOccupation(unsigned int ocu);
 
     void ClearLook() {
         target_look_ = LOO_NONE;
@@ -117,7 +137,8 @@ private:
     double emotions_[EMO_END];
 
     unsigned int state_, old_state_;
-    unsigned int directive_;
+    unsigned int occupation_{OCU_NONE};
+    unsigned int directive_{DIR_NONE};
 
     unsigned int target_look_{LOO_NONE};
 
@@ -133,7 +154,7 @@ private:
     CreatureObject *grabbed_object_{nullptr};
     CreatureObject *look_object_{nullptr};
 
-    bool is_grabbed;
+    bool is_grabbed, is_grounded_{false};
 
     PLVector2D velocity_;
     PLVector2D old_position_;

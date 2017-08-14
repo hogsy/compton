@@ -18,6 +18,8 @@ typedef struct GameVars {
     char profile[PL_SYSTEM_MAX_USERNAME];
 
     float camera_x, camera_y;
+
+    bool is_grabbing;
 } GameVars;
 
 extern GameVars game;

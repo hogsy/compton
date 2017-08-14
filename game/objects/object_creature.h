@@ -3,53 +3,142 @@
 #include "../../shared.h"
 #include "../../engine/sprite.h"
 
+class Creature;
+
+class CreatureObject : public Sprite {
+public:
+    CreatureObject() : Sprite(engine::LoadImage("sprites")) {
+
+    }
+
+    void Draw() override;
+
+    virtual void Simulate();
+
+    bool is_grabbed{false};
+
+    Creature *parent_{nullptr};
+
+    PLVector2D velocity_;
+
+protected:
+    unsigned int s_x_{0}, s_y_{0};
+    unsigned int s_w_{0}, s_h_{0};
+
+private:
+
+};
+
+class CreatureDrink : public CreatureObject {
+public:
+    CreatureDrink() {
+        s_x_ = 119; s_y_ = 118;
+        s_w_ = 9;   s_h_ = 5;
+
+        position_.Set(14.f, 0);
+        origin_.Set(s_w_ / 2, s_h_ / 2);
+    }
+
+    void Simulate() override {
+        CreatureObject::Simulate();
+
+
+    }
+protected:
+private:
+};
+
+class CreatureToy : public CreatureObject {
+public:
+    CreatureToy() {
+        s_x_ = 123; s_y_ = 123;
+        s_w_ = 5;   s_h_ = 5;
+
+        position_.Set(54.f, 0);
+        origin_.Set(s_w_ / 2, s_h_ / 2);
+    }
+
+    void Simulate() override;
+protected:
+private:
+};
+
+////////////////////////////////////
+
 class Creature : public Sprite {
 public:
     enum {
-        CREATURE_STATE_HAPPY,
-        CREATURE_STATE_SURPRISED,
-        CREATURE_STATE_ANGRY,
-        CREATURE_STATE_INDIFFERENT,
-        CREATURE_STATE_SAD,
+        EMO_HAPPINESS,
+        EMO_ANGER,
+        EMO_INDIFFERENT,
+        EMO_SADNESS,
+        EMO_BOREDOM,
 
-        CREATURE_STATE_END
+        EMO_END
     };
 
     enum {
-        HAND_MODE_DEFAULT,
-        HAND_MODE_DRAG,
+        DIR_NONE,
+        DIR_DRINK,
+        DIR_PLAY,
+        DIR_SLEEP,
+    };
+
+    enum {
+        LOO_NONE,
+        LOO_CURSOR,
+        LOO_OBJECT,
     };
 
     Creature();
 
     void SetState(unsigned int state) {
-        old_state_ = current_state_;
-        current_state_ = state;
+        old_state_ = state_;
+        state_ = state;
     }
 
-    void SetMode(unsigned int mode) {
-        old_mode_ = current_mode_;
-        current_mode_ = mode;
-    }
-
-    unsigned int GetState() { return current_state_; }
+    unsigned int GetState() { return state_; }
+    unsigned int GetThirst() { return static_cast<unsigned int>(thirst_); }
+    unsigned int GetHealth() { return static_cast<unsigned int>(health_); }
 
     void Draw() override;
     void Simulate();
 
+    void DropObject();
+    void PickupObject(CreatureObject *object);
+
+    void ClearLook() {
+        target_look_ = LOO_NONE;
+        look_object_ = nullptr;
+    }
+
 protected:
 private:
-    float move_time_{}, transition_delay_, target_angle_{};
-    double emotions_[CREATURE_STATE_END];
+    double emotions_[EMO_END];
 
-    unsigned int current_state_, old_state_;
+    unsigned int state_, old_state_;
+    unsigned int directive_;
 
-    double delay_mouselook;
+    unsigned int target_look_{LOO_NONE};
+
+    float thirst_, health_;
+
+    double delay_look_{1000};
+    double delay_movement;
+    double delay_lastmove;
+    double delay_play_, delay_throw_{1000};
+    double delay_drink_;
+    double delay_sleep_;
+
+    CreatureObject *grabbed_object_{nullptr};
+    CreatureObject *look_object_{nullptr};
 
     bool is_grabbed;
 
     PLVector2D velocity_;
     PLVector2D old_position_;
-
-    unsigned int current_mode_, old_mode_;
 };
+
+extern CreatureDrink   *drink;
+extern CreatureToy     *toy;
+extern Creature        *creature;

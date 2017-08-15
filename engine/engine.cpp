@@ -156,7 +156,7 @@ void InitializeDisplay() {
 #ifdef DEBUG_BUILD
             "Virtual Critters Inc. [DEBUG]"
 #else
-            "Virtual Critters Inc."
+            "Virtual Creature"
 #endif
     );
 #else // platform lib window creation
@@ -327,7 +327,7 @@ void Shutdown() {
 
 int main(int argc, char **argv) {
 
-    std::cout << "Virtual Critters " << VC_VERSION << " (" << __DATE__ << ")\n\n";
+    std::cout << "Virtual Creature " << VC_VERSION << " (" << __DATE__ << ")\n\n";
 
     memset(&engine_vars, 0, sizeof(EngineVars));
 

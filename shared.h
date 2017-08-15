@@ -29,7 +29,7 @@
 #include <PL/platform_filesystem.h>
 #include <PL/platform_graphics.h>
 
-#define DEBUG_BUILD
+//#define DEBUG_BUILD
 
 #define VC_LOG      "debug"
 #define VC_TITLE    "Critter"

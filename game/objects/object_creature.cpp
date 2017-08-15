@@ -10,6 +10,8 @@
 
 #define BORED_SLEEP   50
 
+#define get_gametime() (World::GetInstance()->GetTotalSeconds())
+
 class SnoozeCloud : public Sprite {
 public:
     SnoozeCloud() : Sprite(engine::LoadImage("sprites")) {
@@ -173,7 +175,7 @@ void Creature::Draw() {
             s_y = 33;
             break;
         case EMO_ANGER:
-            s_y = 21;
+            s_y = 22;
             break;
         case EMO_HAPPINESS:
             s_y = 0;
@@ -265,6 +267,8 @@ void Creature::Draw() {
 
     if(directive_ == DIR_SHOCKED) {
         s_x = 75; s_y = 55;
+    } else if(directive_ == DIR_DEAD) {
+        s_x = 64; s_y = 55;
     }
 
     al_draw_bitmap_region(
@@ -387,18 +391,6 @@ void Creature::Simulate() {
 
 #if 0
 
-    if(emotions_[EMO_HAPPINESS] > 50) {
-        SetState(EMO_HAPPINESS);
-    } else if(emotions_[EMO_SADNESS] > 50) {
-        SetState(EMO_SADNESS);
-    } else if(emotions_[EMO_ANGER] > 50) {
-        SetState(EMO_ANGER);
-    } else {
-        SetState(EMO_INDIFFERENT);
-    }
-
-    CheckRage();
-
     switch(directive_) {
         default: {
 #if 1
@@ -468,70 +460,52 @@ void Creature::Simulate() {
         }
 
         case DIR_SLEEP: {
-            ClearLook();
 
-            static unsigned int sleep_start = 0, sleep_end = 0;
-            if(sleep_start == 0) {
-                if(is_grabbed) { // try again later...
-                    emotions_[EMO_ANGER] += 1.f;
-                    WakeUp();
-                    break;
-                }
-
-                sleep_start = World::GetInstance()->GetTotalSeconds();
-                sleep_end = sleep_start + 1500;
-            }
-
-            if((sleep_end > World::GetInstance()->GetTotalSeconds()) && is_grabbed) {
-                sleep_start = 0;
-                emotions_[EMO_ANGER] += 30.f;
-
-                WakeUp();
-                break;
-            }
-
-            if(((thirst_ < 20) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) ||
-                    (sleep_end < World::GetInstance()->GetTotalSeconds())) {
-                sleep_start = 0;
-
-                WakeUp();
-                break;
-            }
-
-            emotions_[EMO_BOREDOM]      -= 0.05f;
-            emotions_[EMO_HAPPINESS]    -= 0.05f;
-            emotions_[EMO_ANGER]        -= 0.05f;
-            emotions_[EMO_SADNESS]      -= 0.05f;
-            break;
         }
     }
 
 #else
 
     if(occupation_ == OCU_NONE) {
-        if ((thirst_ < 30) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
+        if ((thirst_ < 30) && (delay_drink_ < get_gametime())) {
             directive_ = DIR_DRINK;
-        } /*else if(delay_sleep_ < World::GetInstance()->GetTotalSeconds()) {
-            directive_ = DIR_SLEEP;
-        } */else {
-            if (emotions_[EMO_ANGER] > 50) {
-                SetState(EMO_ANGER);
-            }
+        }
 
-            if ((emotions_[EMO_BOREDOM] > 50) && (delay_play_ < World::GetInstance()->GetTotalSeconds())) {
-                directive_ = DIR_PLAY;
-                SetState(EMO_INDIFFERENT);
-            }
+        switch(state_) {
+            default: {
+                if(emotions_[EMO_ANGER] > 50) {
+                    directive_ = DIR_RAGE;
+                    break;
+                }
 
-            if (emotions_[EMO_HAPPINESS] > 50) {
-                SetState(EMO_HAPPINESS);
-            }
+                if((emotions_[EMO_BOREDOM] > 65) && (delay_play_ < get_gametime())) {
+                    directive_ = DIR_PLAY;
+                    break;
+                }
+            } break;
 
-            if (emotions_[EMO_SADNESS] > 50) {
-
-            }
+            case EMO_HAPPINESS: {
+                if((emotions_[EMO_HAPPINESS] > 50) && (delay_sleep_ < get_gametime())) {
+                    directive_ = DIR_SLEEP;
+                    break;
+                }
+            } break;
         }
     }
+
+    double prev_emo = 0; unsigned int h_emo = 0;
+    for(unsigned int i = 0; i < EMO_END; ++i) {
+        if(emotions_[i] > prev_emo) {
+            h_emo = i;
+            prev_emo = emotions_[i];
+        }
+    }
+
+    if(h_emo == EMO_END) {
+        h_emo = EMO_INDIFFERENT;
+    }
+
+    SetState(h_emo);
 
     switch (directive_) {
 
@@ -546,7 +520,7 @@ void Creature::Simulate() {
                 directive_  = DIR_NONE;
                 occupation_ = OCU_NONE;
 
-                delay_play_ = World::GetInstance()->GetTotalSeconds() + 100;
+                delay_play_ = get_gametime() + 100;
                 break;
             }
 
@@ -555,13 +529,16 @@ void Creature::Simulate() {
                     if (delay_throw_ < World::GetInstance()->GetTotalSeconds()) {
                         ThrowObject();
                         emotions_[EMO_HAPPINESS] += 10.f;
-                        delay_throw_ = World::GetInstance()->GetTotalSeconds() + 100;
-                        delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
+
+                        delay_throw_    = get_gametime() + 100;
+                        delay_movement  = get_gametime() + 50;
                     }
                 }
                 emotions_[EMO_ANGER] -= 0.05f;
             } else if(toy->is_grabbed && (toy->parent_ != this)) {
-                emotions_[EMO_ANGER] += 10.f;
+                if(delay_throw_ < get_gametime()) {
+                    emotions_[EMO_ANGER] += 5.f;
+                }
             }
 
             emotions_[EMO_BOREDOM]  -= 0.05f;
@@ -569,32 +546,106 @@ void Creature::Simulate() {
             break;
         }
 
+        case DIR_SLEEP: {
+            if(occupation_ != OCU_SLEEPING) {
+                ClearLook();
+
+                occupation_ = OCU_SLEEPING;
+#
+                delay_sleep_ = get_gametime() + 500;
+            }
+
+            if(is_grabbed) { // try again later...
+                emotions_[EMO_ANGER] += 20.f;
+
+                occupation_ = OCU_NONE;
+                directive_  = DIR_NONE;
+
+                delay_sleep_ = get_gametime() + 100;
+                break;
+            }
+
+            if(delay_sleep_ < get_gametime()) {
+                occupation_ = OCU_NONE;
+                directive_  = DIR_NONE;
+
+                delay_sleep_ = get_gametime() + 400;
+                break;
+            }
+
+            if(((thirst_ < 20) && (delay_drink_ < get_gametime()))) {
+                occupation_ = OCU_NONE;
+                directive_  = DIR_DRINK;
+
+                if((delay_sleep_ - get_gametime()) > 0) {
+                    delay_sleep_ = get_gametime() + (delay_sleep_ - get_gametime());
+                } else {
+                    delay_sleep_ = get_gametime() + 200;
+                }
+                break;
+            }
+
+            delay_movement = get_gametime() + 50;
+
+            emotions_[EMO_BOREDOM]      -= 0.1f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.05f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+        } break;
+
+        case DIR_RAGE: {
+            ClearLook();
+
+            if(occupation_ != OCU_RAGING) {
+                occupation_ = OCU_RAGING;
+
+                delay_look_ = get_gametime() + 400;
+            }
+
+            if(delay_look_ < get_gametime()) {
+                occupation_ = OCU_NONE;
+                directive_  = DIR_NONE;
+
+            }
+
+            Jump(0.7f);
+
+            emotions_[EMO_BOREDOM]      -= 0.05f;
+            emotions_[EMO_HAPPINESS]    -= 0.05f;
+            emotions_[EMO_ANGER]        -= 0.1f;
+            emotions_[EMO_SADNESS]      -= 0.05f;
+        } break;
+
         case DIR_DRINK: {
             look_object_    = drink;
             target_look_    = LOO_OBJECT;
             occupation_     = OCU_DRINKING;
 
-            if(thirst_ >= 100) {
-                ClearLook();
-
-                directive_  = DIR_NONE;
-                occupation_ = OCU_NONE;
-
-                if (is_grounded_) {
-                    velocity_.y = -0.9f;
-                    if(position_.x < 32) {
-                        velocity_.x += 1.f;
-                    } else {
-                        velocity_.x -= 1.f;
-                    }
-                }
-
-                delay_drink_ = World::GetInstance()->GetTotalSeconds() + 100;
-                break;
-            }
-
             if(grabbed_object_ == drink) {
                 thirst_ += 0.5f;
+                if(thirst_ >= 100) {
+                    ClearLook();
+
+                    directive_  = DIR_NONE;
+                    occupation_ = OCU_NONE;
+
+                    DropObject();
+
+                    if (is_grounded_) {
+                        velocity_.y = -0.9f;
+                        if(position_.x < drink->position_.x) {
+                            velocity_.x += 1.f;
+                        } else {
+                            velocity_.x -= 1.f;
+                        }
+                    }
+
+                    delay_drink_ = World::GetInstance()->GetTotalSeconds() + 100;
+                    break;
+                }
+
+                // keep still while we drink
+                delay_movement = World::GetInstance()->GetTotalSeconds() + 10;
             }
 
             emotions_[EMO_BOREDOM]      += 0.05f;
@@ -713,7 +764,7 @@ void Creature::Simulate() {
 
     auto drinking = dynamic_cast<CreatureDrink*>(grabbed_object_);
     if(drinking == nullptr) { // drinking from bowel
-        thirst_ -= 0.05f;
+        thirst_ -= 0.01f;
     } else if(thirst_ < 1) { // dying of thirst
         health_ -= 0.05f;
     }

@@ -84,6 +84,7 @@ public:
         DIR_SLEEP,
         DIR_RAGE,
         DIR_SHOCKED,
+        DIR_DEAD,
     };
 
     enum {
@@ -91,6 +92,7 @@ public:
         OCU_SLEEPING,
         OCU_DRINKING,
         OCU_PLAYING,
+        OCU_RAGING,
     };
 
     enum {
@@ -132,9 +134,9 @@ public:
         look_object_ = nullptr;
     }
 
+    double emotions_[EMO_END];
 protected:
 private:
-    double emotions_[EMO_END];
 
     unsigned int state_, old_state_;
     unsigned int occupation_{OCU_NONE};

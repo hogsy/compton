@@ -259,7 +259,7 @@ void DrawMenu() {
     //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
 
     // Time counter
-
+#if 0
     static float x_scroll = 0;
     static bool scroll_rotation = true;
     if(scroll_rotation) {
@@ -281,6 +281,11 @@ void DrawMenu() {
     );
     DrawString(game.font_small, static_cast<int>(x_scroll) + 1, 11, al_map_rgb(0, 0, 0), monthstr);
     DrawString(game.font_small, static_cast<int>(x_scroll), 10, al_map_rgb(255, 255, 255), monthstr);
+#else
+    std::string cur_day = "DAY " + std::to_string(World::GetInstance()->GetTotalDays() + 1);
+    DrawString(game.font_small, 3, 11, al_map_rgb(0, 0, 0), cur_day.c_str());
+    DrawString(game.font_small, 2, 10, al_map_rgb(255, 255, 255), cur_day.c_str());
+#endif
 
     char timestr[10] = {0};
     static char blink = ':', blink_delay = 0;
@@ -325,6 +330,15 @@ void DrawMenu() {
     if(creature->GetHealth() > 0) { // draw health meter
         al_draw_bitmap_region(status_sprite, 0, 119, (creature->GetHealth() * 33) / 100, 3, 29, 59, 0);
     }
+
+    al_draw_bitmap_region(
+            status_sprite, 0, 105, 1, (float)(creature->emotions_[Creature::EMO_HAPPINESS] * 9) / 100, 11, 54, 0);
+    al_draw_bitmap_region(
+            status_sprite, 1, 105, 1, (float)(creature->emotions_[Creature::EMO_BOREDOM] * 9) / 100, 12, 54, 0);
+    al_draw_bitmap_region(
+            status_sprite, 2, 105, 1, (float)(creature->emotions_[Creature::EMO_ANGER] * 9) / 100, 13, 54, 0);
+    al_draw_bitmap_region(
+            status_sprite, 3, 105, 1, (float)(creature->emotions_[Creature::EMO_SADNESS] * 9) / 100, 14, 54, 0);
 }
 
 void GameDisplayFrame() {

@@ -22,8 +22,6 @@ add_executable(VCritters ${SOURCE_FILES} game/objects/names.h)
 include_directories(${CMAKE_SOURCE_DIR}/platform/include/ ${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
 
 add_subdirectory(platform)
-#add_subdirectory(external/OpenNN-master)
-add_subdirectory(allegro-5.2.2.0)
 
 set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 

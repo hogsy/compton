@@ -121,7 +121,6 @@ PLuint _plGetImageSize(PLImageFormat format, PLuint width, PLuint height);
 bool _plDDSFormatCheck(FILE *fin);
 bool _plDTXFormatCheck(FILE *fin);
 bool _plVTFFormatCheck(FILE *fin);
-bool _plTIFFFormatCheck(FILE *fin);
 bool _plTIMFormatCheck(FILE *fin);
 bool _plBMPFormatCheck(FILE *fin);
 
@@ -135,7 +134,5 @@ PLresult _plLoadBMPImage(FILE *fin, PLImage *out);
 PLresult _plLoadTIFFImage(const PLchar *path, PLImage *out);
 
 #endif
-
-PLresult plWriteTIFFImage(const PLImage *image, const PLchar *path);
 
 PL_EXTERN_C_END

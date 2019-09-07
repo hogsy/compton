@@ -44,8 +44,6 @@ PLresult plLoadImagef(FILE *fin, const char *path, PLImage *out) {
         result = _plLoadVTFImage(fin, out);
     } else if(_plDTXFormatCheck(fin)) {
         result = _plLoadDTXImage(fin, out);
-    } else if(_plTIFFFormatCheck(fin)) {
-        result = _plLoadTIFFImage(path, out);
     } else if(_plBMPFormatCheck(fin)) {
         result = _plLoadBMPImage(fin, out);
     } else {
@@ -99,11 +97,7 @@ PLresult plWriteImage(const PLImage *image, const PLchar *path) {
 
     const PLchar *extension = plGetFileExtension(path);
     if(plIsValidString(extension)) {
-        if (!strncmp(extension, PLIMAGE_EXTENSION_TIFF, 3)) {
-            result = plWriteTIFFImage(image, path);
-        } else {
-            // todo, Write BMP or some other easy-to-go format.
-        }
+
     }
 
     return result;

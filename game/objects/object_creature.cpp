@@ -89,7 +89,7 @@ void CreatureObject::Simulate() {
         }
     }
 
-    if((position_.x <= 0) || (position_.x >= 64)) {
+    if((position_.x <= 0) || (position_.x >= 63)) {
         velocity_.x *= -1;
     }
 
@@ -153,13 +153,7 @@ Creature::Creature() : Sprite(engine::LoadImage("sprites")) {
     thirst_ =
     health_ = 100;
 
-#if 0
-    memset(&(emotions_), 0, sizeof(float));
-#else // kept getting odd behaviour from the above, tried a bunch of things
-    for (double &emotion : emotions_) { // ensure threshold is maintained...
-        emotion = 0;
-    }
-#endif
+    memset(emotions_, 0, sizeof(double) * EMO_END);
 
     //emotions_[EMO_BOREDOM] = BORED_SLEEP;
 }
@@ -340,7 +334,7 @@ void Creature::Simulate() {
         }
     }
 
-    if((position_.x <= 0) || (position_.x >= 64)) {
+    if((position_.x <= 0) || (position_.x >= 63)) {
         velocity_.x *= -1;
 
         Impact();
@@ -551,7 +545,6 @@ void Creature::Simulate() {
                 ClearLook();
 
                 occupation_ = OCU_SLEEPING;
-#
                 delay_sleep_ = get_gametime() + 500;
             }
 

@@ -1,2 +1,6 @@
-name = "Ball"
-script = "ball.scr"
+classname Ball
+baseclass Sprite
+script agents/ball/ball.scr
+sprite agents/ball/ball.png
+bounds "8 8"
+physics true

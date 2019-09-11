@@ -66,6 +66,23 @@ ALLEGRO_BITMAP* LoadImage(const char* path) {
 }
 }
 
+namespace vc {
+ALLEGRO_BITMAP* LoadImage(const std::string& path) {
+  auto i = engine::bitmaps.find(path);
+  if (i != engine::bitmaps.end()) {
+    return i->second;
+  }
+
+  ALLEGRO_BITMAP* bitmap = al_load_bitmap(path.c_str());
+  if (bitmap == nullptr) {
+    PRINT_ERROR("Failed to load bitmap %s!\n", path.c_str());
+  }
+  engine::bitmaps.emplace(path, bitmap);
+
+  return bitmap;
+}
+}
+
 ///////////////////////////////////////
 
 void DisplayMessageBox(const std::string& title, const std::string& message, bool error) {

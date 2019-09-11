@@ -6,28 +6,47 @@ simple and easy to learn.
 
 Below are a list of commands and what they do.
 
+!<procedure>
+    This declares a procedure.
+
+ABS <number>
+    Returns the absolute value of number.
+
+ACS <number>
+    Returns the arc cosine of number.
+
+ASN <number>
+    Returns the arc size of number.
+
+COS <number>
+    Returns the cosine of number.
+
+LEN <string>
+    Returns the number of characters in string.
+
+LET <variable> = <value>
+    Assigns value to the named variable.
+
 REGISTER <name>
     Registers the new actor with the actor factory.
-
-
 
 REM <comment>
     This is a comment, everything after 'REM' will be
     ignored.
-
-!<procedure>
-    This declares a procedure.
 
 RETURN <data, optional>
 CALL <procedure>
     This calls a procedure. The return type of that
     procedure will be stored in A0.
 
-INCLUDE <path>
+MERGE <path>
     Includes another script alongside this one.
     Useful if you want to implement some generic functions
     to use everywhere rather than rewriting them out
     again and again.
+
+PRINT <message>
+    Prints out a message, useful for debugging.
 
 An example script is provided below.
 

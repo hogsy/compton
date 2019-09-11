@@ -70,6 +70,10 @@ ALLEGRO_SAMPLE* LoadSample(const std::string& name);
 ALLEGRO_BITMAP* LoadImage(const char* path);
 }
 
+namespace vc {
+ALLEGRO_BITMAP* LoadImage(const std::string& path);
+}
+
 #endif
 
 void DrawBitmap(ALLEGRO_BITMAP* bitmap, float x, float y, int w, int h);

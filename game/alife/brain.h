@@ -36,13 +36,15 @@ class Brain {
 
   void Tick();
 
+  void Serialise();
+  void Deserialise();
+
  protected:
  private:
   std::vector<Drive> drives_{
    Drive("thirst"),
    Drive("hunger"),
    Drive("boredom"),
-
  };
 
  MemoryStorage storage_;

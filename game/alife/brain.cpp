@@ -9,4 +9,9 @@ Drive::Drive(const std::string& name) :
 Drive::~Drive() = default;
 
 Brain::Brain() = default;
+Brain::~Brain() = default;
+
+void Brain::Tick() {
+
+}
 }

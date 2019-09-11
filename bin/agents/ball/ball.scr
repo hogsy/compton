@@ -9,4 +9,5 @@ return
 return
 
 !tick
+print "hello world!"
 return

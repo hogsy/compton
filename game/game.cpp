@@ -4,6 +4,7 @@
 #include "game.h"
 #include "agent.h"
 #include "objects/object_world.h"
+#include "idx.h"
 #include "../engine/sprite.h"
 
 /*	Game logic and other crap goes here!	*/
@@ -244,6 +245,14 @@ void InitializeGame() {
   game.is_grabbing = false;
 
   World::Get();
+
+  AgentFactory::Get()->RegisterScripts();
+  for(unsigned int i = 0; i < 100; ++i) {
+    Agent* agent = AgentFactory::Get()->Create("Ball");
+    agent->SetPosition({
+                           static_cast<float>(rand() % DISPLAY_WIDTH),
+                           static_cast<float>(rand() % 128)});
+  }
 
   creature = new Creature();
   toy = new CreatureToy();

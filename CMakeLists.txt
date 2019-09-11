@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
+
+add_subdirectory(platform/platform)
+
 project(VCritters)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -19,9 +22,7 @@ file(GLOB SOURCE_FILES
 
 add_executable(VCritters ${SOURCE_FILES} game/objects/names.h)
 
-include_directories(${CMAKE_SOURCE_DIR}/platform/include/ ${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
-
-add_subdirectory(platform)
+include_directories(${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
 
 set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 

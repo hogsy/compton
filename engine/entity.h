@@ -7,17 +7,17 @@
 class Entity : public Sprite {
 public:
     Entity();
-    ~Entity();
+    ~Entity() override;
 
-    virtual void SetPosition(PLVector2D position);
+    virtual void SetPosition(PLVector2 position);
     virtual void SetRotation(float angle);
 
-    virtual void Draw();
+    void Draw() override;
     virtual void Simulate();
 
     virtual bool IsInteractive() { return false; }
 
 protected:
 private:
-    PLVector2D _global_position;
+    PLVector2 _global_position;
 };

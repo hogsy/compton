@@ -60,7 +60,7 @@ void CreatureObject::Simulate() {
     }
 
     if (is_grabbed) {
-        static PLVector2D old_position = { 0, 0 };
+        static PLVector2 old_position = { 0, 0 };
         if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
             is_grabbed = false;
             game.is_grabbing = false;
@@ -303,7 +303,7 @@ void Creature::PhysicsTick() {
   }
 
   if (is_grabbed) {
-    static PLVector2D old_position = { 0, 0 };
+    static PLVector2 old_position = { 0, 0 };
     if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
       is_grabbed = false;
       game.is_grabbing = false;

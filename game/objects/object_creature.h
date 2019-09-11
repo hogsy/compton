@@ -19,7 +19,7 @@ public:
 
     Creature *parent_{nullptr};
 
-    PLVector2D velocity_;
+    PLVector2 velocity_;
 
 protected:
     unsigned int s_x_{0}, s_y_{0};
@@ -159,8 +159,8 @@ private:
 
     bool is_grabbed, is_grounded_{false};
 
-    PLVector2D velocity_;
-    PLVector2D old_position_;
+    PLVector2 velocity_;
+    PLVector2 old_position_;
 };
 
 extern CreatureDrink   *drink;

@@ -24,25 +24,28 @@
 #include <allegro5/allegro_acodec.h>
 
 #include <PL/platform_math.h>
-#include <PL/platform_log.h>
-#include <PL/platform_window.h>
 #include <PL/platform_filesystem.h>
 #include <PL/platform_graphics.h>
+#include <PL/platform_console.h>
 
-//#define DEBUG_BUILD
+#define DEBUG_BUILD
 
 #define VC_LOG      "debug"
 #define VC_TITLE    "Critter"
-#if defined(DEBUG_BUILD)
-#   define VC_VERSION "PRE-ALPHA DEBUG"
-#else
-#   define VC_VERSION "PRE-ALPHA"
-#endif
+#define VC_VERSION  "Pre-Alpha v0.1.0"
 
-#define PRINT(...)       printf(__VA_ARGS__); plWriteLog(VC_LOG, __VA_ARGS__)
-#define PRINT_ERROR(...) PRINT(__VA_ARGS__); exit(-1)
+enum {
+  VC_LOG_MSG, // generic message
+  VC_LOG_DEB, // debug message (won't be displayed in shipped build)
+  VC_LOG_WAR, // warning
+  VC_LOG_ERR, // error (kills application)
+};
+
+#define PRINT(...)       printf(__VA_ARGS__); plLogMessage(VC_LOG_MSG, __VA_ARGS__)
+#define PRINT_WARN(...)  printf(__VA_ARGS__); plLogMessage(VC_LOG_WAR, __VA_ARGS__)
+#define PRINT_ERROR(...) printf(__VA_ARGS__); plLogMessage(VC_LOG_ERR, __VA_ARGS__); exit(-1)
 #if defined(DEBUG_BUILD)
-#   define DPRINT(...)      printf(__VA_ARGS__); plWriteLog(VC_LOG, __VA_ARGS__)
+#   define DPRINT(...)      printf(__VA_ARGS__); plLogMessage(VC_LOG_DEB, __VA_ARGS__)
 #else
 #   define DPRINT(...)
 #endif
@@ -53,52 +56,54 @@ typedef unsigned char byte;
 
 /*	Engine	*/
 
-#define DISPLAY_WIDTH	64
-#define DISPLAY_HEIGHT	64
+#define DISPLAY_WIDTH    64
+#define DISPLAY_HEIGHT    64
 
-#define WINDOW_WIDTH	512
-#define WINDOW_HEIGHT	512
+#define WINDOW_WIDTH    512
+#define WINDOW_HEIGHT    512
 
 #ifdef __cplusplus
 
 namespace engine {
-    ALLEGRO_FONT *LoadFont(const char *path, unsigned int size);
-    ALLEGRO_SAMPLE *LoadSample(std::string name);
-    ALLEGRO_BITMAP *LoadImage(const char *path);
+ALLEGRO_FONT* LoadFont(const char* path, unsigned int size);
+ALLEGRO_SAMPLE* LoadSample(const std::string& name);
+ALLEGRO_BITMAP* LoadImage(const char* path);
 }
 
 #endif
 
-void DrawBitmap(ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h);
-void DrawString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message);
-void DrawCenteredString(const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message);
-void DrawFilledRectangle(PLVector2D position, float w, float h, ALLEGRO_COLOR colour);
+void DrawBitmap(ALLEGRO_BITMAP* bitmap, float x, float y, int w, int h);
+void DrawString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message);
+void DrawCenteredString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message);
+void DrawFilledRectangle(PLVector2 position, float w, float h, ALLEGRO_COLOR colour);
 void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom);
 
-typedef struct EngineVars {
-    ALLEGRO_DISPLAY 		*display;
-    ALLEGRO_EVENT_QUEUE 	*event_queue;
-    ALLEGRO_TIMER			*timer;
-    ALLEGRO_TEXTLOG			*log;
+struct EngineState {
+  ALLEGRO_DISPLAY* display;
+  ALLEGRO_EVENT_QUEUE* event_queue;
+  ALLEGRO_TIMER* timer;
+  ALLEGRO_TEXTLOG* log;
 
-    ALLEGRO_MOUSE_STATE		mouse_state;
-    ALLEGRO_KEYBOARD_STATE  keyboard_state;
+  ALLEGRO_MOUSE_STATE mouse_state;
+  ALLEGRO_KEYBOARD_STATE keyboard_state;
 
-    bool key_status[ALLEGRO_KEY_MAX];
-    bool mouse_status[2]; // left, right, middle
+  bool key_status[ALLEGRO_KEY_MAX];
+  bool mouse_status[2]; // left, right, middle
 
-    bool redraw;
-    bool running;
+  bool redraw;
+  bool running;
 
-    unsigned int window_width, window_height;
-    int scalex, scaley, scalew, scaleh;
+  unsigned int window_width, window_height;
+  int scalex, scaley, scalew, scaleh;
 
-    double counter;
+  double counter;
 
-    ALLEGRO_BITMAP *buffer;
-} EngineVars;
+  char app_data[PL_SYSTEM_MAX_PATH];
 
-extern EngineVars engine_vars;
+  ALLEGRO_BITMAP* buffer{nullptr};
+};
+
+extern EngineState engine_vars;
 
 /*	Game	*/
 
@@ -112,6 +117,6 @@ void ShutdownGame();
 void GameDisplayFrame();
 void GameTimerFrame();
 
-void MouseEvent(void);
+void MouseEvent();
 void KeyboardEvent(int code, bool keyup);
 

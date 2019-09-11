@@ -3,7 +3,7 @@
 class Sprite {
 public:
     Sprite();
-    Sprite(ALLEGRO_BITMAP *bitmap);
+    explicit Sprite(ALLEGRO_BITMAP *bitmap);
     Sprite(ALLEGRO_BITMAP *bitmap, float x, float y);
     virtual ~Sprite();
 
@@ -14,8 +14,8 @@ public:
 
     bool IsVisible();
 
-    PLVector2D position_;
-    PLVector2D origin_;
+    PLVector2 position_;
+    PLVector2 origin_;
     float angle;
 
 protected:

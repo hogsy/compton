@@ -17,7 +17,7 @@ World *game_worldmanager = nullptr;
 
 class RainObject : public Sprite {
 public:
-    RainObject(PLVector2D pos) : Sprite(World::GetInstance()->cloud_droplet) {
+    RainObject(PLVector2 pos) : Sprite(World::GetInstance()->cloud_droplet) {
         position_ = pos;
     }
 
@@ -61,7 +61,7 @@ public:
     }
 
     void Draw() override {
-        PLVector2D oldpos = position_;
+        PLVector2 oldpos = position_;
         position_.y = (std::sin((float) engine_vars.counter / (120 / _jiggle)) * 5 + 5) + position_.y;
 
         position_.x -= game.camera_x;
@@ -101,7 +101,7 @@ class EnvironmentBackground {
 public:
     EnvironmentBackground() {
         plScanDirectory("./bin/sprites/environment/backgrounds/", "night.png",
-                        EnvironmentBackground::LoadNightBackground);
+                        EnvironmentBackground::LoadNightBackground, false);
 
         current_background = nullptr;
     }
@@ -235,15 +235,13 @@ World::World() :
     cloud_droplet = engine::LoadImage("environment/objects/rain");
 
     // Make initial set of clouds.
-    for (int i = 0; i < cloud_density_; i++) {
+    for (unsigned int i = 0; i < cloud_density_; i++) {
         ALLEGRO_BITMAP *sprite = cloud_sprites_[rand() % CLOUD_BITMAPS];
         m_Clouds.emplace(m_Clouds.end(), CloudObject(sprite));
     }
 }
 
-World::~World() {
-
-}
+World::~World() = default;
 
 const char *World::GetDayString() {
     return sky_days[_day];

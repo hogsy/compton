@@ -24,7 +24,7 @@ void Moon::Simulate() {
 }
 
 void Moon::Draw() {
-    PLVector2D oldpos = position_;
+    PLVector2 oldpos = position_;
     position_.x -= game.camera_x / 2;
     position_.y -= game.camera_y / 2;
     Sprite::Draw();

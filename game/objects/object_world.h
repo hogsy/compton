@@ -55,8 +55,8 @@ private:
     double time_;
     unsigned int year_, m_Month, _day, _hour, _minute, _second;
 
-    ALLEGRO_COLOR sky_top_, sky_bottom_;
-    ALLEGRO_COLOR sky_toptarget_, sky_bottomtarget_;
+    ALLEGRO_COLOR sky_top_{}, sky_bottom_{};
+    ALLEGRO_COLOR sky_toptarget_{}, sky_bottomtarget_{};
     ALLEGRO_BITMAP *sky_background_;
 
     unsigned int width_, height_;

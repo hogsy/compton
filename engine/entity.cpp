@@ -12,7 +12,7 @@ Entity::Entity() : Sprite(game.entity_icon) {
 
 Entity::~Entity() = default;
 
-void Entity::SetPosition(PLVector2D position) {
+void Entity::SetPosition(PLVector2 position) {
     this->position_ = position;
 }
 
@@ -22,7 +22,7 @@ void Entity::SetRotation(float angle) {
 
 void Entity::Draw() {
     // Transform for camera position...
-    PLVector2D oposition = position_;
+    PLVector2 oposition = position_;
     position_.x -= game.camera_x;
     position_.y -= game.camera_y;
 

@@ -48,6 +48,8 @@ enum {
 
 ///////////////////////////////////////////
 
+#define GAME_PHYSICS_DEFAULT  0.085f
+
 #include "../engine/entity.h"
 #include "../engine/entity_factory.h"
 

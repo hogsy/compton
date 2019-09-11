@@ -114,6 +114,7 @@ public:
 
     void Draw() override;
     void Simulate();
+    void PhysicsTick();
 
     void DropObject();
     void ThrowObject();

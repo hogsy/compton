@@ -133,7 +133,7 @@ CreatureToy     *toy = nullptr;
 Creature::Creature() : Sprite(engine::LoadImage("sprites")) {
     state_ = old_state_ = EMO_INDIFFERENT;
 
-    origin_.Set(CREATURE_BOUND / 2, CREATURE_BOUND / 2);
+    origin_.Set((int)(CREATURE_BOUND / 2), (int)(CREATURE_BOUND / 2));
 
     velocity_.Clear();
     position_.Set(32, 32);
@@ -276,95 +276,98 @@ void Creature::Draw() {
  * engine_vars.mouse_state.x, engine_vars.mouse_state.y
  */
 
-void Creature::Simulate() {
+void Creature::PhysicsTick() {
 
-    // PHYSICS ......................................................................
-
-    if(grabbed_object_ != nullptr) {
-        grabbed_object_->position_ = position_;
-        grabbed_object_->position_.y += 1;
+  if(grabbed_object_ != nullptr) {
+    grabbed_object_->position_ = position_;
+    grabbed_object_->position_.y += 1;
 #if 0
-        if(velocity_.x > 0.01f) {
+    if(velocity_.x > 0.01f) {
             grabbed_object_->position_.x += (7 - grabbed_object_->origin_.x);
         } else if(velocity_.x < -0.01f) {
             grabbed_object_->position_.x -= (7 - grabbed_object_->origin_.x);
         }
 #endif
+  }
+
+  if(!game.is_grabbing) {
+    if (!is_grabbed && engine_vars.mouse_status[BUTTON_LMOUSE]) {
+      if ((relative_mousepos(x) > ((position_.x - origin_.x) - 10)) &&
+          (relative_mousepos(x) < ((position_.x - origin_.x) + 10)) &&
+          (relative_mousepos(y) > ((position_.y - origin_.y) - 10)) &&
+          (relative_mousepos(y) < ((position_.y - origin_.y) + 10))) {
+        is_grabbed = true;
+        game.is_grabbing = true;
+      }
+    }
+  }
+
+  if (is_grabbed) {
+    static PLVector2D old_position = { 0, 0 };
+    if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
+      is_grabbed = false;
+      game.is_grabbing = false;
+      velocity_ = (old_position - position_) * -1;
+      return;
     }
 
-    if(!game.is_grabbing) {
-        if (!is_grabbed && engine_vars.mouse_status[BUTTON_LMOUSE]) {
-            if ((relative_mousepos(x) > ((position_.x - origin_.x) - 10)) &&
-                (relative_mousepos(x) < ((position_.x - origin_.x) + 10)) &&
-                (relative_mousepos(y) > ((position_.y - origin_.y) - 10)) &&
-                (relative_mousepos(y) < ((position_.y - origin_.y) + 10))) {
-                is_grabbed = true;
-                game.is_grabbing = true;
-            }
-        }
+    old_position = position_;
+    position_.x = relative_mousepos(x);
+    position_.y = relative_mousepos(y);
+    return;
+  }
+
+  // gravity
+  velocity_.y += GAME_PHYSICS_DEFAULT;
+
+  if(velocity_.x > 0) {
+    velocity_.x -= 0.05f;
+  } else if(velocity_.x < 0) {
+    velocity_.x += 0.05f;
+  }
+
+  if(is_grounded_) {
+    if (velocity_.x < 0.05f && velocity_.x > -0.05f) {
+      velocity_.x = 0;
     }
+  }
 
-    if (is_grabbed) {
-        static PLVector2D old_position = { 0, 0 };
-        if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
-            is_grabbed = false;
-            game.is_grabbing = false;
-            velocity_ = (old_position - position_) * -1;
-            return;
-        }
+  if((position_.x <= 0) || (position_.x >= 63)) {
+    velocity_.x *= -1;
 
-        old_position = position_;
-        position_.x = relative_mousepos(x);
-        position_.y = relative_mousepos(y);
-        return;
+    Impact();
+  }
+
+  position_ += velocity_;
+
+  if(position_.y < 0) {
+    position_.y = 0;
+    velocity_.y *= -1;
+  }
+
+  if(position_.y >= GROUND_LEVEL) {
+    //  velocity_.y *= -1;
+    position_.y = GROUND_LEVEL;
+    if(!is_grounded_) {
+      Impact();
+      is_grounded_ = true;
     }
+  } else {
+    is_grounded_ = false;
+  }
 
-    // gravity
-    velocity_.y += 0.085f;
+  if(position_.x < 0) {
+    position_.x = 0;
+  } else if(position_.x > DISPLAY_WIDTH - 1) {
+    position_.x = DISPLAY_WIDTH - 1;
+  }
+}
 
-    if(velocity_.x > 0) {
-        velocity_.x -= 0.05f;
-    } else if(velocity_.x < 0) {
-        velocity_.x += 0.05f;
-    }
+void Creature::Simulate() {
 
-    if(is_grounded_) {
-        if (velocity_.x < 0.05f && velocity_.x > -0.05f) {
-            velocity_.x = 0;
-        }
-    }
+    // PHYSICS ......................................................................
 
-    if((position_.x <= 0) || (position_.x >= 63)) {
-        velocity_.x *= -1;
-
-        Impact();
-    }
-
-    position_ += velocity_;
-
-    if(position_.y < 0) {
-        position_.y = 0;
-        velocity_.y *= -1;
-    }
-
-    if(position_.y >= GROUND_LEVEL) {
-      //  velocity_.y *= -1;
-        position_.y = GROUND_LEVEL;
-        if(!is_grounded_) {
-            Impact();
-            is_grounded_ = true;
-        }
-    } else {
-        is_grounded_ = false;
-    }
-
-    if(position_.x < 0) {
-        position_.x = 0;
-      //  velocity_.x *= -1;
-    } else if(position_.x > DISPLAY_WIDTH - 1) {
-        position_.x = DISPLAY_WIDTH - 1;
-      //  velocity_.x *= -1;
-    }
+    PhysicsTick();
 
     // LOGIC ......................................................................
 

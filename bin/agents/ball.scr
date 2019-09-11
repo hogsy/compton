@@ -1,0 +1,12 @@
+rem ==========================
+rem Ball Script
+rem ==========================
+
+register "ball"
+return
+
+!spawn
+return
+
+!tick
+return

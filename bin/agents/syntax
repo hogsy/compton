@@ -1,0 +1,44 @@
+If you're reading this, awesome!
+
+The scripting language is based heavily on the BASIC
+programming language, and because of that it's incredibly
+simple and easy to learn.
+
+Below are a list of commands and what they do.
+
+REGISTER <name>
+    Registers the new actor with the actor factory.
+
+
+
+REM <comment>
+    This is a comment, everything after 'REM' will be
+    ignored.
+
+!<procedure>
+    This declares a procedure.
+
+RETURN <data, optional>
+CALL <procedure>
+    This calls a procedure. The return type of that
+    procedure will be stored in A0.
+
+INCLUDE <path>
+    Includes another script alongside this one.
+    Useful if you want to implement some generic functions
+    to use everywhere rather than rewriting them out
+    again and again.
+
+An example script is provided below.
+
+rem this is a comment
+
+call myfunc
+print A0
+
+!myfunc
+let var=3
+print var
+var = var + 3
+print var
+return var

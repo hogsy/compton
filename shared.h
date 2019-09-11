@@ -56,11 +56,11 @@ typedef unsigned char byte;
 
 /*	Engine	*/
 
-#define DISPLAY_WIDTH    64
-#define DISPLAY_HEIGHT    64
+#define DISPLAY_WIDTH   320
+#define DISPLAY_HEIGHT  240
 
-#define WINDOW_WIDTH    512
-#define WINDOW_HEIGHT    512
+#define WINDOW_WIDTH    1280
+#define WINDOW_HEIGHT   960
 
 #ifdef __cplusplus
 
@@ -115,7 +115,7 @@ void InitializeGame();
 void ShutdownGame();
 
 void GameDisplayFrame();
-void GameTimerFrame();
+void Game_Tick();
 
 void MouseEvent();
 void KeyboardEvent(int code, bool keyup);

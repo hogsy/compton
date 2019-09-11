@@ -278,7 +278,7 @@ void EventsFrame() {
     default: break;
 
     case ALLEGRO_EVENT_TIMER:engine_vars.counter++;
-      GameTimerFrame();
+      Game_Tick();
       engine_vars.redraw = true;
       break;
 

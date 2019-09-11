@@ -18,6 +18,7 @@ file(GLOB SOURCE_FILES
         game/*.*
         game/objects/*.*
         game/objects/creature/*.*
+        game/alife/*.cpp
         )
 
 add_executable(VCritters ${SOURCE_FILES} game/objects/names.h)

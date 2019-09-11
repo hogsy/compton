@@ -17,7 +17,7 @@ World *game_worldmanager = nullptr;
 
 class RainObject : public Sprite {
 public:
-    RainObject(PLVector2 pos) : Sprite(World::GetInstance()->cloud_droplet) {
+    RainObject(PLVector2 pos) : Sprite(World::Get()->cloud_droplet) {
         position_ = pos;
     }
 
@@ -26,8 +26,8 @@ public:
             delete this;
         }
         position_.x += 0.5f;
-        position_.y += (World::GetInstance()->GetWindSpeed() / 10.0f);
-        angle = -(World::GetInstance()->GetWindSpeed() / 100.0f);
+        position_.y += (World::Get()->GetWindSpeed() / 10.0f);
+        angle = -(World::Get()->GetWindSpeed() / 100.0f);
     }
 
 protected:
@@ -91,7 +91,7 @@ public:
     }
 
     void Simulate() {
-        angle = World::GetInstance()->GetTotalSeconds() * 60 / 360;
+        angle = World::Get()->GetTotalSeconds() * 60 / 360;
     }
 };
 
@@ -251,7 +251,7 @@ const char *World::GetMonthString() {
     return months[m_Month].name;
 }
 
-void World::Simulate() {
+void World::Tick() {
     if(game.menu_state != GAME_MENU_DEFAULT) {
         return;
     }
@@ -345,7 +345,8 @@ void World::Draw() {
         return;
     }
 
-    al_draw_bitmap_region(sky_background_, 0, 0, 64, 64, 0, 0, 0);
+    //al_draw_bitmap_region(sky_background_, 0, 0, 64, 64, 0, 0, 0);
+    al_draw_line(0, 135, DISPLAY_WIDTH, 135, al_map_rgb(255, 255, 255), 2);
 }
 
 

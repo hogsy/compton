@@ -6,11 +6,11 @@
 
 #define CREATURE_BOUND          11
 
-#define GROUND_LEVEL   44
+#define GROUND_LEVEL   128
 
 #define BORED_SLEEP   50
 
-#define get_gametime() (World::GetInstance()->GetTotalSeconds())
+#define get_gametime() (World::Get()->GetTotalSeconds())
 
 class SnoozeCloud : public Sprite {
  public:
@@ -285,10 +285,10 @@ void Creature::Draw() {
  */
 
 void Creature::PhysicsTick() {
-
   if (grabbed_object_ != nullptr) {
     grabbed_object_->position_ = position_;
     grabbed_object_->position_.y += 1;
+    grabbed_object_->velocity_ = 0;
 #if 0
     if(velocity_.x > 0.01f) {
             grabbed_object_->position_.x += (7 - grabbed_object_->origin_.x);
@@ -340,7 +340,7 @@ void Creature::PhysicsTick() {
     }
   }
 
-  if ((position_.x <= 0) || (position_.x >= 63)) {
+  if ((position_.x <= 0) || (position_.x >= DISPLAY_WIDTH - 1)) {
     velocity_.x *= -1;
 
     Impact();
@@ -534,7 +534,7 @@ void Creature::Simulate() {
 
       if (grabbed_object_ == toy) {
         if (is_grounded_) {
-          if (delay_throw_ < World::GetInstance()->GetTotalSeconds()) {
+          if (delay_throw_ < World::Get()->GetTotalSeconds()) {
             ThrowObject();
             emotions_[EMO_HAPPINESS] += 10.f;
 
@@ -649,12 +649,12 @@ void Creature::Simulate() {
             }
           }
 
-          delay_drink_ = World::GetInstance()->GetTotalSeconds() + 100;
+          delay_drink_ = World::Get()->GetTotalSeconds() + 100;
           break;
         }
 
         // keep still while we drink
-        delay_movement = World::GetInstance()->GetTotalSeconds() + 10;
+        delay_movement = World::Get()->GetTotalSeconds() + 10;
       }
 
       emotions_[EMO_BOREDOM] += 0.05f;
@@ -665,7 +665,7 @@ void Creature::Simulate() {
     }
 
     default: {
-      if (delay_look_ < World::GetInstance()->GetTotalSeconds()) {
+      if (delay_look_ < World::Get()->GetTotalSeconds()) {
         if (toy->is_grabbed && (toy->parent_ == nullptr)) {
           target_look_ = LOO_OBJECT;
           look_object_ = toy;
@@ -677,7 +677,7 @@ void Creature::Simulate() {
           look_object_ = nullptr;
         }
 
-        delay_look_ = World::GetInstance()->GetTotalSeconds() + 50;
+        delay_look_ = World::Get()->GetTotalSeconds() + 50;
       }
 
       emotions_[EMO_BOREDOM] += 0.05f;
@@ -691,7 +691,7 @@ void Creature::Simulate() {
 #define relative_pos_x(p) (p->position_.x - p->origin_.x)
 #define relative_pos_y(p) (p->position_.y - p->origin_.y)
 
-  if (delay_movement < World::GetInstance()->GetTotalSeconds()) { // movement
+  if (delay_movement < World::Get()->GetTotalSeconds()) { // movement
     if (grabbed_object_ == nullptr && look_object_ != nullptr) {
       if (!look_object_->is_grabbed) {
         if (!(relative_pos_x(look_object_) > (relative_pos_x(this) - 9) &&
@@ -710,24 +710,24 @@ void Creature::Simulate() {
           ClearLook();
           //delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
         } else {
-          delay_throw_ = World::GetInstance()->GetTotalSeconds() + 50;
+          delay_throw_ = World::Get()->GetTotalSeconds() + 50;
         }
       }
     } else if (grabbed_object_ != nullptr && grabbed_object_ != look_object_) {
-      if ((delay_throw_ < World::GetInstance()->GetTotalSeconds()) && (emotions_[EMO_ANGER] > 50)) {
+      if ((delay_throw_ < World::Get()->GetTotalSeconds()) && (emotions_[EMO_ANGER] > 50)) {
         ThrowObject();
       } else {
         DropObject();
       }
 
-      delay_movement = World::GetInstance()->GetTotalSeconds() + 50;
+      delay_movement = World::Get()->GetTotalSeconds() + 50;
     } else {
       static unsigned int move_dir = 0; // 0 - left, 1 - right, 2 - middle
 
       switch (directive_) {
 
         default: {
-          if (delay_lastmove < World::GetInstance()->GetTotalSeconds()) {
+          if (delay_lastmove < World::Get()->GetTotalSeconds()) {
             if (is_grounded_) {
               velocity_.y = -0.8f;
               if (move_dir == 0) {
@@ -741,12 +741,12 @@ void Creature::Simulate() {
                   move_dir = 0;
                 }
               } else {
-                if (position_.x > 54) {
+                if (position_.x > DISPLAY_WIDTH - 20) {
                   velocity_.x -= 2;
                 } else if (position_.x < 10) {
                   velocity_.x += 2;
                 } else {
-                  if (position_.x > 32) {
+                  if (position_.x > DISPLAY_WIDTH - 30) {
                     velocity_.x -= 0.9f + (float) ((rand() % 50) / 50);
                   } else {
                     velocity_.x += 0.9f + (float) ((rand() % 50) / 50);
@@ -754,7 +754,7 @@ void Creature::Simulate() {
                 }
               }
             }
-            delay_lastmove = World::GetInstance()->GetTotalSeconds() + 30;
+            delay_lastmove = World::Get()->GetTotalSeconds() + 30;
           }
         }
           break;
@@ -762,10 +762,10 @@ void Creature::Simulate() {
         case DIR_DRINK:break;
       }
 
-      if (delay_movement < World::GetInstance()->GetTotalSeconds() - 100) {
+      if (delay_movement < World::Get()->GetTotalSeconds() - 100) {
         move_dir = static_cast<unsigned int>(rand() % 2);
 
-        delay_movement = World::GetInstance()->GetTotalSeconds() + 100;
+        delay_movement = World::Get()->GetTotalSeconds() + 100;
       }
     }
   }
@@ -814,7 +814,7 @@ void Creature::ThrowObject() {
   if(relative_mousepos(x) < 0 || relative_mousepos(x) > 64) {
 #endif
   grabbed_object_->velocity_.y = -2.f;
-  if (position_.x > 32) {
+  if (position_.x > DISPLAY_WIDTH - 30) {
     grabbed_object_->velocity_.x -= 1.5f;
   } else {
     grabbed_object_->velocity_.x += 1.5f;
@@ -826,7 +826,7 @@ void Creature::ThrowObject() {
   }
 #endif
 
-  delay_throw_ = World::GetInstance()->GetTotalSeconds() + 10;
+  delay_throw_ = World::Get()->GetTotalSeconds() + 10;
 
   DropObject();
 
@@ -845,9 +845,9 @@ bool Creature::PickupObject(CreatureObject* object) {
   grabbed_object_->parent_ = this;
   grabbed_object_->is_grabbed = true;
 
-  al_play_sample(game.sample_pickup, 1, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+  al_play_sample(game.sample_pickup, 1, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, nullptr);
   if (grabbed_object_ == drink) {
-    al_play_sample(game.sample_charge, 0.3, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+    al_play_sample(game.sample_charge, 0.3, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, nullptr);
   }
 
   return true;
@@ -862,7 +862,7 @@ void Creature::Jump(float velocity) {
   // need to inverse velocity, because negative is up (hindsight)
   velocity_.y = -velocity;
 
-  al_play_sample(game.sample_jump, 1, ALLEGRO_AUDIO_PAN_NONE, ((rand() % 5) / 10) + 10, ALLEGRO_PLAYMODE_ONCE, NULL);
+  al_play_sample(game.sample_jump, 1, ALLEGRO_AUDIO_PAN_NONE, ((rand() % 5) / 10) + 10, ALLEGRO_PLAYMODE_ONCE, nullptr);
 }
 
 void Creature::Impact() {
@@ -905,7 +905,7 @@ void Creature::SetDirective(unsigned int dir) {
       DropObject();
       ClearLook();
 
-      delay_play_ = World::GetInstance()->GetTotalSeconds() + 100;
+      delay_play_ = World::Get()->GetTotalSeconds() + 100;
     }
       break;
 
@@ -916,7 +916,7 @@ void Creature::SetDirective(unsigned int dir) {
 
     case DIR_SLEEP: {
       if (occupation_ == OCU_SLEEPING) { // only do this if we're actually sleeping!
-        delay_sleep_ = World::GetInstance()->GetTotalSeconds() + 50;
+        delay_sleep_ = World::Get()->GetTotalSeconds() + 50;
       }
     }
       break;
@@ -924,7 +924,7 @@ void Creature::SetDirective(unsigned int dir) {
     case DIR_DRINK: {
       ClearLook();
 
-      delay_drink_ = World::GetInstance()->GetTotalSeconds() + 35;
+      delay_drink_ = World::Get()->GetTotalSeconds() + 35;
     }
       break;
   }

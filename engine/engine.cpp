@@ -101,6 +101,15 @@ void DrawString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, co
   al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_LEFT, message);
 }
 
+void DrawShadowString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message) {
+  if (font == nullptr) {
+    return;
+  }
+
+  al_draw_text(font, al_map_rgb(0, 0, 0), x + 1, y + 1, ALLEGRO_ALIGN_LEFT, message);
+  al_draw_text(font, colour, x, y, ALLEGRO_ALIGN_LEFT, message);
+}
+
 void DrawCenteredString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message) {
   if (font == nullptr) {
     return;
@@ -209,7 +218,6 @@ void DisplayFrame() {
 
   // Buffer scaling.
   al_set_target_backbuffer(engine_vars.display);
-  al_clear_to_color(al_map_rgb(0, 0, 0));
   al_draw_scaled_bitmap(
       engine_vars.buffer,
       0, 0,

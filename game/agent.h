@@ -24,6 +24,10 @@ class Agent {
   PLVector2 GetPosition() { return position_; }
   PLVector2 GetVelocity() { return velocity_; }
 
+  void SetDescriptor(const std::string& desc) {
+    description_ = desc;
+  }
+
  protected:
  private:
   std::string description_{"none"};

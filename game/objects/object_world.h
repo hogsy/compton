@@ -18,7 +18,7 @@ class World {
 public:
     ~World();
 
-    void Simulate();
+    void Tick();
     void Draw();
 
     void SetName(std::string name);
@@ -74,7 +74,7 @@ private:
     unsigned int cloud_density_;
 
 public:
-    static World *GetInstance() {
+    static World *Get() {
         if (!game_worldmanager) {
             game_worldmanager = new World();
         }

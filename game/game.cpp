@@ -243,15 +243,21 @@ void InitializeGame() {
 
   game.is_grabbing = false;
 
-  World::GetInstance();
+  World::Get();
 
   creature = new Creature();
   toy = new CreatureToy();
   drink = new CreatureDrink();
 }
 
-void DrawMenu() {
+void DrawStatusBar(ALLEGRO_COLOR colour, unsigned int value, float x, float y) {
+  al_draw_bitmap_region(status_sprite, 0, 114, 35, 5, x, y, 0);
+  if (creature->GetHealth() > 0) { // draw health meter
+    al_draw_tinted_bitmap_region(status_sprite, colour, 0, 119, (float) (value) * 33 / 100, 3, x + 1, y + 1, 0);
+  }
+}
 
+void DrawMenu() {
   //DrawBitmap(background2, 0 - game.camera_x / 3, 128 - game.camera_y, 1088, 416);
   //DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);
   //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
@@ -273,16 +279,14 @@ void DrawMenu() {
   }
   char monthstr[20] = {0};
   snprintf(monthstr, sizeof(monthstr), "%04u/%02u/%02u",
-           World::GetInstance()->GetYear(),
-           World::GetInstance()->GetMonth(),
-           World::GetInstance()->GetDay()
+           World::Get()->GetYear(),
+           World::Get()->GetMonth(),
+           World::Get()->GetDay()
   );
-  DrawString(game.font_small, static_cast<int>(x_scroll) + 1, 11, al_map_rgb(0, 0, 0), monthstr);
-  DrawString(game.font_small, static_cast<int>(x_scroll), 10, al_map_rgb(255, 255, 255), monthstr);
+  DrawShadowString(game.font_small, static_cast<int>(x_scroll), 10, al_map_rgb(255, 255, 255), monthstr);
 #else
-  std::string cur_day = "DAY " + std::to_string(World::GetInstance()->GetTotalDays() + 1);
-  DrawString(game.font_small, 3, 11, al_map_rgb(0, 0, 0), cur_day.c_str());
-  DrawString(game.font_small, 2, 10, al_map_rgb(255, 255, 255), cur_day.c_str());
+  std::string cur_day = "DAY " + std::to_string(World::Get()->GetTotalDays() + 1);
+  DrawShadowString(game.font_small, 2, 10, al_map_rgb(255, 255, 255), cur_day.c_str());
 #endif
 
   char timestr[10] = {0};
@@ -296,54 +300,53 @@ void DrawMenu() {
     blink_delay = 0;
   }
   snprintf(timestr, 10, "%02u%c%02u",
-           World::GetInstance()->GetHour(), blink,
-           World::GetInstance()->GetMinute()); // Removed the second timer here...
-  DrawString(game.font_small, 3, 3, al_map_rgb(0, 0, 0), timestr);
-  DrawString(game.font_small, 2, 2, al_map_rgb(255, 255, 255), timestr);
+           World::Get()->GetHour(), blink,
+           World::Get()->GetMinute()); // Removed the second timer here...
+  DrawShadowString(game.font_small, 2, 2, al_map_rgb(255, 255, 255), timestr);
   blink_delay++;
 
+  float emo_y = 227;
   switch (creature->GetState()) {
     default:
-    case Creature::EMO_HAPPINESS:al_draw_bitmap_region(status_sprite, 0, 64, 8, 8, 2, 55, 0);
+    case Creature::EMO_HAPPINESS:al_draw_bitmap_region(status_sprite, 0, 64, 8, 8, 10, emo_y, 0);
       break;
 
-    case Creature::EMO_INDIFFERENT:al_draw_bitmap_region(status_sprite, 8, 64, 8, 8, 2, 55, 0);
+    case Creature::EMO_INDIFFERENT:al_draw_bitmap_region(status_sprite, 8, 64, 8, 8, 10, emo_y, 0);
       break;
 
     case Creature::EMO_SADNESS:
-    case Creature::EMO_ANGER:al_draw_bitmap_region(status_sprite, 16, 64, 8, 8, 2, 55, 0);
+    case Creature::EMO_ANGER:al_draw_bitmap_region(status_sprite, 16, 64, 8, 8, 10, emo_y, 0);
       break;
   }
 
-  // two separate backgrounds that go behind both the thirst and health
-  al_draw_bitmap_region(status_sprite, 0, 114, 35, 5, 28, 54, 0);
-  al_draw_bitmap_region(status_sprite, 0, 114, 35, 5, 28, 58, 0);
+  // health meter
+  const float bar_x = 28;
+  float bar_y = 226;
+  DrawStatusBar(al_map_rgb(255, 0, 0), creature->GetHealth(), bar_x, bar_y);
+  bar_y += 6;
+  DrawStatusBar(al_map_rgb(0, 0, 255), creature->GetThirst(), bar_x, bar_y);
 
-  if (creature->GetThirst() > 0) { // draw thirst meter
-    al_draw_bitmap_region(status_sprite, 0, 122, (creature->GetThirst() * 33) / 100, 3, 29, 55, 0);
-  }
-  if (creature->GetHealth() > 0) { // draw health meter
-    al_draw_bitmap_region(status_sprite, 0, 119, (creature->GetHealth() * 33) / 100, 3, 29, 59, 0);
-  }
-
+  emo_y = 54;
   al_draw_bitmap_region(
-      status_sprite, 0, 105, 1, (float) (creature->emotions_[Creature::EMO_HAPPINESS] * 9) / 100, 11, 54, 0);
+      status_sprite, 0, 105, 1, (float) (creature->emotions_[Creature::EMO_HAPPINESS] * 9) / 100, 11, emo_y, 0);
   al_draw_bitmap_region(
-      status_sprite, 1, 105, 1, (float) (creature->emotions_[Creature::EMO_BOREDOM] * 9) / 100, 12, 54, 0);
+      status_sprite, 1, 105, 1, (float) (creature->emotions_[Creature::EMO_BOREDOM] * 9) / 100, 12, emo_y, 0);
   al_draw_bitmap_region(
-      status_sprite, 2, 105, 1, (float) (creature->emotions_[Creature::EMO_ANGER] * 9) / 100, 13, 54, 0);
+      status_sprite, 2, 105, 1, (float) (creature->emotions_[Creature::EMO_ANGER] * 9) / 100, 13, emo_y, 0);
   al_draw_bitmap_region(
-      status_sprite, 3, 105, 1, (float) (creature->emotions_[Creature::EMO_SADNESS] * 9) / 100, 14, 54, 0);
+      status_sprite, 3, 105, 1, (float) (creature->emotions_[Creature::EMO_SADNESS] * 9) / 100, 14, emo_y, 0);
 }
 
 void GameDisplayFrame() {
-  al_clear_to_color(al_map_rgb(0, 0, 0));
+  al_clear_to_color(al_map_rgb(128, 0, 0));
 
-  World::GetInstance()->Draw();
+  World::Get()->Draw();
 
   creature->Draw();
   toy->Draw();
   drink->Draw();
+
+  AgentFactory::Get()->Draw();
 
   DrawMenu();
 }
@@ -352,11 +355,11 @@ void GameDisplayFrame() {
 #define CAMERA_ACCELERATION 0.05f
 
 void Game_Tick() {
-  if(game.state == GAME_STATE_PAUSED) {
+  if (game.state == GAME_STATE_PAUSED) {
     return;
   }
 
-  World::GetInstance()->Simulate();
+  World::Get()->Tick();
 
   AgentFactory::Get()->Tick();
 

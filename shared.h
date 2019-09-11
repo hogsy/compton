@@ -74,6 +74,7 @@ ALLEGRO_BITMAP* LoadImage(const char* path);
 
 void DrawBitmap(ALLEGRO_BITMAP* bitmap, float x, float y, int w, int h);
 void DrawString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message);
+void DrawShadowString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message);
 void DrawCenteredString(const ALLEGRO_FONT* font, int x, int y, ALLEGRO_COLOR colour, const char* message);
 void DrawFilledRectangle(PLVector2 position, float w, float h, ALLEGRO_COLOR colour);
 void DrawVerticalGradientRectangle(float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom);

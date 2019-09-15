@@ -12,6 +12,8 @@ class PhysicsAgent : public SpriteAgent {
   void Tick() override;
   void Draw() override;
 
+  virtual void Impact(Agent* agent);
+
   PLVector2 GetVelocity() { return velocity_; }
   virtual void SetVelocity(PLVector2 vel) {
     old_velocity_ = velocity_;

@@ -77,6 +77,8 @@ class AgentFactory {
   void Register(const std::string& name, AgentSpawnFunction func);
   void Register(const std::string& name, const std::string& baseclass, const AgentDefinitionData& data);
   Agent* Create(const std::string& name);
+
+  void Clear();
 };
 
 #define IMPLEMENT_FACTORY(a) \

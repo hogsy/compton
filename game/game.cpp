@@ -234,7 +234,7 @@ void InitializeGame() {
   game.font_chunk = engine::LoadFont("ps2p/PressStart2P", 24);
 
   game.sample_jump = engine::LoadSample("00.wav");
-  game.sample_land = engine::LoadSample("03.wav");
+  game.sample_land = engine::LoadSample("00.wav");
   game.sample_charge = engine::LoadSample("04.wav");
   game.sample_pickup = engine::LoadSample("05.wav");
   game.sample_throw = engine::LoadSample("06.wav");
@@ -246,16 +246,10 @@ void InitializeGame() {
   World::Get();
 
   AgentFactory::Get()->RegisterScripts();
-  for(unsigned int i = 0; i < 100; ++i) {
-    Agent* agent = AgentFactory::Get()->Create("Ball");
-    agent->SetPosition({
-                           static_cast<float>(rand() % DISPLAY_WIDTH),
-                           static_cast<float>(rand() % 128)});
-  }
 
-  creature = new Creature();
-  toy = new CreatureToy();
-  drink = new CreatureDrink();
+  //creature = new Creature();
+  //toy = new CreatureToy();
+  //drink = new CreatureDrink();
 }
 
 void DrawStatusBar(ALLEGRO_COLOR colour, unsigned int value, float x, float y) {
@@ -266,6 +260,7 @@ void DrawStatusBar(ALLEGRO_COLOR colour, unsigned int value, float x, float y) {
 }
 
 void DrawMenu() {
+#if 0
   //DrawBitmap(background2, 0 - game.camera_x / 3, 128 - game.camera_y, 1088, 416);
   //DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);
   //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
@@ -343,6 +338,7 @@ void DrawMenu() {
       status_sprite, 2, 105, 1, (float) (creature->emotions_[Creature::EMO_ANGER] * 9) / 100, 13, emo_y, 0);
   al_draw_bitmap_region(
       status_sprite, 3, 105, 1, (float) (creature->emotions_[Creature::EMO_SADNESS] * 9) / 100, 14, emo_y, 0);
+#endif
 }
 
 void GameDisplayFrame() {
@@ -350,9 +346,7 @@ void GameDisplayFrame() {
 
   World::Get()->Draw();
 
-  creature->Draw();
-  toy->Draw();
-  drink->Draw();
+  //creature->Draw();
 
   AgentFactory::Get()->Draw();
 
@@ -371,9 +365,7 @@ void Game_Tick() {
 
   AgentFactory::Get()->Tick();
 
-  creature->Simulate();
-  toy->Simulate();
-  drink->Simulate();
+  //creature->Simulate();
 }
 
 void MouseEvent() {
@@ -387,6 +379,17 @@ void KeyboardEvent(int code, bool keyup) {
 
   switch (code) {
     default: break;
+
+    case ALLEGRO_KEY_ENTER: {
+      AgentFactory::Get()->Clear();
+
+      for(unsigned int i = 0; i < 10; ++i) {
+        Agent* agent = AgentFactory::Get()->Create("Ball");
+        agent->SetPosition({
+                               static_cast<float>(rand() % DISPLAY_WIDTH),
+                               static_cast<float>(rand() % 128)});
+      }
+    }
 
     case ALLEGRO_KEY_PAUSE: {
 #if 0

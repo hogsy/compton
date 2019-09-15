@@ -96,3 +96,12 @@ void AgentFactory::RegisterScripts() {
   // now load in all of our agents (these all depend on the base classes)
   plScanDirectory("./agents", "adf", AgentFactory::RegisterScript, true);
 }
+
+void AgentFactory::Clear() {
+  for(auto agent: agents_) {
+    delete agent;
+    agent = nullptr;
+  }
+
+  agents_.clear();
+}

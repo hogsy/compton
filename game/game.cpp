@@ -223,7 +223,6 @@ private:
 ALLEGRO_BITMAP* status_sprite;
 
 void InitializeGame() {
-
   memset(&game, 0, sizeof(GameVars));
 
   game.state = GAME_STATE_DEFAULT;

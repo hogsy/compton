@@ -1,0 +1,6 @@
+classname Bowl
+baseclass Sprite
+script agents/bowl/bowl.scr
+sprite agents/bowl/bowl.png
+bounds "8 8"
+physics true

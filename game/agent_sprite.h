@@ -7,9 +7,9 @@ class SpriteAgent : public Agent {
  public:
   IMPLEMENT_FACTORY(SpriteAgent)
 
-  virtual void SetupProperties(const AgentDefinitionData& adf_loader);
+  void SetupProperties(const AgentDefinitionData& adf_loader) override;
 
-  virtual void Tick();
+  void Tick() override;
   void Draw() override;
 
  private:

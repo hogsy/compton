@@ -14,8 +14,7 @@ class Agent {
   virtual void Activate() { is_activated_ = true; }
   virtual void Deactivate() { is_activated_ = false; }
 
-  virtual void TickPhysics();
-  virtual void Tick() { TickPhysics(); }
+  virtual void Tick() {}
   virtual void Draw() {}
 
   virtual void SetupProperties(const AgentDefinitionData& adf_loader);
@@ -28,13 +27,7 @@ class Agent {
     position_ = pos;
   }
 
-  virtual void SetVelocity(PLVector2 vel) {
-    old_velocity_ = velocity_;
-    velocity_ = vel;
-  }
-
   PLVector2 GetPosition() { return position_; }
-  PLVector2 GetVelocity() { return velocity_; }
 
   void SetDescriptor(const std::string& desc) {
     description_ = desc;
@@ -42,17 +35,11 @@ class Agent {
 
  protected:
   PLVector2 position_, old_position_;
-  PLVector2 velocity_, old_velocity_;
 
  private:
   std::string description_{"none"};
 
-  PLVector2 bounds_{0, 0};
-
-  bool use_physics_{false};
-
   bool is_activated_{false};
-  bool is_grounded_{false};
 };
 
 class AgentFactory {

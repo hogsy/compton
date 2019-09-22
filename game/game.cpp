@@ -1,11 +1,11 @@
-// Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
+// Virtual Critters, Copyright (C) 2016-2019 Mark Elsworth Sowden
 
 #include "../shared.h"
+
 #include "game.h"
 #include "agent.h"
+
 #include "objects/object_world.h"
-#include "idx.h"
-#include "../engine/sprite.h"
 
 /*	Game logic and other crap goes here!	*/
 
@@ -214,11 +214,7 @@ private:
 
 // Menu (includes HUD etc.)
 
-
-
 // Everything Else
-
-//ALLEGRO_BITMAP *background0, *background1, *background2;
 
 ALLEGRO_BITMAP* status_sprite;
 
@@ -246,10 +242,6 @@ void InitializeGame() {
   World::Get();
 
   AgentFactory::Get()->RegisterScripts();
-
-  //creature = new Creature();
-  //toy = new CreatureToy();
-  //drink = new CreatureDrink();
 }
 
 void DrawStatusBar(ALLEGRO_COLOR colour, unsigned int value, float x, float y) {
@@ -345,9 +337,6 @@ void GameDisplayFrame() {
   al_clear_to_color(al_map_rgb(128, 0, 0));
 
   World::Get()->Draw();
-
-  //creature->Draw();
-
   AgentFactory::Get()->Draw();
 
   DrawMenu();
@@ -362,10 +351,7 @@ void Game_Tick() {
   }
 
   World::Get()->Tick();
-
   AgentFactory::Get()->Tick();
-
-  //creature->Simulate();
 }
 
 void MouseEvent() {
@@ -383,12 +369,14 @@ void KeyboardEvent(int code, bool keyup) {
     case ALLEGRO_KEY_ENTER: {
       AgentFactory::Get()->Clear();
 
-      for(unsigned int i = 0; i < 10; ++i) {
+      static unsigned int c = 1;
+      for(unsigned int i = 0; i < c; ++i) {
         Agent* agent = AgentFactory::Get()->Create("Ball");
         agent->SetPosition({
                                static_cast<float>(rand() % DISPLAY_WIDTH),
                                static_cast<float>(rand() % 128)});
       }
+      c *= 2;
     }
 
     case ALLEGRO_KEY_PAUSE: {

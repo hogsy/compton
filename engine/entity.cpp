@@ -1,4 +1,4 @@
-// Virtual Critters, Copyright (C) 2016-2017 Mark Elsworth Sowden
+// Virtual Critters, Copyright (C) 2016-2019 Mark Elsworth Sowden
 
 #include "../shared.h"
 #include "entity.h"

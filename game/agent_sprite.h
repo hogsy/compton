@@ -12,6 +12,6 @@ class SpriteAgent : public Agent {
   void Tick() override;
   void Draw() override;
 
- private:
+ protected:
   Sprite* sprite_{nullptr};
 };

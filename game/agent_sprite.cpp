@@ -1,5 +1,6 @@
 
 #include "../shared.h"
+
 #include "agent_sprite.h"
 
 void SpriteAgent::SetupProperties(const AgentDefinitionData& adf_loader) {

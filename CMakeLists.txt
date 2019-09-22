@@ -21,7 +21,7 @@ file(GLOB SOURCE_FILES
         game/alife/*.cpp
         )
 
-add_executable(VCritters ${SOURCE_FILES} game/objects/names.h)
+add_executable(VCritters ${SOURCE_FILES})
 
 include_directories(${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
 

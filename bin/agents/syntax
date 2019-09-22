@@ -6,7 +6,7 @@ simple and easy to learn.
 
 Below are a list of commands and what they do.
 
-!<procedure>
+PROC <procedure>
     This declares a procedure.
 
 ABS <number>
@@ -24,10 +24,10 @@ COS <number>
 LEN <string>
     Returns the number of characters in string.
 
-LET <variable> = <value>
+VAR <variable> = <value>
     Assigns value to the named variable.
 
-REGISTER <name>
+REG <name>
     Registers the new actor with the actor factory.
 
 REM <comment>

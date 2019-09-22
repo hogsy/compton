@@ -3,6 +3,7 @@
 #include "../../shared.h"
 
 #include "../game.h"
+
 #include "object_world.h"
 
 World *game_worldmanager = nullptr;
@@ -208,7 +209,6 @@ Month months[] = {
 
 #define CLOUD_BITMAPS 3
 
-#include "names.h"
 #include "object_creature.h"
 
 World::World() :
@@ -219,7 +219,7 @@ World::World() :
         temperature_(20) {
     env_background = new EnvironmentBackground();
 
-    name_ = planet_names[rand() % plArrayElements(planet_names)];
+    //name_ = planet_names[rand() % plArrayElements(planet_names)];
 
     cloud_sprites_.reserve(10);
     for (int i = 0; i < CLOUD_BITMAPS; i++) {

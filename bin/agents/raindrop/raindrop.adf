@@ -1,0 +1,7 @@
+classname RainDrop
+baseclass Physics
+script agents/raindrop/raindrop.scr
+sprite agents/raindrop/rain.png
+bounds "2 2"
+elasticity 0
+physics true

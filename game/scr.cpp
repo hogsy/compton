@@ -3,18 +3,8 @@
 
 #include "scr.h"
 
-class ScrHandle {
+enum class OpCodes {
 
-};
-
-class ScrLoader {
- public:
-  explicit ScrLoader(const std::string& path);
-  ~ScrLoader();
-
- protected:
- private:
-  void ParseLine(const std::string& str);
 };
 
 ScrLoader::ScrLoader(const std::string& path) {

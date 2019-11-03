@@ -18,7 +18,7 @@ World *game_worldmanager = nullptr;
 
 class RainObject : public Sprite {
 public:
-    RainObject(PLVector2 pos) : Sprite(World::Get()->cloud_droplet) {
+    RainObject(PLVector2 pos) : Sprite() {
         position_ = pos;
     }
 
@@ -231,8 +231,6 @@ World::World() :
     sky_bottom_         = sky_colourcycle[0].bottom;
     sky_bottomtarget_   = al_map_rgb(0, 0, 0); //sky_colourcycle[1].bottom;
     sky_background_     = engine::LoadImage("sprites");
-
-    cloud_droplet = engine::LoadImage("environment/objects/rain");
 
     // Make initial set of clouds.
     for (unsigned int i = 0; i < cloud_density_; i++) {

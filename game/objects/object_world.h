@@ -46,8 +46,6 @@ public:
     const char *GetDayString();
     const char *GetMonthString();
 
-    ALLEGRO_BITMAP *cloud_droplet; // todo, move to a global table...
-
 protected:
 private:
     World();

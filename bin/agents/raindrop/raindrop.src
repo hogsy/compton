@@ -1,5 +1,12 @@
 // Copyright (C) 2019 Mark E Sowden <markelswo@gmail.com>
 
+proc Tick
+    call IsVisible
+    if $r0 == 0
+        $position
+    endif
+    return
+
 proc Tick() {
     if(!IsVisible()) {
         Remove($self);

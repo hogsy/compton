@@ -4,60 +4,67 @@ The scripting language is based heavily on the BASIC
 programming language, and because of that it's incredibly
 simple and easy to learn.
 
-Below are a list of commands and what they do.
+```
+#include "myscript/script.src"
 
-PROC <procedure>
-    This declares a procedure.
+proc InitFunc
+return
+```
 
-ABS <number>
-    Returns the absolute value of number.
+http://clrhome.org/table/
 
-ACS <number>
-    Returns the arc cosine of number.
+## Compiled (CSRC)
 
-ASN <number>
-    Returns the arc size of number.
+```
+uint8_t hdr[4] = "CSRC"
+```
 
-COS <number>
-    Returns the cosine of number.
+## Preprocessor
 
-LEN <string>
-    Returns the number of characters in string.
-
-VAR <variable> = <value>
-    Assigns value to the named variable.
-
-REG <name>
-    Registers the new actor with the actor factory.
-
-REM <comment>
-    This is a comment, everything after 'REM' will be
+`# <comment>`
+    This is a comment, everything after '# ' will be
     ignored.
 
-RETURN <data, optional>
-CALL <procedure>
-    This calls a procedure. The return type of that
-    procedure will be stored in A0.
-
-MERGE <path>
+`#include <path>`
     Includes another script alongside this one.
     Useful if you want to implement some generic functions
     to use everywhere rather than rewriting them out
     again and again.
+    
+## Functions
 
-PRINT <message>
+Below are a list of commands and what they do. These will probably be
+implemented as their own opcodes.
+
+`proc <procedure>`
+    This declares a procedure.
+
+`add <number,number>`
+    Adds two variables together.
+
+`abs <number>`
+    Returns the absolute value of number.
+
+`acs <number>`
+    Returns the arc cosine of number.
+
+`asn <number>`
+    Returns the arc size of number.
+
+`cos <number>` 
+    Returns the cosine of number.
+
+`len <string>`
+    Returns the number of characters in string.
+
+`var <variable> = <value>`
+    Assigns value to the named variable.
+
+`return <data, optional>`
+
+`call <procedure>`
+    This calls a procedure. The return type of that
+    procedure will be stored in A0.
+
+`print <message>`
     Prints out a message, useful for debugging.
-
-An example script is provided below.
-
-rem this is a comment
-
-call myfunc
-print A0
-
-!myfunc
-let var=3
-print var
-var = var + 3
-print var
-return var

@@ -8,26 +8,66 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
 # Set all of our output directories.
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
+# Get the current working branch
+execute_process(
+        COMMAND git rev-parse --abbrev-ref HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_BRANCH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+        COMMAND git log -1 --format=%h
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Get the number of commits on the working branch
+execute_process(
+        COMMAND git rev-list HEAD --count
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_COUNT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+add_definitions( -DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}" )
+add_definitions( -DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}" )
+add_definitions( -DGIT_BRANCH="${GIT_BRANCH}" )
+
 file(GLOB SOURCE_FILES
-        *.cpp *.c *.h
-        engine/*.*
-        game/*.*
-        game/objects/*.*
-        game/objects/creature/*.*
-        game/alife/*.cpp
+        src/shared.h
+        src/engine/*.cpp
+        src/game/*.cpp
+        src/game/objects/*.cpp
+        src/game/objects/creature/*.cpp
+        src/game/alife/*.cpp
         )
 
-add_executable(VCritters ${SOURCE_FILES})
+add_executable( VCritters ${SOURCE_FILES} )
 
-include_directories(${CMAKE_SOURCE_DIR}/external/OpenNN-master/)
+set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 
-set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
-
-target_link_libraries(VCritters
-        platform X11 dl
-        allegro allegro_main allegro_dialog allegro_font allegro_ttf allegro_image allegro_primitives allegro_audio allegro_acodec
+if ( WIN32 )
+    target_include_directories( VCritters PRIVATE src/3rdparty/allegro/include/ )
+    target_link_directories( VCritters PRIVATE src/3rdparty/allegro/lib/ )
+    target_link_libraries( VCritters -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc )
+endif( WIN32 )
+target_link_libraries( VCritters
+        platform
+        allegro
+        allegro_main
+        allegro_dialog
+        allegro_font
+        allegro_ttf
+        allegro_image
+        allegro_primitives
+        allegro_audio
+        allegro_acodec
+        #allegro_monolith-static
         )

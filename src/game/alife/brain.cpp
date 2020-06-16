@@ -1,17 +1,17 @@
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
 #include "../../shared.h"
 #include "brain.h"
 
-namespace vc {
-Drive::Drive(const std::string& name) :
-    description_(name) {
+vc::Drive::Drive( const std::string &name ) : description_( name ) {
 }
-Drive::~Drive() = default;
+vc::Drive::~Drive() = default;
 
-Brain::Brain() = default;
-Brain::~Brain() = default;
+vc::Brain::Brain() = default;
+vc::Brain::~Brain() = default;
 
-void Brain::Tick() {
-
-}
+void vc::Brain::Tick() {
 }

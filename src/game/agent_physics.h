@@ -1,3 +1,7 @@
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
 #pragma once
 
@@ -7,7 +11,7 @@ class PhysicsAgent : public SpriteAgent {
  public:
   IMPLEMENT_FACTORY(PhysicsAgent)
 
-  void SetupProperties(const AgentDefinitionData& adf_loader) override;
+  void SetupProperties(const AgentDefinitionLoader & adf_loader) override;
 
   void Tick() override;
   void Draw() override;

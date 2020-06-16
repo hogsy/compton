@@ -48,7 +48,7 @@ void CreatureObject::Simulate() {
   }
 
   if (!game.is_grabbing) {
-    if (!is_grabbed && engine_vars.mouse_status[BUTTON_LMOUSE]) {
+    if (!is_grabbed && engine_vars.mouse_status[MOUSE_BUTTON_LEFT]) {
       if ((engine_vars.mouse_state.x / 8 > ((position_.x - origin_.x) - 10)) &&
           (engine_vars.mouse_state.x / 8 < ((position_.x - origin_.x) + 10)) &&
           (engine_vars.mouse_state.y / 8 > ((position_.y - origin_.y) - 10)) &&
@@ -61,7 +61,7 @@ void CreatureObject::Simulate() {
 
   if (is_grabbed) {
     static PLVector2 old_position = {0, 0};
-    if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
+    if (!engine_vars.mouse_status[MOUSE_BUTTON_LEFT]) {
       is_grabbed = false;
       game.is_grabbing = false;
       velocity_ = (old_position - position_) * -1;
@@ -299,7 +299,7 @@ void Creature::PhysicsTick() {
   }
 
   if (!game.is_grabbing) {
-    if (!is_grabbed && engine_vars.mouse_status[BUTTON_LMOUSE]) {
+    if (!is_grabbed && engine_vars.mouse_status[MOUSE_BUTTON_LEFT]) {
       if ((relative_mousepos(x) > ((position_.x - origin_.x) - 10)) &&
           (relative_mousepos(x) < ((position_.x - origin_.x) + 10)) &&
           (relative_mousepos(y) > ((position_.y - origin_.y) - 10)) &&
@@ -312,7 +312,7 @@ void Creature::PhysicsTick() {
 
   if (is_grabbed) {
     static PLVector2 old_position = {0, 0};
-    if (!engine_vars.mouse_status[BUTTON_LMOUSE]) {
+    if (!engine_vars.mouse_status[MOUSE_BUTTON_LEFT]) {
       is_grabbed = false;
       game.is_grabbing = false;
       velocity_ = (old_position - position_) * -1;

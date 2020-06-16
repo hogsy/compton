@@ -1,58 +1,62 @@
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
+#include "ConfigLoader.h"
 #include "agent.h"
-#include "idx.h"
 #include "alife/brain.h"
 
 namespace vc {
-class CreatureAgent : public Agent {
- public:
-  IMPLEMENT_FACTORY(CreatureAgent);
+	class CreatureAgent : public Agent {
+	public:
+		IMPLEMENT_FACTORY( CreatureAgent );
 
-  CreatureAgent();
-  ~CreatureAgent() override;
+		CreatureAgent();
+		~CreatureAgent() override;
 
-  void Tick() override;
+		void Tick() override;
 
- protected:
- private:
-  Brain* brain_{nullptr};
+	protected:
+	private:
+		Brain *brain_{ nullptr };
 
-  void GenerateName();
+		void GenerateName();
 
-  std::string name_{"none"};
-};
+		std::string name_{ "none" };
+	};
 
-CreatureAgent::CreatureAgent() {
-  brain_ = new Brain();
+	CreatureAgent::CreatureAgent() {
+		brain_ = new Brain();
 
-  GenerateName();
-}
+		GenerateName();
+	}
 
-CreatureAgent::~CreatureAgent() {
-  delete brain_;
-}
+	CreatureAgent::~CreatureAgent() {
+		delete brain_;
+	}
 
-void CreatureAgent::GenerateName() {
-  name_.clear();
+	void CreatureAgent::GenerateName() {
+		name_.clear();
 
-  IdxLoader idx("./names.idx");
-  unsigned int sets = rand() % 5 + 1;
-  for(unsigned int i = 0; i < sets; ++i) {
-    std::string app = idx.GetIndex(rand() % idx.GetNumIndices());
-    if(app.empty()) {
-      continue;
-    }
+		ConfigLoader idx( "./names.idx" );
+		unsigned int sets = rand() % 5 + 1;
+		for ( unsigned int i = 0; i < sets; ++i ) {
+			std::string app = idx.GetIndex( rand() % idx.GetNumIndices() );
+			if ( app.empty() ) {
+				continue;
+			}
 
-    name_.append(app);
-  }
+			name_.append( app );
+		}
 
-  name_[0] = std::toupper(name_[0]);
-}
+		name_[ 0 ] = std::toupper( name_[ 0 ] );
+	}
 
-void CreatureAgent::Tick() {
-  Agent::Tick();
+	void CreatureAgent::Tick() {
+		Agent::Tick();
 
-  brain_->Tick();
-}
-}
+		brain_->Tick();
+	}
+}// namespace vc

@@ -3,7 +3,7 @@
 
 #include "agent_sprite.h"
 
-void SpriteAgent::SetupProperties(const AgentDefinitionData& adf_loader) {
+void SpriteAgent::SetupProperties(const AgentDefinitionLoader & adf_loader) {
   Agent::SetupProperties(adf_loader);
 
   std::string sprite_path = adf_loader.GetProperty("sprite");

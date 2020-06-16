@@ -61,7 +61,6 @@ endif( WIN32 )
 target_link_libraries( VCritters
         platform
         allegro
-        allegro_main
         allegro_dialog
         allegro_font
         allegro_ttf
@@ -69,5 +68,4 @@ target_link_libraries( VCritters
         allegro_primitives
         allegro_audio
         allegro_acodec
-        #allegro_monolith-static
         )

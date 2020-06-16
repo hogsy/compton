@@ -2,47 +2,20 @@
 
 #include "../shared.h"
 
-#include "game.h"
 #include "agent.h"
+#include "game.h"
 
 #include "objects/object_world.h"
 
 /*	Game logic and other crap goes here!	*/
 
 enum GameState {
-  GAME_STATE_DEFAULT,
-  GAME_STATE_MENU,
-  GAME_STATE_PAUSED,
+	GAME_STATE_DEFAULT,
+	GAME_STATE_MENU,
+	GAME_STATE_PAUSED,
 } GameState;
 
 GameVars game;
-
-// Text Prompt
-
-class SubtitleSentence {
- public:
- protected:
- private:
-  std::string _sentence;
-};
-
-class SubtitleSystem {
- public:
-  SubtitleSystem() {}
-
-  ~SubtitleSystem() {};
-
-  void Draw() {
-
-  }
-
-  void Simulate() {
-
-  }
-
- protected:
- private:
-};
 
 // Hand
 
@@ -216,39 +189,39 @@ private:
 
 // Everything Else
 
-ALLEGRO_BITMAP* status_sprite;
+ALLEGRO_BITMAP *status_sprite;
 
-void InitializeGame() {
-  memset(&game, 0, sizeof(GameVars));
+void Game_Initialize() {
+	memset( &game, 0, sizeof( GameVars ) );
 
-  game.state = GAME_STATE_DEFAULT;
-  game.menu_state = GAME_MENU_DEFAULT;
+	game.state = GAME_STATE_DEFAULT;
+	game.menu_state = GAME_MENU_DEFAULT;
 
-  game.font_title = engine::LoadFont("ps2p/PressStart2P", 50);
-  game.font_small = engine::LoadFont("ps2p/PressStart2P", 8);
-  game.font_gothic_medium = engine::LoadFont("ps2p/PressStart2P", 32);
-  game.font_chunk = engine::LoadFont("ps2p/PressStart2P", 24);
+	game.font_title = engine::LoadFont( "ps2p/PressStart2P", 50 );
+	game.font_small = engine::LoadFont( "ps2p/PressStart2P", 8 );
+	game.font_gothic_medium = engine::LoadFont( "ps2p/PressStart2P", 32 );
+	game.font_chunk = engine::LoadFont( "ps2p/PressStart2P", 24 );
 
-  game.sample_jump = engine::LoadSample("00.wav");
-  game.sample_land = engine::LoadSample("00.wav");
-  game.sample_charge = engine::LoadSample("04.wav");
-  game.sample_pickup = engine::LoadSample("05.wav");
-  game.sample_throw = engine::LoadSample("06.wav");
+	game.sample_jump = engine::LoadSample( "00.wav" );
+	game.sample_land = engine::LoadSample( "00.wav" );
+	game.sample_charge = engine::LoadSample( "04.wav" );
+	game.sample_pickup = engine::LoadSample( "05.wav" );
+	game.sample_throw = engine::LoadSample( "06.wav" );
 
-  status_sprite = engine::LoadImage("sprites");
+	status_sprite = engine::LoadImage( "sprites" );
 
-  game.is_grabbing = false;
+	game.is_grabbing = false;
 
-  World::Get();
+	World::Get();
 
-  AgentFactory::Get()->RegisterScripts();
+	AgentFactory::Get()->RegisterScripts();
 }
 
-void DrawStatusBar(ALLEGRO_COLOR colour, unsigned int value, float x, float y) {
-  al_draw_bitmap_region(status_sprite, 0, 114, 35, 5, x, y, 0);
-  if (creature->GetHealth() > 0) { // draw health meter
-    al_draw_tinted_bitmap_region(status_sprite, colour, 0, 119, (float) (value) * 33 / 100, 3, x + 1, y + 1, 0);
-  }
+void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y ) {
+	al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
+	if ( creature->GetHealth() > 0 ) {// draw health meter
+		al_draw_tinted_bitmap_region( status_sprite, colour, 0, 119, ( float ) ( value ) *33 / 100, 3, x + 1, y + 1, 0 );
+	}
 }
 
 void DrawMenu() {
@@ -334,52 +307,53 @@ void DrawMenu() {
 }
 
 void GameDisplayFrame() {
-  al_clear_to_color(al_map_rgb(128, 0, 0));
+	al_clear_to_color( al_map_rgb( 128, 0, 0 ) );
 
-  World::Get()->Draw();
-  AgentFactory::Get()->Draw();
+	World::Get()->Draw();
+	AgentFactory::Get()->Draw();
 
-  DrawMenu();
+	DrawMenu();
 }
 
-#define CAMERA_MAXSPEED     10
+#define CAMERA_MAXSPEED 10
 #define CAMERA_ACCELERATION 0.05f
 
 void Game_Tick() {
-  if (game.state == GAME_STATE_PAUSED) {
-    return;
-  }
+	if ( game.state == GAME_STATE_PAUSED ) {
+		return;
+	}
 
-  World::Get()->Tick();
-  AgentFactory::Get()->Tick();
+	World::Get()->Tick();
+	AgentFactory::Get()->Tick();
 }
 
 void MouseEvent() {
-
 }
 
-void KeyboardEvent(int code, bool keyup) {
-  if (keyup) {
-    return;
-  }
+void Game_KeyboardEvent( int code, bool keyup ) {
+	if ( keyup ) {
+		return;
+	}
 
-  switch (code) {
-    default: break;
+	switch ( code ) {
+		default:
+			break;
 
-    case ALLEGRO_KEY_ENTER: {
-      AgentFactory::Get()->Clear();
+		case ALLEGRO_KEY_ENTER: {
+			AgentFactory::Get()->Clear();
 
-      static unsigned int c = 1;
-      for(unsigned int i = 0; i < c; ++i) {
-        Agent* agent = AgentFactory::Get()->Create("Ball");
-        agent->SetPosition({
-                               static_cast<float>(rand() % DISPLAY_WIDTH),
-                               static_cast<float>(rand() % 128)});
-      }
-      c *= 2;
-    }
+			static unsigned int c = 1;
+			for ( unsigned int i = 0; i < c; ++i ) {
+				Agent *agent = AgentFactory::Get()->Create( "Ball" );
+				agent->SetPosition( { static_cast< float >( rand() % DISPLAY_WIDTH ),
+				                      static_cast< float >( rand() % 128 ) } );
+			}
+			c *= 2;
 
-    case ALLEGRO_KEY_PAUSE: {
+			break;
+		}
+
+		case ALLEGRO_KEY_PAUSE: {
 #if 0
       if(game.state == GAME_STATE_PAUSED) {
           game.state = game.old_state;
@@ -395,10 +369,10 @@ void KeyboardEvent(int code, bool keyup) {
       game.state = GAME_STATE_PAUSED;
       game.menu_state = GAME_MENU_PAUSED;
 #endif
-      break;
-    }
+			break;
+		}
 
-    case ALLEGRO_KEY_ESCAPE:
+		case ALLEGRO_KEY_ESCAPE:
 #if 0
       if((game.state == GAME_STATE_MENU) && (game.old_state == GAME_STATE_DEFAULT)) {
           game.state = GAME_STATE_DEFAULT;
@@ -414,9 +388,9 @@ void KeyboardEvent(int code, bool keyup) {
       game.state = GAME_STATE_MENU;
       game.menu_state = GAME_MENU_MAIN;
 #endif
-      exit(0);
-  }
+			exit( 0 );
+	}
 }
 
-void ShutdownGame() {}
-
+void Game_Shutdown() {
+}

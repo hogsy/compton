@@ -63,7 +63,7 @@ public:
 
 	void Draw() override {
 		PLVector2 oldpos = position_;
-		position_.y = ( std::sin( ( float ) engine_vars.counter / ( 120 / _jiggle ) ) * 5 + 5 ) + position_.y;
+		position_.y = ( std::sin( ( float ) vc::GetApp()->GetNumOfTicks() / ( 120 / _jiggle ) ) * 5 + 5 ) + position_.y;
 
 		position_.x -= game.camera_x;
 		position_.y -= game.camera_y;
@@ -83,7 +83,7 @@ private:
 
 class Sun : public Sprite {
 public:
-	Sun() : Sprite( engine::LoadImage( "environment/objects/sun" ) ) {
+	Sun() : Sprite( vc::GetApp()->LoadImage( "environment/objects/sun.png" ) ) {
 		origin_.x = al_get_bitmap_width( GetBitmap() ) / 2;
 		origin_.y = -420;
 		position_.Set( DISPLAY_WIDTH / 2, DISPLAY_HEIGHT );
@@ -217,14 +217,14 @@ World::World() : wind_speed_( DEFAULT_WIND_SPEED ),
 
 	cloud_sprites_.reserve( 10 );
 	for ( int i = 0; i < CLOUD_BITMAPS; i++ ) {
-		cloud_sprites_[ i ] = engine::LoadImage( std::string( "clouds/" + std::to_string( i ) ).c_str() );
+		cloud_sprites_[ i ] = vc::GetApp()->LoadImage( std::string( "clouds/" + std::to_string( i ) + ".png" ).c_str() );
 	}
 
 	sky_top_ = sky_colourcycle[ 0 ].top;
 	sky_toptarget_ = sky_colourcycle[ 1 ].top;
 	sky_bottom_ = sky_colourcycle[ 0 ].bottom;
 	sky_bottomtarget_ = al_map_rgb( 0, 0, 0 );//sky_colourcycle[1].bottom;
-	sky_background_ = engine::LoadImage( "sprites" );
+	sky_background_ = vc::GetApp()->LoadImage( "sprites.png" );
 
 	// Make initial set of clouds.
 	for ( unsigned int i = 0; i < cloud_density_; i++ ) {

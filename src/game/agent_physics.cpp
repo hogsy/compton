@@ -49,7 +49,6 @@ void PhysicsAgent::TickPhysics() {
 	}
 
 	if ( position_.y >= ( 128 + bounds_.x - 2 ) ) {
-		// TODO: uncomment for bouncy balls!
 		velocity_.y *= ( -1 * elasticity );
 		position_.y = ( 128 + bounds_.y - 2 );
 		Impact( nullptr );
@@ -75,10 +74,10 @@ void PhysicsAgent::Impact( Agent *agent ) {
 	float gain = plClamp( 0, velocity_.Length() * 1.0f, 1 );
 	float speed = plClamp( 0.5f, velocity_.Length() * 1.0f, 2 );
 
-	printf( "speed: %f\n", speed );
-	printf( "gain: %f\n", gain );
+	//printf( "speed: %f\n", speed );
+	//printf( "gain: %f\n", gain );
 
-	al_play_sample( game.sample_land, gain, ALLEGRO_AUDIO_PAN_NONE, speed, ALLEGRO_PLAYMODE_ONCE, nullptr );
+	//al_play_sample( game.sample_land, gain, ALLEGRO_AUDIO_PAN_NONE, speed, ALLEGRO_PLAYMODE_ONCE, nullptr );
 }
 
 void PhysicsAgent::Tick() {

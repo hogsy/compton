@@ -10,7 +10,7 @@ AgentDefinitionLoader::AgentDefinitionLoader() = default;
 AgentDefinitionLoader::AgentDefinitionLoader( const std::string &path ) {
 	std::ifstream fp( path );
 	if ( !fp ) {
-		PRINT_WARN( "Failed to open ADF file, \"%s\"!\n", path.c_str() );
+		Warning( "Failed to open ADF file, \"%s\"!\n", path.c_str() );
 		return;
 	}
 
@@ -29,7 +29,7 @@ AgentDefinitionLoader::AgentDefinitionLoader( const std::string &path ) {
 std::string AgentDefinitionLoader::GetProperty( const std::string &property, const std::string &def ) const {
 	auto p = properties_.find( property );
 	if ( p == properties_.end() ) {
-		PRINT_WARN( "Failed to find property \"%s\"!\n", property.c_str() );
+		Warning( "Failed to find property \"%s\"!\n", property.c_str() );
 		return def;
 	}
 

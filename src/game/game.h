@@ -11,9 +11,6 @@ typedef struct GameVars {
 
 	ALLEGRO_BITMAP *menu_earth;
 
-	// Editor Icons
-	ALLEGRO_BITMAP *entity_icon;
-
 	ALLEGRO_FONT *font_title;
 	ALLEGRO_FONT *font_small, *font_gothic_medium;
 	ALLEGRO_FONT *font_chunk;

@@ -5,8 +5,6 @@
 #include "agent.h"
 #include "game.h"
 
-#include "objects/object_world.h"
-
 /*	Game logic and other crap goes here!	*/
 
 enum GameState {
@@ -197,31 +195,31 @@ void Game_Initialize() {
 	game.state = GAME_STATE_DEFAULT;
 	game.menu_state = GAME_MENU_DEFAULT;
 
-	game.font_title = engine::LoadFont( "ps2p/PressStart2P", 50 );
-	game.font_small = engine::LoadFont( "ps2p/PressStart2P", 8 );
-	game.font_gothic_medium = engine::LoadFont( "ps2p/PressStart2P", 32 );
-	game.font_chunk = engine::LoadFont( "ps2p/PressStart2P", 24 );
+	game.font_title = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 50 );
+	game.font_small = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 8 );
+	game.font_gothic_medium = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 32 );
+	game.font_chunk = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 24 );
 
-	game.sample_jump = engine::LoadSample( "00.wav" );
-	game.sample_land = engine::LoadSample( "00.wav" );
-	game.sample_charge = engine::LoadSample( "04.wav" );
-	game.sample_pickup = engine::LoadSample( "05.wav" );
-	game.sample_throw = engine::LoadSample( "06.wav" );
+	game.sample_jump = vc::GetApp()->LoadSample( "00.wav" );
+	game.sample_land = vc::GetApp()->LoadSample( "00.wav" );
+	game.sample_charge = vc::GetApp()->LoadSample( "04.wav" );
+	game.sample_pickup = vc::GetApp()->LoadSample( "05.wav" );
+	game.sample_throw = vc::GetApp()->LoadSample( "06.wav" );
 
-	status_sprite = engine::LoadImage( "sprites" );
+	status_sprite = vc::GetApp()->LoadImage( "sprites.png" );
 
 	game.is_grabbing = false;
 
-	World::Get();
+	//World::Get();
 
 	AgentFactory::Get()->RegisterScripts();
 }
 
 void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y ) {
 	al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
-	if ( creature->GetHealth() > 0 ) {// draw health meter
-		al_draw_tinted_bitmap_region( status_sprite, colour, 0, 119, ( float ) ( value ) *33 / 100, 3, x + 1, y + 1, 0 );
-	}
+	//if ( creature->GetHealth() > 0 ) {// draw health meter
+	//	al_draw_tinted_bitmap_region( status_sprite, colour, 0, 119, ( float ) ( value ) *33 / 100, 3, x + 1, y + 1, 0 );
+	//}
 }
 
 void DrawMenu() {
@@ -309,7 +307,7 @@ void DrawMenu() {
 void GameDisplayFrame() {
 	al_clear_to_color( al_map_rgb( 128, 0, 0 ) );
 
-	World::Get()->Draw();
+	//World::Get()->Draw();
 	AgentFactory::Get()->Draw();
 
 	DrawMenu();
@@ -323,11 +321,11 @@ void Game_Tick() {
 		return;
 	}
 
-	World::Get()->Tick();
+	//World::Get()->Tick();
 	AgentFactory::Get()->Tick();
 }
 
-void MouseEvent() {
+void Game_MouseEvent() {
 }
 
 void Game_KeyboardEvent( int code, bool keyup ) {
@@ -348,8 +346,8 @@ void Game_KeyboardEvent( int code, bool keyup ) {
 				agent->SetPosition( { static_cast< float >( rand() % DISPLAY_WIDTH ),
 				                      static_cast< float >( rand() % 128 ) } );
 			}
+			Print( "%d actors\n", AgentFactory::Get()->GetNumOfAgents() );
 			c *= 2;
-
 			break;
 		}
 

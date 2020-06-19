@@ -83,6 +83,8 @@ public:
 	Agent *Create( const std::string &name );
 
 	void Clear();
+
+	unsigned int GetNumOfAgents() { return agents_.size(); }
 };
 
 #define IMPLEMENT_FACTORY( a ) \

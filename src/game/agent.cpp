@@ -36,7 +36,7 @@ void AgentFactory::Register( const std::string &name, AgentSpawnFunction func ) 
 void AgentFactory::Register( const std::string &name, const std::string &baseclass, const AgentDefinitionLoader &data ) {
 	auto it = registered_.find( baseclass );
 	if ( it == registered_.end() ) {
-		PRINT_WARN( "Failed to find baseclass, \"%s\"!\n", baseclass.c_str() );
+		Warning( "Failed to find baseclass, \"%s\"!\n", baseclass.c_str() );
 		return;
 	}
 
@@ -61,13 +61,13 @@ void AgentFactory::RegisterScript( const char *path ) {
 
 	std::string classname = adf_loader.GetProperty( "classname" );
 	if ( classname.empty() ) {
-		PRINT_WARN( "Invalid classname, unable to register \"%s\"!\n", path );
+		Warning( "Invalid classname, unable to register \"%s\"!\n", path );
 		return;
 	}
 
 	std::string baseclass = adf_loader.GetProperty( "baseclass" );
 	if ( baseclass.empty() ) {
-		PRINT_WARN( "Invalid baseclass, unable to register \"%s\"!\n", path );
+		Warning( "Invalid baseclass, unable to register \"%s\"!\n", path );
 		return;
 	}
 
@@ -88,7 +88,7 @@ void AgentFactory::Draw() {
 
 void AgentFactory::RegisterScripts() {
 	// now load in all of our agents (these all depend on the base classes)
-	plScanDirectory( "./agents", "adf", AgentFactory::RegisterScript, true );
+	plScanDirectory( "scripts", "adf", AgentFactory::RegisterScript, false );
 }
 
 void AgentFactory::Clear() {

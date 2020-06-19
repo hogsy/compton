@@ -14,7 +14,7 @@
 
 class SnoozeCloud : public Sprite {
  public:
-  SnoozeCloud() : Sprite(engine::LoadImage("sprites")) {
+  SnoozeCloud() : Sprite( engine::LoadImage("sprites") ) {
     origin_.Set(2.5, 2.5);
   }
 
@@ -28,7 +28,7 @@ class SnoozeCloud : public Sprite {
 
   void Simulate() {
     position_.y -= 0.07f;
-    position_.x += std::sin((engine_vars.counter / 2) * 100) / 2;
+    position_.x += std::sin((vc::GetApp()->GetNumOfTicks() / 2) * 100) / 2;
   }
 };
 

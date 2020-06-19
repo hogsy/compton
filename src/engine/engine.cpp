@@ -4,100 +4,7 @@
  *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
-
-EngineState engine_vars;
-
-// Loaders
-
-namespace engine {
-	ALLEGRO_FONT *LoadFont( const char *path, unsigned int size ) {
-		char path1[ PL_SYSTEM_MAX_PATH ] = { 0 };
-		std::sprintf( path1, "./fonts/%s.ttf", path );
-		if ( !plFileExists( path1 ) ) {
-			std::sprintf( path1, "./fonts/%s.otf", path );
-		}
-
-		ALLEGRO_FONT *font = al_load_ttf_font( path1, size, 0 );
-		if ( font == nullptr ) {
-			PRINT_ERROR( "Failed to load font %s!\n", path1 );
-		}
-
-		return font;
-	}
-
-	std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;
-	ALLEGRO_SAMPLE *LoadSample( const std::string &name ) {
-		auto i = samples.find( name );
-		if ( i != samples.end() ) {
-			return i->second;
-		}
-
-		std::string path = "./snd/" + name;
-		if ( !plFileExists( path.c_str() ) ) {
-			PRINT_ERROR( "Failed to load %s\n", path.c_str() );
-		}
-
-		ALLEGRO_SAMPLE *sample = al_load_sample( path.c_str() );
-		if ( sample == nullptr ) {
-			PRINT_ERROR( "Failed to load %s\n", path.c_str() );
-		}
-		samples.emplace( name, sample );
-
-		return sample;
-	}
-
-	std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;
-	ALLEGRO_BITMAP *LoadImage( const char *path ) {
-		char path1[ PL_SYSTEM_MAX_PATH ] = { 0 };
-		std::sprintf( path1, "./sprites/%s.png", path );
-		if ( !plFileExists( path1 ) ) {
-			std::sprintf( path1, "./sprites/%s.bmp", path );
-		}
-
-		auto i = bitmaps.find( path1 );
-		if ( i != bitmaps.end() ) {
-			return i->second;
-		}
-
-		ALLEGRO_BITMAP *bitmap = al_load_bitmap( path1 );
-		if ( bitmap == nullptr ) {
-			PRINT_ERROR( "Failed to load bitmap %s!\n", path1 );
-		}
-
-		bitmaps.emplace( path1, bitmap );
-
-		return bitmap;
-	}
-}// namespace engine
-
-namespace vc {
-	ALLEGRO_BITMAP *LoadImage( const std::string &path ) {
-		auto i = engine::bitmaps.find( path );
-		if ( i != engine::bitmaps.end() ) {
-			return i->second;
-		}
-
-		ALLEGRO_BITMAP *bitmap = al_load_bitmap( path.c_str() );
-		if ( bitmap == nullptr ) {
-			PRINT_ERROR( "Failed to load bitmap %s!\n", path.c_str() );
-		}
-		engine::bitmaps.emplace( path, bitmap );
-
-		return bitmap;
-	}
-}// namespace vc
-
-///////////////////////////////////////
-
-void DisplayMessageBox( const std::string &title, const std::string &message, bool error ) {
-	al_show_native_message_box(
-	        nullptr,
-	        VC_TITLE,
-	        title.c_str(),
-	        message.c_str(),
-	        nullptr,
-	        error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
-}
+#include "ImageBitmap.h"
 
 // Draw Routines
 
@@ -159,263 +66,61 @@ void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_
 	al_draw_prim( v, nullptr, nullptr, 0, 4, ALLEGRO_PRIM_TRIANGLE_STRIP );
 }
 
-// Display
+////////////////////////////////
+// App Class
 
-void Engine_InitializeDisplay() {
-	PRINT( "Initializing display...\n" );
-
-	engine_vars.window_width = WINDOW_WIDTH;
-	engine_vars.window_height = WINDOW_HEIGHT;
-
-#if 1
-	al_set_new_display_flags( ALLEGRO_WINDOWED | ALLEGRO_OPENGL );
-	engine_vars.display = al_create_display( engine_vars.window_width, engine_vars.window_height );
-	if ( engine_vars.display == nullptr ) {
-		al_show_native_message_box(
-		        nullptr,
-		        "ERROR",
-		        "A serious fault occurred",
-		        "Failed to initialize display!",
-		        nullptr,
-		        ALLEGRO_MESSAGEBOX_ERROR );
-		exit( -1 );
-	}
-	al_set_window_title(
-	        engine_vars.display,
-#ifdef DEBUG_BUILD
-	        "Virtual Critters Inc. [DEBUG]"
-#else
-	        "Virtual Creature"
-#endif
-	);
-#else// platform lib window creation
-	PLWindow *window = plCreateWindow(
-#ifdef DEBUG_BUILD
-	        "Virtual Critters Inc. [DEBUG]",
-#else
-	        "Virtual Critters Inc.",
-#endif
-	        0, 0, engine_vars.window_width, engine_vars.window_height );
-	if ( !window ) {
-		plMessageBox( "ERROR", "Failed to initialize display!\n" );
-		exit( -1 );
-	}
-#endif
-
-	// Check to see how much we need to scale the buffer.
-	int flags = al_get_new_bitmap_flags();
-	//al_add_new_bitmap_flag(ALLEGRO_MAG_LINEAR);
-	engine_vars.buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
-	al_set_new_bitmap_flags( flags );
-	int sx = engine_vars.window_width / DISPLAY_WIDTH;
-	int sy = engine_vars.window_height / DISPLAY_HEIGHT;
-	int scale = std::min( sx, sy );
-
-	engine_vars.scalew = DISPLAY_WIDTH * scale;
-	engine_vars.scaleh = DISPLAY_HEIGHT * scale;
-	engine_vars.scalex = ( engine_vars.window_width - engine_vars.scalew ) / 2;
-	engine_vars.scaley = ( engine_vars.window_height - engine_vars.scaleh ) / 2;
-
-	al_inhibit_screensaver( true );
-
-	al_set_clipping_rectangle( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
-
-	engine_vars.redraw = true;
+static vc::App *appInstance;
+vc::App *vc::GetApp() {
+	return appInstance;
 }
 
-void Engine_DisplayFrame() {
-	if ( !engine_vars.redraw ) {
-		return;
-	}
-
-	// Buffer scaling.
-	al_set_target_bitmap( engine_vars.buffer );
-
-	GameDisplayFrame();
-
-	// Buffer scaling.
-	al_set_target_backbuffer( engine_vars.display );
-	al_draw_scaled_bitmap(
-	        engine_vars.buffer,
-	        0, 0,
-	        DISPLAY_WIDTH, DISPLAY_HEIGHT,
-#if 0
-  engine_vars.scalex, engine_vars.scaley,
-  engine_vars.scalew, engine_vars.scaleh,
-#else
-	        0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-#endif
-	        0 );
-
-	al_flip_display();
-
-	engine_vars.redraw = false;
-}
-
-static void Engine_ShutdownDisplay() {
-	if ( engine_vars.display != nullptr ) {
-		al_destroy_display( engine_vars.display );
-	}
-}
-
-// Events
-
-static void Engine_InitializeEvents() {
-	PRINT( "Initialize Events\n" );
-
-	if ( ( engine_vars.timer = al_create_timer( 1.0 / 60 ) ) == nullptr ) {
-		DisplayMessageBox( "ERROR", "Failed to initialize timer!", true );
-		exit( -1 );
-	}
-
-	if ( ( engine_vars.event_queue = al_create_event_queue() ) == nullptr ) {
-		DisplayMessageBox( "ERROR", "Failed to initialize events!", true );
-		exit( -1 );
-	}
-
-	al_install_mouse();
-	al_install_keyboard();
-
-#if 0// enable once we're happy with everything else.
-  al_hide_mouse_cursor(engine_vars.display);
-#endif
-
-	al_register_event_source( engine_vars.event_queue, al_get_display_event_source( engine_vars.display ) );
-	al_register_event_source( engine_vars.event_queue, al_get_timer_event_source( engine_vars.timer ) );
-	al_register_event_source( engine_vars.event_queue, al_get_keyboard_event_source() );
-
-	al_start_timer( engine_vars.timer );
-}
-
-static void Engine_EventsTick() {
-	ALLEGRO_EVENT event{};
-	al_wait_for_event( engine_vars.event_queue, &event );
-
-	al_get_mouse_state( &engine_vars.mouse_state );
-	al_get_keyboard_state( &engine_vars.keyboard_state );
-
-	engine_vars.mouse_status[ MOUSE_BUTTON_LEFT ] = ( engine_vars.mouse_state.buttons & 1 ) != 0;
-	engine_vars.mouse_status[ MOUSE_BUTTON_RIGHT ] = ( engine_vars.mouse_state.buttons & 2 ) != 0;
-	engine_vars.mouse_status[ MOUSE_BUTTON_MIDDLE ] = ( engine_vars.mouse_state.buttons & 3 ) != 0;
-
-	switch ( event.type ) {
-		default:
-			break;
-
-		case ALLEGRO_EVENT_TIMER:
-			engine_vars.counter++;
-			Game_Tick();
-			engine_vars.redraw = true;
-			break;
-
-		case ALLEGRO_EVENT_DISPLAY_CLOSE:
-			engine_vars.running = false;
-			break;
-
-		case ALLEGRO_EVENT_MOUSE_AXES: {
-			MouseEvent();
-			break;
-		}
-
-		case ALLEGRO_EVENT_KEY_DOWN: {
-			engine_vars.key_status[ event.keyboard.keycode ] = true;
-
-			Game_KeyboardEvent( event.keyboard.keycode, false );
-			break;
-		}
-		case ALLEGRO_EVENT_KEY_UP: {
-			engine_vars.key_status[ event.keyboard.keycode ] = false;
-
-			Game_KeyboardEvent( event.keyboard.keycode, true );
-			break;
-		}
-	}
-
-	if ( !al_is_event_queue_empty( engine_vars.event_queue ) ) {
-		engine_vars.redraw = false;
-	}
-}
-
-static void ShutdownEvents() {
-	if ( engine_vars.event_queue != nullptr ) al_destroy_event_queue( engine_vars.event_queue );
-	if ( engine_vars.timer != nullptr ) al_destroy_timer( engine_vars.timer );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Shutdown() {
-	Game_Shutdown();
-	Engine_ShutdownDisplay();
-	ShutdownEvents();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Main
-
-#if defined( _WIN32 ) && defined( DEBUG_BUILD )
-extern "C" {
-	extern int32_t __stdcall AllocConsole( void );
-}
-#endif
-
-int main( int argc, char **argv ) {
-	// If we're debugging on Win32 platforms, invoke the console
-#if defined( _WIN32 ) && defined( DEBUG_BUILD )
-	AllocConsole();
-
-	FILE *dummyFilePtr;
-	freopen_s( &dummyFilePtr, "CONIN$", "r", stdin );
-	freopen_s( &dummyFilePtr, "CONOUT$", "w", stderr );
-	freopen_s( &dummyFilePtr, "CONOUT$", "w", stdout );
-#endif
-
-	memset( &engine_vars, 0, sizeof( EngineState ) );
+vc::App::App( int argc, char **argv ) {
+	// Initialize the platform library
 
 	plInitialize( argc, argv );
 
-	plGetApplicationDataDirectory( VC_TITLE, engine_vars.app_data, sizeof( engine_vars.app_data ) );
+	plGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
 
-	std::string log_dir = std::string( engine_vars.app_data ) + "/" + VC_LOG;
-	plSetupLogOutput( log_dir.c_str() );
+	std::string logDir = std::string( appDataPath ) + "/" + VC_LOG;
+	plSetupLogOutput( logDir.c_str() );
 
 	plSetupLogLevel( VC_LOG_ERR, "error", { 255, 0, 0 }, true );
 	plSetupLogLevel( VC_LOG_WAR, "warning", { 255, 255, 0 }, true );
 	plSetupLogLevel( VC_LOG_MSG, "info", { 255, 255, 255 }, true );
 	plSetupLogLevel( VC_LOG_DEB, "debug", { 0, 0, 255 }, true );
 
-	PRINT( "SimGame " VC_VERSION " (" __DATE__ ")\n" );
+	Print( "SimGame " VC_VERSION " (" __DATE__ ")\n" );
+
+	// And now initialize Allegro
 
 	uint32_t version = al_get_allegro_version();
 	uint32_t major = version >> 24;
 	uint32_t minor = ( version >> 16 ) & 255;
-	PRINT( "Initializing Allegro %d.%d\n", major, minor );
+	Print( "Initializing Allegro %d.%d\n", major, minor );
 	if ( !al_init() ) {
-		DisplayMessageBox( "ERROR", "Failed to initialize Allegro library!", true );
-		return -1;
+		Error( "Failed to initialize Allegro library!\n" );
 	}
 
 	if ( !al_install_mouse() ) {
-		DisplayMessageBox( "ERROR", "Failed to install mouse through Allegro!", true );
-		return -1;
+		Error( "Failed to install mouse through Allegro!\n" );
 	}
 
 	if ( !al_install_audio() ) {
-		DisplayMessageBox( "ERROR", "Failed to install audio through Allegro!", true );
-		return -1;
+		Error( "Failed to install audio through Allegro!\n" );
 	}
 
 	if ( !al_init_acodec_addon() ) {
-		DisplayMessageBox( "ERROR", "Failed to install audio codecs through Allegro!", true );
-		return -1;
+		Error( "Failed to install audio codecs through Allegro!\n" );
 	}
+
 	al_init_native_dialog_addon();
 	al_init_primitives_addon();
-	if ( !al_init_image_addon() ) {
-		DisplayMessageBox( "ERROR", "Failed to initialize Allegro image library!", true );
-		return -1;
-	}
 	al_init_font_addon();
 	al_init_ttf_addon();
+
+	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
+	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
+	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );
 
 	al_reserve_samples( 512 );
 
@@ -423,23 +128,276 @@ int main( int argc, char **argv ) {
 	al_change_directory( al_path_cstr( path, '/' ) );
 	al_destroy_path( path );
 
+	// And now, finally, finish setting up the engine
+
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
 
-	engine_vars.running = true;
+	running = true;
 
-	Engine_InitializeDisplay();
-	Engine_InitializeEvents();
-	Game_Initialize();
+	InitializeDisplay();
+	InitializeEvents();
+}
 
-	while ( engine_vars.running ) {
-		Engine_EventsTick();
-		Engine_DisplayFrame();
+vc::App::~App() {
+	Shutdown();
+}
+
+bool vc::App::IsRunning() {
+	// We're always running!
+	return true;
+}
+
+void vc::App::Loop() {
+	Tick();
+	Draw();
+}
+
+ALLEGRO_FONT *vc::App::LoadFont( const char *path, unsigned int size ) {
+	// Check if there's a TTF or OTF available
+	char fullPath[ PL_SYSTEM_MAX_PATH ];
+	snprintf( fullPath, sizeof( fullPath ), "fonts/%s.ttf", path );
+	if ( !plFileExists( fullPath ) ) {
+		snprintf( fullPath, sizeof( fullPath ), "fonts/%s.otf", path );
 	}
 
-	Shutdown();
+	ALLEGRO_FONT *font = al_load_ttf_font( fullPath, size, 0 );
+	if ( font == nullptr ) {
+		Error( "Failed to load font, \"%s\"!\n", fullPath );
+	}
+
+	return font;
+}
+
+ALLEGRO_SAMPLE *vc::App::LoadSample( const char *path ) {
+	char fullPath[ PL_SYSTEM_MAX_PATH ];
+	snprintf( fullPath, sizeof( fullPath ), "sounds/%s", path );
+
+	auto i = samples.find( fullPath );
+	if ( i != samples.end() ) {
+		return i->second;
+	}
+
+	if ( !plFileExists( fullPath ) ) {
+		Error( "Failed to find sample, \"%s\"!\n", fullPath );
+	}
+
+	ALLEGRO_SAMPLE *sample = al_load_sample( fullPath );
+	if ( sample == nullptr ) {
+		Error( "Failed to load sample, \"%s\"!\n", fullPath );
+	}
+
+	samples.emplace( fullPath, sample );
+
+	return sample;
+}
+
+ALLEGRO_BITMAP *vc::App::LoadImage( const char *path ) {
+	char fullPath[ PL_SYSTEM_MAX_PATH ];
+	snprintf( fullPath, sizeof( fullPath ), "sprites/%s", path );
+
+	auto i = bitmaps.find( fullPath );
+	if ( i != bitmaps.end() ) {
+		return i->second;
+	}
+
+	if ( !plFileExists( fullPath ) ) {
+		Error( "Failed to find bitmap, \"%s\"!\n", fullPath );
+	}
+
+	ALLEGRO_BITMAP *bitmap = al_load_bitmap( fullPath );
+	if ( bitmap == nullptr ) {
+		Error( "Failed to load bitmap, \"%s\"!\n", fullPath );
+	}
+
+	bitmaps.emplace( fullPath, bitmap );
+
+	return bitmap;
+}
+
+void vc::App::ShowMessageBox( const char *title, const char *message, bool error ) {
+	al_show_native_message_box(
+			nullptr,
+			VC_TITLE,
+			title,
+			message,
+			nullptr,
+			error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
+}
+
+void vc::App::Shutdown() {
+	Game_Shutdown();
+
+	if ( alDisplay != nullptr ) {
+		al_destroy_display( alDisplay );
+		alDisplay = nullptr;
+	}
+
+	if ( alEventQueue != nullptr ) {
+		al_destroy_event_queue( alEventQueue );
+		alEventQueue = nullptr;
+	}
+
+	if ( alTimer != nullptr ) {
+		al_destroy_timer( alTimer );
+		alTimer = nullptr;
+	}
+}
+
+// Display
+
+void vc::App::InitializeDisplay() {
+	Print( "Initializing display...\n" );
+
+	windowWidth = WINDOW_WIDTH;
+	windowHeight = WINDOW_HEIGHT;
+
+	al_set_new_display_flags( ALLEGRO_WINDOWED | ALLEGRO_OPENGL );
+	alDisplay = al_create_display( windowWidth, windowHeight );
+	if ( alDisplay == nullptr ) {
+		Error( "Failed to initialize display!\n" );
+	}
+
+	al_set_window_title( alDisplay, WINDOW_TITLE );
+
+	// Check to see how much we need to scale the buffer.
+	int flags = al_get_new_bitmap_flags();
+	//al_add_new_bitmap_flag(ALLEGRO_MAG_LINEAR);
+	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	al_set_new_bitmap_flags( flags );
+	int sx = windowWidth / DISPLAY_WIDTH;
+	int sy = windowHeight / DISPLAY_HEIGHT;
+	int scale = std::min( sx, sy );
+
+	scaleW = DISPLAY_WIDTH * scale;
+	scaleH = DISPLAY_HEIGHT * scale;
+	scaleX = ( windowWidth - scaleW ) / 2;
+	scaleY = ( windowHeight - scaleH ) / 2;
+
+	al_inhibit_screensaver( true );
+
+	al_set_clipping_rectangle( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
+
+	redraw = true;
+}
+
+void vc::App::Draw() {
+	if ( !redraw ) {
+		return;
+	}
+
+	// Buffer scaling.
+	al_set_target_bitmap( buffer );
+
+	GameDisplayFrame();
+
+	// Buffer scaling.
+	al_set_target_backbuffer( alDisplay );
+	al_draw_scaled_bitmap(
+			buffer,
+			0, 0,
+			DISPLAY_WIDTH, DISPLAY_HEIGHT,
+#if 0
+			engine_vars.scalex, engine_vars.scaley,
+  engine_vars.scalew, engine_vars.scaleh,
+#else
+			0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+#endif
+			0 );
+
+	al_flip_display();
+
+	redraw = false;
+}
+
+// Events
+
+void vc::App::InitializeEvents() {
+	Print( "Initialize Events\n" );
+
+	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr ) {
+		Error( "Failed to initialize timer!\n" );
+	}
+
+	if ( ( alEventQueue = al_create_event_queue() ) == nullptr ) {
+		Error( "Failed to initialize events!\n" );
+	}
+
+	al_install_mouse();
+	al_install_keyboard();
+
+#if 0// enable once we're happy with everything else.
+	al_hide_mouse_cursor(engine_vars.display);
+#endif
+
+	al_register_event_source( alEventQueue, al_get_display_event_source( alDisplay ) );
+	al_register_event_source( alEventQueue, al_get_timer_event_source( alTimer ) );
+	al_register_event_source( alEventQueue, al_get_keyboard_event_source() );
+
+	al_start_timer( alTimer );
+}
+
+void vc::App::Tick() {
+	ALLEGRO_EVENT event{};
+	al_wait_for_event( alEventQueue, &event );
+
+	al_get_mouse_state( &mouseState );
+	al_get_keyboard_state( &keyboardState );
+
+	mouseStatus[ MOUSE_BUTTON_LEFT ] = ( mouseState.buttons & 1 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_RIGHT ] = ( mouseState.buttons & 2 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_MIDDLE ] = ( mouseState.buttons & 3 ) != 0;
+
+	switch ( event.type ) {
+		default:break;
+
+		case ALLEGRO_EVENT_TIMER:
+			numTicks++;
+			Game_Tick();
+			redraw = true;
+			break;
+
+		case ALLEGRO_EVENT_DISPLAY_CLOSE:
+			running = false;
+			break;
+
+		case ALLEGRO_EVENT_MOUSE_AXES:
+			Game_MouseEvent();
+			break;
+
+		case ALLEGRO_EVENT_KEY_DOWN:
+			keyStatus[ event.keyboard.keycode ] = true;
+			Game_KeyboardEvent( event.keyboard.keycode, false );
+			break;
+		case ALLEGRO_EVENT_KEY_UP:
+			keyStatus[ event.keyboard.keycode ] = false;
+			Game_KeyboardEvent( event.keyboard.keycode, true );
+			break;
+	}
+
+	if ( !al_is_event_queue_empty( alEventQueue ) ) {
+		redraw = false;
+	}
+}
+
+////////////////////////////////
+// Main
+
+int main( int argc, char **argv ) {
+	// Stop buffering stdout!
+	setvbuf( stdout, nullptr, _IONBF, 0 );
+
+	appInstance = new vc::App( argc, argv );
+
+	Game_Initialize();
+
+	while ( appInstance->IsRunning() ) {
+		appInstance->Loop();
+	}
+
+	appInstance->Shutdown();
 
 	return 0;
 }

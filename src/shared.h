@@ -31,7 +31,7 @@
 #define DEBUG_BUILD
 
 #define VC_LOG "debug"
-#define VC_TITLE "Critter"
+#define VC_TITLE "SimGame"
 #define VC_VERSION "Pre-Alpha v0.1.0"
 
 enum {
@@ -41,49 +41,36 @@ enum {
 	VC_LOG_ERR,// error (kills application)
 };
 
-#define PRINT( ... )       \
+#define Print( ... )       \
 	printf( __VA_ARGS__ ); \
 	plLogMessage( VC_LOG_MSG, __VA_ARGS__ )
-#define PRINT_WARN( ... )  \
+#define Warning( ... )     \
 	printf( __VA_ARGS__ ); \
 	plLogMessage( VC_LOG_WAR, __VA_ARGS__ )
-#define PRINT_ERROR( ... )                   \
+#define Error( ... )                         \
 	printf( __VA_ARGS__ );                   \
 	plLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
 	exit( -1 )
 #if defined( DEBUG_BUILD )
-#define DPRINT( ... )      \
+#define DebugMsg( ... )    \
 	printf( __VA_ARGS__ ); \
 	plLogMessage( VC_LOG_DEB, __VA_ARGS__ )
 #else
-#define DPRINT( ... )
+#define DebugMsg( ... )
 #endif
 
-/*	Types	*/
+#define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
 
-typedef unsigned char byte;
+#define DISPLAY_WIDTH   320
+#define DISPLAY_HEIGHT  240
 
-/*	Engine	*/
-
-#define DISPLAY_WIDTH 320
-#define DISPLAY_HEIGHT 240
-
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 960
-
-#ifdef __cplusplus
-
-namespace engine {
-	ALLEGRO_FONT *LoadFont( const char *path, unsigned int size );
-	ALLEGRO_SAMPLE *LoadSample( const std::string &name );
-	ALLEGRO_BITMAP *LoadImage( const char *path );
-}// namespace engine
-
-namespace vc {
-	ALLEGRO_BITMAP *LoadImage( const std::string &path );
-}
-
+#ifdef DEBUG_BUILD
+#   define WINDOW_TITLE "SimGame [DEBUG]"
+#else
+#   define WINDOW_TITLE "SimGame"
 #endif
+#define WINDOW_WIDTH    1280
+#define WINDOW_HEIGHT   960
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -100,32 +87,64 @@ enum InputMouseButton {
 	MAX_MOUSE_BUTTONS
 };
 
-struct EngineState {
-	ALLEGRO_DISPLAY *display;
-	ALLEGRO_EVENT_QUEUE *event_queue;
-	ALLEGRO_TIMER *timer;
-	ALLEGRO_TEXTLOG *log;
+namespace vc {
+	class App {
+	public:
+		App( int argc, char **argv );
 
-	ALLEGRO_MOUSE_STATE mouse_state;
-	ALLEGRO_KEYBOARD_STATE keyboard_state;
+		bool IsRunning();
+		void Loop();
 
-	bool key_status[ ALLEGRO_KEY_MAX ];
-	bool mouse_status[ MAX_MOUSE_BUTTONS ];// left, right, middle
+		ALLEGRO_FONT *LoadFont( const char *path, unsigned int size );
+		ALLEGRO_SAMPLE *LoadSample( const char *path );
+		ALLEGRO_BITMAP *LoadImage( const char *path );
 
-	bool redraw;
-	bool running;
+		void ShowMessageBox( const char *title, const char *message, bool error );
 
-	unsigned int window_width, window_height;
-	int scalex, scaley, scalew, scaleh;
+		void Shutdown();
 
-	double counter;
+		unsigned int GetNumOfTicks() { return numTicks; }
 
-	char app_data[ PL_SYSTEM_MAX_PATH ];
+	protected:
+	private:
+		~App();
 
-	ALLEGRO_BITMAP *buffer{ nullptr };
-};
+		void InitializeDisplay();
+		void Draw();
 
-extern EngineState engine_vars;
+		void InitializeEvents();
+		void Tick();
+
+		ALLEGRO_DISPLAY *alDisplay;
+		ALLEGRO_EVENT_QUEUE *alEventQueue;
+		ALLEGRO_TIMER *alTimer;
+		ALLEGRO_TEXTLOG *alLog;
+
+		ALLEGRO_MOUSE_STATE mouseState;
+		ALLEGRO_KEYBOARD_STATE keyboardState;
+
+		// Resources
+		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;
+		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;
+
+		bool keyStatus[ ALLEGRO_KEY_MAX ];
+		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
+
+		bool redraw;
+		bool running;
+
+		unsigned int windowWidth, windowHeight;
+		int scaleX, scaleY, scaleW, scaleH;
+
+		double numTicks;
+
+		char appDataPath[ PL_SYSTEM_MAX_PATH ];
+
+		ALLEGRO_BITMAP *buffer{ nullptr };
+	};
+
+	App *GetApp();
+}// namespace vc
 
 /*	Game	*/
 
@@ -135,5 +154,5 @@ void Game_Shutdown();
 void GameDisplayFrame();
 void Game_Tick();
 
-void MouseEvent();
+void Game_MouseEvent();
 void Game_KeyboardEvent( int code, bool keyup );

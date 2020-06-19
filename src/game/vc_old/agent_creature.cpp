@@ -11,7 +11,8 @@
 namespace vc {
 	class CreatureAgent : public Agent {
 	public:
-		IMPLEMENT_FACTORY( CreatureAgent );
+		IMPLEMENT_SUPER( Agent )
+		IMPLEMENT_FACTORY( CreatureAgent )
 
 		CreatureAgent();
 		~CreatureAgent() override;

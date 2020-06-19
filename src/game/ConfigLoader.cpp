@@ -12,7 +12,7 @@ namespace vc {
 	ConfigLoader::ConfigLoader( const std::string &path ) {
 		std::ifstream fp( path );
 		if ( !fp ) {
-			PRINT_ERROR( "Failed to open IDX file, \"%s\"!\n", path.c_str() );
+			Error( "Failed to open IDX file, \"%s\"!\n", path.c_str() );
 		}
 
 		std::string line;

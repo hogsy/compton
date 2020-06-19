@@ -43,10 +43,9 @@ add_definitions( -DGIT_BRANCH="${GIT_BRANCH}" )
 file(GLOB SOURCE_FILES
         src/shared.h
         src/engine/*.cpp
+        src/engine/*.h
         src/game/*.cpp
-        src/game/objects/*.cpp
-        src/game/objects/creature/*.cpp
-        src/game/alife/*.cpp
+        src/game/*.h
         )
 
 add_executable( VCritters ${SOURCE_FILES} )
@@ -64,7 +63,6 @@ target_link_libraries( VCritters
         allegro_dialog
         allegro_font
         allegro_ttf
-        allegro_image
         allegro_primitives
         allegro_audio
         allegro_acodec

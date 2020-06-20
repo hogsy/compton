@@ -1,4 +1,7 @@
-// Virtual Critters, Copyright (C) 2016-2019 Mark Elsworth Sowden
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
 

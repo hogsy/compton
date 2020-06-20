@@ -1,9 +1,12 @@
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
 
 #include "agent.h"
 #include "agent_physics.h"
-#include "agent_sprite.h"
 
 Agent::Agent() = default;
 Agent::~Agent() = default;
@@ -56,7 +59,7 @@ Agent *AgentFactory::Create( const std::string &name ) {
 	return agent;
 }
 
-void AgentFactory::RegisterScript( const char *path ) {
+void AgentFactory::RegisterScript( const char *path, void *userData ) {
 	AgentDefinitionLoader adf_loader( path );
 
 	std::string classname = adf_loader.GetProperty( "classname" );
@@ -88,7 +91,7 @@ void AgentFactory::Draw() {
 
 void AgentFactory::RegisterScripts() {
 	// now load in all of our agents (these all depend on the base classes)
-	plScanDirectory( "scripts", "adf", AgentFactory::RegisterScript, false );
+	plScanDirectory( "scripts", "adf", AgentFactory::RegisterScript, false, nullptr );
 }
 
 void AgentFactory::Clear() {

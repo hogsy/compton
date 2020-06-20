@@ -25,7 +25,7 @@
 
 #include <PL/platform_console.h>
 #include <PL/platform_filesystem.h>
-#include <PL/platform_graphics.h>
+#include <PL/pl_graphics.h>
 #include <PL/platform_math.h>
 
 #define DEBUG_BUILD

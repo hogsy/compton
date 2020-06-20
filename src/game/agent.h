@@ -52,7 +52,7 @@ private:
 	AgentFactory( const AgentFactory & ) {}
 	AgentFactory &operator=( const AgentFactory & ) { return *this; }
 
-	static void RegisterScript( const char *path );
+	static void RegisterScript( const char *path, void *userData );
 
 	typedef Agent *( *AgentSpawnFunction )();
 	struct AgentClassData {

@@ -1,0 +1,39 @@
+; identifier w h x y
+
+; outset
+; corners
+gui_lu 3 3 0 0
+gui_ru 3 3 5 0
+gui_ll 3 3 0 5
+gui_lr 3 3 5 5
+; mid sections
+gui_u 2 3 3 0
+gui_r 3 2 5 3
+gui_d 2 3 3 5
+gui_l 3 2 0 3
+
+; inset
+; corners
+gui_ilu 3 3 8 0
+gui_iru 3 3 13 0
+gui_ill 3 3 8 5
+gui_ilr 3 3 13 5
+; mid sections
+gui_iu 2 3 11 0
+gui_ir 3 2 13 3
+gui_id 2 3 3 5
+gui_il 3 2 11 3
+
+; backgrounds
+gui_bg0 16 16 16 0
+gui_bg1 16 16 32 0
+gui_bg2 16 16 48 0
+
+; cursors
+gui_mouse_pointer 11 19 0 16
+gui_mouse_deny 23 28 11 16
+gui_mouse_move 22 22 34 16
+gui_mouse_sizer0 15 15 56 16
+gui_mouse_sizer1 10 19 71 16
+gui_mouse_sizer2 15 15 81 16
+gui_mouse_sizer3 19 10 96 16

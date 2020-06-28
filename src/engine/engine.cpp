@@ -5,6 +5,7 @@
 
 #include "../shared.h"
 #include "ImageBitmap.h"
+#include "LoaderPkg.h"
 
 // Draw Routines
 
@@ -80,6 +81,7 @@ vc::App::App( int argc, char **argv ) {
 	plInitialize( argc, argv );
 
 	plGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
+	plCreateDirectory( appDataPath );
 
 	std::string logDir = std::string( appDataPath ) + "/" + VC_LOG;
 	plSetupLogOutput( logDir.c_str() );
@@ -88,6 +90,19 @@ vc::App::App( int argc, char **argv ) {
 	plSetupLogLevel( VC_LOG_WAR, "warning", { 255, 255, 0 }, true );
 	plSetupLogLevel( VC_LOG_MSG, "info", { 255, 255, 255 }, true );
 	plSetupLogLevel( VC_LOG_DEB, "debug", { 0, 0, 255 }, true );
+
+	plRegisterPackageLoader( "pkg", Pkg_LoadPackage );
+
+	plMountLocalLocation( appDataPath );
+	plMountLocalLocation( "data/" );
+
+	for ( unsigned int i = 0; i < 100; ++i ) {
+		char packageName[ 64 ];
+		snprintf( packageName, sizeof( packageName ), "data%d.pkg", i );
+		if ( plMountLocation( packageName ) == nullptr ) {
+			break;
+		}
+	}
 
 	Print( "SimGame " VC_VERSION " (" __DATE__ ")\n" );
 
@@ -118,6 +133,7 @@ vc::App::App( int argc, char **argv ) {
 	al_init_font_addon();
 	al_init_ttf_addon();
 
+	al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );

@@ -3,9 +3,10 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#pragma once
+#include "SpriteSheet.h"
+#include "GUIPanel.h"
 
-#include "../shared.h"
+vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border ) {
+}
 
-ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags );
-ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags );
+vc::GUIPanel::~GUIPanel() = default;

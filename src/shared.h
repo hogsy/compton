@@ -26,6 +26,7 @@
 #include <PL/platform_console.h>
 #include <PL/platform_filesystem.h>
 #include <PL/pl_graphics.h>
+#include <PL/platform_package.h>
 #include <PL/platform_math.h>
 
 #define DEBUG_BUILD
@@ -34,32 +35,7 @@
 #define VC_TITLE "SimGame"
 #define VC_VERSION "Pre-Alpha v0.1.0"
 
-enum {
-	VC_LOG_MSG,// generic message
-	VC_LOG_DEB,// debug message (won't be displayed in shipped build)
-	VC_LOG_WAR,// warning
-	VC_LOG_ERR,// error (kills application)
-};
-
-#define Print( ... )       \
-	printf( __VA_ARGS__ ); \
-	plLogMessage( VC_LOG_MSG, __VA_ARGS__ )
-#define Warning( ... )     \
-	printf( __VA_ARGS__ ); \
-	plLogMessage( VC_LOG_WAR, __VA_ARGS__ )
-#define Error( ... )                         \
-	printf( __VA_ARGS__ );                   \
-	plLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
-	exit( -1 )
-#if defined( DEBUG_BUILD )
-#define DebugMsg( ... )    \
-	printf( __VA_ARGS__ ); \
-	plLogMessage( VC_LOG_DEB, __VA_ARGS__ )
-#else
-#define DebugMsg( ... )
-#endif
-
-#define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
+#include "engine/SimGame.h"
 
 #define DISPLAY_WIDTH   320
 #define DISPLAY_HEIGHT  240

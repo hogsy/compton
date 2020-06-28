@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.6)
 
-add_subdirectory(platform/platform)
-
-project(VCritters)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
-
 # Set all of our output directories.
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
+
+add_subdirectory( platform/platform/ )
+add_subdirectory( src/tools/pkgman/ )
+
+project( VCritters )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
 # Get the current working branch
 execute_process(
@@ -42,13 +43,17 @@ add_definitions( -DGIT_BRANCH="${GIT_BRANCH}" )
 
 file(GLOB SOURCE_FILES
         src/shared.h
+
         src/engine/*.cpp
         src/engine/*.h
+        src/engine/LoaderGfx.cpp
+        src/engine/LoaderPkg.cpp
+
         src/game/*.cpp
         src/game/*.h
         )
 
-add_executable( VCritters ${SOURCE_FILES} )
+add_executable( VCritters ${SOURCE_FILES} src/engine/SpriteSheet.cpp src/engine/SpriteSheet.h src/engine/GUIPanel.cpp src/engine/GUIPanel.h src/engine/SimGame.h src/engine/ScriptParser.cpp src/engine/ScriptParser.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 

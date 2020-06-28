@@ -43,8 +43,7 @@ void AgentFactory::Register( const std::string &name, const std::string &basecla
 		return;
 	}
 
-	registered_.insert( std::pair< std::string, AgentClassData >( name, AgentClassData(
-	                                                                            it->second.spawn_function, data ) ) );
+	registered_.insert( std::pair< std::string, AgentClassData >( name, AgentClassData( it->second.spawn_function, data ) ) );
 }
 
 Agent *AgentFactory::Create( const std::string &name ) {

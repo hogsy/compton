@@ -7,6 +7,8 @@
 
 #include "ScriptParser.h"
 
+struct ALLEGRO_BITMAP;
+
 namespace vc {
 	class SpriteSheet : public ScriptParser {
 	public:
@@ -14,6 +16,8 @@ namespace vc {
 		~SpriteSheet();
 
 		bool GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h );
+
+		inline ALLEGRO_BITMAP *GetBitmap() const { return bitmap; }
 
 	private:
 		struct SpriteRect {
@@ -24,5 +28,7 @@ namespace vc {
 		std::map< std::string, SpriteRect > sprites;
 
 		SpriteRect *GetSpriteRect( const char *spriteName );
+
+		ALLEGRO_BITMAP *bitmap{ nullptr };
 	};
 }// namespace vc

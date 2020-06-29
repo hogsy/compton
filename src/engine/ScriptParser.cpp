@@ -61,6 +61,7 @@ const char *vc::ScriptParser::GetToken( char *buffer, size_t bufSize ) {
 
 		// Quotations are handled in their own special way
 		if ( ( isContained && *bufPos == '"' ) || (!isContained && *bufPos == ' ' ) ) {
+			AdvanceBufferPosition();
 			break;
 		}
 
@@ -73,11 +74,18 @@ const char *vc::ScriptParser::GetToken( char *buffer, size_t bufSize ) {
 	// If it's a new line, return null
 	if ( bufPos[ 0 ] == '\r' || bufPos[ 1 ] == '\n' ) {
 		SkipLine();
+	}
+
+	if ( buffer[ 0 ] == '\0' ) {
 		return nullptr;
 	}
 
 	// Otherwise return the string
 	return buffer;
+}
+
+bool vc::ScriptParser::IsEndOfFile() {
+	return *bufPos == '\0';
 }
 
 void vc::ScriptParser::SkipSpaces() {
@@ -111,5 +119,6 @@ void vc::ScriptParser::SkipLine() {
  * Increment and return the current internal buffer position.
  */
 const char *vc::ScriptParser::AdvanceBufferPosition() {
+	linePos++;
 	return bufPos++;
 }

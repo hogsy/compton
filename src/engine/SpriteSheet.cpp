@@ -3,47 +3,83 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include <PL/platform_filesystem.h>
-
-#include "SimGame.h"
+#include "../shared.h"
 #include "SpriteSheet.h"
 
-vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {}
-vc::SpriteSheet::~SpriteSheet() = default;
+vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {
+	Print( "Parsing sprite definition file, \"%s\"\n", path );
 
-#if 0
-bool vc::SpriteSheet::LoadSpriteDefinitionFile( const char *path ) {
-	Print( "Loading sprite definition file, \"%s\"\n", path );
-
-
-	// Begin parsing it
-	while ( *bufPos != '\0' ) {
-		// Comment
-		if ( *bufPos == ';' ) {
-			SkipLine();
+	while( !IsEndOfFile() ) {
+		char token[ 4096 ];
+		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
 			continue;
 		}
 
-		if ( *bufPos == '\n' && bufPos[ 1 ] == '\r' ) {
+		if ( token[ 0 ] == ';' ) { // Comment
 			SkipLine();
 			continue;
+		} else if ( token[ 0 ] == '$' ) { // Command
+			const char *cmd = &token[ 1 ];
+			if ( strcmp( cmd, "load_bmp" ) == 0 ) {
+				if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+					Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
+					continue;
+				}
+
+				bitmap = GetApp()->LoadImage( token );
+				continue;
+			}
 		}
+
+		// Otherwise, assume it's an index into the sheet!
 
 		SpriteRect spriteRect;
 
-		if ( GetToken( spriteRect.identifier, sizeof( spriteRect.identifier ) ) == nullptr ) {
-			SkipLine();
-			continue;
+		if ( strlen( token ) >= sizeof( spriteRect.identifier ) ) {
+			Warning( "Token, \"%s\", is longer than maximum identifier length!\n", token );
 		}
 
-		char token[ 4 ];
+		strncpy( spriteRect.identifier, token, sizeof( spriteRect.identifier ) );
+
+		// Width
+		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
+			continue;
+		}
+		spriteRect.w = atoi( token );
+
+		// Height
+		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
+			continue;
+		}
+		spriteRect.h = atoi( token );
+
+		// X
+		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
+			continue;
+		}
+		spriteRect.x = atoi( token );
+
+		// Y
+		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
+			continue;
+		}
+		spriteRect.y = atoi( token );
 
 		sprites.emplace( std::pair< std::string, SpriteRect >( spriteRect.identifier, spriteRect ) );
+
+		Print( "Added \"%s\" to sprite table\n", spriteRect.identifier );
 	}
 
-	return true;
+	Print( "Done!\n" );
 }
-#endif
+
+vc::SpriteSheet::~SpriteSheet() {
+	al_destroy_bitmap( bitmap );
+}
 
 bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) {
 	SpriteRect *spriteRect = GetSpriteRect( spriteName );

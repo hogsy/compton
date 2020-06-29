@@ -198,24 +198,19 @@ ALLEGRO_SAMPLE *vc::App::LoadSample( const char *path ) {
 }
 
 ALLEGRO_BITMAP *vc::App::LoadImage( const char *path ) {
-	char fullPath[ PL_SYSTEM_MAX_PATH ];
-	snprintf( fullPath, sizeof( fullPath ), "sprites/%s", path );
-
-	auto i = bitmaps.find( fullPath );
+	auto i = bitmaps.find( path );
 	if ( i != bitmaps.end() ) {
 		return i->second;
 	}
 
-	if ( !plFileExists( fullPath ) ) {
-		Error( "Failed to find bitmap, \"%s\"!\n", fullPath );
-	}
+	Print( "Caching image, \"%s\"\n", path );
 
-	ALLEGRO_BITMAP *bitmap = al_load_bitmap( fullPath );
+	ALLEGRO_BITMAP *bitmap = al_load_bitmap( path );
 	if ( bitmap == nullptr ) {
-		Error( "Failed to load bitmap, \"%s\"!\n", fullPath );
+		Error( "Failed to load bitmap, \"%s\"!\n", path );
 	}
 
-	bitmaps.emplace( fullPath, bitmap );
+	bitmaps.emplace( path, bitmap );
 
 	return bitmap;
 }

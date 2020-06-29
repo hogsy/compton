@@ -5,6 +5,7 @@
 
 #include "../shared.h"
 
+#include "../engine/SpriteSheet.h"
 #include "agent.h"
 #include "game.h"
 

@@ -17,6 +17,8 @@ namespace vc {
 		// Parsing
 		const char *GetToken( char *buffer, size_t bufSize );
 
+		bool IsEndOfFile();
+
 		void SkipSpaces();
 		void SkipLine();
 

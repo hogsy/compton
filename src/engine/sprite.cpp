@@ -20,9 +20,7 @@ Sprite::Sprite( ALLEGRO_BITMAP *bitmap, float x, float y ) : bitmap_( bitmap ), 
 	origin_.Set( _w / 2, _h / 2 );
 }
 
-Sprite::~Sprite() {
-	//if(bitmap_) al_destroy_bitmap(bitmap_);
-}
+Sprite::~Sprite() = default;
 
 void Sprite::SetBitmap( ALLEGRO_BITMAP *bitmap ) {
 	if ( !bitmap ) {

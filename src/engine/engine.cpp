@@ -173,39 +173,26 @@ void vc::App::Loop() {
 
 ALLEGRO_FONT *vc::App::LoadFont( const char *path, unsigned int size ) {
 	// Check if there's a TTF or OTF available
-	char fullPath[ PL_SYSTEM_MAX_PATH ];
-	snprintf( fullPath, sizeof( fullPath ), "fonts/%s.ttf", path );
-	if ( !plFileExists( fullPath ) ) {
-		snprintf( fullPath, sizeof( fullPath ), "fonts/%s.otf", path );
-	}
-
-	ALLEGRO_FONT *font = al_load_ttf_font( fullPath, size, 0 );
+	ALLEGRO_FONT *font = al_load_ttf_font( path, size, 0 );
 	if ( font == nullptr ) {
-		Error( "Failed to load font, \"%s\"!\n", fullPath );
+		Error( "Failed to load font, \"%s\"!\n", path );
 	}
 
 	return font;
 }
 
 ALLEGRO_SAMPLE *vc::App::LoadSample( const char *path ) {
-	char fullPath[ PL_SYSTEM_MAX_PATH ];
-	snprintf( fullPath, sizeof( fullPath ), "sounds/%s", path );
-
-	auto i = samples.find( fullPath );
+	auto i = samples.find( path );
 	if ( i != samples.end() ) {
 		return i->second;
 	}
 
-	if ( !plFileExists( fullPath ) ) {
-		Error( "Failed to find sample, \"%s\"!\n", fullPath );
-	}
-
-	ALLEGRO_SAMPLE *sample = al_load_sample( fullPath );
+	ALLEGRO_SAMPLE *sample = al_load_sample( path );
 	if ( sample == nullptr ) {
-		Error( "Failed to load sample, \"%s\"!\n", fullPath );
+		Error( "Failed to load sample, \"%s\"!\n", path );
 	}
 
-	samples.emplace( fullPath, sample );
+	samples.emplace( path, sample );
 
 	return sample;
 }

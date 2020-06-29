@@ -8,9 +8,10 @@
 #include "SimGame.h"
 #include "SpriteSheet.h"
 
-vc::SpriteSheet::SpriteSheet() = default;
+vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {}
 vc::SpriteSheet::~SpriteSheet() = default;
 
+#if 0
 bool vc::SpriteSheet::LoadSpriteDefinitionFile( const char *path ) {
 	Print( "Loading sprite definition file, \"%s\"\n", path );
 
@@ -42,6 +43,7 @@ bool vc::SpriteSheet::LoadSpriteDefinitionFile( const char *path ) {
 
 	return true;
 }
+#endif
 
 bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) {
 	SpriteRect *spriteRect = GetSpriteRect( spriteName );

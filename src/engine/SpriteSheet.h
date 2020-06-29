@@ -10,10 +10,8 @@
 namespace vc {
 	class SpriteSheet : public ScriptParser {
 	public:
-		SpriteSheet();
+		SpriteSheet( const char *path );
 		~SpriteSheet();
-
-		bool LoadSpriteDefinitionFile( const char *path );
 
 		bool GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h );
 

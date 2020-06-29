@@ -13,13 +13,22 @@ namespace vc {
 		PLVector2 oldVelocity, velocity;
 	};
 
+	class SpriteSheet;
+
 	class GameMode {
 	public:
 		GameMode();
 		~GameMode();
 
+		void SaveGame();
+		void RestoreGame();
+
 	protected:
 	private:
 		Camera playerCamera;
+
+		SpriteSheet *terrainSheet;
+		SpriteSheet *interfaceSheet;
+		SpriteSheet *characterSheet;
 	};
 }

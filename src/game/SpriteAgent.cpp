@@ -4,7 +4,7 @@
  *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
-#include "agent_sprite.h"
+#include "SpriteAgent.h"
 
 void SpriteAgent::SetupProperties( const AgentDefinitionLoader &adf_loader ) {
 	Agent::SetupProperties( adf_loader );

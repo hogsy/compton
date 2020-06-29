@@ -190,26 +190,22 @@ private:
 
 // Everything Else
 
-ALLEGRO_BITMAP *status_sprite;
-
 void Game_Initialize() {
 	memset( &game, 0, sizeof( GameVars ) );
 
 	game.state = GAME_STATE_DEFAULT;
 	game.menu_state = GAME_MENU_DEFAULT;
 
-	game.font_title = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 50 );
-	game.font_small = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 8 );
-	game.font_gothic_medium = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 32 );
-	game.font_chunk = vc::GetApp()->LoadFont( "ps2p/PressStart2P", 24 );
+	game.font_title = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 50 );
+	game.font_small = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 8 );
+	game.font_gothic_medium = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 32 );
+	game.font_chunk = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 24 );
 
-	game.sample_jump = vc::GetApp()->LoadSample( "00.wav" );
-	game.sample_land = vc::GetApp()->LoadSample( "00.wav" );
-	game.sample_charge = vc::GetApp()->LoadSample( "04.wav" );
-	game.sample_pickup = vc::GetApp()->LoadSample( "05.wav" );
-	game.sample_throw = vc::GetApp()->LoadSample( "06.wav" );
-
-	status_sprite = vc::GetApp()->LoadImage( "sprites.png" );
+	game.sample_jump = vc::GetApp()->LoadSample( "data/sounds/00.wav" );
+	game.sample_land = vc::GetApp()->LoadSample( "data/sounds/00.wav" );
+	game.sample_charge = vc::GetApp()->LoadSample( "data/sounds/04.wav" );
+	game.sample_pickup = vc::GetApp()->LoadSample( "data/sounds/05.wav" );
+	game.sample_throw = vc::GetApp()->LoadSample( "data/sounds/06.wav" );
 
 	game.is_grabbing = false;
 
@@ -219,7 +215,7 @@ void Game_Initialize() {
 }
 
 void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y ) {
-	al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
+	//al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
 	//if ( creature->GetHealth() > 0 ) {// draw health meter
 	//	al_draw_tinted_bitmap_region( status_sprite, colour, 0, 119, ( float ) ( value ) *33 / 100, 3, x + 1, y + 1, 0 );
 	//}

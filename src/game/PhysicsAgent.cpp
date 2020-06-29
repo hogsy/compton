@@ -5,7 +5,7 @@
 
 #include "../shared.h"
 
-#include "agent_physics.h"
+#include "PhysicsAgent.h"
 #include "game.h"
 
 #define DEFAULT_GRAVITY 0.085f

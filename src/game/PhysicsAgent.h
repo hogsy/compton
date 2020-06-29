@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "agent_sprite.h"
+#include "SpriteAgent.h"
 
 class PhysicsAgent : public SpriteAgent {
  public:

@@ -46,14 +46,23 @@ file(GLOB SOURCE_FILES
 
         src/engine/*.cpp
         src/engine/*.h
-        src/engine/LoaderGfx.cpp
-        src/engine/LoaderPkg.cpp
 
         src/game/*.cpp
         src/game/*.h
         )
 
-add_executable( VCritters ${SOURCE_FILES} src/engine/SpriteSheet.cpp src/engine/SpriteSheet.h src/engine/GUIPanel.cpp src/engine/GUIPanel.h src/engine/SimGame.h src/engine/ScriptParser.cpp src/engine/ScriptParser.h)
+add_executable( VCritters ${SOURCE_FILES}
+        # engine
+        src/engine/SpriteSheet.cpp
+        src/engine/SpriteSheet.h
+        src/engine/GUIPanel.cpp
+        src/engine/GUIPanel.h
+        src/engine/SimGame.h
+        src/engine/ScriptParser.cpp
+        src/engine/ScriptParser.h
+        src/engine/LoaderGfx.cpp
+        src/engine/LoaderPkg.cpp
+        src/game/StateStorage.cpp src/game/StateStorage.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 

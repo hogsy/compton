@@ -5,7 +5,7 @@
 
 #include "../shared.h"
 
-#include "PhysicsAgent.h"
+#include "agents/PhysicsAgent.h"
 #include "agent.h"
 
 Agent::Agent() = default;

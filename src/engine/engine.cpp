@@ -4,27 +4,31 @@
  *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
+
 #include "ImageBitmap.h"
 #include "LoaderPkg.h"
+#include "GameMode.h"
+
+#include "agent.h"
 
 // Draw Routines
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h ) {
-	if ( bitmap == nullptr ) return;
-	al_draw_scaled_bitmap(
-	        bitmap,
-	        0, 0,
-	        al_get_bitmap_width( bitmap ),
-	        al_get_bitmap_height( bitmap ),
-	        x, y,
-	        w, h,
-	        0 );
+	if ( bitmap == nullptr ) {
+		return;
+	}
+
+	float bW = al_get_bitmap_width( bitmap );
+	float bH = al_get_bitmap_height( bitmap );
+
+	al_draw_scaled_bitmap( bitmap, 0, 0, bW, bH, x, y, w, h, 0 );
 }
 
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message ) {
 	if ( font == nullptr ) {
 		return;
 	}
+
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_LEFT, message );
 }
 
@@ -74,6 +78,10 @@ static vc::App *appInstance;
 vc::App *vc::GetApp() {
 	return appInstance;
 }
+
+#define VC_LOG "debug"
+#define VC_TITLE "SimGame"
+#define VC_VERSION "Pre-Alpha v0.1.0"
 
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
@@ -152,9 +160,6 @@ vc::App::App( int argc, char **argv ) {
 	srand( ( unsigned ) time( nullptr ) );
 
 	running = true;
-
-	InitializeDisplay();
-	InitializeEvents();
 }
 
 vc::App::~App() {
@@ -171,21 +176,32 @@ void vc::App::Loop() {
 	Draw();
 }
 
-ALLEGRO_FONT *vc::App::LoadFont( const char *path, unsigned int size ) {
-	// Check if there's a TTF or OTF available
+ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size ) {
+	std::string fullName = std::string( path ) + ":" + std::to_string( size );
+	auto i = fonts.find( fullName );
+	if ( i != fonts.end() ) {
+		return i->second;
+	}
+
+	Print( "Caching font, \"%s\" size %d\n", fullName.c_str(), size );
+
 	ALLEGRO_FONT *font = al_load_ttf_font( path, size, 0 );
 	if ( font == nullptr ) {
 		Error( "Failed to load font, \"%s\"!\n", path );
 	}
 
+	fonts.emplace( fullName, font );
+
 	return font;
 }
 
-ALLEGRO_SAMPLE *vc::App::LoadSample( const char *path ) {
+ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path ) {
 	auto i = samples.find( path );
 	if ( i != samples.end() ) {
 		return i->second;
 	}
+
+	Print( "Caching sample, \"%s\"\n", path );
 
 	ALLEGRO_SAMPLE *sample = al_load_sample( path );
 	if ( sample == nullptr ) {
@@ -197,7 +213,7 @@ ALLEGRO_SAMPLE *vc::App::LoadSample( const char *path ) {
 	return sample;
 }
 
-ALLEGRO_BITMAP *vc::App::LoadImage( const char *path ) {
+ALLEGRO_BITMAP *vc::App::CacheImage( const char *path ) {
 	auto i = bitmaps.find( path );
 	if ( i != bitmaps.end() ) {
 		return i->second;
@@ -226,7 +242,7 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 }
 
 void vc::App::Shutdown() {
-	Game_Shutdown();
+	delete gameMode;
 
 	if ( alDisplay != nullptr ) {
 		al_destroy_display( alDisplay );
@@ -286,12 +302,15 @@ void vc::App::Draw() {
 		return;
 	}
 
-	// Buffer scaling.
+	// Setup the target buffer and then clear it to red
 	al_set_target_bitmap( buffer );
+	al_clear_to_color( al_map_rgb( 128, 0, 0 ) );
 
-	GameDisplayFrame();
+	// Now draw everything we want
 
-	// Buffer scaling.
+	AgentFactory::Get()->Draw();
+
+	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
 	al_draw_scaled_bitmap(
 			buffer,
@@ -299,7 +318,7 @@ void vc::App::Draw() {
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
 #if 0
 			engine_vars.scalex, engine_vars.scaley,
-  engine_vars.scalew, engine_vars.scaleh,
+            engine_vars.scalew, engine_vars.scaleh,
 #else
 			0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
 #endif
@@ -337,6 +356,10 @@ void vc::App::InitializeEvents() {
 	al_start_timer( alTimer );
 }
 
+void vc::App::InitializeGame() {
+	gameMode = new GameMode();
+}
+
 void vc::App::Tick() {
 	ALLEGRO_EVENT event{};
 	al_wait_for_event( alEventQueue, &event );
@@ -353,7 +376,7 @@ void vc::App::Tick() {
 
 		case ALLEGRO_EVENT_TIMER:
 			numTicks++;
-			Game_Tick();
+			gameMode->Tick();
 			redraw = true;
 			break;
 
@@ -361,17 +384,20 @@ void vc::App::Tick() {
 			running = false;
 			break;
 
-		case ALLEGRO_EVENT_MOUSE_AXES:
-			Game_MouseEvent();
+		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.button, false );
+			break;
+		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.button, true );
 			break;
 
 		case ALLEGRO_EVENT_KEY_DOWN:
 			keyStatus[ event.keyboard.keycode ] = true;
-			Game_KeyboardEvent( event.keyboard.keycode, false );
+			gameMode->HandleKeyboardEvent( event.keyboard.keycode, false );
 			break;
 		case ALLEGRO_EVENT_KEY_UP:
 			keyStatus[ event.keyboard.keycode ] = false;
-			Game_KeyboardEvent( event.keyboard.keycode, true );
+			gameMode->HandleKeyboardEvent( event.keyboard.keycode, true );
 			break;
 	}
 
@@ -389,7 +415,9 @@ int main( int argc, char **argv ) {
 
 	appInstance = new vc::App( argc, argv );
 
-	Game_Initialize();
+	appInstance->InitializeDisplay();
+	appInstance->InitializeEvents();
+	appInstance->InitializeGame();
 
 	while ( appInstance->IsRunning() ) {
 		appInstance->Loop();

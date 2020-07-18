@@ -39,6 +39,7 @@ public:
 
 protected:
 	PLVector2 position_, old_position_;
+	float angle{ 0.0f };
 
 private:
 	std::string description_{ "none" };

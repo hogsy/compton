@@ -5,17 +5,10 @@
 
 #include "../shared.h"
 
-#include "../engine/SpriteSheet.h"
 #include "agent.h"
 #include "game.h"
 
 /*	Game logic and other crap goes here!	*/
-
-enum GameState {
-	GAME_STATE_DEFAULT,
-	GAME_STATE_MENU,
-	GAME_STATE_PAUSED,
-} GameState;
 
 GameVars game;
 
@@ -191,30 +184,6 @@ private:
 
 // Everything Else
 
-void Game_Initialize() {
-	memset( &game, 0, sizeof( GameVars ) );
-
-	game.state = GAME_STATE_DEFAULT;
-	game.menu_state = GAME_MENU_DEFAULT;
-
-	game.font_title = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 50 );
-	game.font_small = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 8 );
-	game.font_gothic_medium = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 32 );
-	game.font_chunk = vc::GetApp()->LoadFont( "data/fonts/ps2p/PressStart2P.ttf", 24 );
-
-	game.sample_jump = vc::GetApp()->LoadSample( "data/sounds/00.wav" );
-	game.sample_land = vc::GetApp()->LoadSample( "data/sounds/00.wav" );
-	game.sample_charge = vc::GetApp()->LoadSample( "data/sounds/04.wav" );
-	game.sample_pickup = vc::GetApp()->LoadSample( "data/sounds/05.wav" );
-	game.sample_throw = vc::GetApp()->LoadSample( "data/sounds/06.wav" );
-
-	game.is_grabbing = false;
-
-	//World::Get();
-
-	AgentFactory::Get()->RegisterScripts();
-}
-
 void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y ) {
 	//al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
 	//if ( creature->GetHealth() > 0 ) {// draw health meter
@@ -302,93 +271,4 @@ void DrawMenu() {
   al_draw_bitmap_region(
       status_sprite, 3, 105, 1, (float) (creature->emotions_[Creature::EMO_SADNESS] * 9) / 100, 14, emo_y, 0);
 #endif
-}
-
-void GameDisplayFrame() {
-	al_clear_to_color( al_map_rgb( 128, 0, 0 ) );
-
-	//World::Get()->Draw();
-	AgentFactory::Get()->Draw();
-
-	DrawMenu();
-}
-
-#define CAMERA_MAXSPEED 10
-#define CAMERA_ACCELERATION 0.05f
-
-void Game_Tick() {
-	if ( game.state == GAME_STATE_PAUSED ) {
-		return;
-	}
-
-	//World::Get()->Tick();
-	AgentFactory::Get()->Tick();
-}
-
-void Game_MouseEvent() {
-}
-
-void Game_KeyboardEvent( int code, bool keyup ) {
-	if ( keyup ) {
-		return;
-	}
-
-	switch ( code ) {
-		default:
-			break;
-
-		case ALLEGRO_KEY_ENTER: {
-			AgentFactory::Get()->Clear();
-
-			static unsigned int c = 1;
-			for ( unsigned int i = 0; i < c; ++i ) {
-				Agent *agent = AgentFactory::Get()->Create( "Ball" );
-				agent->SetPosition( { static_cast< float >( rand() % DISPLAY_WIDTH ),
-				                      static_cast< float >( rand() % 128 ) } );
-			}
-			Print( "%d actors\n", AgentFactory::Get()->GetNumOfAgents() );
-			c *= 2;
-			break;
-		}
-
-		case ALLEGRO_KEY_PAUSE: {
-#if 0
-      if(game.state == GAME_STATE_PAUSED) {
-          game.state = game.old_state;
-          game.menu_state = game.menu_old_state;
-          break;
-      }
-
-      // todo, play pause sound.
-
-      game.old_state = game.state;
-      game.menu_old_state = game.menu_state;
-
-      game.state = GAME_STATE_PAUSED;
-      game.menu_state = GAME_MENU_PAUSED;
-#endif
-			break;
-		}
-
-		case ALLEGRO_KEY_ESCAPE:
-#if 0
-      if((game.state == GAME_STATE_MENU) && (game.old_state == GAME_STATE_DEFAULT)) {
-          game.state = GAME_STATE_DEFAULT;
-          game.menu_state = GAME_MENU_DEFAULT;
-          break;
-      }
-
-      // todo, play menu sound.
-
-      game.old_state = game.state;
-      game.menu_old_state = game.menu_state;
-
-      game.state = GAME_STATE_MENU;
-      game.menu_state = GAME_MENU_MAIN;
-#endif
-			exit( 0 );
-	}
-}
-
-void Game_Shutdown() {
 }

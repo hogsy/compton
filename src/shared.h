@@ -31,10 +31,6 @@
 
 #define DEBUG_BUILD
 
-#define VC_LOG "debug"
-#define VC_TITLE "SimGame"
-#define VC_VERSION "Pre-Alpha v0.1.0"
-
 #include "engine/SimGame.h"
 
 #define DISPLAY_WIDTH   320
@@ -64,31 +60,33 @@ enum InputMouseButton {
 };
 
 namespace vc {
+	class GameMode;
 	class App {
 	public:
 		App( int argc, char **argv );
 
+		void InitializeDisplay();
+		void InitializeEvents();
+		void InitializeGame();
+
 		bool IsRunning();
 		void Loop();
 
-		ALLEGRO_FONT *LoadFont( const char *path, unsigned int size );
-		ALLEGRO_SAMPLE *LoadSample( const char *path );
-		ALLEGRO_BITMAP *LoadImage( const char *path );
+		ALLEGRO_FONT *CacheFont( const char *path, unsigned int size );
+		ALLEGRO_SAMPLE *CacheSample( const char *path );
+		ALLEGRO_BITMAP *CacheImage( const char *path );
 
 		void ShowMessageBox( const char *title, const char *message, bool error );
 
 		void Shutdown();
 
 		unsigned int GetNumOfTicks() { return numTicks; }
-
 	protected:
 	private:
 		~App();
 
-		void InitializeDisplay();
 		void Draw();
 
-		void InitializeEvents();
 		void Tick();
 
 		ALLEGRO_DISPLAY *alDisplay;
@@ -99,9 +97,13 @@ namespace vc {
 		ALLEGRO_MOUSE_STATE mouseState;
 		ALLEGRO_KEYBOARD_STATE keyboardState;
 
+		// Game state
+		GameMode *gameMode{ nullptr };
+
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;
+		std::unordered_map< std::string, ALLEGRO_FONT * > fonts;
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
@@ -123,12 +125,3 @@ namespace vc {
 }// namespace vc
 
 /*	Game	*/
-
-void Game_Initialize();
-void Game_Shutdown();
-
-void GameDisplayFrame();
-void Game_Tick();
-
-void Game_MouseEvent();
-void Game_KeyboardEvent( int code, bool keyup );

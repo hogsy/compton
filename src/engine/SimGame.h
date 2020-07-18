@@ -29,3 +29,7 @@ enum {
 #endif
 
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
+
+#define FONT_SIZE_LARGE     50
+#define FONT_SIZE_MEDIUM    32
+#define FONT_SIZE_SMALL     8

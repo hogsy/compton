@@ -4,9 +4,11 @@
  *------------------------------------------------------------------------------------*/
 
 #include "../shared.h"
-#include "SpriteSheet.h"
 
-vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {
+#include "SpriteSheet.h"
+#include "SimGame.h"
+
+vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : ScriptParser( path ), bitmap( bitmap ) {
 	Print( "Parsing sprite definition file, \"%s\"\n", path );
 
 	while( !IsEndOfFile() ) {
@@ -19,6 +21,7 @@ vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {
 			SkipLine();
 			continue;
 		} else if ( token[ 0 ] == '$' ) { // Command
+#if 0
 			const char *cmd = &token[ 1 ];
 			if ( strcmp( cmd, "load_bmp" ) == 0 ) {
 				if ( GetToken( token, sizeof( token ) ) == nullptr ) {
@@ -26,9 +29,10 @@ vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {
 					continue;
 				}
 
-				bitmap = GetApp()->LoadImage( token );
+				bitmap = GetApp()->CacheImage( token );
 				continue;
 			}
+#endif
 		}
 
 		// Otherwise, assume it's an index into the sheet!
@@ -77,9 +81,7 @@ vc::SpriteSheet::SpriteSheet( const char *path ) : ScriptParser( path ) {
 	Print( "Done!\n" );
 }
 
-vc::SpriteSheet::~SpriteSheet() {
-	al_destroy_bitmap( bitmap );
-}
+vc::SpriteSheet::~SpriteSheet() = default;
 
 bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) {
 	SpriteRect *spriteRect = GetSpriteRect( spriteName );

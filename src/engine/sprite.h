@@ -5,6 +5,8 @@
 
 #pragma once
 
+typedef struct ALLEGRO_BITMAP ALLEGRO_BITMAP;
+
 class Sprite {
 public:
     Sprite();

@@ -11,7 +11,7 @@ void SpriteAgent::SetupProperties( const AgentDefinitionLoader &adf_loader ) {
 
 	std::string sprite_path = adf_loader.GetProperty( "sprite" );
 	if ( !sprite_path.empty() ) {
-		sprite_ = new Sprite( vc::GetApp()->LoadImage( sprite_path.c_str() ) );
+		sprite_ = new Sprite( vc::GetApp()->CacheImage( sprite_path.c_str() ) );
 	}
 }
 

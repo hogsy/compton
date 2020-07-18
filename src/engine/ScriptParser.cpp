@@ -71,12 +71,12 @@ const char *vc::ScriptParser::GetToken( char *buffer, size_t bufSize ) {
 	// Ensure the returned string is null-terminated
 	buffer[ i ] = '\0';
 
-	// If it's a new line, return null
+	// If it's a new line
 	if ( bufPos[ 0 ] == '\r' || bufPos[ 1 ] == '\n' ) {
 		SkipLine();
 	}
 
-	if ( buffer[ 0 ] == '\0' ) {
+	if ( IsEndOfFile() ) {
 		return nullptr;
 	}
 

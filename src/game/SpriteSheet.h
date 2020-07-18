@@ -7,17 +7,17 @@
 
 #include "ScriptParser.h"
 
-struct ALLEGRO_BITMAP;
+typedef struct ALLEGRO_BITMAP ALLEGRO_BITMAP;
 
 namespace vc {
 	class SpriteSheet : public ScriptParser {
 	public:
-		SpriteSheet( const char *path );
+		SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap );
 		~SpriteSheet();
 
 		bool GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h );
 
-		inline ALLEGRO_BITMAP *GetBitmap() const { return bitmap; }
+		ALLEGRO_BITMAP *GetBitmap() const { return bitmap; }
 
 	private:
 		struct SpriteRect {
@@ -29,6 +29,6 @@ namespace vc {
 
 		SpriteRect *GetSpriteRect( const char *spriteName );
 
-		ALLEGRO_BITMAP *bitmap{ nullptr };
+		ALLEGRO_BITMAP *bitmap;
 	};
 }// namespace vc

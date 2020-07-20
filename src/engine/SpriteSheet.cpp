@@ -3,10 +3,8 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include "../shared.h"
-
-#include "SpriteSheet.h"
 #include "SimGame.h"
+#include "SpriteSheet.h"
 
 vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : ScriptParser( path ), bitmap( bitmap ) {
 	Print( "Parsing sprite definition file, \"%s\"\n", path );
@@ -20,19 +18,6 @@ vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : Scrip
 		if ( token[ 0 ] == ';' ) { // Comment
 			SkipLine();
 			continue;
-		} else if ( token[ 0 ] == '$' ) { // Command
-#if 0
-			const char *cmd = &token[ 1 ];
-			if ( strcmp( cmd, "load_bmp" ) == 0 ) {
-				if ( GetToken( token, sizeof( token ) ) == nullptr ) {
-					Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
-					continue;
-				}
-
-				bitmap = GetApp()->CacheImage( token );
-				continue;
-			}
-#endif
 		}
 
 		// Otherwise, assume it's an index into the sheet!

@@ -7,7 +7,7 @@
 
 #include "ScriptParser.h"
 
-typedef struct ALLEGRO_BITMAP ALLEGRO_BITMAP;
+struct ALLEGRO_BITMAP;
 
 namespace vc {
 	class SpriteSheet : public ScriptParser {

@@ -10,6 +10,8 @@
 struct ALLEGRO_BITMAP;
 
 namespace vc {
+	class SpriteSheet;
+
 	class GUIPanel {
 	public:
 		enum class Background {
@@ -24,6 +26,13 @@ namespace vc {
 
 		GUIPanel( GUIPanel *parent = nullptr, int x = 0, int y = 0, int w = 640, int h = 480, Background background = Background::NONE, Border border = Border::NONE );
 		~GUIPanel();
+
+		void Draw();
+		void DrawBackground();
+
+		void Tick();
+
+		void SetStyle( SpriteSheet *spriteSheet );
 
 	protected:
 	private:

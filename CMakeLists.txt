@@ -53,8 +53,8 @@ file(GLOB SOURCE_FILES
 
 add_executable( VCritters ${SOURCE_FILES}
         # engine
-        src/game/SpriteSheet.cpp
-        src/game/SpriteSheet.h
+        src/engine/SpriteSheet.cpp
+        src/engine/SpriteSheet.h
         src/engine/GUIPanel.cpp
         src/engine/GUIPanel.h
         src/engine/SimGame.h
@@ -62,17 +62,22 @@ add_executable( VCritters ${SOURCE_FILES}
         src/engine/ScriptParser.h
         src/engine/LoaderGfx.cpp
         src/engine/LoaderPkg.cpp
-        src/game/StateStorage.cpp
-        src/game/StateStorage.h
+        src/engine/StateStorage.cpp
+        src/engine/StateStorage.h
 
+        # game
         src/game/agents/Cloud.cpp
         src/game/agents/PhysicsAgent.cpp
         src/game/agents/SpriteAgent.cpp
-        )
+        src/engine/GUIButton.cpp src/engine/GUIButton.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 
-target_include_directories( VCritters PRIVATE src/engine/ src/game/ )
+target_include_directories( VCritters PRIVATE
+        src/engine/
+        src/game/
+        src/game/desktop/
+        )
 if ( WIN32 )
     target_include_directories( VCritters PRIVATE src/3rdparty/allegro/include/ )
     target_link_directories( VCritters PRIVATE src/3rdparty/allegro/lib/ )

@@ -18,6 +18,8 @@ namespace vc {
 		PLVector2 oldVelocity, velocity;
 	};
 
+	class GUIPanel;
+
 	class GameMode {
 	public:
 		GameMode();
@@ -43,5 +45,7 @@ namespace vc {
 
 		SpriteSheet *terrainSheet;
 		SpriteSheet *interfaceSheet;
+
+		GUIPanel *uiPanelPtr{ nullptr };
 	};
 }

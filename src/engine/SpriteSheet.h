@@ -15,7 +15,7 @@ namespace vc {
 		SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap );
 		~SpriteSheet();
 
-		bool GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h );
+		bool GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) const;
 
 		ALLEGRO_BITMAP *GetBitmap() const { return bitmap; }
 
@@ -27,7 +27,7 @@ namespace vc {
 		};
 		std::map< std::string, SpriteRect > sprites;
 
-		SpriteRect *GetSpriteRect( const char *spriteName );
+		const SpriteRect *GetSpriteRect( const char *spriteName ) const;
 
 		ALLEGRO_BITMAP *bitmap;
 	};

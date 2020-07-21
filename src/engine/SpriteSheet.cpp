@@ -68,8 +68,8 @@ vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : Scrip
 
 vc::SpriteSheet::~SpriteSheet() = default;
 
-bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) {
-	SpriteRect *spriteRect = GetSpriteRect( spriteName );
+bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) const {
+	const SpriteRect *spriteRect = GetSpriteRect( spriteName );
 	if ( spriteRect == nullptr ) {
 		*x = *y = *w = *h = 0;
 		return false;
@@ -83,7 +83,7 @@ bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int 
 	return true;
 }
 
-vc::SpriteSheet::SpriteRect *vc::SpriteSheet::GetSpriteRect( const char *spriteName ) {
+const vc::SpriteSheet::SpriteRect *vc::SpriteSheet::GetSpriteRect( const char *spriteName ) const {
 	const auto &key = sprites.find( spriteName );
 	if ( key == sprites.end() ) {
 		Warning( "Failed to find sprite index, \"%s\"!\n", spriteName );
@@ -92,5 +92,3 @@ vc::SpriteSheet::SpriteRect *vc::SpriteSheet::GetSpriteRect( const char *spriteN
 
 	return &key->second;
 }
-
-

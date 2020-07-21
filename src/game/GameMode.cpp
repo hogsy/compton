@@ -25,13 +25,16 @@ vc::GameMode::GameMode() {
 	vc::GetApp()->CacheSample( "data/sounds/06.wav" );
 
 	terrainSheet = new SpriteSheet( "sprites:terrain.sdf", vc::GetApp()->CacheImage( "sprites:terrain.gfx" ) );
-	interfaceSheet = new SpriteSheet( "sprites:interface.sdf", vc::GetApp()->CacheImage( "sprites:interface.gfx" ) );
 
 	// Register agents
 	AgentFactory::Get()->RegisterScripts();
 
 	// Now create the base GUI panel
-	uiPanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
+
+	uiDefaultStyleSheet = new GUIStyleSheet( "sprites:interface.sdf", vc::GetApp()->CacheImage( "sprites:interface.gfx" ) );
+
+	uiBasePanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	uiBasePanelPtr->SetStyleSheet( uiDefaultStyleSheet );
 }
 
 vc::GameMode::~GameMode() = default;

@@ -5,16 +5,18 @@
 
 #pragma once
 
+#include "../shared.h"
+
 namespace vc {
-	class StateStorage {
+	class Serializer {
 	public:
 		enum class Mode {
 			READ,
 			WRITE,
 		};
 
-		StateStorage( const char *path, Mode mode );
-		~StateStorage();
+		Serializer( const char *path, Mode mode );
+		~Serializer();
 
 		bool ValidateDataFormat( uint8_t target );
 

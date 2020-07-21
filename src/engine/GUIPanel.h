@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "GUIStyleSheet.h"
 #include <vector>
 
 struct ALLEGRO_BITMAP;
@@ -32,7 +33,8 @@ namespace vc {
 
 		void Tick();
 
-		void SetStyle( SpriteSheet *spriteSheet );
+		void SetStyleSheet( const GUIStyleSheet *styleSheet );
+		const GUIStyleSheet *GetStyle() const { return myStyleSheet; }
 
 	protected:
 	private:
@@ -40,6 +42,7 @@ namespace vc {
 		Border myBorder{ Border::NONE };
 
 		GUIPanel *parentPtr{ nullptr };
+		const GUIStyleSheet *myStyleSheet{ nullptr };
 
 		int x{ 0 }, y{ 0 };
 		int w{ 640 }, h{ 480 };

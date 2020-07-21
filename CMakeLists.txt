@@ -62,14 +62,14 @@ add_executable( VCritters ${SOURCE_FILES}
         src/engine/ScriptParser.h
         src/engine/LoaderGfx.cpp
         src/engine/LoaderPkg.cpp
-        src/engine/StateStorage.cpp
-        src/engine/StateStorage.h
+        src/engine/Serializer.cpp
+        src/engine/Serializer.h
 
         # game
         src/game/agents/Cloud.cpp
         src/game/agents/PhysicsAgent.cpp
         src/game/agents/SpriteAgent.cpp
-        src/engine/GUIButton.cpp src/engine/GUIButton.h)
+        src/engine/GUIButton.cpp src/engine/GUIButton.h src/engine/GUIStyleSheet.cpp src/engine/GUIStyleSheet.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 

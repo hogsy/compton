@@ -3,12 +3,11 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include "../shared.h"
-#include "StateStorage.h"
+#include "Serializer.h"
 
 static const uint32_t storageVersion = 20200629;
 
-vc::StateStorage::StateStorage( const char *path, vc::StateStorage::Mode mode ) {
+vc::Serializer::Serializer( const char *path, vc::Serializer::Mode mode ) {
 	filePtr = fopen( path, mode == Mode::READ ? "rb" : "wb" );
 	if ( filePtr == nullptr ) {
 		Warning( "Failed to open \"%s\" for read/write operations, state will not be correctly restored!\n", path );
@@ -37,13 +36,13 @@ vc::StateStorage::StateStorage( const char *path, vc::StateStorage::Mode mode ) 
 	}
 }
 
-vc::StateStorage::~StateStorage() {
+vc::Serializer::~Serializer() {
 	if ( filePtr != nullptr ) {
 		fclose( filePtr );
 	}
 }
 
-bool vc::StateStorage::ValidateDataFormat( uint8_t target ) {
+bool vc::Serializer::ValidateDataFormat( uint8_t target ) {
 	uint8_t format = fgetc( filePtr );
 	if ( format != target ) {
 		Warning( "Invalid data format found, expected \"%d\" but got \"%d\"!\n", target, format );
@@ -53,7 +52,7 @@ bool vc::StateStorage::ValidateDataFormat( uint8_t target ) {
 	return true;
 }
 
-void vc::StateStorage::WriteString( const char *var ) {
+void vc::Serializer::WriteString( const char *var ) {
 	fputc( DATA_FORMAT_STRING, filePtr );
 
 	// Write out the length
@@ -64,19 +63,29 @@ void vc::StateStorage::WriteString( const char *var ) {
 	fwrite( var, sizeof( char ), length, filePtr );
 }
 
-void vc::StateStorage::WriteCoordinate( const PLVector2 &var ) {
+void vc::Serializer::WriteCoordinate( const PLVector2 &var ) {
 	fputc( DATA_FORMAT_COORDINATE, filePtr );
 
 	fwrite( &var, sizeof( PLVector2 ), 1, filePtr );
 }
 
-void vc::StateStorage::ReadString( char *buffer, size_t bufLength ) {
+void vc::Serializer::ReadString( char *buffer, size_t bufLength ) {
 	if ( !ValidateDataFormat( DATA_FORMAT_STRING ) ) {
 		return;
 	}
+
+	uint32_t length;
+	fread( &length, sizeof( uint32_t ), 1, filePtr );
+
+	if ( length > bufLength ) {
+		length = bufLength;
+	}
+
+	// And now read in the string!
+	fread( buffer, sizeof( char ), length, filePtr );
 }
 
-PLVector2 vc::StateStorage::ReadCoordinate() {
+PLVector2 vc::Serializer::ReadCoordinate() {
 	if ( !ValidateDataFormat( DATA_FORMAT_COORDINATE ) ) {
 		return PLVector2();
 	}

@@ -19,6 +19,7 @@ namespace vc {
 	};
 
 	class GUIPanel;
+	class GUIStyleSheet;
 
 	class GameMode {
 	public:
@@ -44,8 +45,8 @@ namespace vc {
 		GameState curGameState{ GameState::ACTIVE };
 
 		SpriteSheet *terrainSheet;
-		SpriteSheet *interfaceSheet;
 
-		GUIPanel *uiPanelPtr{ nullptr };
+		GUIStyleSheet *uiDefaultStyleSheet;
+		GUIPanel *uiBasePanelPtr{ nullptr };
 	};
 }

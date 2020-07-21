@@ -3,8 +3,8 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include "GUIPanel.h"
 #include "SimGame.h"
+#include "GUIPanel.h"
 #include "SpriteSheet.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
@@ -30,6 +30,6 @@ void vc::GUIPanel::DrawBackground() {
 void vc::GUIPanel::Tick() {
 }
 
-void vc::GUIPanel::SetStyle( vc::SpriteSheet *spriteSheet ) {
-
+void vc::GUIPanel::SetStyleSheet( const GUIStyleSheet *styleSheet ) {
+	myStyleSheet = styleSheet;
 }

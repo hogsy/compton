@@ -6,6 +6,7 @@
 #pragma once
 
 namespace vc {
+	class Serializer;
 	class Entity;
 	class EntityManager {
 	protected:
@@ -22,6 +23,9 @@ namespace vc {
 
 		void Tick();
 		void Draw();
+
+		void SerializeEntities( Serializer *write );
+		void DeserializeEntities( Serializer *read );
 
 		class EntityClassRegistration {
 		public:

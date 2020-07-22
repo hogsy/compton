@@ -1,21 +1,55 @@
 /* Copyright (C) 2020 Mark Sowden <markelswo@gmail.com>
- * Project Yin
  * */
 
 #include <PL/pl_llist.h>
+#include <PL/platform_console.h>
+#include <PL/platform_filesystem.h>
 
-#include "yin.h"
 #include "vm.h"
 
-/*
+/* Virtual Machine
+ * This is my first attempt at writing a virtual machine
+ * and obviously, could be a heck better; total learning experience.
+ *
+ * Feel free to use this for whatever you want if it's for some reason
+ * useful to you!
+ *
  * todo
  * 	- separate log outputs per VM instance
  * 	- log output for VM manager
  */
 
+static int vmLogIndex;
+#define VM_Print( ... ) plLogMessage( vmLogIndex, __VA_ARGS__ )
+
+/*********************************/
+/** ERROR HANDLING **/
+
+static char vmErrorMsg[ 256 ];
+
+static void VM_ClearError( void ) {
+	vmErrorMsg[ 0 ] = '\0';
+}
+
+static void VM_SetError( const char *msg, ... ) {
+
+}
+
+const char *VM_GetError( void ) {
+	return vmErrorMsg;
+}
+
+/*********************************/
+
 static PLLinkedList *vmPrograms;
 
-typedef enum VMRegister {
+typedef enum VMVariableType {
+	VM_VAR_INTEGER,
+	VM_VAR_FLOAT,
+	VM_VAR_STRING,
+} VMVariableType;
+
+typedef enum VMRegisterIndex {
 	VM_REG_0,
 	VM_REG_1,
 	VM_REG_2,
@@ -29,6 +63,15 @@ typedef enum VMRegister {
 	VM_REG_COUNT,
 
 	VM_MAX_REGISTERS
+} VMRegisterIndex;
+
+typedef struct VMRegister {
+	VMVariableType varType;
+	union {
+		int         varI;
+		float       varF;
+		char        varS[ 256 ];
+	};
 } VMRegister;
 
 typedef enum VMOpCode {
@@ -55,7 +98,7 @@ typedef struct VMInstruction {
 #define VM_PROGRAM_NAME_LENGTH	16
 
 typedef struct VMProgram {
-	int registers[ VM_MAX_REGISTERS ];
+	VMRegister registers[ VM_MAX_REGISTERS ];
 
 	bool isRunning; /* whether or not the program should be ticked */
 
@@ -73,6 +116,8 @@ typedef struct VMProgram {
 } VMProgram;
 
 VMProgram *VM_GetProgramByName( const char *programName ) {
+	VM_ClearError();
+
 	PLLinkedListNode *curNode = plGetRootNode( vmPrograms );
 	while ( curNode != NULL ) {
 		VMProgram *program = ( VMProgram* ) plGetLinkedListNodeUserData( curNode );
@@ -83,7 +128,7 @@ VMProgram *VM_GetProgramByName( const char *programName ) {
 		curNode = plGetNextLinkedListNode( curNode );
 	}
 
-	PrintWarn( "Failed to find the specified VM program!\n" );
+	VM_SetError( "Failed to find the specified VM program!\n" );
 
 	return NULL;
 }
@@ -93,9 +138,11 @@ void VM_ExecuteProgram( VMProgram *program ) {
 }
 
 VMProgram *VM_LoadProgram( const char *path ) {
+	VM_ClearError();
+
 	PLFile *filePtr = plOpenFile( path, false );
 	if ( filePtr == NULL ) {
-		PrintWarn( "Failed to open CVM, \"%s\"!\nPL: %s\n", path, plGetError() );
+		VM_SetError( "Failed to open CVM, \"%s\"!\nPL: %s\n", path, plGetError() );
 		return NULL;
 	}
 
@@ -103,34 +150,38 @@ VMProgram *VM_LoadProgram( const char *path ) {
 
 	char identifier[ 4 ];
 	if ( plReadFile( filePtr, identifier, sizeof( char ), 4 ) != 4 ) {
-		PrintError( "Failed to read identifier for \"%s\"!\nPL: %s\n", path, plGetError() );
+		VM_SetError( "Failed to read identifier for \"%s\"!\nPL: %s\n", path, plGetError() );
+		return NULL;
 	}
 
 	if ( identifier[ 0 ] != 'C' || identifier[ 1 ] != 'V' || identifier[ 2 ] != 'M' || identifier[ 3 ] != '0' ) {
-		PrintError( "Unexpected identifier \"%s\", expected CVM0!\n", identifier );
+		VM_SetError( "Unexpected identifier \"%s\", expected CVM0!\n", identifier );
+		return NULL;
 	}
 
 	char programName[ VM_PROGRAM_NAME_LENGTH ];
 	if ( plReadFile( filePtr, programName, sizeof( char ), VM_PROGRAM_NAME_LENGTH ) != VM_PROGRAM_NAME_LENGTH ) {
-		PrintError( "Failed to read in program name for \"%s\"!\nPL: %s\n", path, plGetError() );
+		VM_SetError( "Failed to read in program name for \"%s\"!\nPL: %s\n", path, plGetError() );
+		return NULL;
 	}
 
 	/* read in all of the instructions */
 	bool status;
 	unsigned int numInstructions = plReadInt32( filePtr, false, &status );
-	VMInstruction *instructions = g_system.calloc( numInstructions, sizeof( VMInstruction ) );
+	VMInstruction *instructions = pl_calloc( numInstructions, sizeof( VMInstruction ) );
 	for ( unsigned int i = 0; i < numInstructions; ++i ) {
 		instructions[ i ].opCode = plReadInt8( filePtr, &status );
 
 	}
 
 	if ( !status ) {
-		PrintError( "Failed to read in instructions for \"%s\"!\nPL: %s\n", path, plGetError() );
+		VM_SetError( "Failed to read in instructions for \"%s\"!\nPL: %s\n", path, plGetError() );
+		return NULL;
 	}
 
 	/* now we can actually setup the VM */
 
-	VMProgram *program = g_system.calloc( 1, sizeof( VMProgram ) );
+	VMProgram *program = pl_calloc( 1, sizeof( VMProgram ) );
 	program->clockSpeed = 0;
 	program->numInstructions = numInstructions;
 	program->instructions = instructions;
@@ -161,7 +212,8 @@ static void VM_TickProgram( VMProgram *program ) {
 	VM_Evaluate( program, curInstruction );
 
 	if ( program->curInstruction >= program->numInstructions ) {
-		PrintError( "Overrun in program, \"%s\"!\n", program->name );
+		VM_SetError( "Overrun in program, \"%s\"!\n", program->name );
+		return;
 	}
 }
 
@@ -174,7 +226,7 @@ static void VM_SetClockSpeed( unsigned int argc, char **argv ) {
 
 static void VM_FreezeCallback( unsigned int argc, char **argv ) {
 	if ( argc <= 1 ) {
-		PrintWarn( "Invalid arguments!\n" );
+		VM_SetError( "Invalid arguments!\n" );
 		return;
 	}
 
@@ -195,28 +247,28 @@ static void VM_ExecuteCallback( unsigned int argc, char **argv ) {
 
 static void VM_AssembleCallback( unsigned int argc, char **argv ) {
 	if ( argc <= 2 ) {
-		PrintWarn( "Invalid arguments!\n" );
+		VM_SetError( "Invalid arguments!\n" );
 		return;
 	}
 
 	const char *asmPath = argv[ 1 ];
 	const char *outPath = argv[ 2 ];
 
-	PrintMsg( "Assembling \"%s\"...\n", asmPath );
+	VM_Print( "Assembling \"%s\"...\n", asmPath );
 
 	PLFile *filePtr = plOpenLocalFile( asmPath, false );
 	if ( filePtr == NULL ) {
-		PrintWarn( "Failed to open \"%s\"!\nPL: %s\n", asmPath, plGetError() );
+		VM_SetError( "Failed to open \"%s\"!\nPL: %s\n", asmPath, plGetError() );
 		return;
 	}
 
-	
-
-	PrintMsg( "Wrote \"%s\"\n" );
+	VM_Print( "Wrote \"%s\"\n" );
 }
 
 void VM_Initialize( void ) {
-	PrintMsg( "Initializing Virtual Machine...\n" );
+	vmLogIndex = plAddLogLevel( "vm", PL_COLOUR_WHITE, true );
+
+	VM_Print( "Initializing Virtual Machine...\n" );
 
 	plRegisterConsoleCommand( "Vm.SetClockSpeed", VM_SetClockSpeed, "Set the clock speed of the specified program." );
 	plRegisterConsoleCommand( "Vm.Freeze", VM_FreezeCallback, "Freeze the specified program." );
@@ -226,7 +278,8 @@ void VM_Initialize( void ) {
 
 	vmPrograms = plCreateLinkedList();
 	if ( vmPrograms == NULL ) {
-		PrintError( "Failed to create vmPrograms list!\nPL: %s\n", plGetError() );
+		VM_SetError( "Failed to create vmPrograms list!\nPL: %s\n", plGetError() );
+		return;
 	}
 }
 

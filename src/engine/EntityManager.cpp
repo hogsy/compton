@@ -73,6 +73,18 @@ void vc::EntityManager::Draw() {
 	}
 }
 
+void vc::EntityManager::SerializeEntities( Serializer *write ) {
+	for ( auto &entity : entities ) {
+		entity->Serialize( write );
+	}
+}
+
+void vc::EntityManager::DeserializeEntities( Serializer *read ) {
+	for ( auto &entity : entities ) {
+		entity->Deserialize( read );
+	}
+}
+
 vc::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
 : myIdentifier( identifier ) {
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;

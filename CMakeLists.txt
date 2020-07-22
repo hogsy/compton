@@ -10,8 +10,8 @@ add_subdirectory( src/tools/pkgman/ )
 
 project( VCritters )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_C_STANDARD 11 )
 
 # Get the current working branch
 execute_process(
@@ -64,6 +64,7 @@ add_executable( VCritters ${SOURCE_FILES}
         src/engine/LoaderPkg.cpp
         src/engine/Serializer.cpp
         src/engine/Serializer.h
+        src/engine/vm/vm.c
 
         # game
         src/game/agents/Cloud.cpp

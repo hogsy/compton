@@ -8,8 +8,9 @@
 #include "ImageBitmap.h"
 #include "LoaderPkg.h"
 #include "GameMode.h"
-
 #include "agent.h"
+
+#include "vm/vm.h"
 
 // Draw Routines
 
@@ -153,6 +154,8 @@ vc::App::App( int argc, char **argv ) {
 	al_destroy_path( path );
 
 	// And now, finally, finish setting up the engine
+
+	VM_Initialize();
 
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn

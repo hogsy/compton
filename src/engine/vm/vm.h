@@ -15,9 +15,19 @@
  * VM API
  * */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct VMProgram VMProgram;
 
 VMProgram *VM_GetProgramByName( const char *programName );
 VMProgram *VM_LoadCVM( const char *path, size_t memoryPoolSize );
 void VM_Tick( void );
 void VM_Initialize( void );
+
+const char *VM_GetError( void );
+
+#ifdef __cplusplus
+};
+#endif

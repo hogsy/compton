@@ -42,8 +42,8 @@ namespace vc {
 }// namespace vc
 
 #define REGISTER_ENTITY( NAME, CLASS )                                                       \
-	static Entity *NAME##_make() { return new CLASS(); }                                     \
-	static EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2000 ) ) ) \
+	static vc::Entity *NAME##_make() { return new CLASS(); }                                     \
+	static vc::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
 	        _reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)
 #define REGISTER_ENTITY_BASIC( CLASS ) \
 	REGISTER_ACTOR( CLASS, CLASS )

@@ -69,6 +69,16 @@ void vc::Serializer::WriteCoordinate( const PLVector2 &var ) {
 	fwrite( &var, sizeof( PLVector2 ), 1, filePtr );
 }
 
+int vc::Serializer::ReadInteger() {
+	if ( !ValidateDataFormat( DATA_FORMAT_INTEGER ) ) {
+		return 0;
+	}
+
+	int32_t var;
+	fread( &var, sizeof( int32_t ), 1, filePtr );
+	return var;
+}
+
 void vc::Serializer::ReadString( char *buffer, size_t bufLength ) {
 	if ( !ValidateDataFormat( DATA_FORMAT_STRING ) ) {
 		return;

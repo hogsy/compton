@@ -8,6 +8,7 @@
 #include "ImageBitmap.h"
 #include "LoaderPkg.h"
 #include "GameMode.h"
+#include "EntityManager.h"
 #include "agent.h"
 
 #include "vm/vm.h"
@@ -360,6 +361,7 @@ void vc::App::InitializeEvents() {
 }
 
 void vc::App::InitializeGame() {
+	entityManager = new EntityManager();
 	gameMode = new GameMode();
 }
 

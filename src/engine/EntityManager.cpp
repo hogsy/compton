@@ -7,7 +7,7 @@
 #include "EntityManager.h"
 #include "Entity.h"
 
-std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::EntityManager::entityClasses;
+std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
 
 std::set< vc::Entity* > vc::EntityManager::entities;
 std::vector< vc::Entity* > vc::EntityManager::destructionQueue;

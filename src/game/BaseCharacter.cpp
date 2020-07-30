@@ -5,18 +5,23 @@
 
 #include "SimGame.h"
 #include "Entity.h"
+#include "Serializer.h"
 
 namespace vc {
 	enum class CharacterSex {
 		MALE,
 		FEMALE,
 		INTERSEX,
+
+		MAX_SEXES
 	};
 
 	enum class CharacterMood {
 		MOOD_SAD,
 		MOOD_NEUTRAL,
 		MOOD_HAPPY,
+
+		MAX_MOODS
 	};
 
 	enum class CharacterDirective {
@@ -35,6 +40,11 @@ namespace vc {
 	public:
 		IMPLEMENT_SUPER( Entity )
 
+		bool CanBreed( BaseCharacter *other );
+
+		void Deserialize( Serializer *read ) override;
+		void Serialize( Serializer *write ) override;
+
 	protected:
 	private:
 		struct Directive {
@@ -46,8 +56,14 @@ namespace vc {
 
 		std::vector< Directive > directives;
 
+		CharacterMood mood{ CharacterMood::MOOD_NEUTRAL };
+		CharacterSex sex{ CharacterSex::INTERSEX };
+
 		unsigned int age{ 0 };
 		unsigned int maxAge{ 100 };
+
+		bool isPregnant{ false };
+		unsigned int timePregnant{ 0 };
 
 		int health{ 100 };
 		int maxHealth{ 100 };
@@ -60,6 +76,61 @@ namespace vc {
 
 		int influence{ 0 };
 	};
-
-	REGISTER_ENTITY( character_base, BaseCharacter )
 }// namespace vc
+
+REGISTER_ENTITY( character_base, vc::BaseCharacter )
+
+/**
+ * Determines whether or not this character can breed with the other.
+ */
+bool vc::BaseCharacter::CanBreed( BaseCharacter *other ) {
+	// Can't get pregnant if we're already pregnant!
+	if ( isPregnant || other->isPregnant ) {
+		return false;
+	}
+
+	switch( sex ) {
+		default:
+			break;
+		case CharacterSex::INTERSEX:
+			return true;
+		case CharacterSex::MALE:
+			if ( other->sex == CharacterSex::FEMALE ) {
+				return true;
+			}
+			break;
+		case CharacterSex::FEMALE:
+			if ( other->sex == CharacterSex::MALE ) {
+				return true;
+			}
+			break;
+	}
+
+	return false;
+}
+
+void vc::BaseCharacter::Deserialize( vc::Serializer *read ) {
+	SuperClass::Deserialize( read );
+
+	health = read->ReadInteger();
+	maxHealth = read->ReadInteger();
+
+	stamina = read->ReadInteger();
+	maxStamina = read->ReadInteger();
+
+	experience = read->ReadInteger();
+	maxExperience = read->ReadInteger();
+}
+
+void vc::BaseCharacter::Serialize( vc::Serializer *write ) {
+	SuperClass::Serialize( write );
+
+	write->WriteInteger( health );
+	write->WriteInteger( maxHealth );
+
+	write->WriteInteger( stamina );
+	write->WriteInteger( maxStamina );
+
+	write->WriteInteger( experience );
+	write->WriteInteger( maxExperience );
+}

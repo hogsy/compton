@@ -61,6 +61,7 @@ enum InputMouseButton {
 
 namespace vc {
 	class GameMode;
+	class EntityManager;
 	class App {
 	public:
 		App( int argc, char **argv );
@@ -99,6 +100,7 @@ namespace vc {
 
 		// Game state
 		GameMode *gameMode{ nullptr };
+		EntityManager *entityManager{ nullptr };
 
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;

@@ -20,9 +20,13 @@ namespace vc {
 
 		bool ValidateDataFormat( uint8_t target );
 
+		void WriteInteger( int var );
+		void WriteFloat( float var );
 		void WriteString( const char *var );
 		void WriteCoordinate( const PLVector2 &var );
 
+		int ReadInteger();
+		float ReadFloat();
 		void ReadString( char *buffer, size_t bufLength );
 		PLVector2 ReadCoordinate();
 
@@ -30,6 +34,8 @@ namespace vc {
 		enum : uint8_t {
 			DATA_FORMAT_STRING,
 			DATA_FORMAT_COORDINATE,
+			DATA_FORMAT_INTEGER,
+			DATA_FORMAT_FLOAT,
 		};
 
 		unsigned int version{ 0 };

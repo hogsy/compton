@@ -312,7 +312,7 @@ void vc::App::Draw() {
 
 	// Now draw everything we want
 
-	AgentFactory::Get()->Draw();
+	gameMode->Draw();
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );

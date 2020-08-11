@@ -9,24 +9,16 @@ typedef struct GameVars {
 	unsigned int state, old_state;
 	unsigned int menu_state, menu_old_state;
 
-	ALLEGRO_BITMAP *menu_earth;
-
 	ALLEGRO_FONT *font_title;
-	ALLEGRO_FONT *font_small, *font_gothic_medium;
-	ALLEGRO_FONT *font_chunk;
+	ALLEGRO_FONT *font_small;
 
 	// sounds...
-	ALLEGRO_SAMPLE *sample_jump;
-	ALLEGRO_SAMPLE *sample_throw;
 	ALLEGRO_SAMPLE *sample_land;
-	ALLEGRO_SAMPLE *sample_pickup;
 	ALLEGRO_SAMPLE *sample_charge;
 
 	char profile[ PL_SYSTEM_MAX_USERNAME ];
 
 	float camera_x, camera_y;
-
-	bool is_grabbing;
 } GameVars;
 
 extern GameVars game;

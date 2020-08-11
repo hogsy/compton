@@ -52,6 +52,12 @@ bool vc::Serializer::ValidateDataFormat( uint8_t target ) {
 	return true;
 }
 
+void vc::Serializer::WriteInteger( int var ) {
+	fputc( DATA_FORMAT_INTEGER, filePtr );
+
+	fwrite( &var, sizeof( int32_t ), 1, filePtr );
+}
+
 void vc::Serializer::WriteString( const char *var ) {
 	fputc( DATA_FORMAT_STRING, filePtr );
 

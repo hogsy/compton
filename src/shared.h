@@ -33,8 +33,8 @@
 
 #include "engine/SimGame.h"
 
-#define DISPLAY_WIDTH   320
-#define DISPLAY_HEIGHT  240
+#define DISPLAY_WIDTH   640
+#define DISPLAY_HEIGHT  480
 
 #ifdef DEBUG_BUILD
 #   define WINDOW_TITLE "SimGame [DEBUG]"
@@ -82,6 +82,16 @@ namespace vc {
 		void Shutdown();
 
 		unsigned int GetNumOfTicks() { return numTicks; }
+
+		PL_INLINE void GetWindowSize( int *dW, int *dH ) const {
+			*dW = windowWidth;
+			*dH = windowHeight;
+		}
+
+		PL_INLINE void GetScaledSize( int *dW, int *dH ) const {
+			*dW = scaleW;
+			*dH = scaleH;
+		}
 	protected:
 	private:
 		~App();

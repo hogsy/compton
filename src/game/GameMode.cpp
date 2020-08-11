@@ -4,9 +4,10 @@
  *------------------------------------------------------------------------------------*/
 
 #include "GameMode.h"
-#include "GUIPanel.h"
 #include "SimGame.h"
 #include "agent.h"
+#include "GUIPanel.h"
+#include "GUICursor.h"
 
 vc::GameMode::GameMode() {
 	// Cache all the data we're going to use...
@@ -35,16 +36,36 @@ vc::GameMode::GameMode() {
 
 	uiBasePanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	uiBasePanelPtr->SetStyleSheet( uiDefaultStyleSheet );
+
+	// Create the UI cursor
+	new GUICursor( uiBasePanelPtr );
 }
 
 vc::GameMode::~GameMode() = default;
 
 void vc::GameMode::Tick() {
+	// Always tick UI, because we still want to access it even if paused
+	uiBasePanelPtr->Tick();
+
 	if ( curGameState == GameState::PAUSED ) {
 		return;
 	}
 
 	AgentFactory::Get()->Tick();
+}
+
+void vc::GameMode::Draw() {
+	AgentFactory::Get()->Draw();
+
+	uiBasePanelPtr->Draw();
+}
+
+void vc::GameMode::SaveGame() {
+	assert( 0 );
+}
+
+void vc::GameMode::RestoreGame() {
+	assert( 0 );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int button, bool buttonUp ) {

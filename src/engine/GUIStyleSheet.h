@@ -13,6 +13,19 @@ namespace vc {
 		int w, h;
 	};
 
+	enum GUICursorMode {
+		GUI_MOUSE_DEFAULT,
+		GUI_MOUSE_DENY,
+		GUI_MOUSE_MOVE,
+
+		GUI_MOUSE_SIZER0,
+		GUI_MOUSE_SIZER1,
+		GUI_MOUSE_SIZER2,
+		GUI_MOUSE_SIZER3,
+
+		MAX_MOUSE_STATES
+	};
+
 	struct GUIStyleSheet : public SpriteSheet {
 		GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap );
 
@@ -36,12 +49,6 @@ namespace vc {
 		unsigned int numBackgrounds;
 
 		// Mouse cursor
-		RectangleCoord mousePointer;
-		RectangleCoord mouseDeny;
-		RectangleCoord mouseMove;
-		RectangleCoord mouseSizer0;
-		RectangleCoord mouseSizer1;
-		RectangleCoord mouseSizer2;
-		RectangleCoord mouseSizer3;
+		RectangleCoord mouseStyles[ MAX_MOUSE_STATES ];
 	};
 }

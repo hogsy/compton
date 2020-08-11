@@ -28,25 +28,38 @@ namespace vc {
 		GUIPanel( GUIPanel *parent = nullptr, int x = 0, int y = 0, int w = 640, int h = 480, Background background = Background::NONE, Border border = Border::NONE );
 		~GUIPanel();
 
-		void Draw();
-		void DrawBackground();
+		virtual void Draw();
+		virtual void DrawBackground();
 
-		void Tick();
+		virtual void Tick();
 
-		void SetStyleSheet( const GUIStyleSheet *styleSheet );
-		const GUIStyleSheet *GetStyle() const { return myStyleSheet; }
+		void SetStyleSheet( GUIStyleSheet *styleSheet );
+		GUIStyleSheet *GetStyle() const { return myStyleSheet; }
+
+		PL_INLINE void SetBackgroundColour( const PLColour &colour )    { backgroundColour = colour; }
+		PL_INLINE PLColour GetBackgroundColour() const                  { return backgroundColour; }
+
+		PL_INLINE GUIPanel *GetParent() const { return parentPtr; }
+
+		PL_INLINE void GetPosition( int *xd, int *yd ) const { *xd = x; *yd = y; }
+		PL_INLINE void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
 
 	protected:
-	private:
-		Background myBackground{ Background::NONE };
-		Border myBorder{ Border::NONE };
+		GUIStyleSheet *myStyleSheet{ nullptr };
 
-		GUIPanel *parentPtr{ nullptr };
-		const GUIStyleSheet *myStyleSheet{ nullptr };
+		std::vector< GUIPanel * > children;
 
 		int x{ 0 }, y{ 0 };
 		int w{ 640 }, h{ 480 };
 
-		std::vector< GUIPanel * > children;
+		bool shouldDraw{ false };
+
+	private:
+		Background myBackground{ Background::NONE };
+		Border myBorder{ Border::NONE };
+
+		PLColour backgroundColour;
+
+		GUIPanel *parentPtr{ nullptr };
 	};
 }

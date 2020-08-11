@@ -8,7 +8,7 @@
 
 /* Future Improvements
  * - if the number of colours in the block are less than 16 bytes, we need to pack the data smaller
- * - if there are two colours that aren't discernably different, pack them together (optional)
+ * - if there are two colours that aren't discernibly different, pack them together (optional)
  */
 
 #define CHANNEL_RED		( 1 << 0 )

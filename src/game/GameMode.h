@@ -27,12 +27,15 @@ namespace vc {
 		~GameMode();
 
 		void Tick();
+		void Draw();
 
 		void SaveGame();
 		void RestoreGame();
 
 		void HandleMouseEvent( int x, int y, int button, bool buttonUp );
 		void HandleKeyboardEvent( int button, bool buttonUp );
+
+		PL_INLINE GUIPanel *GetBasePanel() const { return uiBasePanelPtr; }
 
 	protected:
 	private:

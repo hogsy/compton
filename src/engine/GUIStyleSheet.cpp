@@ -43,11 +43,11 @@ vc::GUIStyleSheet::GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : S
 	}
 
 	// Mouse cursor
-	GetSpriteCoordinates( "gui_mouse_pointer", &mousePointer.x, &mousePointer.y, &mousePointer.w, &mousePointer.h );
-	GetSpriteCoordinates( "gui_mouse_deny", &mouseDeny.x, &mouseDeny.y, &mouseDeny.w, &mouseDeny.h );
-	GetSpriteCoordinates( "gui_mouse_move", &mouseMove.x, &mouseMove.y, &mouseMove.w, &mouseMove.h );
-	GetSpriteCoordinates( "gui_mouse_sizer0", &mouseSizer0.x, &mouseSizer0.y, &mouseSizer0.w, &mouseSizer0.h );
-	GetSpriteCoordinates( "gui_mouse_sizer1", &mouseSizer1.x, &mouseSizer1.y, &mouseSizer1.w, &mouseSizer1.h );
-	GetSpriteCoordinates( "gui_mouse_sizer2", &mouseSizer2.x, &mouseSizer2.y, &mouseSizer2.w, &mouseSizer2.h );
-	GetSpriteCoordinates( "gui_mouse_sizer3", &mouseSizer3.x, &mouseSizer3.y, &mouseSizer3.w, &mouseSizer3.h );
+	GetSpriteCoordinates( "gui_mouse_pointer", &mouseStyles[ GUI_MOUSE_DEFAULT ].x, &mouseStyles[ GUI_MOUSE_DEFAULT ].y, &mouseStyles[ GUI_MOUSE_DEFAULT ].w, &mouseStyles[ GUI_MOUSE_DEFAULT ].h );
+	GetSpriteCoordinates( "gui_mouse_deny", &mouseStyles[ GUI_MOUSE_DENY ].x, &mouseStyles[ GUI_MOUSE_DENY ].y, &mouseStyles[ GUI_MOUSE_DENY ].w, &mouseStyles[ GUI_MOUSE_DENY ].h );
+	GetSpriteCoordinates( "gui_mouse_move", &mouseStyles[ GUI_MOUSE_MOVE ].x, &mouseStyles[ GUI_MOUSE_MOVE ].y, &mouseStyles[ GUI_MOUSE_MOVE ].w, &mouseStyles[ GUI_MOUSE_MOVE ].h );
+	GetSpriteCoordinates( "gui_mouse_sizer0", &mouseStyles[ GUI_MOUSE_SIZER0 ].x, &mouseStyles[ GUI_MOUSE_SIZER0 ].y, &mouseStyles[ GUI_MOUSE_SIZER0 ].w, &mouseStyles[ GUI_MOUSE_SIZER0 ].h );
+	GetSpriteCoordinates( "gui_mouse_sizer1", &mouseStyles[ GUI_MOUSE_SIZER1 ].x, &mouseStyles[ GUI_MOUSE_SIZER1 ].y, &mouseStyles[ GUI_MOUSE_SIZER1 ].w, &mouseStyles[ GUI_MOUSE_SIZER1 ].h );
+	GetSpriteCoordinates( "gui_mouse_sizer2", &mouseStyles[ GUI_MOUSE_SIZER2 ].x, &mouseStyles[ GUI_MOUSE_SIZER2 ].y, &mouseStyles[ GUI_MOUSE_SIZER2 ].w, &mouseStyles[ GUI_MOUSE_SIZER2 ].h );
+	GetSpriteCoordinates( "gui_mouse_sizer3", &mouseStyles[ GUI_MOUSE_SIZER3 ].x, &mouseStyles[ GUI_MOUSE_SIZER3 ].y, &mouseStyles[ GUI_MOUSE_SIZER3 ].w, &mouseStyles[ GUI_MOUSE_SIZER3 ].h );
 }

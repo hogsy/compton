@@ -9,7 +9,6 @@
 #include "LoaderPkg.h"
 #include "GameMode.h"
 #include "EntityManager.h"
-#include "agent.h"
 
 #include "vm/vm.h"
 
@@ -409,6 +408,17 @@ void vc::App::Tick() {
 	if ( !al_is_event_queue_empty( alEventQueue ) ) {
 		redraw = false;
 	}
+}
+
+/**
+ * Returns cursor position, accounting for scaled size.
+ */
+void vc::App::GetCursorPosition( int *dX, int *dY ) const {
+	ALLEGRO_MOUSE_STATE state;
+	al_get_mouse_state( &state );
+
+	*dX = state.x * DISPLAY_WIDTH / windowWidth;
+	*dY = state.y * DISPLAY_HEIGHT / windowHeight;
 }
 
 ////////////////////////////////

@@ -52,6 +52,11 @@ const char *vc::ScriptParser::GetToken( char *buffer, size_t bufSize ) {
 		AdvanceBufferPosition();
 	}
 
+	// If it's a new line
+	if ( bufPos[ 0 ] == '\r' || bufPos[ 1 ] == '\n' ) {
+		SkipLine();
+	}
+
 	unsigned int i;
 	for ( i = 0; i < bufSize; ++i ) {
 		// Stop if we either hit the end or a new line

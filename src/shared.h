@@ -92,6 +92,8 @@ namespace vc {
 			*dW = scaleW;
 			*dH = scaleH;
 		}
+
+		void GetCursorPosition( int *dX, int *dY ) const;
 	protected:
 	private:
 		~App();

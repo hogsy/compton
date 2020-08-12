@@ -25,17 +25,17 @@ vc::GameMode::GameMode() {
 	vc::GetApp()->CacheSample( "data/sounds/05.wav" );
 	vc::GetApp()->CacheSample( "data/sounds/06.wav" );
 
+	uiDefaultStyleSheet = new GUIStyleSheet( "sprites:interface.sdf", vc::GetApp()->CacheImage( "sprites:interface.gfx" ) );
+
+	// Now create the base GUI panels
+
+	uiBasePanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	uiBasePanelPtr->SetStyleSheet( uiDefaultStyleSheet );
+
 	terrainSheet = new SpriteSheet( "sprites:terrain.sdf", vc::GetApp()->CacheImage( "sprites:terrain.gfx" ) );
 
 	// Register agents
 	AgentFactory::Get()->RegisterScripts();
-
-	// Now create the base GUI panel
-
-	uiDefaultStyleSheet = new GUIStyleSheet( "sprites:interface.sdf", vc::GetApp()->CacheImage( "sprites:interface.gfx" ) );
-
-	uiBasePanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
-	uiBasePanelPtr->SetStyleSheet( uiDefaultStyleSheet );
 
 	// Create the UI cursor
 	new GUICursor( uiBasePanelPtr );

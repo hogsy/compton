@@ -18,6 +18,9 @@ vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : Scrip
 		if ( token[ 0 ] == ';' ) { // Comment
 			SkipLine();
 			continue;
+		} else if ( token[ 0 ] == '$' ) {
+			SkipLine();
+			continue;
 		}
 
 		// Otherwise, assume it's an index into the sheet!

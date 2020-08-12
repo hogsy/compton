@@ -31,9 +31,32 @@ void vc::GUIPanel::Draw() {
 }
 
 void vc::GUIPanel::DrawBackground() {
-	if ( myBackground == Background::NONE ) {
+	if ( myBackground == Background::NONE || !shouldDraw || myStyleSheet == nullptr ) {
 		return;
 	}
+
+	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
+	if ( bmp == nullptr ) {
+		return;
+	}
+
+	float sx, sy, sw, sh;
+	switch( myBorder ) {
+		default: break;
+		case Border::INSET:
+			break;
+		case Border::OUTSET:
+			break;
+	}
+
+#if 0
+	sx = myStyleSheet->.x;
+	sy = myStyleSheet->mouseStyles[ currentCursorMode ].y;
+	sw = myStyleSheet->mouseStyles[ currentCursorMode ].w;
+	sh = myStyleSheet->mouseStyles[ currentCursorMode ].h;
+
+	al_draw_bitmap_region( bmp, sx, sy, sw, sh, x, y, 0 );
+#endif
 }
 
 void vc::GUIPanel::Tick() {

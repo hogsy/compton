@@ -9,8 +9,8 @@
 
 namespace vc {
 	struct RectangleCoord {
-		int x, y;
-		int w, h;
+		int x{ 0 }, y{ 0 };
+		int w{ 0 }, h{ 0 };
 	};
 
 	enum GUICursorMode {
@@ -46,7 +46,7 @@ namespace vc {
 
 #define GUI_MAX_BACKGROUNDS 8
 		RectangleCoord backgrounds[ GUI_MAX_BACKGROUNDS ];
-		unsigned int numBackgrounds;
+		unsigned int numBackgrounds{ 0 };
 
 		// Mouse cursor
 		RectangleCoord mouseStyles[ MAX_MOUSE_STATES ];

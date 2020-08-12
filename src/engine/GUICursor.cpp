@@ -31,21 +31,17 @@ void vc::GUICursor::DrawBackground() {
 	sh = myStyleSheet->mouseStyles[ currentCursorMode ].h;
 
 	al_draw_bitmap_region( bmp, sx, sy, sw, sh, x, y, 0 );
-	al_draw_pixel( x, y, al_map_rgba( 255, 255, 255, 255 ) );
 }
 
 void vc::GUICursor::Tick() {
-	ALLEGRO_MOUSE_STATE state;
-	al_get_mouse_state( &state );
-
-	int wW, wH;
-	GetApp()->GetWindowSize( &wW, &wH );
-
-	x = state.x * 640 / wW;
-	y = state.y * 480 / wH;
+	GetApp()->GetCursorPosition( &x, &y );
 
 	int pX, pY, pW, pH;
 	GUIPanel *panel = GetParent();
+	if ( panel == nullptr ) {
+		return;
+	}
+
 	panel->GetPosition( &pX, &pY );
 	panel->GetSize( &pW, &pH );
 

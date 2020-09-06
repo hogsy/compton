@@ -45,9 +45,11 @@ file(GLOB SOURCE_FILES
         src/shared.h
 
         src/engine/*.cpp
+        src/engine/GUI/*.cpp
         src/engine/*.h
 
         src/game/*.cpp
+        src/game/entities/*.cpp
         src/game/*.h
         )
 
@@ -55,8 +57,6 @@ add_executable( VCritters ${SOURCE_FILES}
         # engine
         src/engine/SpriteSheet.cpp
         src/engine/SpriteSheet.h
-        src/engine/GUIPanel.cpp
-        src/engine/GUIPanel.h
         src/engine/SimGame.h
         src/engine/ScriptParser.cpp
         src/engine/ScriptParser.h
@@ -70,7 +70,7 @@ add_executable( VCritters ${SOURCE_FILES}
         src/game/agents/Cloud.cpp
         src/game/agents/PhysicsAgent.cpp
         src/game/agents/SpriteAgent.cpp
-        src/engine/GUIButton.cpp src/engine/GUIButton.h src/engine/GUIStyleSheet.cpp src/engine/GUIStyleSheet.h)
+        )
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 

@@ -6,8 +6,8 @@
 #include "GameMode.h"
 #include "SimGame.h"
 #include "agent.h"
-#include "GUIPanel.h"
-#include "GUICursor.h"
+#include "GUI/GUIPanel.h"
+#include "GUI/GUICursor.h"
 
 vc::GameMode::GameMode() {
 	// Cache all the data we're going to use...

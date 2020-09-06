@@ -49,7 +49,7 @@ file(GLOB SOURCE_FILES
         src/engine/*.h
 
         src/game/*.cpp
-        src/game/entities/*.cpp
+        src/game/Entities/*.cpp
         src/game/*.h
         )
 

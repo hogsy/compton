@@ -1,0 +1,10 @@
+; Generates data0.pkg
+output base.pkg
+
+; Sprite sheets
+dir sheets png
+dir sheets bmp
+dir sheets sdf
+
+; Sounds
+dir sounds wav

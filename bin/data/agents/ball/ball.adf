@@ -1,7 +1,0 @@
-classname Ball
-baseclass Physics
-script agents/ball/ball.scr
-sprite agents/ball/ball.png
-bounds "8 8"
-elasticity 0.5
-physics true

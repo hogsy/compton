@@ -30,6 +30,8 @@ namespace vc {
 		void ReadString( char *buffer, size_t bufLength );
 		PLVector2 ReadCoordinate();
 
+		PL_INLINE unsigned int GetVersion() const { return version; }
+
 	private:
 		enum : uint8_t {
 			DATA_FORMAT_STRING,

@@ -14,15 +14,20 @@ namespace vc {
 		Entity();
 		~Entity();
 
+		virtual void Spawn();
+
 		virtual void Tick();
 		virtual void Draw();
 
 		virtual void Deserialize( Serializer *read );
 		virtual void Serialize( Serializer *write );
 
+		PL_INLINE PLVector2 GetOrigin() const { return origin; }
+		PL_INLINE PLVector2 GetBounds() const { return bounds; }
+
 	protected:
 		bool isVisible{ false };
 
-		PLVector2 origin;
+		PLVector2 origin{ 0.0f, 0.0f }, bounds{ 0.0f, 0.0f };
 	};
 }

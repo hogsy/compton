@@ -1,5 +1,5 @@
 ; Generates data0.pkg
-output base.pkg
+output data0.pkg
 
 ; Sprite sheets
 dir sheets png

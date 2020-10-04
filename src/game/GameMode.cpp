@@ -3,42 +3,76 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include "GameMode.h"
 #include "SimGame.h"
-#include "agent.h"
-#include "GUI/GUIPanel.h"
+#include "GameMode.h"
+#include "GUI/GUIButton.h"
 #include "GUI/GUICursor.h"
+#include "GUI/GUIPanel.h"
+#include "Terrain.h"
+#include "EntityManager.h"
+#include "Serializer.h"
+#include "agent.h"
 
 vc::GameMode::GameMode() {
 	// Cache all the data we're going to use...
 
-	vc::GetApp()->CacheFont( "data/fonts/ps2p/PressStart2P.ttf", FONT_SIZE_LARGE );
-	vc::GetApp()->CacheFont( "data/fonts/ps2p/PressStart2P.ttf", FONT_SIZE_SMALL );
-	vc::GetApp()->CacheFont( "data/fonts/ps2p/PressStart2P.ttf", 32 );
-	vc::GetApp()->CacheFont( "data/fonts/ps2p/PressStart2P.ttf", FONT_SIZE_MEDIUM );
+	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_LARGE );
+	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_SMALL );
+	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", 32 );
+	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_MEDIUM );
 
-	vc::GetApp()->CacheSample( "data/sounds/00.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/01.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/02.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/03.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/04.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/05.wav" );
-	vc::GetApp()->CacheSample( "data/sounds/06.wav" );
+	vc::GetApp()->CacheSample( "sounds/00.wav" );
+	vc::GetApp()->CacheSample( "sounds/01.wav" );
+	vc::GetApp()->CacheSample( "sounds/02.wav" );
+	vc::GetApp()->CacheSample( "sounds/03.wav" );
+	vc::GetApp()->CacheSample( "sounds/04.wav" );
+	vc::GetApp()->CacheSample( "sounds/05.wav" );
+	vc::GetApp()->CacheSample( "sounds/06.wav" );
 
-	uiDefaultStyleSheet = new GUIStyleSheet( "sprites:interface.sdf", vc::GetApp()->CacheImage( "sprites:interface.gfx" ) );
+	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
 
 	// Now create the base GUI panels
 
 	uiBasePanelPtr = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	uiBasePanelPtr->SetStyleSheet( uiDefaultStyleSheet );
 
-	terrainSheet = new SpriteSheet( "sprites:terrain.sdf", vc::GetApp()->CacheImage( "sprites:terrain.gfx" ) );
+	new GUIButton( uiBasePanelPtr, "Hello World", 2, 2, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", 34, 2, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", 66, 2, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", 2, 34, 96, 32 );
 
-	// Register agents
-	AgentFactory::Get()->RegisterScripts();
+	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
+	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+
+#define MINIMAP_WIDTH   128
+#define MINIMAP_HEIGHT  128
+	GUIPanel *minimapPanel = new GUIPanel(
+	        uiBasePanelPtr,
+	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
+	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
+	        GUIPanel::Background::TEXTURE,
+	        GUIPanel::Border::OUTSET );
+	minimapPanel->SetBackground( GUIPanel::Background::NONE );
+	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
+	new GUIPanel(
+	        minimapPanel,
+	        2, 2,
+	        MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
+	        GUIPanel::Background::SOLID,
+	        GUIPanel::Border::INSET );
 
 	// Create the UI cursor
 	new GUICursor( uiBasePanelPtr );
+
+	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
+	terrainPtr = new Terrain();
+
+	entityManager = new EntityManager();
+
+	NewGame( "Fudge" );
 }
 
 vc::GameMode::~GameMode() = default;
@@ -51,21 +85,30 @@ void vc::GameMode::Tick() {
 		return;
 	}
 
-	AgentFactory::Get()->Tick();
+	terrainPtr->Tick();
+	entityManager->Tick();
 }
 
 void vc::GameMode::Draw() {
-	AgentFactory::Get()->Draw();
-
+	terrainPtr->Draw();
+	entityManager->Draw();
 	uiBasePanelPtr->Draw();
 }
 
-void vc::GameMode::SaveGame() {
-	assert( 0 );
+void vc::GameMode::NewGame( const char *path ) {
+
 }
 
-void vc::GameMode::RestoreGame() {
-	assert( 0 );
+void vc::GameMode::SaveGame( const char *path ) {
+	Serializer serializer( path, Serializer::Mode::WRITE );
+	terrainPtr->Serialize( &serializer );
+	entityManager->SerializeEntities( &serializer );
+}
+
+void vc::GameMode::RestoreGame( const char *path ) {
+	Serializer serializer( path, Serializer::Mode::READ );
+	terrainPtr->Deserialize( &serializer );
+	entityManager->DeserializeEntities( &serializer );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int button, bool buttonUp ) {

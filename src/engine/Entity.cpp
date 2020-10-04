@@ -13,19 +13,28 @@ vc::Entity::Entity() {
 vc::Entity::~Entity() {
 }
 
+/**
+ * Called if the entity is spawning anew.
+ */
+void vc::Entity::Spawn() {
+}
+
 void vc::Entity::Tick() {
 }
 
 void vc::Entity::Draw() {
-	if( !isVisible ) {
-		return;
-	}
 }
 
+/**
+ * Loading from pre-existing dataset.
+ */
 void vc::Entity::Deserialize( Serializer *read ) {
 	origin = read->ReadCoordinate();
 }
 
+/**
+ * Saving.
+ */
 void vc::Entity::Serialize( Serializer *write ) {
 	write->WriteCoordinate( origin );
 }

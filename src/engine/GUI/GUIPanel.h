@@ -17,7 +17,8 @@ namespace vc {
 	public:
 		enum class Background {
 			NONE,
-			SOLID
+			SOLID,
+			TEXTURE,
 		};
 		enum class Border {
 			NONE,
@@ -39,10 +40,17 @@ namespace vc {
 		PL_INLINE void SetBackgroundColour( const PLColour &colour )    { backgroundColour = colour; }
 		PL_INLINE PLColour GetBackgroundColour() const                  { return backgroundColour; }
 
+		PL_INLINE void SetBorder( Border border ) { myBorder = border; }
+		PL_INLINE void SetBackground( Background background ) { myBackground = background; }
+
 		PL_INLINE GUIPanel *GetParent() const { return parentPtr; }
 
 		PL_INLINE void GetPosition( int *xd, int *yd ) const { *xd = x; *yd = y; }
+		void GetContentPosition( int *xd, int *yd ) const;
 		PL_INLINE void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
+		void GetContentSize( int *wd, int *hd ) const;
+
+		bool IsMouseOver() const;
 
 	protected:
 		GUIStyleSheet *myStyleSheet{ nullptr };
@@ -55,6 +63,10 @@ namespace vc {
 		bool shouldDraw{ false };
 
 	private:
+		void DrawBorder();
+		void DrawBorderCorner( int dx, int dy, const RectangleCoord &tileCoord );
+		void DrawBorderEdge( int dx, int dy, int dw, int dh, const RectangleCoord &tileCoord );
+
 		Background myBackground{ Background::NONE };
 		Border myBorder{ Border::NONE };
 

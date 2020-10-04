@@ -58,6 +58,12 @@ void vc::Serializer::WriteInteger( int var ) {
 	fwrite( &var, sizeof( int32_t ), 1, filePtr );
 }
 
+void vc::Serializer::WriteFloat( float var ) {
+	fputc( DATA_FORMAT_FLOAT, filePtr );
+
+	fwrite( &var, sizeof( float ), 1, filePtr );
+}
+
 void vc::Serializer::WriteString( const char *var ) {
 	fputc( DATA_FORMAT_STRING, filePtr );
 
@@ -82,6 +88,16 @@ int vc::Serializer::ReadInteger() {
 
 	int32_t var;
 	fread( &var, sizeof( int32_t ), 1, filePtr );
+	return var;
+}
+
+float vc::Serializer::ReadFloat() {
+	if ( !ValidateDataFormat( DATA_FORMAT_FLOAT ) ) {
+		return 0.0f;
+	}
+
+	float var;
+	fread( &var, sizeof( float ), 1, filePtr );
 	return var;
 }
 

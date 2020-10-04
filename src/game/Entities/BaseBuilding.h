@@ -1,8 +1,22 @@
-//
-// Created by mark- on 06/09/2020.
-//
+/*--------------------------------------------------------------------------------------
+ * SimGame
+ * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *------------------------------------------------------------------------------------*/
 
-#ifndef VCRITTERS_SRC_GAME_ENTITIES_BASEBUILDING_H_
-#define VCRITTERS_SRC_GAME_ENTITIES_BASEBUILDING_H_
+#pragma once
 
-#endif //VCRITTERS_SRC_GAME_ENTITIES_BASEBUILDING_H_
+#include "Entity.h"
+#include "Serializer.h"
+
+namespace vc {
+	class BaseBuilding : public Entity {
+	public:
+		IMPLEMENT_SUPER( Entity )
+
+		void Deserialize( Serializer *read ) override;
+		void Serialize( Serializer *write ) override;
+
+	protected:
+	private:
+	};
+}

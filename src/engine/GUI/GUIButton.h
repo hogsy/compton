@@ -10,8 +10,12 @@
 namespace vc {
 	class GUIButton : public GUIPanel {
 	public:
+		IMPLEMENT_SUPER( GUIPanel )
+
 		GUIButton( GUIPanel *parent = nullptr, const char *label = nullptr, int x = 0, int y = 0, int w = 32, int h = 16 );
 		~GUIButton();
+
+		void Tick() override;
 
 	protected:
 	private:

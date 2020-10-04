@@ -46,6 +46,7 @@ void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR c
 	if ( font == nullptr ) {
 		return;
 	}
+
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_CENTER, message );
 }
 
@@ -80,9 +81,8 @@ vc::App *vc::GetApp() {
 	return appInstance;
 }
 
-#define VC_LOG "debug"
-#define VC_TITLE "SimGame"
-#define VC_VERSION "Pre-Alpha v0.1.0"
+#define VC_LOG      "debug"
+#define VC_TITLE    "SimGame"
 
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
@@ -101,9 +101,10 @@ vc::App::App( int argc, char **argv ) {
 	plSetupLogLevel( VC_LOG_DEB, "debug", { 0, 0, 255 }, true );
 
 	plRegisterPackageLoader( "pkg", Pkg_LoadPackage );
+	plRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
 	plMountLocalLocation( appDataPath );
-	plMountLocalLocation( "data/" );
+	plMountLocalLocation( "./" );
 
 	for ( unsigned int i = 0; i < 100; ++i ) {
 		char packageName[ 64 ];
@@ -113,7 +114,7 @@ vc::App::App( int argc, char **argv ) {
 		}
 	}
 
-	Print( "SimGame " VC_VERSION " (" __DATE__ ")\n" );
+	Print( "SimGame (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
 	// And now initialize Allegro
 
@@ -268,22 +269,30 @@ void vc::App::Shutdown() {
 void vc::App::InitializeDisplay() {
 	Print( "Initializing display...\n" );
 
-	windowWidth = WINDOW_WIDTH;
-	windowHeight = WINDOW_HEIGHT;
+	windowWidth = DISPLAY_WIDTH;
+	windowHeight = DISPLAY_HEIGHT;
 
-	al_set_new_display_flags( ALLEGRO_WINDOWED | ALLEGRO_OPENGL );
+	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr ) {
 		Error( "Failed to initialize display!\n" );
 	}
 
+	// Get the actual width and height
+	windowWidth = al_get_display_width( alDisplay );
+	windowHeight = al_get_display_height( alDisplay );
+
 	al_set_window_title( alDisplay, WINDOW_TITLE );
 
 	// Check to see how much we need to scale the buffer.
 	int flags = al_get_new_bitmap_flags();
-	//al_add_new_bitmap_flag(ALLEGRO_MAG_LINEAR);
+	al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
 	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	if ( buffer == nullptr ) {
+		Error( "Failed to create screen buffer!\n" );
+	}
 	al_set_new_bitmap_flags( flags );
+
 	int sx = windowWidth / DISPLAY_WIDTH;
 	int sy = windowHeight / DISPLAY_HEIGHT;
 	int scale = std::min( sx, sy );
@@ -295,7 +304,7 @@ void vc::App::InitializeDisplay() {
 
 	al_inhibit_screensaver( true );
 
-	al_set_clipping_rectangle( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
+	al_set_clipping_rectangle( 0, 0, windowWidth, windowHeight );
 
 	redraw = true;
 }
@@ -319,12 +328,8 @@ void vc::App::Draw() {
 			buffer,
 			0, 0,
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
-#if 0
-			engine_vars.scalex, engine_vars.scaley,
-            engine_vars.scalew, engine_vars.scaleh,
-#else
-			0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-#endif
+			scaleX, scaleY,
+            scaleW, scaleH,
 			0 );
 
 	al_flip_display();
@@ -348,6 +353,7 @@ void vc::App::InitializeEvents() {
 	al_install_mouse();
 	al_install_keyboard();
 
+	al_grab_mouse( alDisplay );
 #if 0// enable once we're happy with everything else.
 	al_hide_mouse_cursor(engine_vars.display);
 #endif
@@ -360,7 +366,6 @@ void vc::App::InitializeEvents() {
 }
 
 void vc::App::InitializeGame() {
-	entityManager = new EntityManager();
 	gameMode = new GameMode();
 }
 

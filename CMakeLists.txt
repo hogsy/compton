@@ -70,7 +70,11 @@ add_executable( VCritters ${SOURCE_FILES}
         src/game/agents/Cloud.cpp
         src/game/agents/PhysicsAgent.cpp
         src/game/agents/SpriteAgent.cpp
-        )
+
+        # miniz
+        src/3rdparty/miniz/miniz.c
+        src/3rdparty/miniz/miniz.h
+        src/engine/PlayerManager.cpp src/engine/Random.cpp src/engine/Random.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 
@@ -78,6 +82,9 @@ target_include_directories( VCritters PRIVATE
         src/engine/
         src/game/
         src/game/desktop/
+
+        # 3rd party libraries
+        src/3rdparty/miniz/
         )
 if ( WIN32 )
     target_include_directories( VCritters PRIVATE src/3rdparty/allegro/include/ )

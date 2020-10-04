@@ -41,8 +41,6 @@
 #else
 #   define WINDOW_TITLE "SimGame"
 #endif
-#define WINDOW_WIDTH    1280
-#define WINDOW_HEIGHT   960
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -94,6 +92,8 @@ namespace vc {
 		}
 
 		void GetCursorPosition( int *dX, int *dY ) const;
+
+		PL_INLINE const char *GetAppDataPath() const { return appDataPath; }
 	protected:
 	private:
 		~App();
@@ -112,7 +112,6 @@ namespace vc {
 
 		// Game state
 		GameMode *gameMode{ nullptr };
-		EntityManager *entityManager{ nullptr };
 
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;

@@ -5,6 +5,7 @@
 
 #include "SimGame.h"
 #include "Entity.h"
+#include "Random.h"
 #include "Serializer.h"
 
 namespace vc {
@@ -36,14 +37,20 @@ namespace vc {
 		MAX_DIRECTIVES
 	};
 
+#define MAX_CHARACTER_NAME 64
+
 	class BaseCharacter : public Entity {
 	public:
 		IMPLEMENT_SUPER( Entity )
+
+		void Spawn() override;
 
 		bool CanBreed( BaseCharacter *other );
 
 		void Deserialize( Serializer *read ) override;
 		void Serialize( Serializer *write ) override;
+
+		void Draw() override;
 
 	protected:
 	private:
@@ -59,6 +66,8 @@ namespace vc {
 		CharacterMood mood{ CharacterMood::MOOD_NEUTRAL };
 		CharacterSex sex{ CharacterSex::INTERSEX };
 
+		char name[ MAX_CHARACTER_NAME ];
+
 		unsigned int age{ 0 };
 		unsigned int maxAge{ 100 };
 
@@ -73,12 +82,47 @@ namespace vc {
 
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };
+		unsigned int currentLevel{ 0 };
 
 		int influence{ 0 };
 	};
 }// namespace vc
 
 REGISTER_ENTITY( character_base, vc::BaseCharacter )
+
+void vc::BaseCharacter::Spawn() {
+	static const char *names[]={
+			"Adelmarus",
+	        "Arnaldus",
+	        "Carola",
+	        "Harmonia",
+	        "Harrius",
+	        "Hilarius",
+	        "Michaelis",
+	        "Victoria",
+	        "Zacharias",
+	};
+	const char *firstName = names[ random::GenerateRandomInteger( 0, plArrayElements( names ) ) ];
+	const char *lastName = names[ random::GenerateRandomInteger( 0, plArrayElements( names ) ) ];
+	snprintf( name, sizeof( name ), "%s %s", firstName, lastName );
+
+	// Age
+	age = random::GenerateRandomInteger( 1, 50 );
+	maxAge = random::GenerateRandomInteger( age, age + 50 );
+
+	// Health
+	health = random::GenerateRandomInteger( 50, 100 );
+	maxHealth = random::GenerateRandomInteger( health, health + 100 );
+
+	// Stamina
+	stamina = random::GenerateRandomInteger( 30, 100 );
+	maxStamina = random::GenerateRandomInteger( stamina, stamina + 100 );
+
+	// Generate a random sex for the character
+	sex = static_cast< CharacterSex >( random::GenerateRandomInteger( 0, static_cast< int >( CharacterSex::MAX_SEXES ) ) );
+	// Initial mood should also initially be randomised
+	mood = static_cast< CharacterMood >( random::GenerateRandomInteger( 0, static_cast< int >( CharacterMood::MAX_MOODS ) ) );
+}
 
 /**
  * Determines whether or not this character can breed with the other.
@@ -112,6 +156,8 @@ bool vc::BaseCharacter::CanBreed( BaseCharacter *other ) {
 void vc::BaseCharacter::Deserialize( vc::Serializer *read ) {
 	SuperClass::Deserialize( read );
 
+	read->ReadString( name, sizeof( name ) );
+
 	health = read->ReadInteger();
 	maxHealth = read->ReadInteger();
 
@@ -125,6 +171,8 @@ void vc::BaseCharacter::Deserialize( vc::Serializer *read ) {
 void vc::BaseCharacter::Serialize( vc::Serializer *write ) {
 	SuperClass::Serialize( write );
 
+	write->WriteString( name );
+
 	write->WriteInteger( health );
 	write->WriteInteger( maxHealth );
 
@@ -133,4 +181,12 @@ void vc::BaseCharacter::Serialize( vc::Serializer *write ) {
 
 	write->WriteInteger( experience );
 	write->WriteInteger( maxExperience );
+}
+
+void vc::BaseCharacter::Draw() {
+	if ( !isVisible ) {
+		return;
+	}
+
+	al_draw_filled_circle( 0, 0, 0.5f, al_map_rgb( 0, 255, 0 ) );
 }

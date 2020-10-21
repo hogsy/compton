@@ -32,15 +32,10 @@
 #define DEBUG_BUILD
 
 #include "engine/SimGame.h"
+#include "engine/Timer.h"
 
 #define DISPLAY_WIDTH   640
 #define DISPLAY_HEIGHT  480
-
-#ifdef DEBUG_BUILD
-#   define WINDOW_TITLE "SimGame [DEBUG]"
-#else
-#   define WINDOW_TITLE "SimGame"
-#endif
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -75,6 +70,10 @@ namespace vc {
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 		ALLEGRO_BITMAP *CacheImage( const char *path );
 
+		PL_INLINE ALLEGRO_FONT *GetDefaultFont() {
+			return defaultFont;
+		}
+
 		void ShowMessageBox( const char *title, const char *message, bool error );
 
 		void Shutdown();
@@ -92,15 +91,24 @@ namespace vc {
 		}
 
 		void GetCursorPosition( int *dX, int *dY ) const;
+		bool GetKeyState( int key ) const;
 
 		PL_INLINE const char *GetAppDataPath() const { return appDataPath; }
+
+		//////////////////////////////////////////////////////
+		// PERFORMANCE
+
+		void StartPerformanceTimer( const char *identifier );
+		void EndPerformanceTimer( const char *identifier );
+
 	protected:
 	private:
 		~App();
 
 		void Draw();
-
 		void Tick();
+
+		std::map< std::string, Timer > performanceTimers;
 
 		ALLEGRO_DISPLAY *alDisplay;
 		ALLEGRO_EVENT_QUEUE *alEventQueue;
@@ -117,6 +125,7 @@ namespace vc {
 		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;
 		std::unordered_map< std::string, ALLEGRO_FONT * > fonts;
+		ALLEGRO_FONT *defaultFont;
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
@@ -136,5 +145,13 @@ namespace vc {
 
 	App *GetApp();
 }// namespace vc
+
+#if defined( DEBUG_BUILD )
+#   define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
+#   define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
+#else
+#   define START_MEASURE()
+#   define END_MEASURE()
+#endif
 
 /*	Game	*/

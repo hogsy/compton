@@ -10,9 +10,9 @@
 
 namespace vc {
 	class BaseBuilding : public Entity {
-	public:
-		IMPLEMENT_SUPER( Entity )
+		DECLARE_ENTITY_CLASS( BaseBuilding, Entity )
 
+	public:
 		void Deserialize( Serializer *read ) override;
 		void Serialize( Serializer *write ) override;
 

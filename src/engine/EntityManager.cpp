@@ -4,8 +4,10 @@
  *------------------------------------------------------------------------------------*/
 
 #include "SimGame.h"
+#include "../shared.h"
 #include "EntityManager.h"
 #include "Entity.h"
+#include "Serializer.h"
 
 std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
 
@@ -18,7 +20,7 @@ vc::EntityManager::EntityManager() {
 vc::EntityManager::~EntityManager() {
 }
 
-vc::Entity *vc::EntityManager::CreateEntity( const std::string &className, const std::stringstream &spawnData ) {
+vc::Entity *vc::EntityManager::CreateEntity( const std::string &className ) {
 	auto i = entityClasses.find( className );
 	if ( i == entityClasses.end() ) {
 		printf( "Failed to find entity class \"%s\"!\n", className.c_str() );
@@ -27,8 +29,6 @@ vc::Entity *vc::EntityManager::CreateEntity( const std::string &className, const
 
 	Entity *entity = i->second();
 	entities.insert( entity );
-
-	entity->Deserialize( nullptr );
 
 	return entity;
 }
@@ -54,6 +54,8 @@ void vc::EntityManager::DestroyEntities() {
 }
 
 void vc::EntityManager::Tick() {
+	START_MEASURE();
+
 	for ( const auto &entity : entities ) {
 		entity->Tick();
 	}
@@ -65,23 +67,48 @@ void vc::EntityManager::Tick() {
 	}
 
 	destructionQueue.clear();
+
+	END_MEASURE();
 }
 
-void vc::EntityManager::Draw() {
+void vc::EntityManager::Draw( const Camera &camera ) {
+	START_MEASURE();
+
 	for ( const auto &entity : entities ) {
-		entity->Draw();
+		entity->Draw( camera );
 	}
+
+	END_MEASURE();
 }
 
 void vc::EntityManager::SerializeEntities( Serializer *write ) {
+	write->WriteInteger( entities.size() );
+
 	for ( auto &entity : entities ) {
+		write->WriteString( entity->GetClassIdentifier() );
+
 		entity->Serialize( write );
 	}
 }
 
 void vc::EntityManager::DeserializeEntities( Serializer *read ) {
-	for ( auto &entity : entities ) {
+	unsigned int numEntities = read->ReadInteger();
+	for ( unsigned int i = 0; i < numEntities; ++i ) {
+		char className[ 64 ];
+		read->ReadString( className, sizeof( className ) );
+
+		Entity *entity = CreateEntity( className );
+		if ( entity == nullptr ) {
+			Error( "Failed to deserialize entity %d, unknown class %s!\n", i, className );
+		}
+
 		entity->Deserialize( read );
+	}
+}
+
+void vc::EntityManager::SpawnEntities() {
+	for ( auto &entity : entities ) {
+		entity->Spawn();
 	}
 }
 

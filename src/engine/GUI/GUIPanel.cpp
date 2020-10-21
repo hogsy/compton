@@ -8,6 +8,7 @@
 
 #include "SimGame.h"
 #include "GUIPanel.h"
+
 #include "../../shared.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
@@ -202,4 +203,15 @@ bool vc::GUIPanel::IsMouseOver() const {
 	int mx, my;
 	GetApp()->GetCursorPosition( &mx, &my );
 	return !( mx < x || mx > x + w || my < y || my > y + h );
+}
+
+bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp ) {
+	for ( auto i : children ) {
+		// If the child handles the event, return true
+		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }

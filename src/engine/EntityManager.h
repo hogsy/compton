@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Camera.h"
 namespace vc {
 	class Serializer;
 	class Entity;
@@ -17,15 +18,17 @@ namespace vc {
 		EntityManager();
 		~EntityManager();
 
-		Entity *CreateEntity( const std::string &className, const std::stringstream &spawnData );
+		vc::Entity *CreateEntity( const std::string &className );
 		void DestroyEntity( Entity *entity );
 		void DestroyEntities();
 
 		void Tick();
-		void Draw();
+		void Draw( const Camera &camera );
 
 		void SerializeEntities( Serializer *write );
 		void DeserializeEntities( Serializer *read );
+
+		void SpawnEntities();
 
 		class EntityClassRegistration {
 		public:
@@ -45,5 +48,3 @@ namespace vc {
 	static vc::Entity *NAME##_make() { return new CLASS(); }                                     \
 	static vc::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
 	        _reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)
-#define REGISTER_ENTITY_BASIC( CLASS ) \
-	REGISTER_ACTOR( CLASS, CLASS )

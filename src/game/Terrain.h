@@ -6,6 +6,7 @@
 #pragma once
 
 namespace vc {
+	class Camera;
 	class Serializer;
 
 	enum TerrainType {
@@ -35,9 +36,9 @@ namespace vc {
 #define TERRAIN_NUM_TILES ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
 #define TERRAIN_TILE_WIDTH 64
 #define TERRAIN_TILE_HEIGHT 64
-#define TERRAIN_WIDTH ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
-#define TERRAIN_HEIGHT ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_PIXEL_SIZE ( TERRAIN_WIDTH * TERRAIN_HEIGHT )
+#define TERRAIN_PIXEL_WIDTH ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
+#define TERRAIN_PIXEL_HEIGHT ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
+#define TERRAIN_PIXEL_SIZE ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
 
 	class Terrain {
 	public:
@@ -48,7 +49,9 @@ namespace vc {
 		void Serialize( Serializer *write );
 
 		void Tick();
-		void Draw();
+		void Draw( const Camera &camera );
+
+		void Generate();
 
 	private:
 		TerrainTile tiles[ TERRAIN_NUM_TILES ];

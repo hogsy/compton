@@ -8,6 +8,8 @@
 #include "Serializer.h"
 #include "SimGame.h"
 #include "Terrain.h"
+#include "Camera.h"
+#include "Random.h"
 
 void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
 	static const PLColour tileColour[ MAX_TERRAIN_TYPES ] = {
@@ -36,22 +38,22 @@ void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
 	vertices[ 2 ].x = offsetX + TERRAIN_TILE_WIDTH;
 	vertices[ 2 ].y = offsetY + TERRAIN_TILE_HEIGHT;
 	vertices[ 2 ].color = al_map_rgb(
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
+			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
+			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
+			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
 
 	vertices[ 3 ].x = offsetX + TERRAIN_TILE_WIDTH;
 	vertices[ 3 ].y = offsetY + TERRAIN_TILE_HEIGHT;
 	vertices[ 3 ].color = al_map_rgb(
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
-			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
-	vertices[ 4 ].x = offsetX;
-	vertices[ 4 ].y = offsetY + TERRAIN_TILE_HEIGHT;
-	vertices[ 4 ].color = al_map_rgb(
 			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
 			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
 			( plFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
+	vertices[ 4 ].x = offsetX;
+	vertices[ 4 ].y = offsetY + TERRAIN_TILE_HEIGHT;
+	vertices[ 4 ].color = al_map_rgb(
+			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
+			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
+			( plFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
 	vertices[ 5 ].x = offsetX;
 	vertices[ 5 ].y = offsetY;
 	vertices[ 5 ].color = al_map_rgb(
@@ -62,15 +64,7 @@ void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
 	al_draw_prim( vertices, nullptr, nullptr, 0, 6, ALLEGRO_PRIM_TRIANGLE_LIST );
 }
 
-vc::Terrain::Terrain() {
-	// For testing...
-	for ( unsigned int i = 0; i < TERRAIN_NUM_TILES; ++i ) {
-		tiles[ i ].height[ 0 ] =
-		tiles[ i ].height[ 1 ] =
-		tiles[ i ].height[ 2 ] =
-		tiles[ i ].height[ 3 ] = 0.5f;
-	}
-}
+vc::Terrain::Terrain() {}
 
 vc::Terrain::~Terrain() {
 }
@@ -104,16 +98,67 @@ void vc::Terrain::Serialize( vc::Serializer *write ) {
 void vc::Terrain::Tick() {
 }
 
-void vc::Terrain::Draw() {
-	// Figure out how many tiles are actually going to fit on screen
-	static const unsigned int numTilesWide = ( DISPLAY_WIDTH / TERRAIN_TILE_WIDTH ) + TERRAIN_TILE_WIDTH;
-	static const unsigned int numTilesTall = ( DISPLAY_HEIGHT / TERRAIN_TILE_HEIGHT ) + TERRAIN_TILE_HEIGHT;
+void vc::Terrain::Draw( const Camera &camera ) {
+	START_MEASURE();
 
-	for ( unsigned int y = 0; y < numTilesTall; ++y ) {
-		for ( unsigned int x = 0; x < numTilesWide; ++x ) {
-			tiles[ x + y * TERRAIN_NUM_TILES_ROW ].Draw(
-			        x * TERRAIN_TILE_WIDTH,
-			        y * TERRAIN_TILE_HEIGHT );
+	al_draw_rectangle( 0.0f, 0.0f, TERRAIN_PIXEL_WIDTH, TERRAIN_PIXEL_HEIGHT, al_map_rgb( 0, 0, 255 ), 16.0f );
+
+	unsigned int numTilesDrawn = 0;
+	for ( unsigned int y = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y ) {
+		for ( unsigned int x = 0; x < TERRAIN_NUM_TILES_ROW; ++x ) {
+			unsigned int tileNum = x + y * TERRAIN_NUM_TILES_ROW;
+			if ( tileNum >= TERRAIN_NUM_TILES ) {
+				break;
+			}
+
+			float offsetX = x * TERRAIN_TILE_WIDTH;
+			if ( offsetX > camera.position.x + ( DISPLAY_WIDTH / camera.zoom ) || offsetX + TERRAIN_PIXEL_WIDTH < camera.position.x - ( DISPLAY_WIDTH / camera.zoom ) ) {
+				continue;
+			}
+
+			float offsetY = y * TERRAIN_TILE_HEIGHT;
+			if ( offsetY > camera.position.y + ( DISPLAY_HEIGHT / camera.zoom ) || offsetY + TERRAIN_PIXEL_HEIGHT < camera.position.y - ( DISPLAY_HEIGHT / camera.zoom ) ) {
+				continue;
+			}
+
+			tiles[ tileNum ].Draw( offsetX, offsetY );
+
+			numTilesDrawn++;
+		}
+	}
+
+	printf( "%d tiles draw\n", numTilesDrawn );
+
+	END_MEASURE();
+}
+
+void vc::Terrain::Generate() {
+	vc::random::PerlinNoise perlinNoise( (int)time( nullptr ) );
+
+	float fx = TERRAIN_PIXEL_WIDTH / 128.0f;
+	float fy = TERRAIN_PIXEL_HEIGHT / 128.0f;
+
+	double pz = plClamp( 0.0f, plGenerateRandomf( 64.0f ), 100.0f );
+
+	for ( unsigned int y = 0, yOfs = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y, yOfs += TERRAIN_TILE_HEIGHT ) {
+		for ( unsigned int x = 0, xOfs = 0; x < TERRAIN_NUM_TILES_ROW; ++x, xOfs += TERRAIN_TILE_WIDTH ) {
+			unsigned int tileNum = x + y * TERRAIN_NUM_TILES_ROW;
+
+			// Generate the heightmap based on perlin noise
+			tiles[ tileNum ].height[ 0 ] = perlinNoise.Noise( xOfs / fx, yOfs / fy, pz );
+			tiles[ tileNum ].height[ 1 ] = perlinNoise.Noise( ( xOfs + TERRAIN_TILE_WIDTH ) / fx, yOfs / fy, pz );
+			tiles[ tileNum ].height[ 2 ] = perlinNoise.Noise( xOfs / fx, ( yOfs + TERRAIN_TILE_HEIGHT ) / fy , pz );
+			tiles[ tileNum ].height[ 3 ] = perlinNoise.Noise( ( xOfs + TERRAIN_TILE_WIDTH ) / fx, ( yOfs + TERRAIN_TILE_HEIGHT ) / fy, pz );
+
+#if 1
+			// Determine if it's underwater or not
+			if ( tiles[ tileNum ].height[ 0 ] <= 0.0f || tiles[ tileNum ].height[ 1 ] <= 0.0f || tiles[ tileNum ].height[ 3 ] <= 0.0f ) {
+				tiles[ tileNum ].corners[ 0 ].terrainType = TERRAIN_WATER;
+			}
+			if ( tiles[ tileNum ].height[ 0 ] <= 0.0f || tiles[ tileNum ].height[ 2 ] <= 0.0f || tiles[ tileNum ].height[ 3 ] <= 0.0f ) {
+				tiles[ tileNum ].corners[ 1 ].terrainType = TERRAIN_WATER;
+			}
+#endif
 		}
 	}
 }

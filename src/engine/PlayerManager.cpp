@@ -10,7 +10,9 @@ namespace vc {
 	class PlayerManager {
 	public:
 		struct Player {
-			char name[ 64 ];
+			Player( const std::string &sName ) : name( sName ) {}
+
+			std::string name;
 			Entity *controlTarget{ nullptr };
 		};
 
@@ -20,10 +22,34 @@ namespace vc {
 		void HandleInput();
 
 		typedef std::vector< Player > PlayerList;
-		const PlayerList *GetPlayers() const { return &players; }
-		unsigned int GetNumPlayers() const { return players.size(); }
+		PL_INLINE const PlayerList *GetPlayers() const { return &players; }
+		PL_INLINE unsigned int GetNumPlayers() const { return players.size(); }
+
+		Player *GetPlayer( unsigned int id );
 
 	private:
 		PlayerList players;
 	};
+}
+
+/**
+ * Adds a brand new player to the game.
+ */
+unsigned int vc::PlayerManager::AddPlayer( const char *name ) {
+	players.push_back( Player( name ) );
+	return players.size();
+}
+
+void vc::PlayerManager::HandleInput() {
+}
+
+/**
+ * Return a pointer to the specified player.
+ */
+vc::PlayerManager::Player *vc::PlayerManager::GetPlayer( unsigned int id ) {
+	if ( id >= players.size() ) {
+		return nullptr;
+	}
+
+	return &players[ id ];
 }

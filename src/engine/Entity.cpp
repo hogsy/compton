@@ -17,12 +17,13 @@ vc::Entity::~Entity() {
  * Called if the entity is spawning anew.
  */
 void vc::Entity::Spawn() {
+	origin = velocity = bounds = pl_vecOrigin2;
 }
 
 void vc::Entity::Tick() {
 }
 
-void vc::Entity::Draw() {
+void vc::Entity::Draw( const Camera &camera ) {
 }
 
 /**
@@ -30,6 +31,8 @@ void vc::Entity::Draw() {
  */
 void vc::Entity::Deserialize( Serializer *read ) {
 	origin = read->ReadCoordinate();
+	velocity = read->ReadCoordinate();
+	bounds = read->ReadCoordinate();
 }
 
 /**
@@ -37,4 +40,6 @@ void vc::Entity::Deserialize( Serializer *read ) {
  */
 void vc::Entity::Serialize( Serializer *write ) {
 	write->WriteCoordinate( origin );
+	write->WriteCoordinate( velocity );
+	write->WriteCoordinate( bounds );
 }

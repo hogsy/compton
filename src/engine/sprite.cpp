@@ -1,6 +1,5 @@
 
 #include "../shared.h"
-#include "../game/game.h"
 #include "sprite.h"
 
 Sprite::Sprite() : bitmap_( nullptr ), origin_( 0, 0 ), position_( 0, 0 ), angle( 0 ), _w( 0 ), _h( 0 ),

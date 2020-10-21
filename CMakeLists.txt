@@ -65,16 +65,17 @@ add_executable( VCritters ${SOURCE_FILES}
         src/engine/Serializer.cpp
         src/engine/Serializer.h
         src/engine/vm/vm.c
-
-        # game
-        src/game/agents/Cloud.cpp
-        src/game/agents/PhysicsAgent.cpp
-        src/game/agents/SpriteAgent.cpp
+        src/engine/PlayerManager.cpp
+        src/engine/Random.cpp
+        src/engine/Random.h
+        src/engine/Camera.h
+        src/game/Utility.h
+        src/game/Utility.cpp
+        src/engine/Timer.h
 
         # miniz
         src/3rdparty/miniz/miniz.c
-        src/3rdparty/miniz/miniz.h
-        src/engine/PlayerManager.cpp src/engine/Random.cpp src/engine/Random.h)
+        src/3rdparty/miniz/miniz.h src/game/Entities/BaseCreature.cpp src/game/Entities/BaseCreature.h src/game/Entities/AIBrain.cpp src/game/Entities/AIBrain.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 
@@ -84,6 +85,7 @@ target_include_directories( VCritters PRIVATE
         src/game/desktop/
 
         # 3rd party libraries
+        src/3rdparty/
         src/3rdparty/miniz/
         )
 if ( WIN32 )

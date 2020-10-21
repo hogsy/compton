@@ -84,6 +84,12 @@ vc::App *vc::GetApp() {
 #define VC_LOG      "debug"
 #define VC_TITLE    "SimGame"
 
+#ifdef DEBUG_BUILD
+#   define WINDOW_TITLE "SimGame [DEBUG]"
+#else
+#   define WINDOW_TITLE "SimGame"
+#endif
+
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
 
@@ -155,8 +161,9 @@ vc::App::App( int argc, char **argv ) {
 	al_destroy_path( path );
 
 	// And now, finally, finish setting up the engine
-
+#if 0
 	VM_Initialize();
+#endif
 
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn
@@ -178,6 +185,9 @@ bool vc::App::IsRunning() {
 void vc::App::Loop() {
 	Tick();
 	Draw();
+
+	// Now clear all the performance timers
+	performanceTimers.clear();
 }
 
 ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size ) {
@@ -284,6 +294,12 @@ void vc::App::InitializeDisplay() {
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
 
+	// Load in the default font for displaying debug info
+	defaultFont = al_create_builtin_font();
+	if ( defaultFont == nullptr ) {
+		Error( "Failed to create default font!\n" );
+	}
+
 	// Check to see how much we need to scale the buffer.
 	int flags = al_get_new_bitmap_flags();
 	al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
@@ -316,11 +332,18 @@ void vc::App::Draw() {
 
 	// Setup the target buffer and then clear it to red
 	al_set_target_bitmap( buffer );
-	al_clear_to_color( al_map_rgb( 128, 0, 0 ) );
+	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
 
 	// Now draw everything we want
 
 	gameMode->Draw();
+
+	// Draw our debug data
+	float y = 0.0f;
+	for ( auto const &i : performanceTimers ) {
+		al_draw_textf( defaultFont, al_map_rgb( 255, 0, 0 ), 0.0f, y, 0, "%s: %f", i.first.c_str(), i.second.GetTimeTaken() );
+		y += al_get_font_line_height( defaultFont );
+	}
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
@@ -329,7 +352,7 @@ void vc::App::Draw() {
 			0, 0,
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
 			scaleX, scaleY,
-            scaleW, scaleH,
+			scaleW, scaleH,
 			0 );
 
 	al_flip_display();
@@ -361,6 +384,7 @@ void vc::App::InitializeEvents() {
 	al_register_event_source( alEventQueue, al_get_display_event_source( alDisplay ) );
 	al_register_event_source( alEventQueue, al_get_timer_event_source( alTimer ) );
 	al_register_event_source( alEventQueue, al_get_keyboard_event_source() );
+	al_register_event_source( alEventQueue, al_get_mouse_event_source() );
 
 	al_start_timer( alTimer );
 }
@@ -370,6 +394,8 @@ void vc::App::InitializeGame() {
 }
 
 void vc::App::Tick() {
+	START_MEASURE();
+
 	ALLEGRO_EVENT event{};
 	al_wait_for_event( alEventQueue, &event );
 
@@ -394,10 +420,9 @@ void vc::App::Tick() {
 			break;
 
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.button, false );
-			break;
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.button, true );
+		case ALLEGRO_EVENT_MOUSE_AXES:
+			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.dz, event.mouse.button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
 
 		case ALLEGRO_EVENT_KEY_DOWN:
@@ -413,6 +438,8 @@ void vc::App::Tick() {
 	if ( !al_is_event_queue_empty( alEventQueue ) ) {
 		redraw = false;
 	}
+
+	END_MEASURE();
 }
 
 /**
@@ -426,7 +453,29 @@ void vc::App::GetCursorPosition( int *dX, int *dY ) const {
 	*dY = state.y * DISPLAY_HEIGHT / windowHeight;
 }
 
-////////////////////////////////
+bool vc::App::GetKeyState( int key ) const {
+	assert( key > 0 && key < ALLEGRO_KEY_MAX );
+	return keyStatus[ key ];
+}
+
+//////////////////////////////////////////////////////
+// PERFORMANCE
+
+void vc::App::StartPerformanceTimer( const char *identifier ) {
+	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
+}
+
+void vc::App::EndPerformanceTimer( const char *identifier ) {
+	auto i = performanceTimers.find( identifier );
+	if ( i == performanceTimers.end() ) {
+		Warning( "Attempted to end an invalid timer, \"%s\"!\n", identifier );
+		return;
+	}
+
+	i->second.End();
+}
+
+//////////////////////////////////////////////////////
 // Main
 
 int main( int argc, char **argv ) {

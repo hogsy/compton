@@ -3,11 +3,6 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include "SimGame.h"
-#include "BaseBuilding.h"
+#pragma once
 
-namespace vc {
-	class StoreHouse : public BaseBuilding {
-		DECLARE_ENTITY_CLASS( StoreHouse, BaseBuilding )
-	};
-}// namespace vc
+const char *UTIL_GetRomanNumeralForNum( unsigned int num );

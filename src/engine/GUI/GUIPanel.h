@@ -52,6 +52,8 @@ namespace vc {
 
 		bool IsMouseOver() const;
 
+		bool HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp );
+
 	protected:
 		GUIStyleSheet *myStyleSheet{ nullptr };
 

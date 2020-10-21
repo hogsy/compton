@@ -5,7 +5,6 @@
 
 #include "../shared.h"
 
-#include "agent.h"
 #include "game.h"
 
 /*	Game logic and other crap goes here!	*/

@@ -4,10 +4,10 @@
  *------------------------------------------------------------------------------------*/
 
 #include "SimGame.h"
-#include "BaseBuilding.h"
+#include "AIBrain.h"
 
-namespace vc {
-	class StoreHouse : public BaseBuilding {
-		DECLARE_ENTITY_CLASS( StoreHouse, BaseBuilding )
-	};
-}// namespace vc
+vc::AIBrain::AIBrain() {
+}
+
+vc::AIBrain::~AIBrain() {
+}

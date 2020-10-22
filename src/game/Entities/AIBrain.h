@@ -11,7 +11,6 @@ namespace vc {
 		AIBrain();
 		~AIBrain();
 
-	private:
 		enum class Mood {
 			SAD,
 			NEUTRAL,
@@ -19,9 +18,13 @@ namespace vc {
 
 			MAX_MOODS
 		};
+
+		inline Mood GetCurrentMood() const { return myMood; }
+
+	private:
 		Mood myMood{ Mood::NEUTRAL };
 
-		struct ResponseState {
+		struct FeedbackState {
 			struct Need {
 				const char *description;
 				double value;
@@ -34,7 +37,7 @@ namespace vc {
 			Need rest{ "rest", 0.0 };
 			Need shelter{ "shelter", 0.0 };
 		};
-		ResponseState myState;
+		FeedbackState myState;
 
 		class MemoryManager {
 		public:
@@ -52,8 +55,8 @@ namespace vc {
 				Disposition genericDisposition{ Disposition::NEUTRAL };
 
 				unsigned int curResponses{ 0 };
-				ResponseState mappedResponses[ 8 ];
-				ResponseState averageResponse;
+				FeedbackState mappedResponses[ 8 ];
+				FeedbackState averageResponse;
 			};
 			std::map< std::string, Memory > myMemories;
 		};

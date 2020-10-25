@@ -114,6 +114,7 @@ void vc::Serializer::ReadString( char *buffer, size_t bufLength ) {
 	}
 
 	// And now read in the string!
+	memset( buffer, 0, bufLength );
 	fread( buffer, sizeof( char ), length, filePtr );
 }
 

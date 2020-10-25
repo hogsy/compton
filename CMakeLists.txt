@@ -75,7 +75,14 @@ add_executable( VCritters ${SOURCE_FILES}
 
         # miniz
         src/3rdparty/miniz/miniz.c
-        src/3rdparty/miniz/miniz.h src/game/Entities/BaseCreature.cpp src/game/Entities/BaseCreature.h src/game/Entities/AIBrain.cpp src/game/Entities/AIBrain.h)
+        src/3rdparty/miniz/miniz.h
+
+        src/game/Entities/BaseCreature.cpp
+        src/game/Entities/BaseCreature.h
+        src/game/Entities/AIBrain.cpp
+        src/game/Entities/AIBrain.h
+        src/game/Entities/Tree.cpp
+        src/game/Entities/Tree.h)
 
 set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
 

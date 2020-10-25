@@ -80,6 +80,10 @@ void vc::BaseCharacter::Serialize( vc::Serializer *write ) {
 void vc::BaseCharacter::Draw( const Camera &camera ) {
 	SuperClass::Draw( camera );
 
+	if ( !ShouldDraw( camera ) ) {
+		return;
+	}
+
 	al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 0, 255, 255 ) );
 	al_draw_pixel( origin.x, origin.y, al_map_rgb( 255, 0, 0 ) );
 }

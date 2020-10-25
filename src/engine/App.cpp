@@ -302,7 +302,7 @@ void vc::App::InitializeDisplay() {
 
 	// Check to see how much we need to scale the buffer.
 	int flags = al_get_new_bitmap_flags();
-	al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
+	//al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
 	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( buffer == nullptr ) {
 		Error( "Failed to create screen buffer!\n" );

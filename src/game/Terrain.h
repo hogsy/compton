@@ -27,7 +27,7 @@ namespace vc {
 		TerrainTileCorner corners[ 2 ];
 		float height[ 4 ];
 
-		void Draw( float offsetX, float offsetY );
+		void Draw( const Camera &camera, float offsetX, float offsetY );
 	};
 
 	// And here we go...

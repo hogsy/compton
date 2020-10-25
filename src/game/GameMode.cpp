@@ -34,7 +34,7 @@ vc::GameMode::GameMode() {
 	terrainManager = new Terrain();
 	entityManager = new EntityManager();
 
-	NewGame( "ExampleSave.save" );
+	NewGame( "default.save" );
 }
 
 vc::GameMode::~GameMode() {
@@ -95,24 +95,24 @@ void vc::GameMode::Tick() {
 	}
 
 	if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) ) {
-		playerCamera.velocity.y += CAMERA_ACCELERATION;
+		playerCamera.velocity.y -= CAMERA_ACCELERATION;
 		if ( playerCamera.velocity.y > CAMERA_MAXSPEED ) {
 			playerCamera.velocity.y = CAMERA_MAXSPEED;
 		}
 	} else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) ) {
-		playerCamera.velocity.y -= CAMERA_ACCELERATION;
+		playerCamera.velocity.y += CAMERA_ACCELERATION;
 		if ( playerCamera.velocity.y < -CAMERA_MAXSPEED ) {
 			playerCamera.velocity.y = -CAMERA_MAXSPEED;
 		}
 	}
 
 	if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) ) {
-		playerCamera.velocity.x += CAMERA_ACCELERATION;
+		playerCamera.velocity.x -= CAMERA_ACCELERATION;
 		if ( playerCamera.velocity.x > CAMERA_MAXSPEED ) {
 			playerCamera.velocity.x = CAMERA_MAXSPEED;
 		}
 	} else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) ) {
-		playerCamera.velocity.x -= CAMERA_ACCELERATION;
+		playerCamera.velocity.x += CAMERA_ACCELERATION;
 		if ( playerCamera.velocity.x < -CAMERA_MAXSPEED ) {
 			playerCamera.velocity.x = -CAMERA_MAXSPEED;
 		}
@@ -177,9 +177,11 @@ void vc::GameMode::Draw() {
 }
 
 void vc::GameMode::NewGame( const char *path ) {
-	// todo: Generate environment
-
 	terrainManager->Generate();
+
+	// Set the camera to the middle of the world
+	playerCamera.position.x = TERRAIN_PIXEL_WIDTH / 2;
+	playerCamera.position.y = TERRAIN_PIXEL_HEIGHT / 2;
 
 	for ( unsigned int i = 0; i < 2048; ++i ) {
 		Entity *entity = entityManager->CreateEntity( "BaseCharacter" );
@@ -187,6 +189,8 @@ void vc::GameMode::NewGame( const char *path ) {
 
 		entity->origin.x = rand() % TERRAIN_PIXEL_WIDTH;
 		entity->origin.y = rand() % TERRAIN_PIXEL_HEIGHT;
+		// TODO: determine if location is in water, if it is then
+		//  either discard or try again.
 	}
 
 	// Then automatically save it
@@ -197,6 +201,12 @@ void vc::GameMode::SaveGame( const char *path ) {
 	Serializer serializer( path, Serializer::Mode::WRITE );
 	terrainManager->Serialize( &serializer );
 	entityManager->SerializeEntities( &serializer );
+
+	// Write camera data
+	serializer.WriteCoordinate( playerCamera.position );
+	serializer.WriteFloat( playerCamera.zoom );
+	serializer.WriteFloat( playerCamera.angle );
+	serializer.WriteInteger( static_cast< int >( playerCamera.movementMode ) );
 }
 
 void vc::GameMode::RestoreGame( const char *path ) {
@@ -207,6 +217,12 @@ void vc::GameMode::RestoreGame( const char *path ) {
 	entityManager->DestroyEntities();
 	entityManager->DeserializeEntities( &serializer );
 #endif
+
+	// Now restore the camera data
+	playerCamera.position = serializer.ReadCoordinate();
+	playerCamera.zoom = serializer.ReadFloat();
+	playerCamera.angle = serializer.ReadFloat();
+	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) {
@@ -243,13 +259,13 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 
 		case ALLEGRO_KEY_F5: {
 			// Quick save check
-			SaveGame( "Quick.save" );
+			SaveGame( "quick.save" );
 			break;
 		}
 
 		case ALLEGRO_KEY_F6: {
 			// Quick load check
-			RestoreGame( "Quick.save" );
+			RestoreGame( "quick.save" );
 			break;
 		}
 

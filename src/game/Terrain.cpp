@@ -5,13 +5,13 @@
 
 #include <allegro5/allegro_primitives.h>
 
-#include "Serializer.h"
 #include "SimGame.h"
 #include "Terrain.h"
+#include "Serializer.h"
 #include "Camera.h"
 #include "Random.h"
 
-void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
+void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY ) {
 	static const PLColour tileColour[ MAX_TERRAIN_TYPES ] = {
 			{ 0, 255, 0 },
 			{ 205, 203, 74 },
@@ -19,6 +19,13 @@ void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
 			{ 73, 77, 90 },
 			{ 0, 0, 255 }
 	};
+
+	if ( offsetX + TERRAIN_TILE_WIDTH > camera.position.x + DISPLAY_WIDTH ||
+	     offsetX < camera.position.x - DISPLAY_WIDTH ||
+	     offsetY + TERRAIN_TILE_HEIGHT > camera.position.y + DISPLAY_HEIGHT ||
+	     offsetY < camera.position.y - DISPLAY_HEIGHT ) {
+		return;
+	}
 
 	ALLEGRO_VERTEX vertices[ 6 ];
 	memset( vertices, 0, sizeof ( ALLEGRO_VERTEX ) * 6 );
@@ -62,12 +69,11 @@ void vc::TerrainTile::Draw( float offsetX, float offsetY ) {
 			( plFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
 
 	al_draw_prim( vertices, nullptr, nullptr, 0, 6, ALLEGRO_PRIM_TRIANGLE_LIST );
+	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, 50 ), 4.0f );
 }
 
 vc::Terrain::Terrain() {}
-
-vc::Terrain::~Terrain() {
-}
+vc::Terrain::~Terrain() {}
 
 void vc::Terrain::Deserialize( vc::Serializer *read ) {
 	unsigned int numTiles = read->ReadInteger();
@@ -103,7 +109,8 @@ void vc::Terrain::Draw( const Camera &camera ) {
 
 	al_draw_rectangle( 0.0f, 0.0f, TERRAIN_PIXEL_WIDTH, TERRAIN_PIXEL_HEIGHT, al_map_rgb( 0, 0, 255 ), 16.0f );
 
-	unsigned int numTilesDrawn = 0;
+	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
+
 	for ( unsigned int y = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y ) {
 		for ( unsigned int x = 0; x < TERRAIN_NUM_TILES_ROW; ++x ) {
 			unsigned int tileNum = x + y * TERRAIN_NUM_TILES_ROW;
@@ -112,22 +119,12 @@ void vc::Terrain::Draw( const Camera &camera ) {
 			}
 
 			float offsetX = x * TERRAIN_TILE_WIDTH;
-			if ( offsetX > camera.position.x + ( DISPLAY_WIDTH / camera.zoom ) || offsetX + TERRAIN_PIXEL_WIDTH < camera.position.x - ( DISPLAY_WIDTH / camera.zoom ) ) {
-				continue;
-			}
-
 			float offsetY = y * TERRAIN_TILE_HEIGHT;
-			if ( offsetY > camera.position.y + ( DISPLAY_HEIGHT / camera.zoom ) || offsetY + TERRAIN_PIXEL_HEIGHT < camera.position.y - ( DISPLAY_HEIGHT / camera.zoom ) ) {
-				continue;
-			}
-
-			tiles[ tileNum ].Draw( offsetX, offsetY );
-
-			numTilesDrawn++;
+			tiles[ tileNum ].Draw( camera, offsetX, offsetY );
 		}
 	}
 
-	printf( "%d tiles draw\n", numTilesDrawn );
+	al_set_blender( ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA );
 
 	END_MEASURE();
 }

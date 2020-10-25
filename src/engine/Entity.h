@@ -31,6 +31,8 @@ namespace vc {
 		virtual void Deserialize( Serializer *read );
 		virtual void Serialize( Serializer *write );
 
+		virtual bool ShouldDraw( const Camera &camera ) const;
+
 #if 0
 		PL_INLINE PLVector2 GetOrigin() const { return origin; }
 		PL_INLINE PLVector2 GetBounds() const { return bounds; }
@@ -38,9 +40,13 @@ namespace vc {
 
 		PLVector2 origin{ 0.0f, 0.0f };
 		PLVector2 velocity{ 0.0f, 0.0f };
+		PLVector2 myRenderBounds{ 0.0f, 0.0f };
 		PLVector2 bounds{ 0.0f, 0.0f };
 
 	protected:
+		int myHealth{ 100 };
+		int myMaxHealth{ 100 };
+
 		bool isVisible{ false };
 	};
 }// namespace vc

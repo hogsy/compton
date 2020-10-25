@@ -43,3 +43,20 @@ void vc::Entity::Serialize( Serializer *write ) {
 	write->WriteCoordinate( velocity );
 	write->WriteCoordinate( bounds );
 }
+
+/**
+ * Determine if we should display this particular entity or not.
+ */
+bool vc::Entity::ShouldDraw( const vc::Camera &camera ) const {
+	if ( origin.x - bounds.x > camera.position.x + DISPLAY_WIDTH ) {
+		return false;
+	} else if ( origin.y - bounds.y > camera.position.y + DISPLAY_HEIGHT ) {
+		return false;
+	} else if ( origin.x + bounds.x < camera.position.x - DISPLAY_WIDTH ) {
+		return false;
+	} else if ( origin.y + bounds.y < camera.position.y - DISPLAY_HEIGHT ) {
+		return false;
+	}
+
+	return true;
+}

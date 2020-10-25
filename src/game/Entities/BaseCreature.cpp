@@ -1,6 +1,9 @@
 /*--------------------------------------------------------------------------------------
  * SimGame
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ *
+ * BaseCreature.cpp
+ *  Foundation of everything with intelligence.
  *------------------------------------------------------------------------------------*/
 
 #include "SimGame.h"
@@ -20,8 +23,8 @@ void vc::BaseCreature::Spawn() {
 	generation = random::GenerateRandomInteger( 1, 10 );
 
 	// Health
-	health = random::GenerateRandomInteger( 50, 100 );
-	maxHealth = random::GenerateRandomInteger( health, health + 100 );
+	myHealth = random::GenerateRandomInteger( 50, 100 );
+	myMaxHealth = random::GenerateRandomInteger( myHealth, myHealth + 100 );
 
 	// Stamina
 	stamina = random::GenerateRandomInteger( 30, 100 );
@@ -62,8 +65,8 @@ bool vc::BaseCreature::CanBreed( BaseCreature *other ) {
 void vc::BaseCreature::Deserialize( vc::Serializer *read ) {
 	SuperClass::Deserialize( read );
 
-	health = read->ReadInteger();
-	maxHealth = read->ReadInteger();
+	myHealth = read->ReadInteger();
+	myMaxHealth = read->ReadInteger();
 
 	stamina = read->ReadInteger();
 	maxStamina = read->ReadInteger();
@@ -77,8 +80,8 @@ void vc::BaseCreature::Deserialize( vc::Serializer *read ) {
 void vc::BaseCreature::Serialize( vc::Serializer *write ) {
 	SuperClass::Serialize( write );
 
-	write->WriteInteger( health );
-	write->WriteInteger( maxHealth );
+	write->WriteInteger( myHealth );
+	write->WriteInteger( myMaxHealth );
 
 	write->WriteInteger( stamina );
 	write->WriteInteger( maxStamina );
@@ -91,6 +94,10 @@ void vc::BaseCreature::Serialize( vc::Serializer *write ) {
 
 void vc::BaseCreature::Draw( const vc::Camera &camera ) {
 	SuperClass::Draw( camera );
+
+	if ( !ShouldDraw( camera ) ) {
+		return;
+	}
 
 	al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
 	al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );

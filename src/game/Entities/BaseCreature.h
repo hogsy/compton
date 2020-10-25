@@ -43,9 +43,6 @@ namespace vc {
 		bool isPregnant{ false };
 		unsigned int timePregnant{ 0 };
 
-		int health{ 100 };
-		int maxHealth{ 100 };
-
 		int stamina{ 100 };
 		int maxStamina{ 100 };
 

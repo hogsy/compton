@@ -40,7 +40,7 @@ namespace vc {
 	private:
 		char name[ MAX_CHARACTER_NAME ];
 
-		int influence{ 0 };
+		float myInfluence{ 0.0f };
 	};
 }// namespace vc
 

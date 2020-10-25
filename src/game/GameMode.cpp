@@ -202,7 +202,11 @@ void vc::GameMode::SaveGame( const char *path ) {
 void vc::GameMode::RestoreGame( const char *path ) {
 	Serializer serializer( path, Serializer::Mode::READ );
 	terrainManager->Deserialize( &serializer );
+
+#if 0
+	entityManager->DestroyEntities();
 	entityManager->DeserializeEntities( &serializer );
+#endif
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) {
@@ -236,6 +240,18 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 	switch ( button ) {
 		default:
 			break;
+
+		case ALLEGRO_KEY_F5: {
+			// Quick save check
+			SaveGame( "Quick.save" );
+			break;
+		}
+
+		case ALLEGRO_KEY_F6: {
+			// Quick load check
+			RestoreGame( "Quick.save" );
+			break;
+		}
 
 		case ALLEGRO_KEY_ESCAPE:
 		case ALLEGRO_KEY_PAUSE: {

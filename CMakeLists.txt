@@ -5,13 +5,13 @@ cmake_minimum_required(VERSION 3.6)
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
-add_subdirectory( platform/platform/ )
-add_subdirectory( src/tools/pkgman/ )
+add_subdirectory(platform/platform/)
+add_subdirectory(src/tools/pkgman/)
 
-project( VCritters )
+project(VCritters)
 
-set( CMAKE_CXX_STANDARD 11 )
-set( CMAKE_C_STANDARD 11 )
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD 11)
 
 # Get the current working branch
 execute_process(
@@ -37,9 +37,9 @@ execute_process(
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-add_definitions( -DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}" )
-add_definitions( -DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}" )
-add_definitions( -DGIT_BRANCH="${GIT_BRANCH}" )
+add_definitions(-DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
+add_definitions(-DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}")
+add_definitions(-DGIT_BRANCH="${GIT_BRANCH}")
 
 file(GLOB SOURCE_FILES
         src/shared.h
@@ -53,13 +53,16 @@ file(GLOB SOURCE_FILES
         src/game/*.h
         )
 
-add_executable( VCritters ${SOURCE_FILES}
+add_executable(VCritters ${SOURCE_FILES}
         # engine
         src/engine/SpriteSheet.cpp
         src/engine/SpriteSheet.h
         src/engine/SimGame.h
+        src/engine/JsonReader.cpp
+        src/engine/JsonReader.h
         src/engine/ScriptParser.cpp
         src/engine/ScriptParser.h
+        src/engine/FileSystem.cpp
         src/engine/LoaderGfx.cpp
         src/engine/LoaderPkg.cpp
         src/engine/Serializer.cpp
@@ -69,24 +72,27 @@ add_executable( VCritters ${SOURCE_FILES}
         src/engine/Random.cpp
         src/engine/Random.h
         src/engine/Camera.h
-        src/game/Utility.h
-        src/game/Utility.cpp
         src/engine/Timer.h
 
         # miniz
         src/3rdparty/miniz/miniz.c
         src/3rdparty/miniz/miniz.h
 
+        # duktape
+        src/3rdparty/duktape-2.2.0/duktape.c
+
         src/game/Entities/BaseCreature.cpp
         src/game/Entities/BaseCreature.h
         src/game/Entities/AIBrain.cpp
         src/game/Entities/AIBrain.h
         src/game/Entities/Tree.cpp
-        src/game/Entities/Tree.h)
+        src/game/Entities/Tree.h
+        src/game/Utility.cpp
+        src/game/Utility.h)
 
-set_target_properties( VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/ )
+set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 
-target_include_directories( VCritters PRIVATE
+target_include_directories(VCritters PRIVATE
         src/engine/
         src/game/
         src/game/desktop/
@@ -94,13 +100,14 @@ target_include_directories( VCritters PRIVATE
         # 3rd party libraries
         src/3rdparty/
         src/3rdparty/miniz/
+        src/3rdparty/duktape-2.2.0/
         )
-if ( WIN32 )
-    target_include_directories( VCritters PRIVATE src/3rdparty/allegro/include/ )
-    target_link_directories( VCritters PRIVATE src/3rdparty/allegro/lib/ )
-    target_link_libraries( VCritters -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc )
-endif( WIN32 )
-target_link_libraries( VCritters
+if (WIN32)
+    target_include_directories(VCritters PRIVATE src/3rdparty/allegro/include/)
+    target_link_directories(VCritters PRIVATE src/3rdparty/allegro/lib/)
+    target_link_libraries(VCritters -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc)
+endif (WIN32)
+target_link_libraries(VCritters
         platform
         allegro
         allegro_dialog

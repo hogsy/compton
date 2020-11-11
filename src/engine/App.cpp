@@ -90,6 +90,8 @@ vc::App *vc::GetApp() {
 #   define WINDOW_TITLE "SimGame"
 #endif
 
+extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
+
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
 
@@ -148,6 +150,8 @@ vc::App::App( int argc, char **argv ) {
 	al_init_primitives_addon();
 	al_init_font_addon();
 	al_init_ttf_addon();
+
+	al_set_new_file_interface( &g_fsIOInterface );
 
 	al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
@@ -459,7 +463,7 @@ bool vc::App::GetKeyState( int key ) const {
 }
 
 //////////////////////////////////////////////////////
-// PERFORMANCE
+// PROFILING
 
 void vc::App::StartPerformanceTimer( const char *identifier ) {
 	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );

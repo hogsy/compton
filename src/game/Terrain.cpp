@@ -69,7 +69,12 @@ void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 			( plFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
 
 	al_draw_prim( vertices, nullptr, nullptr, 0, 6, ALLEGRO_PRIM_TRIANGLE_LIST );
-	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, 50 ), 4.0f );
+
+#if 0
+	float rectThick = camera.zoom / 4.0f;
+	unsigned char rectAlpha = plFloatToByte( camera.zoom ) * 50;
+	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, rectAlpha ), rectThick );
+#endif
 }
 
 vc::Terrain::Terrain() {}
@@ -132,10 +137,10 @@ void vc::Terrain::Draw( const Camera &camera ) {
 void vc::Terrain::Generate() {
 	vc::random::PerlinNoise perlinNoise( (int)time( nullptr ) );
 
-	float fx = TERRAIN_PIXEL_WIDTH / 128.0f;
-	float fy = TERRAIN_PIXEL_HEIGHT / 128.0f;
+	float fx = TERRAIN_PIXEL_WIDTH / 8.0f;
+	float fy = TERRAIN_PIXEL_HEIGHT / 8.0f;
 
-	double pz = plClamp( 0.0f, plGenerateRandomf( 64.0f ), 100.0f );
+	double pz = plClamp( 0.0f, plGenerateRandomf( 100.0f ), 100.0f );
 
 	for ( unsigned int y = 0, yOfs = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y, yOfs += TERRAIN_TILE_HEIGHT ) {
 		for ( unsigned int x = 0, xOfs = 0; x < TERRAIN_NUM_TILES_ROW; ++x, xOfs += TERRAIN_TILE_WIDTH ) {
@@ -158,4 +163,8 @@ void vc::Terrain::Generate() {
 #endif
 		}
 	}
+}
+
+bool vc::Terrain::IsWater( float x, float y ) {
+	return false;
 }

@@ -31,8 +31,8 @@ namespace vc {
 	};
 
 	// And here we go...
-#define TERRAIN_NUM_TILES_ROW 1024
-#define TERRAIN_NUM_TILES_COLUMN 1024
+#define TERRAIN_NUM_TILES_ROW 128
+#define TERRAIN_NUM_TILES_COLUMN 128
 #define TERRAIN_NUM_TILES ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
 #define TERRAIN_TILE_WIDTH 64
 #define TERRAIN_TILE_HEIGHT 64
@@ -52,6 +52,8 @@ namespace vc {
 		void Draw( const Camera &camera );
 
 		void Generate();
+
+		bool IsWater( float x, float y );
 
 	private:
 		TerrainTile tiles[ TERRAIN_NUM_TILES ];

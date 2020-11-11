@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------------------
  * SimGame
- * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ * Copyright (C) 2016-2021, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
 #pragma once
@@ -20,6 +20,8 @@ namespace vc {
 		};
 
 		inline Mood GetCurrentMood() const { return myMood; }
+
+		void Tick();
 
 	private:
 		Mood myMood{ Mood::NEUTRAL };

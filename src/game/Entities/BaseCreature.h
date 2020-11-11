@@ -46,6 +46,9 @@ namespace vc {
 		int stamina{ 100 };
 		int maxStamina{ 100 };
 
+		int myHunger{ 0 };
+		int myThirst{ 0 };
+
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };
 		unsigned int currentLevel{ 0 };

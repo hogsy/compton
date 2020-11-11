@@ -5,20 +5,12 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "Serializer.h"
+#include "BaseBuilding.h"
 
 namespace vc {
-	class BaseBuilding : public Entity {
-		DECLARE_ENTITY_CLASS( BaseBuilding, Entity )
+	class House : public BaseBuilding {
+		DECLARE_ENTITY_CLASS( House, Entity )
 
 	public:
-		void Deserialize( Serializer *read ) override;
-		void Serialize( Serializer *write ) override;
-
-		void Draw( const Camera &camera ) override;
-
-	protected:
-	private:
 	};
-}
+}// namespace vc

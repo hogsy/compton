@@ -68,6 +68,10 @@ namespace vc {
 		Terrain *terrainManager;
 
 		struct Territory {
+			Territory( const PLVector2 &origin );
+
+			void DrawBorder();
+
 			char name[ 32 ];
 			PLVector2 origin{ 0.0f, 0.0f };
 			PLPolygon *border{ nullptr };

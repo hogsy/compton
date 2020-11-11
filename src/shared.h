@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <list>
 #include <vector>
 
 #include <sys/stat.h>
@@ -35,7 +36,7 @@
 #include "engine/Timer.h"
 
 #define DISPLAY_WIDTH   640
-#define DISPLAY_HEIGHT  480
+#define DISPLAY_HEIGHT  360
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -96,7 +97,7 @@ namespace vc {
 		PL_INLINE const char *GetAppDataPath() const { return appDataPath; }
 
 		//////////////////////////////////////////////////////
-		// PERFORMANCE
+		// PROFILING
 
 		void StartPerformanceTimer( const char *identifier );
 		void EndPerformanceTimer( const char *identifier );

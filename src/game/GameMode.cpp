@@ -10,7 +10,10 @@
 #include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
+#include "Random.h"
 #include "Serializer.h"
+
+#include "Entities/BaseCharacter.h"
 
 vc::GameMode::GameMode() {
 	// Cache all the data we're going to use...
@@ -177,21 +180,64 @@ void vc::GameMode::Draw() {
 }
 
 void vc::GameMode::NewGame( const char *path ) {
+	Print( "Generating terrain...\n" );
 	terrainManager->Generate();
+
+	Print( "Generating territories...\n" );
+	unsigned int n = random::GenerateRandomInteger( 4, 8 );
+	for ( unsigned int i = 0; i < n; ++i ) {
+		// Pick a random point in the world
+		float x, y;
+		for ( unsigned int j = 0; j < 16; ++j ) {
+			// Try at least 16 times before we give up
+			x = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_WIDTH );
+			y = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_HEIGHT );
+			if ( !terrainManager->IsWater( x, y ) ) {
+				break;
+			}
+
+			x = y = -1.0f;
+		}
+
+		// Never found a point without water, give up...
+		if ( x == -1.0f && y == -1.0f ) {
+			continue;
+		}
+
+		// Now attempt to spawn in the territory
+		Territory territory( PLVector2( x, y ) );
+
+		// Spawn one Storehouse at the center
+		Entity *hub = entityManager->CreateEntity( "StoreHouse" );
+		hub->origin = PLVector2( x, y );
+
+#define TERRITORY_BOUNDS 256
+
+		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
+		for ( unsigned int j = 0; j < numAbodes; ++j ) {
+			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
+			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
+			if ( terrainManager->IsWater( x, y ) ) {
+				continue;
+			}
+
+			// Assign some citizens to the abode.
+			int numCitizens = random::GenerateRandomInteger( 0, 4 );
+			for ( unsigned int k = 0; k < numCitizens; ++k ) {
+				BaseCharacter *citizen = dynamic_cast< BaseCharacter * >( entityManager->CreateEntity( "BaseCharacter" ) );
+				if ( citizen == nullptr ) {
+					continue;
+				}
+
+				citizen->origin = PLVector2( x, y );
+				citizen->Spawn();
+			}
+		}
+	}
 
 	// Set the camera to the middle of the world
 	playerCamera.position.x = TERRAIN_PIXEL_WIDTH / 2;
 	playerCamera.position.y = TERRAIN_PIXEL_HEIGHT / 2;
-
-	for ( unsigned int i = 0; i < 2048; ++i ) {
-		Entity *entity = entityManager->CreateEntity( "BaseCharacter" );
-		entity->Spawn();
-
-		entity->origin.x = rand() % TERRAIN_PIXEL_WIDTH;
-		entity->origin.y = rand() % TERRAIN_PIXEL_HEIGHT;
-		// TODO: determine if location is in water, if it is then
-		//  either discard or try again.
-	}
 
 	// Then automatically save it
 	SaveGame( path );
@@ -281,4 +327,14 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 			break;
 		}
 	}
+}
+
+////////////////////////////////
+// Territory
+
+vc::GameMode::Territory::Territory( const PLVector2 &origin ) {
+	snprintf( name, sizeof( name ), "T%d", rand() % 100 );
+}
+
+void vc::GameMode::Territory::DrawBorder() {
 }

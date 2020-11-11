@@ -4,12 +4,13 @@
  *------------------------------------------------------------------------------------*/
 
 #include "SimGame.h"
-#include "BaseCreature.h"
+#include "BaseCharacter.h"
 #include "Random.h"
 #include "Serializer.h"
 #include "Utility.h"
 
 namespace vc {
+	/*
 	enum class CharacterDirective {
 		IDLE, // Do nothing
 		EAT,  // Search for a food source
@@ -21,27 +22,7 @@ namespace vc {
 
 		MAX_DIRECTIVES
 	};
-
-#define MAX_CHARACTER_NAME 64
-
-	class BaseCharacter : public BaseCreature {
-	public:
-		IMPLEMENT_SUPER( BaseCreature )
-
-		void Spawn() override;
-
-		void Deserialize( Serializer *read ) override;
-		void Serialize( Serializer *write ) override;
-
-		void Draw( const Camera &camera ) override;
-		void Tick() override;
-
-	protected:
-	private:
-		char name[ MAX_CHARACTER_NAME ];
-
-		float myInfluence{ 0.0f };
-	};
+	 */
 }// namespace vc
 
 REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
@@ -86,8 +67,31 @@ void vc::BaseCharacter::Draw( const Camera &camera ) {
 
 	al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 0, 255, 255 ) );
 	al_draw_pixel( origin.x, origin.y, al_map_rgb( 255, 0, 0 ) );
+
+	al_draw_filled_circle( debugGoal.x, debugGoal.y, 5.0f, al_map_rgb( 255, 0, 0 ) );
+	al_draw_line( origin.x, origin.y, debugGoal.x, debugGoal.y, al_map_rgb( 255, 0, 0 ), 1.0f );
+
+	al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, name );
 }
 
 void vc::BaseCharacter::Tick() {
 	SuperClass::Tick();
+
+	// Setup a goal for us to move to.
+	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() ) {
+		debugGoal.x = random::GenerateRandomInteger( origin.x - 512, origin.x + 512 );
+		debugGoal.y = random::GenerateRandomInteger( origin.y - 512, origin.y + 512 );
+		debugGoalDelay = GetApp()->GetNumOfTicks() + 200;
+	}
+
+	PLVector2 direction = debugGoal - origin;
+	//velocity.x = ( plInOutPow( origin.x, direction.Length() ) ) + direction.x;
+	//velocity.y = ( plInOutPow( origin.y, direction.Length() ) ) + direction.y;
+	velocity += direction * direction.Length();
+	if ( velocity.x > 1.0f ) velocity.x = 1.0f;
+	if ( velocity.x < -1.0f ) velocity.x = -1.0f;
+	if ( velocity.y > 1.0f ) velocity.y = 1.0f;
+	if ( velocity.y < -1.0f ) velocity.y = -1.0f;
+
+	origin += velocity;
 }

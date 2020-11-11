@@ -11,3 +11,8 @@ namespace vc {
 		DECLARE_ENTITY_CLASS( StoreHouse, BaseBuilding )
 	};
 }// namespace vc
+
+REGISTER_ENTITY( StoreHouse, vc::StoreHouse )
+
+vc::StoreHouse::StoreHouse() {}
+vc::StoreHouse::~StoreHouse() {}

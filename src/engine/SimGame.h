@@ -28,6 +28,12 @@ enum {
 #   define DebugMsg( ... )
 #endif
 
+#if defined( DEBUG_BUILD )
+#   define SgAssert( A, ... )   DebugMsg( __VA_ARGS__ ); assert( A )
+#else
+#   define SgAssert( A, ... )
+#endif
+
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
 
 #define FONT_SIZE_LARGE     50

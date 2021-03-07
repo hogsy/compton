@@ -79,7 +79,7 @@ add_executable(VCritters ${SOURCE_FILES}
         src/3rdparty/miniz/miniz.h
 
         # duktape
-        src/3rdparty/duktape-2.2.0/duktape.c
+        src/3rdparty/duktape-2.2.0/src/duktape.c
 
         src/game/Entities/BaseCreature.cpp
         src/game/Entities/BaseCreature.h
@@ -100,7 +100,7 @@ target_include_directories(VCritters PRIVATE
         # 3rd party libraries
         src/3rdparty/
         src/3rdparty/miniz/
-        src/3rdparty/duktape-2.2.0/
+        src/3rdparty/duktape-2.2.0/src/
         )
 if (WIN32)
     target_include_directories(VCritters PRIVATE src/3rdparty/allegro/include/)

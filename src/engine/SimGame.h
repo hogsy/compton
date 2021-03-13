@@ -7,12 +7,10 @@
 
 #include <PL/platform_console.h>
 
-enum {
-	VC_LOG_MSG, // generic message
-	VC_LOG_DEB, // debug message (won't be displayed in shipped build)
-	VC_LOG_WAR, // warning
-	VC_LOG_ERR, // error (kills application)
-};
+extern int VC_LOG_MSG; // generic message
+extern int VC_LOG_DEB; // debug message (won't be displayed in shipped build)
+extern int VC_LOG_WAR; // warning
+extern int VC_LOG_ERR; // error (kills application)
 
 #define Print( ... )       \
 	plLogMessage( VC_LOG_MSG, __VA_ARGS__ )

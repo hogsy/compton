@@ -92,6 +92,11 @@ vc::App *vc::GetApp() {
 
 extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 
+int VC_LOG_MSG; // generic message
+int VC_LOG_DEB; // debug message (won't be displayed in shipped build)
+int VC_LOG_WAR; // warning
+int VC_LOG_ERR; // error (kills application)
+
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
 
@@ -103,10 +108,10 @@ vc::App::App( int argc, char **argv ) {
 	std::string logDir = std::string( appDataPath ) + "/" + VC_LOG;
 	plSetupLogOutput( logDir.c_str() );
 
-	plSetupLogLevel( VC_LOG_ERR, "error", { 255, 0, 0 }, true );
-	plSetupLogLevel( VC_LOG_WAR, "warning", { 255, 255, 0 }, true );
-	plSetupLogLevel( VC_LOG_MSG, "info", { 255, 255, 255 }, true );
-	plSetupLogLevel( VC_LOG_DEB, "debug", { 0, 0, 255 }, true );
+	VC_LOG_ERR = plAddLogLevel( "error", { 255, 0, 0 }, true );
+	VC_LOG_WAR = plAddLogLevel( "warning", { 255, 255, 0 }, true );
+	VC_LOG_MSG = plAddLogLevel( "info", { 255, 255, 255 }, true );
+	VC_LOG_DEB = plAddLogLevel( "debug", { 0, 0, 255 }, true );
 
 	plRegisterPackageLoader( "pkg", Pkg_LoadPackage );
 	plRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );

@@ -60,6 +60,8 @@ namespace vc {
 	public:
 		App( int argc, char **argv );
 
+		static GameMode *GetGameMode();
+
 		void InitializeDisplay();
 		void InitializeEvents();
 		void InitializeGame();
@@ -93,6 +95,7 @@ namespace vc {
 
 		void GetCursorPosition( int *dX, int *dY ) const;
 		bool GetKeyState( int key ) const;
+		bool GetMouseState( int *dX, int *dY, InputMouseButton button );
 
 		PL_INLINE const char *GetAppDataPath() const { return appDataPath; }
 

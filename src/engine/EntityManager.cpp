@@ -11,8 +11,8 @@
 
 std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
 
-std::set< vc::Entity* > vc::EntityManager::entities;
-std::vector< vc::Entity* > vc::EntityManager::destructionQueue;
+vc::EntityManager::EntityVector vc::EntityManager::entities;
+vc::EntityManager::EntityVector vc::EntityManager::destructionQueue;
 
 vc::EntityManager::EntityManager() {
 }
@@ -23,12 +23,12 @@ vc::EntityManager::~EntityManager() {
 vc::Entity *vc::EntityManager::CreateEntity( const std::string &className ) {
 	auto i = entityClasses.find( className );
 	if ( i == entityClasses.end() ) {
-		printf( "Failed to find entity class \"%s\"!\n", className.c_str() );
+		Warning( "Failed to find entity class \"%s\"!\n", className.c_str() );
 		return nullptr;
 	}
 
 	Entity *entity = i->second();
-	entities.insert( entity );
+	entities.push_back( entity );
 
 	return entity;
 }
@@ -36,7 +36,7 @@ vc::Entity *vc::EntityManager::CreateEntity( const std::string &className ) {
 void vc::EntityManager::DestroyEntity( Entity *entity ) {
 	// Ensure it's not already queued for destruction
 	if ( std::find( destructionQueue.begin(), destructionQueue.end(), entity ) != destructionQueue.end() ) {
-		printf( "Attempted to queue entity for deletion twice, ignoring...\n" );
+		Warning( "Attempted to queue entity for deletion twice, ignoring...\n" );
 		return;
 	}
 
@@ -62,7 +62,7 @@ void vc::EntityManager::Tick() {
 
 	// Now clean everything up that was marked for destruction
 	for ( auto &entity : destructionQueue ) {
-		entities.erase( entity );
+		entities.erase( std::remove( entities.begin(), entities.end(), entity ), entities.end() );
 		delete entity;
 	}
 
@@ -112,8 +112,26 @@ void vc::EntityManager::SpawnEntities() {
 	}
 }
 
+vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const char *className, const vc::EntityManager::EntitySlot *curSlot ) const {
+	// Allow us to iterate from a previous position if desired
+	unsigned int i = 0;
+	if ( curSlot != nullptr ) {
+		i = curSlot->num;
+	}
+
+	for ( ; i < entities.size(); ++i ) {
+		if ( strcmp( entities[ i ]->GetClassIdentifier(), className ) != 0 ) {
+			continue;
+		}
+
+		return EntitySlot( entities[ i ], i );
+	}
+
+	return EntitySlot( nullptr, 0 );
+}
+
 vc::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
-: myIdentifier( identifier ) {
+    : myIdentifier( identifier ) {
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;
 }
 

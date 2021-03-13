@@ -152,7 +152,6 @@ vc::App::App( int argc, char **argv ) {
 	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
-
 	al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
@@ -391,6 +390,9 @@ void vc::App::InitializeEvents() {
 	al_register_event_source( alEventQueue, al_get_mouse_event_source() );
 
 	al_start_timer( alTimer );
+
+	// Clear out key states
+	memset( keyStatus, 0, sizeof( bool ) * ALLEGRO_KEY_MAX );
 }
 
 void vc::App::InitializeGame() {
@@ -423,11 +425,21 @@ void vc::App::Tick() {
 			running = false;
 			break;
 
-		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 		case ALLEGRO_EVENT_MOUSE_AXES:
-			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.dz, event.mouse.button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
+		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+		case ALLEGRO_EVENT_MOUSE_BUTTON_UP: {
+			InputMouseButton button = MOUSE_BUTTON_LEFT;
+			if ( event.mouse.button & 1 ) {
+				button = MOUSE_BUTTON_LEFT;
+			} else if ( event.mouse.button & 2 ) {
+				button = MOUSE_BUTTON_RIGHT;
+			} else if ( event.mouse.button & 3 ) {
+				button = MOUSE_BUTTON_MIDDLE;
+			}
+
+			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
+		}
 
 		case ALLEGRO_EVENT_KEY_DOWN:
 			keyStatus[ event.keyboard.keycode ] = true;
@@ -462,6 +474,14 @@ bool vc::App::GetKeyState( int key ) const {
 	return keyStatus[ key ];
 }
 
+bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button ) {
+	if ( dX != nullptr && dY != nullptr ) {
+		GetCursorPosition( dX, dY );
+	}
+
+	return mouseStatus[ button ];
+}
+
 //////////////////////////////////////////////////////
 // PROFILING
 
@@ -481,6 +501,8 @@ void vc::App::EndPerformanceTimer( const char *identifier ) {
 
 //////////////////////////////////////////////////////
 // Main
+
+vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 
 int main( int argc, char **argv ) {
 	// Stop buffering stdout!

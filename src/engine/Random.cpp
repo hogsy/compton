@@ -4,6 +4,9 @@
  *------------------------------------------------------------------------------------*/
 
 #include <random>
+#include <cstring>
+
+#include <PL/platform.h>
 
 #include "Random.h"
 
@@ -12,6 +15,28 @@ int vc::random::GenerateRandomInteger( int min, int max ) {
 	static std::mt19937 generator( randomDevice() );
 	std::uniform_int_distribution<> distribution( min, max );
 	return distribution( generator );
+}
+
+const char *vc::random::GenerateRandomName( char *buffer, size_t size ) {
+	static const char *segments[] = {
+	        "aa", "al", "el", "la", "fa", "mo",
+	        "re", "ka", "ca", "ma", "fe", "me",
+	        "ra", "ke", "ce", "ee", "he", "fo",
+	        "ru", "ku", "cu", "eu", "hu", "fu",
+	};
+
+	unsigned int maxSize = GenerateRandomInteger( 4, size - 1 );
+	char *p = buffer;
+	for ( size_t i = 0; i < maxSize; i += 2 ) {
+		unsigned int s = GenerateRandomInteger( 0, plArrayElements( segments ) - 1 );
+		*p++ = segments[ s ][ 0 ];
+		*p++ = segments[ s ][ 1 ];
+	}
+
+	// Ensure the first character is uppercase and null termination.
+	buffer[ 0 ] = std::toupper( buffer[ 0 ] );
+	buffer[ maxSize ] = '\0';
+	return buffer;
 }
 
 int vc::random::PerlinNoise::permutation[] = {
@@ -48,9 +73,9 @@ vc::random::PerlinNoise::PerlinNoise( int seed ) {
  */
 double vc::random::PerlinNoise::Noise( double x, double y, double z ) {
 	// Find unit cube that contains point
-	int X = (int) floor( x ) & 255;
-	int Y = (int) floor( y ) & 255;
-	int Z = (int) floor( z ) & 255;
+	int X = ( int ) floor( x ) & 255;
+	int Y = ( int ) floor( y ) & 255;
+	int Z = ( int ) floor( z ) & 255;
 
 	// Find relative X, Y and Z of point in cube
 	x -= floor( x );
@@ -85,7 +110,7 @@ double vc::random::PerlinNoise::Grad( int hash, double x, double y, double z ) {
 	// Convert lo 4 bits of hash code into 12 gradient directions
 	int h = hash & 15;
 	double u = h < 8 ? x : y,
-			v = h < 4 ? y : h == 12 || h == 14 ? x
-			                                   : z;
+	       v = h < 4 ? y : h == 12 || h == 14 ? x
+	                                          : z;
 	return ( ( h & 1 ) == 0 ? u : -u ) + ( ( h & 2 ) == 0 ? v : -v );
 }

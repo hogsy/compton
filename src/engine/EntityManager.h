@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Camera.h"
+
 namespace vc {
 	class Serializer;
 	class Entity;
@@ -30,6 +31,13 @@ namespace vc {
 
 		void SpawnEntities();
 
+		struct EntitySlot {
+			EntitySlot( vc::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
+			vc::Entity *entity;
+			unsigned int num;
+		};
+		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
+
 		class EntityClassRegistration {
 		public:
 			const std::string myIdentifier;
@@ -39,8 +47,9 @@ namespace vc {
 		};
 
 	private:
-		static std::set< Entity * > entities;
-		static std::vector< Entity * > destructionQueue;
+		typedef std::vector< Entity * > EntityVector;
+		static EntityVector entities;
+		static EntityVector destructionQueue;
 	};
 }// namespace vc
 

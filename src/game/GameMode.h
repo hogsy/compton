@@ -33,6 +33,8 @@ namespace vc {
 		void SaveGame( const char *path );
 		void RestoreGame( const char *path );
 
+		PLVector2 MousePosToWorld( int x, int y ) const;
+
 		void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 		void HandleKeyboardEvent( int button, bool buttonUp );
 
@@ -49,6 +51,9 @@ namespace vc {
 			PAUSED,
 		};
 		GameState GetState() const { return gameState; }
+
+		static PlayerManager *GetPlayerManager();
+		static EntityManager *GetEntityManager();
 
 	protected:
 	private:

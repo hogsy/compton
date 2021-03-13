@@ -64,23 +64,23 @@ void vc::GameMode::SetupUserInterface() {
 	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
-#define MINIMAP_WIDTH   128
-#define MINIMAP_HEIGHT  128
+#define MINIMAP_WIDTH 128
+#define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
-			uiBasePanelPtr,
-			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
-			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
-			MINIMAP_WIDTH, MINIMAP_HEIGHT,
-			GUIPanel::Background::TEXTURE,
-			GUIPanel::Border::OUTSET );
+	        uiBasePanelPtr,
+	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
+	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
+	        GUIPanel::Background::TEXTURE,
+	        GUIPanel::Border::OUTSET );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
 	new GUIPanel(
-			minimapPanel,
-			2, 2,
-			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
-			GUIPanel::Background::SOLID,
-			GUIPanel::Border::INSET );
+	        minimapPanel,
+	        2, 2,
+	        MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
+	        GUIPanel::Background::SOLID,
+	        GUIPanel::Border::INSET );
 
 	// Create the UI cursor
 	new GUICursor( uiBasePanelPtr );
@@ -271,6 +271,10 @@ void vc::GameMode::RestoreGame( const char *path ) {
 	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
 }
 
+PLVector2 vc::GameMode::MousePosToWorld( int x, int y ) const {
+	return PLVector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
+}
+
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) {
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( uiBasePanelPtr->HandleMouseEvent( x, y, wheel, button, buttonUp ) ) {
@@ -291,6 +295,18 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 			playerCamera.zoom = 0.2f;
 		}
 		return;
+	}
+
+	static Entity *waypoint = nullptr;
+	if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_LEFT ) && !buttonUp ) {
+		if ( waypoint == nullptr ) {
+			waypoint = entityManager->CreateEntity( "DebugWaypoint" );
+		}
+
+		waypoint->origin = MousePosToWorld( x, y );
+	} else if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_RIGHT ) && !buttonUp ) {
+		entityManager->DestroyEntity( waypoint );
+		waypoint = nullptr;
 	}
 }
 
@@ -328,6 +344,9 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 		}
 	}
 }
+
+vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
+vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager; }
 
 ////////////////////////////////
 // Territory

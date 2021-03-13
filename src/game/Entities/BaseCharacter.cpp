@@ -4,6 +4,7 @@
  *------------------------------------------------------------------------------------*/
 
 #include "SimGame.h"
+#include "GameMode.h"
 #include "BaseCharacter.h"
 #include "Random.h"
 #include "Serializer.h"
@@ -30,19 +31,9 @@ REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
 void vc::BaseCharacter::Spawn() {
 	SuperClass::Spawn();
 
-	static const char *names[]={
-			"Adelmarus",
-	        "Arnaldus",
-	        "Carola",
-	        "Harmonia",
-	        "Harrius",
-	        "Hilarius",
-	        "Michaelis",
-	        "Victoria",
-	        "Zacharias",
-	};
-	const char *firstName = names[ random::GenerateRandomInteger( 0, plArrayElements( names ) ) ];
-	const char *lastName = names[ random::GenerateRandomInteger( 0, plArrayElements( names ) ) ];
+	char firstName[ 8 ], lastName[ 8 ];
+	random::GenerateRandomName( firstName, sizeof( firstName ) );
+	random::GenerateRandomName( lastName, sizeof( lastName ) );
 	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation ) );
 }
 
@@ -79,19 +70,22 @@ void vc::BaseCharacter::Tick() {
 
 	// Setup a goal for us to move to.
 	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() ) {
-		debugGoal.x = random::GenerateRandomInteger( origin.x - 512, origin.x + 512 );
-		debugGoal.y = random::GenerateRandomInteger( origin.y - 512, origin.y + 512 );
-		debugGoalDelay = GetApp()->GetNumOfTicks() + 200;
+		// Attempt to find a debug waypoint
+		EntityManager::EntitySlot slot = GameMode::GetEntityManager()->FindEntityByClassName( "DebugWaypoint", nullptr );
+		if ( slot.entity != nullptr ) {
+			debugGoal.x = random::GenerateRandomInteger( slot.entity->origin.x - 64, slot.entity->origin.x + 64 );
+			debugGoal.y = random::GenerateRandomInteger( slot.entity->origin.y - 64, slot.entity->origin.y + 64 );
+		} else { // otherwise fallback
+			debugGoal.x = random::GenerateRandomInteger( 0, 2048 );
+			debugGoal.y = random::GenerateRandomInteger( 0, 2048 );
+		}
+
+		debugGoalDelay = GetApp()->GetNumOfTicks() + random::GenerateRandomInteger( 50, 200 );
 	}
 
 	PLVector2 direction = debugGoal - origin;
-	//velocity.x = ( plInOutPow( origin.x, direction.Length() ) ) + direction.x;
-	//velocity.y = ( plInOutPow( origin.y, direction.Length() ) ) + direction.y;
 	velocity += direction * direction.Length();
-	if ( velocity.x > 1.0f ) velocity.x = 1.0f;
-	if ( velocity.x < -1.0f ) velocity.x = -1.0f;
-	if ( velocity.y > 1.0f ) velocity.y = 1.0f;
-	if ( velocity.y < -1.0f ) velocity.y = -1.0f;
+	velocity = plClampVector2( &velocity, -1.0f, 1.0f );
 
 	origin += velocity;
 }

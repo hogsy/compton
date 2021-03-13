@@ -8,6 +8,7 @@
 namespace vc {
 	namespace random {
 		int GenerateRandomInteger( int min, int max );
+		const char *GenerateRandomName( char *buffer, size_t size );
 
 		class PerlinNoise {
 		public:

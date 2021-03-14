@@ -137,8 +137,8 @@ void vc::Terrain::Draw( const Camera &camera ) {
 void vc::Terrain::Generate() {
 	vc::random::PerlinNoise perlinNoise( (int)time( nullptr ) );
 
-	float fx = TERRAIN_PIXEL_WIDTH / 8.0f;
-	float fy = TERRAIN_PIXEL_HEIGHT / 8.0f;
+	float fx = TERRAIN_PIXEL_WIDTH / 2.0f;
+	float fy = TERRAIN_PIXEL_HEIGHT / 2.0f;
 
 	double pz = plClamp( 0.0f, plGenerateRandomf( 100.0f ), 100.0f );
 

@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "Serializer.h"
 #include "Utility.h"
+#include "Terrain.h"
 
 namespace vc {
 	/*
@@ -68,6 +69,11 @@ void vc::BaseCharacter::Draw( const Camera &camera ) {
 void vc::BaseCharacter::Tick() {
 	SuperClass::Tick();
 
+	Terrain *terrainManager = App::GetGameMode()->GetTerrainManager();
+	if ( terrainManager == nullptr ) {
+		return;
+	}
+
 	// Setup a goal for us to move to.
 	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() ) {
 		// Attempt to find a debug waypoint
@@ -76,8 +82,14 @@ void vc::BaseCharacter::Tick() {
 			debugGoal.x = random::GenerateRandomInteger( slot.entity->origin.x - 64, slot.entity->origin.x + 64 );
 			debugGoal.y = random::GenerateRandomInteger( slot.entity->origin.y - 64, slot.entity->origin.y + 64 );
 		} else { // otherwise fallback
-			debugGoal.x = random::GenerateRandomInteger( 0, 2048 );
-			debugGoal.y = random::GenerateRandomInteger( 0, 2048 );
+			debugGoal.x = random::GenerateRandomInteger( origin.x - 64, origin.x + 64 );
+			debugGoal.y = random::GenerateRandomInteger( origin.y - 64, origin.y + 64 );
+		}
+
+		// If our goal is in water, return so we can try again next tick
+		if ( terrainManager->IsWater( debugGoal.x, debugGoal.y ) ) {
+			debugGoalDelay = 0;
+			return;
 		}
 
 		debugGoalDelay = GetApp()->GetNumOfTicks() + random::GenerateRandomInteger( 50, 200 );

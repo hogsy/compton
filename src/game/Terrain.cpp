@@ -137,8 +137,8 @@ void vc::Terrain::Draw( const Camera &camera ) {
 void vc::Terrain::Generate() {
 	vc::random::PerlinNoise perlinNoise( (int)time( nullptr ) );
 
-	float fx = TERRAIN_PIXEL_WIDTH / 2.0f;
-	float fy = TERRAIN_PIXEL_HEIGHT / 2.0f;
+	float fx = TERRAIN_PIXEL_WIDTH / 3.0f;
+	float fy = TERRAIN_PIXEL_HEIGHT / 3.0f;
 
 	double pz = plClamp( 0.0f, plGenerateRandomf( 100.0f ), 100.0f );
 
@@ -166,5 +166,16 @@ void vc::Terrain::Generate() {
 }
 
 bool vc::Terrain::IsWater( float x, float y ) {
-	return false;
+	if ( x <= 0.0f || y <= 0.0f ) {
+		return true;
+	}
+
+	unsigned int xr = plRoundUp( x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
+	unsigned int yr = plRoundUp( y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
+	unsigned int tileNum = xr + yr * TERRAIN_NUM_TILES_ROW;
+	if ( tileNum >= TERRAIN_NUM_TILES ) {
+		return false;
+	}
+
+	return ( ( tiles[ tileNum ].corners[ 0 ].terrainType == TERRAIN_WATER ) && ( tiles[ tileNum ].corners[ 1 ].terrainType == TERRAIN_WATER ) );
 }

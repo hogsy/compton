@@ -218,9 +218,9 @@ bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool
 	}
 
 	// If the user is clicking, their mouse is over, but we're not handling it, return true(?)
-	if ( !buttonUp && ( button == MOUSE_BUTTON_LEFT ) || ( button == MOUSE_BUTTON_MIDDLE ) || ( button == MOUSE_BUTTON_RIGHT ) ) {
-		return true;
-	}
+	//if ( !buttonUp && ( button == MOUSE_BUTTON_LEFT ) || ( button == MOUSE_BUTTON_MIDDLE ) || ( button == MOUSE_BUTTON_RIGHT ) ) {
+	//	return true;
+	//}
 
 	return false;
 }

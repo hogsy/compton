@@ -178,6 +178,10 @@ void vc::GameMode::Draw() {
 
 	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 0, 0 ), 0.0f, 128.0f, 0, "camera: %f %f %f", playerCamera.position.x, playerCamera.position.y, playerCamera.zoom );
 
+	unsigned int xr = plRoundUp( playerCamera.position.x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
+	unsigned int yr = plRoundUp( playerCamera.position.y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
+	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), 0.0f, 256.0f, 0, "camera_tile: %d %d", xr, yr );
+
 	END_MEASURE();
 }
 
@@ -353,6 +357,7 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 
 vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager; }
+vc::Terrain *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager; }
 
 ////////////////////////////////
 // Territory

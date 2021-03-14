@@ -54,6 +54,7 @@ namespace vc {
 
 		static PlayerManager *GetPlayerManager();
 		static EntityManager *GetEntityManager();
+		static Terrain *GetTerrainManager();
 
 	protected:
 	private:

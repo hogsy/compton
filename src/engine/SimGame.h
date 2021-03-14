@@ -7,6 +7,11 @@
 
 #include <PL/platform_console.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <map>
+
 extern int VC_LOG_MSG; // generic message
 extern int VC_LOG_DEB; // debug message (won't be displayed in shipped build)
 extern int VC_LOG_WAR; // warning

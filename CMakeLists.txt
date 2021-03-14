@@ -67,7 +67,6 @@ add_executable(VCritters ${SOURCE_FILES}
         src/engine/LoaderPkg.cpp
         src/engine/Serializer.cpp
         src/engine/Serializer.h
-        src/engine/vm/vm.c
         src/engine/PlayerManager.cpp
         src/engine/Random.cpp
         src/engine/Random.h
@@ -87,8 +86,9 @@ add_executable(VCritters ${SOURCE_FILES}
         src/game/Entities/AIBrain.h
         src/game/Entities/Tree.cpp
         src/game/Entities/Tree.h
+        src/game/Entities/DebugWaypoint.cpp
         src/game/Utility.cpp
-        src/game/Utility.h src/game/Entities/DebugWaypoint.cpp)
+        src/game/Utility.h)
 
 set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 

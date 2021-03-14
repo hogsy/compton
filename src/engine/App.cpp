@@ -10,8 +10,6 @@
 #include "GameMode.h"
 #include "EntityManager.h"
 
-#include "vm/vm.h"
-
 // Draw Routines
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h ) {
@@ -167,11 +165,6 @@ vc::App::App( int argc, char **argv ) {
 	ALLEGRO_PATH *path = al_get_standard_path( ALLEGRO_RESOURCES_PATH );
 	al_change_directory( al_path_cstr( path, '/' ) );
 	al_destroy_path( path );
-
-	// And now, finally, finish setting up the engine
-#if 0
-	VM_Initialize();
-#endif
 
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn

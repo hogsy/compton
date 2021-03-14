@@ -8,7 +8,7 @@
 namespace vc {
 	class ConfigLoader {
 	public:
-		explicit ConfigLoader( const std::string &path );
+		explicit ConfigLoader( const char *path );
 		~ConfigLoader();
 
 		std::string GetIndex( unsigned int i ) {

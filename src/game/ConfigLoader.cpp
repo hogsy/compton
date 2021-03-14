@@ -3,16 +3,16 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include <sstream>
+#include <fstream>
 
 #include "../shared.h"
 #include "ConfigLoader.h"
 
 namespace vc {
-	ConfigLoader::ConfigLoader( const std::string &path ) {
+	ConfigLoader::ConfigLoader( const char *path ) {
 		std::ifstream fp( path );
 		if ( !fp ) {
-			Error( "Failed to open IDX file, \"%s\"!\n", path.c_str() );
+			Error( "Failed to open IDX file, \"%s\"!\n", path );
 		}
 
 		std::string line;

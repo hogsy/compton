@@ -1,0 +1,13 @@
+; Generates data0.pkg
+output data0.pkg
+
+; Sprite sheets
+dir sheets json
+dir sheets png
+
+dir textures png
+dir textures/desktop png
+dir textures/desktop/wallpapers png
+
+; Sounds
+dir sounds wav

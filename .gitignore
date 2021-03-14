@@ -3,3 +3,5 @@
 /.idea/
 
 /bin/default.save
+/bin/quick.save
+/bin/libplatform.dll

@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------------------------
  * SimGame
- * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
+ * Copyright (C) 2016-2021, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
 #include <fstream>
 
-#include "../shared.h"
+#include "SimGame.h"
 #include "ConfigLoader.h"
 
 namespace vc {
@@ -17,6 +17,9 @@ namespace vc {
 
 		std::string line;
 		while ( std::getline( fp, line ) ) {
+			if ( line.empty() || line[ 0 ] == ';' ) {
+				continue;
+			}
 			list_.push_back( line );
 		}
 	}

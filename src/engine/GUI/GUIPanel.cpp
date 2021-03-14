@@ -30,7 +30,7 @@ vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GU
 vc::GUIPanel::~GUIPanel() = default;
 
 void vc::GUIPanel::Draw() {
-	if ( !shouldDraw ) {
+	if ( !isDrawing ) {
 		return;
 	}
 
@@ -161,11 +161,7 @@ void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::Rec
 }
 
 void vc::GUIPanel::Tick() {
-	if ( x + w < 0 || x > 640 || y + h < 0 || y > 480 ) {
-		shouldDraw = false;
-	} else {
-		shouldDraw = true;
-	}
+	isDrawing = ShouldDraw();
 
 	// Tick all of the children
 	for ( auto i : children ) {
@@ -199,16 +195,40 @@ void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const {
 	*hd = h - 2;
 }
 
-bool vc::GUIPanel::IsMouseOver() const {
-	int mx, my;
-	GetApp()->GetCursorPosition( &mx, &my );
+bool vc::GUIPanel::IsMouseOver( int mx, int my ) const {
 	return !( mx < x || mx > x + w || my < y || my > y + h );
 }
 
+bool vc::GUIPanel::IsMouseOver() const {
+	int mx, my;
+	GetApp()->GetCursorPosition( &mx, &my );
+	return IsMouseOver( mx, my );
+}
+
 bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp ) {
+	if ( !IsMouseOver( mx, my ) ) {
+		return false;
+	}
+
 	for ( auto i : children ) {
 		// If the child handles the event, return true
 		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) ) {
+			return true;
+		}
+	}
+
+	// If the user is clicking, their mouse is over, but we're not handling it, return true(?)
+	if ( !buttonUp && ( button == MOUSE_BUTTON_LEFT ) || ( button == MOUSE_BUTTON_MIDDLE ) || ( button == MOUSE_BUTTON_RIGHT ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+bool vc::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp ) {
+	for ( auto i : children ) {
+		// If the child handles the event, return true
+		if ( i->HandleKeyboardEvent( button, buttonUp ) ) {
 			return true;
 		}
 	}

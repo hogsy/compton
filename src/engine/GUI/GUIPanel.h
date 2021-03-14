@@ -50,9 +50,25 @@ namespace vc {
 		PL_INLINE void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
 		void GetContentSize( int *wd, int *hd ) const;
 
+		bool IsMouseOver( int mx, int my ) const;
 		bool IsMouseOver() const;
 
 		bool HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp );
+		bool HandleKeyboardEvent( int button, bool buttonUp );
+
+		inline void SetVisible( bool flag ) {
+			isVisible = flag;
+		}
+
+		inline bool ShouldDraw() {
+			if ( !isVisible ) {
+				return false;
+			} else if ( x + w < 0 || x > 640 || y + h < 0 || y > 480 ) {
+				return false;
+			}
+
+			return true;
+		}
 
 	protected:
 		GUIStyleSheet *myStyleSheet{ nullptr };
@@ -62,7 +78,8 @@ namespace vc {
 		int x{ 0 }, y{ 0 };
 		int w{ 640 }, h{ 480 };
 
-		bool shouldDraw{ false };
+		bool isDrawing{ false };    // Flag on whether or not the panel is actually in view
+		bool isVisible{ true };     // User flag, specifying if the panel should show or not
 
 	private:
 		void DrawBorder();

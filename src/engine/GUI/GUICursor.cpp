@@ -6,8 +6,6 @@
 #include "../shared.h"
 #include "GUICursor.h"
 
-#include <allegro5/allegro.h>
-
 vc::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}
 
@@ -15,7 +13,7 @@ vc::GUICursor::~GUICursor() {
 }
 
 void vc::GUICursor::DrawBackground() {
-	if ( !shouldDraw || myStyleSheet == nullptr ) {
+	if ( !isDrawing || myStyleSheet == nullptr ) {
 		return;
 	}
 
@@ -47,8 +45,8 @@ void vc::GUICursor::Tick() {
 
 	// Check the cursor is in the bounds of the parent
 	if ( x + w < pX || x > pX + pW || y + h < pY || y > pY + pH ) {
-		shouldDraw = false;
+		isDrawing = false;
 	} else {
-		shouldDraw = true;
+		isDrawing = true;
 	}
 }

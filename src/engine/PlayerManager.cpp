@@ -22,8 +22,8 @@ namespace vc {
 		void HandleInput();
 
 		typedef std::vector< Player > PlayerList;
-		PL_INLINE const PlayerList *GetPlayers() const { return &players; }
-		PL_INLINE unsigned int GetNumPlayers() const { return players.size(); }
+		inline const PlayerList *GetPlayers() const { return &players; }
+		inline unsigned int GetNumPlayers() const { return players.size(); }
 
 		Player *GetPlayer( unsigned int id );
 

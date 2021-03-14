@@ -7,13 +7,13 @@
 
 #include "../shared.h"
 
+#include "GUI/GUIPanel.h"
+#include "GUI/GUIPieMenu.h"
+
 #include "SpriteSheet.h"
 #include "Camera.h"
 
 namespace vc {
-	class GUIPanel;
-	class GUIStyleSheet;
-
 	class PlayerManager;
 	class Terrain;
 
@@ -65,6 +65,7 @@ namespace vc {
 
 		GUIStyleSheet *uiDefaultStyleSheet;
 		GUIPanel *uiBasePanelPtr{ nullptr };
+		GUIPieMenu *uiPieMenu{ nullptr };
 
 		PlayerManager *playerManager{ nullptr };
 		EntityManager *entityManager{ nullptr };

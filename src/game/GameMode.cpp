@@ -84,6 +84,8 @@ void vc::GameMode::SetupUserInterface() {
 
 	// Create the UI cursor
 	new GUICursor( uiBasePanelPtr );
+
+	uiPieMenu = new GUIPieMenu( uiBasePanelPtr );
 }
 
 void vc::GameMode::Tick() {
@@ -304,13 +306,18 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 		}
 
 		waypoint->origin = MousePosToWorld( x, y );
-	} else if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_RIGHT ) && !buttonUp ) {
+	} else if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_RIGHT ) && !buttonUp && ( waypoint != nullptr ) ) {
 		entityManager->DestroyEntity( waypoint );
 		waypoint = nullptr;
 	}
 }
 
 void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
+	// Push input through to GUI first, so that can do whatever it needs to
+	if ( uiBasePanelPtr->HandleKeyboardEvent( button, buttonUp ) ) {
+		return;
+	}
+
 	if ( buttonUp ) {
 		return;
 	}
@@ -324,7 +331,6 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 			SaveGame( "quick.save" );
 			break;
 		}
-
 		case ALLEGRO_KEY_F6: {
 			// Quick load check
 			RestoreGame( "quick.save" );

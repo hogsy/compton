@@ -435,7 +435,9 @@ void vc::App::Tick() {
 				button = MOUSE_BUTTON_MIDDLE;
 			}
 
-			gameMode->HandleMouseEvent( event.mouse.x, event.mouse.y, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
+			int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
+			int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
+			gameMode->HandleMouseEvent( aX, aY, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
 		}
 

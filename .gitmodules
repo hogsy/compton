@@ -1,3 +1,3 @@
 [submodule "platform"]
-	path = platform
+	path = src/hei
 	url = https://github.com/TalonBraveInfo/platform.git

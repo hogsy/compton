@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.6)
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
-add_subdirectory(platform/platform/)
+add_subdirectory(src/hei/plcore/)
 add_subdirectory(src/tools/pkgman/)
 
 project(VCritters)

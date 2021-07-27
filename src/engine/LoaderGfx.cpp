@@ -24,17 +24,17 @@ static uint8_t PackImage_GetNumChannels( uint8_t channelFlags ) {
 }
 
 PLImage *Image_LoadPackedImage( const char *path ) {
-	PLFile *filePtr = plOpenFile( path, false );
+	PLFile *filePtr = PlOpenFile( path, false );
 	if ( filePtr == NULL ) {
-		Warning( "Failed to open packed image, \"%s\"!\nPL: %s\n", path, plGetError() );
+		Warning( "Failed to open packed image, \"%s\"!\nPL: %s\n", path, PlGetError() );
 		return NULL;
 	}
 
 	/* read in the header */
 
 	char identifier[ 4 ];
-	if ( plReadFile( filePtr, identifier, sizeof( char ), 4 ) != 4 ) {
-		Error( "Failed to read in identifier for \"%s\"!\nPL: %s\n", path, plGetError() );
+	if ( PlReadFile( filePtr, identifier, sizeof( char ), 4 ) != 4 ) {
+		Error( "Failed to read in identifier for \"%s\"!\nPL: %s\n", path, PlGetError() );
 	}
 
 	if ( !( identifier[ 0 ] == 'G' && identifier[ 1 ] == 'F' && identifier[ 2 ] == 'X' && identifier[ 3 ] == '0' ) ) {
@@ -42,10 +42,10 @@ PLImage *Image_LoadPackedImage( const char *path ) {
 	}
 
 	bool status;
-	uint8_t flags = plReadInt8( filePtr, &status );
-	uint16_t width = plReadInt16( filePtr, false, &status );
-	uint16_t height = plReadInt16( filePtr, false, &status );
-	uint16_t numBlocks = plReadInt16( filePtr, false, &status );
+	uint8_t flags = PlReadInt8( filePtr, &status );
+	uint16_t width = PlReadInt16( filePtr, false, &status );
+	uint16_t height = PlReadInt16( filePtr, false, &status );
+	uint16_t numBlocks = PlReadInt16( filePtr, false, &status );
 	if ( !status ) {
 		Error( "Failed to read header for \"%s\"!\n", path );
 	}
@@ -60,40 +60,40 @@ PLImage *Image_LoadPackedImage( const char *path ) {
 		colourFormat = PL_COLOURFORMAT_RGB;
 	}
 
-	PLImage *image = plCreateImage( NULL, width, height, colourFormat, imageFormat );
+	PLImage *image = PlCreateImage( NULL, width, height, colourFormat, imageFormat );
 	if ( image == NULL ) {
-		Error( "Failed to create image handle!\nPL: %s\n", plGetError() );
+		Error( "Failed to create image handle!\nPL: %s\n", PlGetError() );
 	}
 
 	if ( numBlocks == 0 ) {
 		uint32_t pixelSize = width * height;
 		uint8_t *pixelPos = image->data[ 0 ];
 		for ( unsigned int i = 0; i < pixelSize; ++i ) {
-			if ( flags & CHANNEL_RED ) 		{ pixelPos[ 0 ] = plReadInt8( filePtr, &status ); }
-			if ( flags & CHANNEL_GREEN ) 	{ pixelPos[ 1 ] = plReadInt8( filePtr, &status ); }
-			if ( flags & CHANNEL_BLUE )		{ pixelPos[ 2 ] = plReadInt8( filePtr, &status ); }
-			if ( flags & CHANNEL_ALPHA ) 	{ pixelPos[ 3 ] = plReadInt8( filePtr, &status ); }
+			if ( flags & CHANNEL_RED ) 		{ pixelPos[ 0 ] = PlReadInt8( filePtr, &status ); }
+			if ( flags & CHANNEL_GREEN ) 	{ pixelPos[ 1 ] = PlReadInt8( filePtr, &status ); }
+			if ( flags & CHANNEL_BLUE )		{ pixelPos[ 2 ] = PlReadInt8( filePtr, &status ); }
+			if ( flags & CHANNEL_ALPHA ) 	{ pixelPos[ 3 ] = PlReadInt8( filePtr, &status ); }
 			pixelPos += ( imageFormat == PL_IMAGEFORMAT_RGBA8 ) ? 4 : 3;
 		}
 	} else {
 		for ( unsigned int i = 0; i < numBlocks; ++i ) {
-			uint8_t blockFlags = plReadInt8( filePtr, &status );
+			uint8_t blockFlags = PlReadInt8( filePtr, &status );
 			if ( !status ) {
-				Error( "Failed to read in block %d header in \"%s\"!\nPL: %s\n", i, path, plGetError() );
+				Error( "Failed to read in block %d header in \"%s\"!\nPL: %s\n", i, path, PlGetError() );
 			}
 
 			/* fetch the number of channels and then create our colour store */
 			uint8_t colour[ 4 ] = { 0, 0, 0, 255 };
-			if ( blockFlags & CHANNEL_RED ) 	{ colour[ 0 ] = plReadInt8( filePtr, &status ); }
-			if ( blockFlags & CHANNEL_GREEN ) 	{ colour[ 1 ] = plReadInt8( filePtr, &status ); }
-			if ( blockFlags & CHANNEL_BLUE ) 	{ colour[ 2 ] = plReadInt8( filePtr, &status ); }
-			if ( blockFlags & CHANNEL_ALPHA )	{ colour[ 3 ] = plReadInt8( filePtr, &status ); }
+			if ( blockFlags & CHANNEL_RED ) 	{ colour[ 0 ] = PlReadInt8( filePtr, &status ); }
+			if ( blockFlags & CHANNEL_GREEN ) 	{ colour[ 1 ] = PlReadInt8( filePtr, &status ); }
+			if ( blockFlags & CHANNEL_BLUE ) 	{ colour[ 2 ] = PlReadInt8( filePtr, &status ); }
+			if ( blockFlags & CHANNEL_ALPHA )	{ colour[ 3 ] = PlReadInt8( filePtr, &status ); }
 
 			/* now fetch the offsets */
-			uint16_t numBlockPixels = plReadInt16( filePtr, false, &status );
+			uint16_t numBlockPixels = PlReadInt16( filePtr, false, &status );
 			uint16_t *pixelOffsets = ( uint16_t* ) calloc( numBlockPixels, sizeof( uint16_t ) );
-			if ( plReadFile( filePtr, pixelOffsets, sizeof( uint16_t ), numBlockPixels ) != numBlockPixels ) {
-				Error( "Failed to read pixel offsets in block %d, in \"%s\"!\nPL: %s\n", i, path, plGetError() );
+			if ( PlReadFile( filePtr, pixelOffsets, sizeof( uint16_t ), numBlockPixels ) != numBlockPixels ) {
+				Error( "Failed to read pixel offsets in block %d, in \"%s\"!\nPL: %s\n", i, path, PlGetError() );
 			}
 
 			for ( unsigned int j = 0; j < numBlockPixels; ++j ) {

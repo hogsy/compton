@@ -6,7 +6,7 @@
 #include <random>
 #include <cstring>
 
-#include <PL/platform.h>
+#include <plcore/pl.h>
 
 #include "Random.h"
 

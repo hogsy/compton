@@ -3,7 +3,7 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include <PL/platform_filesystem.h>
+#include <plcore/pl_filesystem.h>
 
 #include "ScriptParser.h"
 #include "SimGame.h"
@@ -11,15 +11,15 @@
 vc::ScriptParser::ScriptParser( const char *path ) {
 	Print( "Loading script, \"%s\"\n", path );
 
-	PLFile *filePtr = plOpenFile( path, true );
+	PLFile *filePtr = PlOpenFile( path, true );
 	if ( filePtr == nullptr ) {
-		Error( "Failed to open script, \"%s\"!\nPL: %s\n", path, plGetError() );
+		Error( "Failed to open script, \"%s\"!\nPL: %s\n", path, PlGetError() );
 	}
 
-	size_t length = plGetFileSize( filePtr );
+	size_t length = PlGetFileSize( filePtr );
 	if ( length == 0 ) {
 		Warning( "Specified script \"%s\" is empty!\n", path );
-		plCloseFile( filePtr );
+		PlCloseFile( filePtr );
 		return;
 	}
 
@@ -28,7 +28,7 @@ vc::ScriptParser::ScriptParser( const char *path ) {
 		length = MAX_SCRIPT_LENGTH;
 	}
 
-	const uint8_t *fileDataPtr = plGetFileData( filePtr );
+	const uint8_t *fileDataPtr = PlGetFileData( filePtr );
 	memcpy( scriptBuffer, fileDataPtr, length );
 
 	// Fetch the starting position
@@ -37,7 +37,7 @@ vc::ScriptParser::ScriptParser( const char *path ) {
 		Warning( "Specified script \"%s\" is empty!\n", path );
 	}
 
-	plCloseFile( filePtr );
+	PlCloseFile( filePtr );
 }
 
 vc::ScriptParser::~ScriptParser() = default;

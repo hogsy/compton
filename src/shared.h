@@ -24,11 +24,12 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
 
-#include <PL/platform_console.h>
-#include <PL/platform_filesystem.h>
-#include <PL/pl_graphics.h>
-#include <PL/platform_package.h>
-#include <PL/platform_math.h>
+#include <plcore/pl_console.h>
+#include <plcore/pl_filesystem.h>
+#include <plcore/pl_package.h>
+#include <plcore/pl_math.h>
+
+#include <plgraphics/plg.h>
 
 #define DEBUG_BUILD
 
@@ -73,7 +74,7 @@ namespace vc {
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 		ALLEGRO_BITMAP *CacheImage( const char *path );
 
-		PL_INLINE ALLEGRO_FONT *GetDefaultFont() {
+		inline ALLEGRO_FONT *GetDefaultFont() {
 			return defaultFont;
 		}
 
@@ -83,12 +84,12 @@ namespace vc {
 
 		unsigned int GetNumOfTicks() { return numTicks; }
 
-		PL_INLINE void GetWindowSize( int *dW, int *dH ) const {
+		inline void GetWindowSize( int *dW, int *dH ) const {
 			*dW = windowWidth;
 			*dH = windowHeight;
 		}
 
-		PL_INLINE void GetScaledSize( int *dW, int *dH ) const {
+		inline void GetScaledSize( int *dW, int *dH ) const {
 			*dW = scaleW;
 			*dH = scaleH;
 		}
@@ -97,7 +98,7 @@ namespace vc {
 		bool GetKeyState( int key ) const;
 		bool GetMouseState( int *dX, int *dY, InputMouseButton button );
 
-		PL_INLINE const char *GetAppDataPath() const { return appDataPath; }
+		inline const char *GetAppDataPath() const { return appDataPath; }
 
 		//////////////////////////////////////////////////////
 		// PROFILING

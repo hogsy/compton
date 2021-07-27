@@ -38,13 +38,13 @@ namespace vc {
 		void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 		void HandleKeyboardEvent( int button, bool buttonUp );
 
-		PL_INLINE GUIPanel *GetBasePanel() const { return uiBasePanelPtr; }
+		inline GUIPanel *GetBasePanel() const { return uiBasePanelPtr; }
 
 		// Simulation crap
-		PL_INLINE uint64_t GetTotalSeconds() const { return numSeconds; }
-		PL_INLINE uint64_t GetTotalMinutes() const { return numSeconds / 60; }
-		PL_INLINE uint64_t GetTotalHours() const { return GetTotalMinutes() / 60; }
-		PL_INLINE uint64_t GetTotalDays() const { return GetTotalHours() / 25; }
+		inline uint64_t GetTotalSeconds() const { return numSeconds; }
+		inline uint64_t GetTotalMinutes() const { return numSeconds / 60; }
+		inline uint64_t GetTotalHours() const { return GetTotalMinutes() / 60; }
+		inline uint64_t GetTotalDays() const { return GetTotalHours() / 25; }
 
 		enum class GameState {
 			ACTIVE,
@@ -81,7 +81,7 @@ namespace vc {
 
 			char name[ 32 ];
 			PLVector2 origin{ 0.0f, 0.0f };
-			PLPolygon *border{ nullptr };
+			PLGPolygon *border{ nullptr };
 		};
 		std::vector< Territory > myTerritories;
 	};

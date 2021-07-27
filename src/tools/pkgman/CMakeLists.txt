@@ -8,6 +8,6 @@ set( CMAKE_C_STANDARD 11 )
 
 add_executable( pkgman main.c pack_image.c )
 
-target_link_libraries( pkgman platform )
+target_link_libraries( pkgman plcore )
 
 

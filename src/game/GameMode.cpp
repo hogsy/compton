@@ -178,8 +178,8 @@ void vc::GameMode::Draw() {
 
 	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 0, 0 ), 0.0f, 128.0f, 0, "camera: %f %f %f", playerCamera.position.x, playerCamera.position.y, playerCamera.zoom );
 
-	unsigned int xr = plRoundUp( playerCamera.position.x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
-	unsigned int yr = plRoundUp( playerCamera.position.y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
+	unsigned int xr = PlRoundUp( playerCamera.position.x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
+	unsigned int yr = PlRoundUp( playerCamera.position.y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
 	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), 0.0f, 256.0f, 0, "camera_tile: %d %d", xr, yr );
 
 	END_MEASURE();
@@ -283,7 +283,7 @@ PLVector2 vc::GameMode::MousePosToWorld( int x, int y ) const {
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) {
 	// Push input through to GUI first, so that can do whatever it needs to
-	if ( uiBasePanelPtr->HandleMouseEvent( x, y, wheel, button, buttonUp ) ) {
+	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleMouseEvent( x, y, wheel, button, buttonUp ) ) {
 		return;
 	}
 
@@ -318,7 +318,7 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 
 void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 	// Push input through to GUI first, so that can do whatever it needs to
-	if ( uiBasePanelPtr->HandleKeyboardEvent( button, buttonUp ) ) {
+	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleKeyboardEvent( button, buttonUp ) ) {
 		return;
 	}
 

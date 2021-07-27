@@ -97,7 +97,7 @@ void vc::BaseCharacter::Tick() {
 
 	PLVector2 direction = debugGoal - origin;
 	velocity += direction * direction.Length();
-	velocity = plClampVector2( &velocity, -1.0f, 1.0f );
+	velocity = PlClampVector2( &velocity, -1.0f, 1.0f );
 
 	origin += velocity;
 }

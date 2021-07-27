@@ -8,9 +8,9 @@
 static void *FS_fopen( const char *path, const char *mode ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	SgAssert( mode[ 0 ] != 'w', "Unsupported operation in FS_fopen!\n" );
-	PLFile *file = plOpenFile( path, false );
+	PLFile *file = PlOpenFile( path, false );
 	if ( file == nullptr ) {
-		Warning( "Failed to open \"%s\"!\nPL: %s\n", path, plGetError() );
+		Warning( "Failed to open \"%s\"!\nPL: %s\n", path, PlGetError() );
 		return nullptr;
 	}
 
@@ -20,47 +20,47 @@ static void *FS_fopen( const char *path, const char *mode ) {
 static bool FS_fclose( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	plCloseFile( file );
+	PlCloseFile( file );
 	return true;
 }
 
 static size_t FS_fread( ALLEGRO_FILE *f, void *ptr, size_t size ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return plReadFile( file, ptr, 1, size );
+	return PlReadFile( file, ptr, 1, size );
 }
 
 static int64_t FS_ftell( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return plGetFileOffset( file );
+	return PlGetFileOffset( file );
 }
 
 static bool FS_fseek( ALLEGRO_FILE *f, int64_t offset, int whence ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return plFileSeek( file, offset, static_cast< PLFileSeek >( whence ) );
+	return PlFileSeek( file, offset, static_cast< PLFileSeek >( whence ) );
 }
 
 static bool FS_feof( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return plIsEndOfFile( file );
+	return PlIsEndOfFile( file );
 }
 
 static int FS_ferror( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
-	return plGetFunctionResult();
+	return PlGetFunctionResult();
 }
 
 static const char *FS_ferrmsg( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
-	return plGetError();
+	return PlGetError();
 }
 
 static void FS_fclearerr( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
-	plUnused( f );
+	PlUnused( f );
 }
 
 static int FS_fungetc( ALLEGRO_FILE *f, int c ) {
@@ -71,7 +71,7 @@ static int FS_fungetc( ALLEGRO_FILE *f, int c ) {
 static off_t FS_fsize( ALLEGRO_FILE *f ) {
 	DebugMsg( "%s\n", __FUNCTION__ );
 	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return plGetFileSize( file );
+	return PlGetFileSize( file );
 }
 
 ALLEGRO_FILE_INTERFACE g_fsIOInterface = {

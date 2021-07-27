@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <PL/platform_console.h>
+#include <plcore/pl_console.h>
 
 #include <algorithm>
 #include <string>
@@ -18,15 +18,15 @@ extern int VC_LOG_WAR; // warning
 extern int VC_LOG_ERR; // error (kills application)
 
 #define Print( ... )       \
-	plLogMessage( VC_LOG_MSG, __VA_ARGS__ )
+	PlLogMessage( VC_LOG_MSG, __VA_ARGS__ )
 #define Warning( ... )     \
-	plLogMessage( VC_LOG_WAR, __VA_ARGS__ )
+	PlLogMessage( VC_LOG_WAR, __VA_ARGS__ )
 #define Error( ... )                         \
-	plLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
+	PlLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
 	exit( -1 )
 #if defined( DEBUG_BUILD )
 #   define DebugMsg( ... )    \
-	plLogMessage( VC_LOG_DEB, __VA_ARGS__ )
+	PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
 #else
 #   define DebugMsg( ... )
 #endif

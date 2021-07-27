@@ -2,9 +2,9 @@
  * Project Yin
  * */
 
-#include <PL/platform.h>
-#include <PL/platform_filesystem.h>
-#include <PL/platform_image.h>
+#include <plcore/pl.h>
+#include <plcore/pl_filesystem.h>
+#include <plcore/pl_image.h>
 
 #include "main.h"
 
@@ -76,11 +76,11 @@ static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *
 	strncpy( packName, fileName, sizeof( packName ) );
 
 	/* see if it's a file we can pack */
-	const char *extension = plGetFileExtension( packPath );
+	const char *extension = PlGetFileExtension( packPath );
 	if ( strcmp( extension, "png" ) == 0 || strcmp( extension, "gif" ) == 0 || strcmp( extension, "bmp" ) == 0 ) {
-		PLImage *image = plLoadImage( packPath );
+		PLImage *image = PlLoadImage( packPath );
 		if ( image == NULL ) {
-			Error( "Failed to load \"%s\"!\nPL: %s\n", packPath, plGetError() );
+			Error( "Failed to load \"%s\"!\nPL: %s\n", packPath, PlGetError() );
 		}
 
 		size_t strPos;
@@ -91,16 +91,16 @@ static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *
 
 		PackImage_Write( packPath, image );
 
-		plDestroyImage( image );
+		PlDestroyImage( image );
 	}
 
-	PLFile *filePtr = plOpenFile( packPath, true );
+	PLFile *filePtr = PlOpenFile( packPath, true );
 	if ( filePtr == NULL ) {
-		Error( "Failed to add file \"%s\"!\nPL: %s\n", packPath, plGetError() );
+		Error( "Failed to add file \"%s\"!\nPL: %s\n", packPath, PlGetError() );
 	}
 
-	const uint8_t *data = plGetFileData( filePtr );
-	size_t fileLength = plGetFileSize( filePtr );
+	const uint8_t *data = PlGetFileData( filePtr );
+	size_t fileLength = PlGetFileSize( filePtr );
 
 	char indexName[ 128 ];
 	snprintf( indexName, sizeof( indexName ), "%s:%s", fileTag, packName );
@@ -117,7 +117,7 @@ static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *
 	/* and now write out the file itself */
 	fwrite( data, 1, fileLength, fileOutPtr );
 
-	plCloseFile( filePtr );
+	PlCloseFile( filePtr );
 
 	packageHeader.numFiles++;
 }
@@ -126,7 +126,7 @@ static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *
  * Callback used by ScanDirectory function.
  */
 static void Pkg_AddFileCallback( const char *filePath, void *userData ) {
-	const char *fileName = plGetFileName( filePath );
+	const char *fileName = PlGetFileName( filePath );
 	if ( fileName == NULL ) {
 		Error( "Failed to get valid file name from \"%s\"!\n", filePath );
 	}
@@ -210,7 +210,7 @@ static void ParseScript( const char *buffer, size_t length ) {
 			char tag[ 64 ];
 			curPos = ReadString( curPos, tag, sizeof( tag ) );
 
-			plScanDirectory( directory, extension, Pkg_AddFileCallback, false, tag );
+			PlScanDirectory( directory, extension, Pkg_AddFileCallback, false, tag );
 			continue;
 		}
 
@@ -223,7 +223,7 @@ static void ParseScript( const char *buffer, size_t length ) {
 }
 
 int main( int argc, char **argv ) {
-	plInitialize( argc, argv );
+	PlInitialize( argc, argv );
 
 	Print( "Package Manager\nCopyright (C) 2020 Mark Sowden\n" );
 	if ( argc < 2 ) {
@@ -233,17 +233,17 @@ int main( int argc, char **argv ) {
 
 	/* open the file and read it all into memory */
 	const char *input = argv[ 1 ];
-	PLFile *filePtr = plOpenFile( input, true );
+	PLFile *filePtr = PlOpenFile( input, true );
 	if ( filePtr == NULL ) {
-		Error( "Failed to open \"%s\"!\nPL: %s\n", argv[ 1 ], plGetError() );
+		Error( "Failed to open \"%s\"!\nPL: %s\n", argv[ 1 ], PlGetError() );
 	}
 
 	/* now fetch the buffer and length, and throw it to our parser */
-	const char *buffer = ( const char* ) plGetFileData( filePtr );
-	size_t length = plGetFileSize( filePtr );
+	const char *buffer = ( const char* ) PlGetFileData( filePtr );
+	size_t length = PlGetFileSize( filePtr );
 	ParseScript( buffer, length );
 
-	plCloseFile( filePtr );
+	PlCloseFile( filePtr );
 
 	Print( "Done!\n" );
 }

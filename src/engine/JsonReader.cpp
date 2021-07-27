@@ -3,7 +3,7 @@
  * Copyright (C) 2016-2020, Mark Elsworth Sowden <markelswo@gmail.com>
  *------------------------------------------------------------------------------------*/
 
-#include <PL/platform_filesystem.h>
+#include <plcore/pl_filesystem.h>
 
 #include <duktape.h>
 #include <sstream>
@@ -19,21 +19,21 @@ JsonReader::JsonReader( const std::string &path ) : JsonReader() {
 		throw std::runtime_error( "Empty path for config, aborting!\n" );
 	}
 
-	PLFile *filePtr = plOpenFile( path.c_str(), false );
+	PLFile *filePtr = PlOpenFile( path.c_str(), false );
 	if ( filePtr == nullptr ) {
 		throw std::runtime_error( "Failed to load file!\n" );
 	}
 
-	size_t sz = plGetFileSize( filePtr );
+	size_t sz = PlGetFileSize( filePtr );
 	if ( sz == 0 ) {
-		plCloseFile( filePtr );
+		PlCloseFile( filePtr );
 		throw std::runtime_error( "Failed to load file, empty config!\n" );
 	}
 
 	std::vector< char > buf( sz + 1 );
-	plReadFile( filePtr, buf.data(), sizeof( char ), sz );
+	PlReadFile( filePtr, buf.data(), sizeof( char ), sz );
 	buf[ sz ] = '\0';
-	plCloseFile( filePtr );
+	PlCloseFile( filePtr );
 	ParseBuffer( buf.data() );
 }
 

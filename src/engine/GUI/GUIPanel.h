@@ -37,17 +37,17 @@ namespace vc {
 		void SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return myStyleSheet; }
 
-		PL_INLINE void SetBackgroundColour( const PLColour &colour )    { backgroundColour = colour; }
-		PL_INLINE PLColour GetBackgroundColour() const                  { return backgroundColour; }
+		inline void SetBackgroundColour( const PLColour &colour )    { backgroundColour = colour; }
+		inline PLColour GetBackgroundColour() const                  { return backgroundColour; }
 
-		PL_INLINE void SetBorder( Border border ) { myBorder = border; }
-		PL_INLINE void SetBackground( Background background ) { myBackground = background; }
+		inline void SetBorder( Border border ) { myBorder = border; }
+		inline void SetBackground( Background background ) { myBackground = background; }
 
-		PL_INLINE GUIPanel *GetParent() const { return parentPtr; }
+		inline GUIPanel *GetParent() const { return parentPtr; }
 
-		PL_INLINE void GetPosition( int *xd, int *yd ) const { *xd = x; *yd = y; }
+		inline void GetPosition( int *xd, int *yd ) const { *xd = x; *yd = y; }
 		void GetContentPosition( int *xd, int *yd ) const;
-		PL_INLINE void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
+		inline void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
 		void GetContentSize( int *wd, int *hd ) const;
 
 		bool IsMouseOver( int mx, int my ) const;

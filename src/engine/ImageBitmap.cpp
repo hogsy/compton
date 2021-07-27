@@ -55,21 +55,21 @@ ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags ) {
 
 	ALLEGRO_BITMAP *bitmap = ImageBitmap_ConvertPlatformImageToAllegroBitmap( image );
 
-	plDestroyImage( image );
+	PlDestroyImage( image );
 
 	return bitmap;
 }
 
 ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags ) {
-	PLImage *image = plLoadImage( path );
+	PLImage *image = PlLoadImage( path );
 	if ( image == NULL ) {
-		Warning( "Failed to load specified image, \"%s\" (%s)!", path, plGetError() );
+		Warning( "Failed to load specified image, \"%s\" (%s)!", path, PlGetError() );
 		return nullptr;
 	}
 
 	ALLEGRO_BITMAP *bitmap = ImageBitmap_ConvertPlatformImageToAllegroBitmap( image );
 
-	plDestroyImage( image );
+	PlDestroyImage( image );
 
 	return bitmap;
 }

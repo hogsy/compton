@@ -98,29 +98,29 @@ int VC_LOG_ERR; // error (kills application)
 vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
 
-	plInitialize( argc, argv );
+	PlInitialize( argc, argv );
 
-	plGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
-	plCreateDirectory( appDataPath );
+	PlGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
+	PlCreateDirectory( appDataPath );
 
 	std::string logDir = std::string( appDataPath ) + "/" + VC_LOG;
-	plSetupLogOutput( logDir.c_str() );
+	PlSetupLogOutput( logDir.c_str() );
 
-	VC_LOG_ERR = plAddLogLevel( "error", { 255, 0, 0 }, true );
-	VC_LOG_WAR = plAddLogLevel( "warning", { 255, 255, 0 }, true );
-	VC_LOG_MSG = plAddLogLevel( "info", { 255, 255, 255 }, true );
-	VC_LOG_DEB = plAddLogLevel( "debug", { 0, 0, 255 }, true );
+	VC_LOG_ERR = PlAddLogLevel( "error", { 255, 0, 0 }, true );
+	VC_LOG_WAR = PlAddLogLevel( "warning", { 255, 255, 0 }, true );
+	VC_LOG_MSG = PlAddLogLevel( "info", { 255, 255, 255 }, true );
+	VC_LOG_DEB = PlAddLogLevel( "debug", { 0, 0, 255 }, true );
 
-	plRegisterPackageLoader( "pkg", Pkg_LoadPackage );
-	plRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
+	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage );
+	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
-	plMountLocalLocation( appDataPath );
-	plMountLocalLocation( "./" );
+	PlMountLocalLocation( appDataPath );
+	PlMountLocalLocation( "./" );
 
 	for ( unsigned int i = 0; i < 100; ++i ) {
 		char packageName[ 64 ];
 		snprintf( packageName, sizeof( packageName ), "data%d.pkg", i );
-		if ( plMountLocation( packageName ) == nullptr ) {
+		if ( PlMountLocation( packageName ) == nullptr ) {
 			break;
 		}
 	}

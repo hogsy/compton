@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.6)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
 
 add_subdirectory(src/hei/plcore/)
+add_subdirectory(src/hei/plgraphics/)
+
 add_subdirectory(src/tools/pkgman/)
 
 project(VCritters)
@@ -108,7 +110,9 @@ if (WIN32)
     target_link_libraries(VCritters -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc)
 endif (WIN32)
 target_link_libraries(VCritters
-        platform
+        plcore
+        plgraphics
+
         allegro
         allegro_dialog
         allegro_font

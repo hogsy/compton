@@ -12,8 +12,10 @@
 #include "../../shared.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
-    : myBackground( background ), myBorder( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h ) {
-	if ( parent == nullptr ) {
+	: myBackground( background ), myBorder( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
+{
+	if ( parent == nullptr )
+	{
 		return;
 	}
 
@@ -29,8 +31,10 @@ vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GU
 
 vc::GUIPanel::~GUIPanel() = default;
 
-void vc::GUIPanel::Draw() {
-	if ( !isDrawing ) {
+void vc::GUIPanel::Draw()
+{
+	if ( !isDrawing )
+	{
 		return;
 	}
 
@@ -38,13 +42,16 @@ void vc::GUIPanel::Draw() {
 	DrawBorder();
 
 	// Draw all of the children
-	for ( auto i : children ) {
+	for ( auto i : children )
+	{
 		i->Draw();
 	}
 }
 
-void vc::GUIPanel::DrawBackground() {
-	if ( myBackground == Background::NONE ) {
+void vc::GUIPanel::DrawBackground()
+{
+	if ( myBackground == Background::NONE )
+	{
 		return;
 	}
 
@@ -52,19 +59,17 @@ void vc::GUIPanel::DrawBackground() {
 	GetContentPosition( &dx, &dy );
 	GetContentSize( &dw, &dh );
 
-	switch( myBackground ) {
+	switch ( myBackground )
+	{
 		default: break;
 		case Background::SOLID:
-			al_draw_filled_rectangle( dx, dy, dx + dw, dy + dh, al_map_rgba(
-					backgroundColour.r,
-					backgroundColour.g,
-					backgroundColour.b,
-					backgroundColour.a
-			) );
+			al_draw_filled_rectangle( dx, dy, dx + dw, dy + dh, al_map_rgba( backgroundColour.r, backgroundColour.g, backgroundColour.b, backgroundColour.a ) );
 			break;
-		case Background::TEXTURE: {
+		case Background::TEXTURE:
+		{
 			ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
-			if ( bmp == nullptr ) {
+			if ( bmp == nullptr )
+			{
 				return;
 			}
 
@@ -79,24 +84,24 @@ void vc::GUIPanel::DrawBackground() {
 					sx, sy,
 					sw, sh,
 					al_map_rgba(
-			                backgroundColour.r,
-			                backgroundColour.g,
-			                backgroundColour.b,
-			                backgroundColour.a
-			                ),
+							backgroundColour.r,
+							backgroundColour.g,
+							backgroundColour.b,
+							backgroundColour.a ),
 					0.0f, 0.0f,
 					dx, dy, dw / sw, dh / sh,
 					0.0f,
-			        0
-			);
+					0 );
 			break;
 		}
 	}
 }
 
-void vc::GUIPanel::DrawBorder() {
+void vc::GUIPanel::DrawBorder()
+{
 	const GUIStyleSheet::GUIBorderStyle *borderStyle;
-	switch( myBorder ) {
+	switch ( myBorder )
+	{
 		default:
 			return;
 		case Border::INSET:
@@ -122,59 +127,65 @@ void vc::GUIPanel::DrawBorder() {
 	DrawBorderCorner( x + w - borderStyle->lr.w, y + h - borderStyle->lr.h, borderStyle->lr );
 }
 
-void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &tileCoord ) {
+void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &tileCoord )
+{
 	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
-	if ( bmp == nullptr ) {
+	if ( bmp == nullptr )
+	{
 		return;
 	}
 
 	al_draw_bitmap_region(
-	        bmp,
-	        tileCoord.x, tileCoord.y,
-	        tileCoord.w, tileCoord.h,
-	        dx, dy,
-	        0
-	        );
+			bmp,
+			tileCoord.x, tileCoord.y,
+			tileCoord.w, tileCoord.h,
+			dx, dy,
+			0 );
 }
 
-void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::RectangleCoord &tileCoord ) {
+void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::RectangleCoord &tileCoord )
+{
 	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
-	if ( bmp == nullptr ) {
+	if ( bmp == nullptr )
+	{
 		return;
 	}
 
 	al_draw_tinted_scaled_rotated_bitmap_region(
 			bmp,
-	        tileCoord.x, tileCoord.y,
-	        tileCoord.w, tileCoord.h,
+			tileCoord.x, tileCoord.y,
+			tileCoord.w, tileCoord.h,
 			al_map_rgba(
 					backgroundColour.r,
 					backgroundColour.g,
 					backgroundColour.b,
-					backgroundColour.a
-			),
+					backgroundColour.a ),
 			0.0f, 0.0f,
 			dx, dy, dw / tileCoord.w, dh / tileCoord.h,
 			0.0f,
-			0
-	);
+			0 );
 }
 
-void vc::GUIPanel::Tick() {
+void vc::GUIPanel::Tick()
+{
 	isDrawing = ShouldDraw();
 
 	// Tick all of the children
-	for ( auto i : children ) {
+	for ( auto i : children )
+	{
 		i->Tick();
 	}
 }
 
-void vc::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet ) {
+void vc::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet )
+{
 	myStyleSheet = styleSheet;
 }
 
-void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const {
-	if ( myBorder == Border::NONE ) {
+void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const
+{
+	if ( myBorder == Border::NONE )
+	{
 		GetPosition( xd, yd );
 		return;
 	}
@@ -184,8 +195,10 @@ void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const {
 	*yd = y + 2;
 }
 
-void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const {
-	if ( myBorder == Border::NONE ) {
+void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const
+{
+	if ( myBorder == Border::NONE )
+	{
 		GetSize( wd, hd );
 		return;
 	}
@@ -195,24 +208,30 @@ void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const {
 	*hd = h - 2;
 }
 
-bool vc::GUIPanel::IsMouseOver( int mx, int my ) const {
+bool vc::GUIPanel::IsMouseOver( int mx, int my ) const
+{
 	return !( mx < x || mx > x + w || my < y || my > y + h );
 }
 
-bool vc::GUIPanel::IsMouseOver() const {
+bool vc::GUIPanel::IsMouseOver() const
+{
 	int mx, my;
 	GetApp()->GetCursorPosition( &mx, &my );
 	return IsMouseOver( mx, my );
 }
 
-bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp ) {
-	if ( !IsMouseOver( mx, my ) ) {
+bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp )
+{
+	if ( !IsMouseOver( mx, my ) )
+	{
 		return false;
 	}
 
-	for ( auto i : children ) {
+	for ( auto i : children )
+	{
 		// If the child handles the event, return true
-		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) ) {
+		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) )
+		{
 			return true;
 		}
 	}
@@ -225,10 +244,13 @@ bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool
 	return false;
 }
 
-bool vc::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp ) {
-	for ( auto i : children ) {
+bool vc::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp )
+{
+	for ( auto i : children )
+	{
 		// If the child handles the event, return true
-		if ( i->HandleKeyboardEvent( button, buttonUp ) ) {
+		if ( i->HandleKeyboardEvent( button, buttonUp ) )
+		{
 			return true;
 		}
 	}

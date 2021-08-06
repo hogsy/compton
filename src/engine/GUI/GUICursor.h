@@ -7,8 +7,10 @@
 
 #include "GUIPanel.h"
 
-namespace vc {
-	class GUICursor : public GUIPanel {
+namespace vc
+{
+	class GUICursor : public GUIPanel
+	{
 	public:
 		GUICursor( GUIPanel *parent = nullptr, int x = 0, int y = 0, int w = 32, int h = 32 );
 		~GUICursor();
@@ -21,4 +23,4 @@ namespace vc {
 	private:
 		GUICursorMode currentCursorMode{ GUICursorMode::GUI_MOUSE_DEFAULT };
 	};
-}
+}// namespace vc

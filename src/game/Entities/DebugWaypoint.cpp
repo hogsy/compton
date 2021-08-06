@@ -7,8 +7,10 @@
 #include "GameMode.h"
 #include "Entity.h"
 
-namespace vc::entity {
-	class DebugWaypoint : public Entity {
+namespace vc::entity
+{
+	class DebugWaypoint : public Entity
+	{
 		DECLARE_ENTITY_CLASS( DebugWaypoint, Entity )
 
 		void Draw( const Camera &camera ) override;
@@ -22,10 +24,12 @@ using namespace vc::entity;
 DebugWaypoint::DebugWaypoint() {}
 DebugWaypoint::~DebugWaypoint() {}
 
-void DebugWaypoint::Draw( const Camera &camera ) {
+void DebugWaypoint::Draw( const Camera &camera )
+{
 	SuperClass::Draw( camera );
 
-	if ( !ShouldDraw( camera ) ) {
+	if ( !ShouldDraw( camera ) )
+	{
 		return;
 	}
 

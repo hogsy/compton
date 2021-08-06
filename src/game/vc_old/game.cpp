@@ -183,14 +183,16 @@ private:
 
 // Everything Else
 
-void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y ) {
+void DrawStatusBar( ALLEGRO_COLOR colour, unsigned int value, float x, float y )
+{
 	//al_draw_bitmap_region( status_sprite, 0, 114, 35, 5, x, y, 0 );
 	//if ( creature->GetHealth() > 0 ) {// draw health meter
 	//	al_draw_tinted_bitmap_region( status_sprite, colour, 0, 119, ( float ) ( value ) *33 / 100, 3, x + 1, y + 1, 0 );
 	//}
 }
 
-void DrawMenu() {
+void DrawMenu()
+{
 #if 0
   //DrawBitmap(background2, 0 - game.camera_x / 3, 128 - game.camera_y, 1088, 416);
   //DrawBitmap(background1, 0 - game.camera_x / 2, 128 - game.camera_y, 1088, 416);

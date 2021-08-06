@@ -7,19 +7,23 @@
 
 #include <time.h>
 
-class Timer {
+class Timer
+{
 public:
-	Timer() {
+	Timer()
+	{
 		clock_gettime( CLOCK_MONOTONIC, &clock );
 	}
 
-	void End() {
+	void End()
+	{
 		struct timespec end;
 		clock_gettime( CLOCK_MONOTONIC, &end );
 		timeTaken = TimespecToDouble( TimespecSub( end, clock ) );
 	}
 
-	double GetTimeTaken() const {
+	double GetTimeTaken() const
+	{
 		return timeTaken;
 	}
 
@@ -30,7 +34,8 @@ private:
  	 *  \brief Converts a timespec to a fractional number of seconds.
  	 *  Originally written by Daniel Collins (2017)
 	 */
-	static double TimespecToDouble( struct timespec ts ) {
+	static double TimespecToDouble( struct timespec ts )
+	{
 		return ( ( double ) ( ts.tv_sec ) + ( ( double ) ( ts.tv_nsec ) / NSEC_PER_SEC ) );
 	}
 
@@ -51,25 +56,31 @@ private:
 	 *
 	 * Originally written by Daniel Collins (2017)
 	 */
-	static struct timespec TimespecNormalise( struct timespec ts ) {
-		while ( ts.tv_nsec >= NSEC_PER_SEC ) {
+	static struct timespec TimespecNormalise( struct timespec ts )
+	{
+		while ( ts.tv_nsec >= NSEC_PER_SEC )
+		{
 			++( ts.tv_sec );
 			ts.tv_nsec -= NSEC_PER_SEC;
 		}
 
-		while ( ts.tv_nsec <= -NSEC_PER_SEC ) {
+		while ( ts.tv_nsec <= -NSEC_PER_SEC )
+		{
 			--( ts.tv_sec );
 			ts.tv_nsec += NSEC_PER_SEC;
 		}
 
-		if ( ts.tv_nsec < 0 && ts.tv_sec > 0 ) {
+		if ( ts.tv_nsec < 0 && ts.tv_sec > 0 )
+		{
 			/* Negative nanoseconds while seconds is positive.
 			 * Decrement tv_sec and roll tv_nsec over.
 			*/
 
 			--( ts.tv_sec );
 			ts.tv_nsec = NSEC_PER_SEC - ( -1 * ts.tv_nsec );
-		} else if ( ts.tv_nsec > 0 && ts.tv_sec < 0 ) {
+		}
+		else if ( ts.tv_nsec > 0 && ts.tv_sec < 0 )
+		{
 			/* Positive nanoseconds while seconds is negative.
 			 * Increment tv_sec and roll tv_nsec over.
 			*/
@@ -85,7 +96,8 @@ private:
  	 *  \brief Returns the result of subtracting ts2 from ts1.
  	 *  Originally written by Daniel Collins (2017)
 	 */
-	static struct timespec TimespecSub( struct timespec ts1, struct timespec ts2 ) {
+	static struct timespec TimespecSub( struct timespec ts1, struct timespec ts2 )
+	{
 		/* Normalise inputs to prevent tv_nsec rollover if whole-second values
 		 * are packed in it.
 		*/
@@ -99,5 +111,5 @@ private:
 	}
 
 	struct timespec clock;
-	double timeTaken{ 0.0 };
+	double			timeTaken{ 0.0 };
 };

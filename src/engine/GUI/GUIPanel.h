@@ -10,17 +10,21 @@
 
 struct ALLEGRO_BITMAP;
 
-namespace vc {
+namespace vc
+{
 	class SpriteSheet;
 
-	class GUIPanel {
+	class GUIPanel
+	{
 	public:
-		enum class Background {
+		enum class Background
+		{
 			NONE,
 			SOLID,
 			TEXTURE,
 		};
-		enum class Border {
+		enum class Border
+		{
 			NONE,
 			INSET,
 			OUTSET
@@ -34,20 +38,28 @@ namespace vc {
 
 		virtual void Tick();
 
-		void SetStyleSheet( GUIStyleSheet *styleSheet );
+		void		   SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return myStyleSheet; }
 
-		inline void SetBackgroundColour( const PLColour &colour )    { backgroundColour = colour; }
-		inline PLColour GetBackgroundColour() const                  { return backgroundColour; }
+		inline void		SetBackgroundColour( const PLColour &colour ) { backgroundColour = colour; }
+		inline PLColour GetBackgroundColour() const { return backgroundColour; }
 
 		inline void SetBorder( Border border ) { myBorder = border; }
 		inline void SetBackground( Background background ) { myBackground = background; }
 
 		inline GUIPanel *GetParent() const { return parentPtr; }
 
-		inline void GetPosition( int *xd, int *yd ) const { *xd = x; *yd = y; }
-		void GetContentPosition( int *xd, int *yd ) const;
-		inline void GetSize( int *wd, int *hd ) const { *wd = w; *hd = h; }
+		inline void GetPosition( int *xd, int *yd ) const
+		{
+			*xd = x;
+			*yd = y;
+		}
+		void		GetContentPosition( int *xd, int *yd ) const;
+		inline void GetSize( int *wd, int *hd ) const
+		{
+			*wd = w;
+			*hd = h;
+		}
 		void GetContentSize( int *wd, int *hd ) const;
 
 		bool IsMouseOver( int mx, int my ) const;
@@ -56,14 +68,19 @@ namespace vc {
 		bool HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp );
 		bool HandleKeyboardEvent( int button, bool buttonUp );
 
-		inline void SetVisible( bool flag ) {
+		inline void SetVisible( bool flag )
+		{
 			isVisible = flag;
 		}
 
-		inline bool ShouldDraw() {
-			if ( !isVisible ) {
+		inline bool ShouldDraw()
+		{
+			if ( !isVisible )
+			{
 				return false;
-			} else if ( x + w < 0 || x > 640 || y + h < 0 || y > 480 ) {
+			}
+			else if ( x + w < 0 || x > 640 || y + h < 0 || y > 480 )
+			{
 				return false;
 			}
 
@@ -78,8 +95,8 @@ namespace vc {
 		int x{ 0 }, y{ 0 };
 		int w{ 640 }, h{ 480 };
 
-		bool isDrawing{ false };    // Flag on whether or not the panel is actually in view
-		bool isVisible{ true };     // User flag, specifying if the panel should show or not
+		bool isDrawing{ false };// Flag on whether or not the panel is actually in view
+		bool isVisible{ true }; // User flag, specifying if the panel should show or not
 
 	private:
 		void DrawBorder();
@@ -87,10 +104,10 @@ namespace vc {
 		void DrawBorderEdge( int dx, int dy, int dw, int dh, const RectangleCoord &tileCoord );
 
 		Background myBackground{ Background::NONE };
-		Border myBorder{ Border::NONE };
+		Border	   myBorder{ Border::NONE };
 
 		PLColour backgroundColour;
 
 		GUIPanel *parentPtr{ nullptr };
 	};
-}
+}// namespace vc

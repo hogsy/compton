@@ -5,21 +5,26 @@
 
 #pragma once
 
-namespace vc {
-	class ConfigLoader {
+namespace vc
+{
+	class ConfigLoader
+	{
 	public:
 		explicit ConfigLoader( const char *path );
 		~ConfigLoader();
 
-		std::string GetIndex( unsigned int i ) {
-			if ( i >= list_.size() ) {
+		std::string GetIndex( unsigned int i )
+		{
+			if ( i >= list_.size() )
+			{
 				return "";
 			}
 
 			return list_[ i ];
 		}
 
-		unsigned int GetNumIndices() {
+		unsigned int GetNumIndices()
+		{
 			return list_.size();
 		}
 

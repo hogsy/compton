@@ -13,11 +13,13 @@
 #include "SpriteSheet.h"
 #include "Camera.h"
 
-namespace vc {
+namespace vc
+{
 	class PlayerManager;
 	class Terrain;
 
-	class GameMode {
+	class GameMode
+	{
 	public:
 		GameMode();
 		~GameMode();
@@ -46,7 +48,8 @@ namespace vc {
 		inline uint64_t GetTotalHours() const { return GetTotalMinutes() / 60; }
 		inline uint64_t GetTotalDays() const { return GetTotalHours() / 25; }
 
-		enum class GameState {
+		enum class GameState
+		{
 			ACTIVE,
 			PAUSED,
 		};
@@ -54,7 +57,7 @@ namespace vc {
 
 		static PlayerManager *GetPlayerManager();
 		static EntityManager *GetEntityManager();
-		static Terrain *GetTerrainManager();
+		static Terrain *	  GetTerrainManager();
 
 	protected:
 	private:
@@ -65,24 +68,25 @@ namespace vc {
 		uint64_t numSeconds{ 0 };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
-		GUIPanel *uiBasePanelPtr{ nullptr };
-		GUIPieMenu *uiPieMenu{ nullptr };
+		GUIPanel *	   uiBasePanelPtr{ nullptr };
+		GUIPieMenu *   uiPieMenu{ nullptr };
 
 		PlayerManager *playerManager{ nullptr };
 		EntityManager *entityManager{ nullptr };
 
 		SpriteSheet *terrainSheet;
-		Terrain *terrainManager;
+		Terrain *	 terrainManager;
 
-		struct Territory {
+		struct Territory
+		{
 			Territory( const PLVector2 &origin );
 
 			void DrawBorder();
 
-			char name[ 32 ];
-			PLVector2 origin{ 0.0f, 0.0f };
+			char		name[ 32 ];
+			PLVector2	origin{ 0.0f, 0.0f };
 			PLGPolygon *border{ nullptr };
 		};
 		std::vector< Territory > myTerritories;
 	};
-}
+}// namespace vc

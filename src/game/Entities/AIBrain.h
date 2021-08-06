@@ -5,13 +5,16 @@
 
 #pragma once
 
-namespace vc {
-	class AIBrain {
+namespace vc
+{
+	class AIBrain
+	{
 	public:
 		AIBrain();
 		~AIBrain();
 
-		enum class Mood {
+		enum class Mood
+		{
 			SAD,
 			NEUTRAL,
 			HAPPY,
@@ -26,10 +29,12 @@ namespace vc {
 	private:
 		Mood myMood{ Mood::NEUTRAL };
 
-		struct FeedbackState {
-			struct Need {
+		struct FeedbackState
+		{
+			struct Need
+			{
 				const char *description;
-				double value;
+				double		value;
 			};
 			Need food{ "food", 0.0 };
 			Need water{ "water", 0.0 };
@@ -41,22 +46,23 @@ namespace vc {
 		};
 		FeedbackState myState;
 
-		class MemoryManager {
+		class MemoryManager
+		{
 		public:
 		private:
-			class Memory {
+			class Memory
+			{
 			public:
-
-
 			private:
-				enum class Disposition : uint8_t {
+				enum class Disposition : uint8_t
+				{
 					NEUTRAL,
 					POSITIVE,
 					NEGATIVE,
 				};
 				Disposition genericDisposition{ Disposition::NEUTRAL };
 
-				unsigned int curResponses{ 0 };
+				unsigned int  curResponses{ 0 };
 				FeedbackState mappedResponses[ 8 ];
 				FeedbackState averageResponse;
 			};
@@ -64,12 +70,13 @@ namespace vc {
 		};
 		MemoryManager myMemoryManager;
 
-		struct Directive {
-			double weight{ 0 };
-			bool isCompleted{ false };
-			PLVector2 targetPosition;
+		struct Directive
+		{
+			double		weight{ 0 };
+			bool		isCompleted{ false };
+			PLVector2	targetPosition;
 			std::string description;
 		};
 		std::vector< Directive > myDirectives;
 	};
-}
+}// namespace vc

@@ -10,7 +10,8 @@
 #include "../engine/sprite.h"
 #include "AgentDefinitionLoader.h"
 
-class Agent {
+class Agent
+{
 public:
 	Agent();
 	virtual ~Agent();
@@ -26,20 +27,22 @@ public:
 	virtual void Restore();
 	virtual void Save();
 
-	virtual void SetPosition( PLVector2 pos ) {
+	virtual void SetPosition( PLVector2 pos )
+	{
 		old_position_ = position_;
-		position_ = pos;
+		position_	  = pos;
 	}
 
 	PLVector2 GetPosition() { return position_; }
 
-	void SetDescriptor( const std::string &desc ) {
+	void SetDescriptor( const std::string &desc )
+	{
 		description_ = desc;
 	}
 
 protected:
 	PLVector2 position_, old_position_;
-	float angle{ 0.0f };
+	float	  angle{ 0.0f };
 
 private:
 	std::string description_{ "none" };
@@ -47,7 +50,8 @@ private:
 	bool is_activated_{ false };
 };
 
-class AgentFactory {
+class AgentFactory
+{
 private:
 	AgentFactory();
 	AgentFactory( const AgentFactory & ) {}
@@ -56,21 +60,23 @@ private:
 	static void RegisterScript( const char *path, void *userData );
 
 	typedef Agent *( *AgentSpawnFunction )();
-	struct AgentClassData {
+	struct AgentClassData
+	{
 		AgentClassData( AgentSpawnFunction func, AgentDefinitionLoader data ) : spawn_function( func ),
-		                                                                        spawn_data( std::move( data ) ) {}
-		AgentSpawnFunction spawn_function{ nullptr };
+																				spawn_data( std::move( data ) ) {}
+		AgentSpawnFunction	  spawn_function{ nullptr };
 		AgentDefinitionLoader spawn_data;
 	};
 	typedef std::map< std::string, AgentClassData > AgentMap;
-	AgentMap registered_;
+	AgentMap										registered_;
 
 	std::vector< Agent * > agents_;
 
 public:
 	~AgentFactory();
 
-	static AgentFactory *Get() {
+	static AgentFactory *Get()
+	{
 		static AgentFactory instance;
 		return &instance;
 	}
@@ -78,9 +84,9 @@ public:
 	void Tick();
 	void Draw();
 
-	void RegisterScripts();
-	void Register( const std::string &name, AgentSpawnFunction func );
-	void Register( const std::string &name, const std::string &baseclass, const AgentDefinitionLoader &data );
+	void   RegisterScripts();
+	void   Register( const std::string &name, AgentSpawnFunction func );
+	void   Register( const std::string &name, const std::string &baseclass, const AgentDefinitionLoader &data );
 	Agent *Create( const std::string &name );
 
 	void Clear();

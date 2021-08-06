@@ -14,15 +14,19 @@ std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::Entity
 vc::EntityManager::EntityVector vc::EntityManager::entities;
 vc::EntityManager::EntityVector vc::EntityManager::destructionQueue;
 
-vc::EntityManager::EntityManager() {
+vc::EntityManager::EntityManager()
+{
 }
 
-vc::EntityManager::~EntityManager() {
+vc::EntityManager::~EntityManager()
+{
 }
 
-vc::Entity *vc::EntityManager::CreateEntity( const std::string &className ) {
+vc::Entity *vc::EntityManager::CreateEntity( const std::string &className )
+{
 	auto i = entityClasses.find( className );
-	if ( i == entityClasses.end() ) {
+	if ( i == entityClasses.end() )
+	{
 		Warning( "Failed to find entity class \"%s\"!\n", className.c_str() );
 		return nullptr;
 	}
@@ -33,9 +37,11 @@ vc::Entity *vc::EntityManager::CreateEntity( const std::string &className ) {
 	return entity;
 }
 
-void vc::EntityManager::DestroyEntity( Entity *entity ) {
+void vc::EntityManager::DestroyEntity( Entity *entity )
+{
 	// Ensure it's not already queued for destruction
-	if ( std::find( destructionQueue.begin(), destructionQueue.end(), entity ) != destructionQueue.end() ) {
+	if ( std::find( destructionQueue.begin(), destructionQueue.end(), entity ) != destructionQueue.end() )
+	{
 		Warning( "Attempted to queue entity for deletion twice, ignoring...\n" );
 		return;
 	}
@@ -44,8 +50,10 @@ void vc::EntityManager::DestroyEntity( Entity *entity ) {
 	destructionQueue.push_back( entity );
 }
 
-void vc::EntityManager::DestroyEntities() {
-	for ( auto &entity : entities ) {
+void vc::EntityManager::DestroyEntities()
+{
+	for ( auto &entity : entities )
+	{
 		delete entity;
 	}
 
@@ -53,15 +61,18 @@ void vc::EntityManager::DestroyEntities() {
 	entities.clear();
 }
 
-void vc::EntityManager::Tick() {
+void vc::EntityManager::Tick()
+{
 	START_MEASURE();
 
-	for ( const auto &entity : entities ) {
+	for ( const auto &entity : entities )
+	{
 		entity->Tick();
 	}
 
 	// Now clean everything up that was marked for destruction
-	for ( auto &entity : destructionQueue ) {
+	for ( auto &entity : destructionQueue )
+	{
 		entities.erase( std::remove( entities.begin(), entities.end(), entity ), entities.end() );
 		delete entity;
 	}
@@ -71,34 +82,41 @@ void vc::EntityManager::Tick() {
 	END_MEASURE();
 }
 
-void vc::EntityManager::Draw( const Camera &camera ) {
+void vc::EntityManager::Draw( const Camera &camera )
+{
 	START_MEASURE();
 
-	for ( const auto &entity : entities ) {
+	for ( const auto &entity : entities )
+	{
 		entity->Draw( camera );
 	}
 
 	END_MEASURE();
 }
 
-void vc::EntityManager::SerializeEntities( Serializer *write ) {
+void vc::EntityManager::SerializeEntities( Serializer *write )
+{
 	write->WriteInteger( entities.size() );
 
-	for ( auto &entity : entities ) {
+	for ( auto &entity : entities )
+	{
 		write->WriteString( entity->GetClassIdentifier() );
 
 		entity->Serialize( write );
 	}
 }
 
-void vc::EntityManager::DeserializeEntities( Serializer *read ) {
+void vc::EntityManager::DeserializeEntities( Serializer *read )
+{
 	unsigned int numEntities = read->ReadInteger();
-	for ( unsigned int i = 0; i < numEntities; ++i ) {
+	for ( unsigned int i = 0; i < numEntities; ++i )
+	{
 		char className[ 64 ];
 		read->ReadString( className, sizeof( className ) );
 
 		Entity *entity = CreateEntity( className );
-		if ( entity == nullptr ) {
+		if ( entity == nullptr )
+		{
 			Error( "Failed to deserialize entity %d, unknown class %s!\n", i, className );
 		}
 
@@ -106,21 +124,27 @@ void vc::EntityManager::DeserializeEntities( Serializer *read ) {
 	}
 }
 
-void vc::EntityManager::SpawnEntities() {
-	for ( auto &entity : entities ) {
+void vc::EntityManager::SpawnEntities()
+{
+	for ( auto &entity : entities )
+	{
 		entity->Spawn();
 	}
 }
 
-vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const char *className, const vc::EntityManager::EntitySlot *curSlot ) const {
+vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const char *className, const vc::EntityManager::EntitySlot *curSlot ) const
+{
 	// Allow us to iterate from a previous position if desired
 	unsigned int i = 0;
-	if ( curSlot != nullptr ) {
+	if ( curSlot != nullptr )
+	{
 		i = curSlot->num;
 	}
 
-	for ( ; i < entities.size(); ++i ) {
-		if ( strcmp( entities[ i ]->GetClassIdentifier(), className ) != 0 ) {
+	for ( ; i < entities.size(); ++i )
+	{
+		if ( strcmp( entities[ i ]->GetClassIdentifier(), className ) != 0 )
+		{
 			continue;
 		}
 
@@ -131,10 +155,12 @@ vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const ch
 }
 
 vc::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
-    : myIdentifier( identifier ) {
+	: myIdentifier( identifier )
+{
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;
 }
 
-vc::EntityManager::EntityClassRegistration::~EntityClassRegistration() {
+vc::EntityManager::EntityClassRegistration::~EntityClassRegistration()
+{
 	EntityManager::entityClasses.erase( myIdentifier );
 }

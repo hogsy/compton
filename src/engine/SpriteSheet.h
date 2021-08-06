@@ -9,8 +9,10 @@
 
 struct ALLEGRO_BITMAP;
 
-namespace vc {
-	class SpriteSheet : public ScriptParser {
+namespace vc
+{
+	class SpriteSheet : public ScriptParser
+	{
 	public:
 		SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap );
 		~SpriteSheet();
@@ -20,10 +22,11 @@ namespace vc {
 		ALLEGRO_BITMAP *GetBitmap() const { return bitmap; }
 
 	private:
-		struct SpriteRect {
+		struct SpriteRect
+		{
 			char identifier[ 32 ];
-			int x, y;
-			int w, h;
+			int	 x, y;
+			int	 w, h;
 		};
 		std::map< std::string, SpriteRect > sprites;
 

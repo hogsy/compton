@@ -7,8 +7,10 @@
 
 #include "Entity.h"
 
-namespace vc {
-	class Tree : public Entity {
+namespace vc
+{
+	class Tree : public Entity
+	{
 		DECLARE_ENTITY_CLASS( Tree, Entity )
 
 	public:

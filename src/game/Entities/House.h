@@ -7,8 +7,10 @@
 
 #include "BaseBuilding.h"
 
-namespace vc {
-	class House : public BaseBuilding {
+namespace vc
+{
+	class House : public BaseBuilding
+	{
 		DECLARE_ENTITY_CLASS( House, Entity )
 
 	public:

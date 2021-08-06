@@ -6,19 +6,25 @@
 #include "SimGame.h"
 #include "SpriteSheet.h"
 
-vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : ScriptParser( path ), bitmap( bitmap ) {
+vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : ScriptParser( path ), bitmap( bitmap )
+{
 	Print( "Parsing sprite definition file, \"%s\"\n", path );
 
-	while( !IsEndOfFile() ) {
+	while ( !IsEndOfFile() )
+	{
 		char token[ 4096 ];
-		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		{
 			continue;
 		}
 
-		if ( token[ 0 ] == ';' ) { // Comment
+		if ( token[ 0 ] == ';' )
+		{// Comment
 			SkipLine();
 			continue;
-		} else if ( token[ 0 ] == '$' ) {
+		}
+		else if ( token[ 0 ] == '$' )
+		{
 			SkipLine();
 			continue;
 		}
@@ -27,35 +33,40 @@ vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : Scrip
 
 		SpriteRect spriteRect;
 
-		if ( strlen( token ) >= sizeof( spriteRect.identifier ) ) {
+		if ( strlen( token ) >= sizeof( spriteRect.identifier ) )
+		{
 			Warning( "Token, \"%s\", is longer than maximum identifier length!\n", token );
 		}
 
 		strncpy( spriteRect.identifier, token, sizeof( spriteRect.identifier ) );
 
 		// Width
-		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		{
 			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
 			continue;
 		}
 		spriteRect.w = atoi( token );
 
 		// Height
-		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		{
 			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
 			continue;
 		}
 		spriteRect.h = atoi( token );
 
 		// X
-		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		{
 			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
 			continue;
 		}
 		spriteRect.x = atoi( token );
 
 		// Y
-		if ( GetToken( token, sizeof( token ) ) == nullptr ) {
+		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		{
 			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
 			continue;
 		}
@@ -71,9 +82,11 @@ vc::SpriteSheet::SpriteSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : Scrip
 
 vc::SpriteSheet::~SpriteSheet() = default;
 
-bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) const {
+bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int *y, int *w, int *h ) const
+{
 	const SpriteRect *spriteRect = GetSpriteRect( spriteName );
-	if ( spriteRect == nullptr ) {
+	if ( spriteRect == nullptr )
+	{
 		*x = *y = *w = *h = 0;
 		return false;
 	}
@@ -86,9 +99,11 @@ bool vc::SpriteSheet::GetSpriteCoordinates( const char *spriteName, int *x, int 
 	return true;
 }
 
-const vc::SpriteSheet::SpriteRect *vc::SpriteSheet::GetSpriteRect( const char *spriteName ) const {
+const vc::SpriteSheet::SpriteRect *vc::SpriteSheet::GetSpriteRect( const char *spriteName ) const
+{
 	const auto &key = sprites.find( spriteName );
-	if ( key == sprites.end() ) {
+	if ( key == sprites.end() )
+	{
 		Warning( "Failed to find sprite index, \"%s\"!\n", spriteName );
 		return nullptr;
 	}

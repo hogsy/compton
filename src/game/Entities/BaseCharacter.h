@@ -8,10 +8,12 @@
 #include "Entity.h"
 #include "BaseCreature.h"
 
-namespace vc {
+namespace vc
+{
 #define MAX_CHARACTER_NAME 64
 
-	class BaseCharacter : public BaseCreature {
+	class BaseCharacter : public BaseCreature
+	{
 	public:
 		IMPLEMENT_SUPER( BaseCreature )
 
@@ -27,8 +29,8 @@ namespace vc {
 	private:
 		char name[ MAX_CHARACTER_NAME ];
 
-		PLVector2 debugGoal;
-		PLVector2 debugRoutes[ 16 ];
+		PLVector2	 debugGoal;
+		PLVector2	 debugRoutes[ 16 ];
 		unsigned int debugNumRoutes{ 0 };
 		unsigned int debugCurRoute{ 0 };
 		unsigned int debugGoalDelay{ 2000 };
@@ -36,4 +38,3 @@ namespace vc {
 		float myInfluence{ 0.0f };
 	};
 }// namespace vc
-

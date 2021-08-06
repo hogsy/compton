@@ -6,9 +6,11 @@
 
 class Creature;
 
-class CreatureObject : public Sprite {
+class CreatureObject : public Sprite
+{
 public:
-	CreatureObject() : Sprite( vc::GetApp()->LoadImage( "sprites.png" ) ) {
+	CreatureObject() : Sprite( vc::GetApp()->LoadImage( "sprites.png" ) )
+	{
 	}
 
 	void Draw() override;
@@ -28,9 +30,11 @@ protected:
 private:
 };
 
-class CreatureDrink : public CreatureObject {
+class CreatureDrink : public CreatureObject
+{
 public:
-	CreatureDrink() {
+	CreatureDrink()
+	{
 		s_x_ = 119;
 		s_y_ = 118;
 		s_w_ = 9;
@@ -40,7 +44,8 @@ public:
 		origin_.Set( s_w_ / 2, s_h_ / 2 );
 	}
 
-	void Simulate() override {
+	void Simulate() override
+	{
 		CreatureObject::Simulate();
 	}
 
@@ -48,9 +53,11 @@ protected:
 private:
 };
 
-class CreatureToy : public CreatureObject {
+class CreatureToy : public CreatureObject
+{
 public:
-	CreatureToy() {
+	CreatureToy()
+	{
 		s_x_ = 123;
 		s_y_ = 123;
 		s_w_ = 5;
@@ -68,9 +75,11 @@ private:
 
 ////////////////////////////////////
 
-class Creature : public Sprite {
+class Creature : public Sprite
+{
 public:
-	enum {
+	enum
+	{
 		EMO_HAPPINESS,
 		EMO_ANGER,
 		EMO_INDIFFERENT,
@@ -80,7 +89,8 @@ public:
 		EMO_END
 	};
 
-	enum {
+	enum
+	{
 		DIR_NONE,
 		DIR_DRINK,
 		DIR_PLAY,
@@ -90,7 +100,8 @@ public:
 		DIR_DEAD,
 	};
 
-	enum {
+	enum
+	{
 		OCU_NONE,
 		OCU_SLEEPING,
 		OCU_DRINKING,
@@ -98,7 +109,8 @@ public:
 		OCU_RAGING,
 	};
 
-	enum {
+	enum
+	{
 		LOO_NONE,
 		LOO_CURSOR,
 		LOO_OBJECT,
@@ -106,9 +118,10 @@ public:
 
 	Creature();
 
-	void SetState( unsigned int state ) {
+	void SetState( unsigned int state )
+	{
 		old_state_ = state_;
-		state_ = state;
+		state_	   = state;
 	}
 
 	unsigned int GetState() { return state_; }
@@ -133,7 +146,8 @@ public:
 	void SetDirective( unsigned int dir );
 	void SetOccupation( unsigned int ocu );
 
-	void ClearLook() {
+	void ClearLook()
+	{
 		target_look_ = LOO_NONE;
 		look_object_ = nullptr;
 	}
@@ -167,5 +181,5 @@ private:
 };
 
 extern CreatureDrink *drink;
-extern CreatureToy *toy;
-extern Creature *creature;
+extern CreatureToy *  toy;
+extern Creature *	  creature;

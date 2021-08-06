@@ -14,9 +14,11 @@ public:                                              \
 	~CLASSNAME();                                    \
 	virtual const char *GetClassIdentifier() const override { return #CLASSNAME; }
 
-namespace vc {
+namespace vc
+{
 	class Serializer;
-	class Entity {
+	class Entity
+	{
 	public:
 		Entity();
 		~Entity();

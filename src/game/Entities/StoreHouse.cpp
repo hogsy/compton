@@ -6,8 +6,10 @@
 #include "SimGame.h"
 #include "BaseBuilding.h"
 
-namespace vc {
-	class StoreHouse : public BaseBuilding {
+namespace vc
+{
+	class StoreHouse : public BaseBuilding
+	{
 		DECLARE_ENTITY_CLASS( StoreHouse, BaseBuilding )
 	};
 }// namespace vc

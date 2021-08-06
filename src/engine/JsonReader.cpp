@@ -12,20 +12,24 @@
 #include "JsonReader.h"
 
 #define LogMissingProperty( P ) Warning( "Failed to get JSON property \"%s\"!\n", ( P ) )
-#define LogInvalidArray( P ) Warning( "Invalid JSON array for property \"%s\"!\n", ( P ) )
+#define LogInvalidArray( P )	Warning( "Invalid JSON array for property \"%s\"!\n", ( P ) )
 
-JsonReader::JsonReader( const std::string &path ) : JsonReader() {
-	if ( path.empty() ) {
+JsonReader::JsonReader( const std::string &path ) : JsonReader()
+{
+	if ( path.empty() )
+	{
 		throw std::runtime_error( "Empty path for config, aborting!\n" );
 	}
 
 	PLFile *filePtr = PlOpenFile( path.c_str(), false );
-	if ( filePtr == nullptr ) {
+	if ( filePtr == nullptr )
+	{
 		throw std::runtime_error( "Failed to load file!\n" );
 	}
 
 	size_t sz = PlGetFileSize( filePtr );
-	if ( sz == 0 ) {
+	if ( sz == 0 )
+	{
 		PlCloseFile( filePtr );
 		throw std::runtime_error( "Failed to load file, empty config!\n" );
 	}
@@ -37,25 +41,32 @@ JsonReader::JsonReader( const std::string &path ) : JsonReader() {
 	ParseBuffer( buf.data() );
 }
 
-JsonReader::JsonReader() {
-	if ( ( ctx_ = duk_create_heap_default() ) == nullptr ) {
+JsonReader::JsonReader()
+{
+	if ( ( ctx_ = duk_create_heap_default() ) == nullptr )
+	{
 		throw std::bad_alloc();
 	}
 }
 
-JsonReader::~JsonReader() {
-	if ( ctx_ != nullptr ) {
+JsonReader::~JsonReader()
+{
+	if ( ctx_ != nullptr )
+	{
 		duk_destroy_heap( static_cast< duk_context * >( ctx_ ) );
 	}
 }
 
-std::string JsonReader::GetStringProperty( const std::string &property, const std::string &def, bool silent ) {
+std::string JsonReader::GetStringProperty( const std::string &property, const std::string &def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -67,13 +78,16 @@ std::string JsonReader::GetStringProperty( const std::string &property, const st
 	return str;
 }
 
-int JsonReader::GetIntegerProperty( const std::string &property, int def, bool silent ) {
+int JsonReader::GetIntegerProperty( const std::string &property, int def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -85,13 +99,16 @@ int JsonReader::GetIntegerProperty( const std::string &property, int def, bool s
 	return var;
 }
 
-bool JsonReader::GetBooleanProperty( const std::string &property, bool def, bool silent ) {
+bool JsonReader::GetBooleanProperty( const std::string &property, bool def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -103,13 +120,16 @@ bool JsonReader::GetBooleanProperty( const std::string &property, bool def, bool
 	return var;
 }
 
-float JsonReader::GetFloatProperty( const std::string &property, float def, bool silent ) {
+float JsonReader::GetFloatProperty( const std::string &property, float def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -123,22 +143,29 @@ float JsonReader::GetFloatProperty( const std::string &property, float def, bool
 
 // https://stackoverflow.com/a/23305012
 template< char C >
-std::istream &expect( std::istream &in ) {
-	if ( in.peek() == C ) {
+std::istream &expect( std::istream &in )
+{
+	if ( in.peek() == C )
+	{
 		in.ignore();
-	} else {
+	}
+	else
+	{
 		in.setstate( std::ios_base::failbit );
 	}
 	return in;
 }
 
-PLColour JsonReader::GetColourProperty( const std::string &property, PLColour def, bool silent ) {
+PLColour JsonReader::GetColourProperty( const std::string &property, PLColour def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -148,28 +175,35 @@ PLColour JsonReader::GetColourProperty( const std::string &property, PLColour de
 	duk_pop( context );
 
 	std::stringstream stream( str );
-	int r, g, b, a;
+	int				  r, g, b, a;
 	stream >> r >> expect< ' ' > >> g >> expect< ' ' > >> b;
-	if ( !( stream.rdstate() & std::stringstream::failbit ) ) {
+	if ( !( stream.rdstate() & std::stringstream::failbit ) )
+	{
 		stream >> expect< ' ' > >> a;
-		if ( stream.rdstate() & std::stringstream::failbit ) {
+		if ( stream.rdstate() & std::stringstream::failbit )
+		{
 			// can still ignore alpha channel
 			a = 255;
 		}
-	} else {
+	}
+	else
+	{
 		throw std::runtime_error( "Failed to parse entirety of colour from JSON property, \"" + property + "\"!\n" );
 	}
 
 	return { r, g, b, a };
 }
 
-PLVector4 JsonReader::GetVector4Property( const std::string &property, PLVector4 def, bool silent ) {
+PLVector4 JsonReader::GetVector4Property( const std::string &property, PLVector4 def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -178,23 +212,27 @@ PLVector4 JsonReader::GetVector4Property( const std::string &property, PLVector4
 	std::string str = duk_safe_to_string( context, -1 );
 	duk_pop( context );
 
-	PLVector4 out;
+	PLVector4		  out;
 	std::stringstream stream( str );
 	stream >> out.x >> expect< ' ' > >> out.y >> expect< ' ' > >> out.z >> expect< ' ' > >> out.w;
-	if ( stream.rdstate() & std::stringstream::failbit ) {
+	if ( stream.rdstate() & std::stringstream::failbit )
+	{
 		throw std::runtime_error( "Failed to parse entirety of vector from JSON property, \"" + property + "\"!\n" );
 	}
 
 	return out;
 }
 
-PLVector3 JsonReader::GetVector3Property( const std::string &property, PLVector3 def, bool silent ) {
+PLVector3 JsonReader::GetVector3Property( const std::string &property, PLVector3 def, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return def;
@@ -203,35 +241,43 @@ PLVector3 JsonReader::GetVector3Property( const std::string &property, PLVector3
 	std::string str = duk_safe_to_string( context, -1 );
 	duk_pop( context );
 
-	PLVector3 out;
+	PLVector3		  out;
 	std::stringstream stream( str );
 	stream >> out.x >> expect< ' ' > >> out.y >> expect< ' ' > >> out.z;
-	if ( stream.rdstate() & std::stringstream::failbit ) {
+	if ( stream.rdstate() & std::stringstream::failbit )
+	{
 		throw std::runtime_error( "Failed to parse entirety of vector from JSON property, \"" + property + "\"!\n" );
 	}
 
 	return out;
 }
 
-unsigned int JsonReader::GetArrayLength( const std::string &property, bool silent ) {
+unsigned int JsonReader::GetArrayLength( const std::string &property, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
-	if ( !property.empty() ) {
+	if ( !property.empty() )
+	{
 		const char *p = property.c_str();
-		if ( !duk_get_prop_string( context, -1, p ) ) {
+		if ( !duk_get_prop_string( context, -1, p ) )
+		{
 			duk_pop( context );
-			if ( !silent ) {
+			if ( !silent )
+			{
 				LogMissingProperty( p );
 			}
 			return 0;
 		}
 	}
 
-	if ( !duk_is_array( context, -1 ) ) {
-		if ( !property.empty() ) {
+	if ( !duk_is_array( context, -1 ) )
+	{
+		if ( !property.empty() )
+		{
 			duk_pop( context );
 		}
-		if ( !silent ) {
+		if ( !silent )
+		{
 			Warning( "Invalid array node!\n" );
 		}
 		return 0;
@@ -239,31 +285,36 @@ unsigned int JsonReader::GetArrayLength( const std::string &property, bool silen
 
 	duk_size_t len = duk_get_length( context, -1 );
 
-	if ( !property.empty() ) {
+	if ( !property.empty() )
+	{
 		duk_pop( context );
 	}
 
 	return static_cast< unsigned int >( len );
 }
 
-std::string JsonReader::GetArrayStringProperty( const std::string &property, unsigned int index ) {
+std::string JsonReader::GetArrayStringProperty( const std::string &property, unsigned int index )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
 		LogMissingProperty( p );
 		return "";
 	}
 
-	if ( !duk_is_array( context, -1 ) ) {
+	if ( !duk_is_array( context, -1 ) )
+	{
 		duk_pop( context );
 		LogInvalidArray( p );
 		return "";
 	}
 
 	duk_size_t length = duk_get_length( context, -1 );
-	if ( index >= length ) {
+	if ( index >= length )
+	{
 		Warning( "Invalid index, %d (%d), in array!\n", index, length );
 		return "";
 	}
@@ -276,21 +327,26 @@ std::string JsonReader::GetArrayStringProperty( const std::string &property, uns
 	return str;
 }
 
-std::vector< std::string > JsonReader::GetArrayStrings( const std::string &property, bool silent ) {
+std::vector< std::string > JsonReader::GetArrayStrings( const std::string &property, bool silent )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 
 	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return {};
 	}
 
-	if ( !duk_is_array( context, -1 ) ) {
+	if ( !duk_is_array( context, -1 ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return {};
@@ -301,7 +357,8 @@ std::vector< std::string > JsonReader::GetArrayStrings( const std::string &prope
 	std::vector< std::string > strings;
 	strings.reserve( length );
 
-	for ( size_t i = 0; i < length; ++i ) {
+	for ( size_t i = 0; i < length; ++i )
+	{
 		duk_get_prop_index( context, -1, i );
 		const char *c = duk_get_string( context, -1 );
 		SgAssert( c != nullptr, "Null string passed by duk_get_string!\n" );
@@ -314,8 +371,10 @@ std::vector< std::string > JsonReader::GetArrayStrings( const std::string &prope
 	return strings;
 }
 
-void JsonReader::ParseBuffer( const char *buf ) {
-	if ( buf == nullptr ) {
+void JsonReader::ParseBuffer( const char *buf )
+{
+	if ( buf == nullptr )
+	{
 		Error( "Invalid buffer length!\n" );
 	}
 
@@ -324,12 +383,15 @@ void JsonReader::ParseBuffer( const char *buf ) {
 	duk_json_decode( context, -1 );
 }
 
-bool JsonReader::EnterChildNode( const std::string &property, bool silent ) {
-	auto *context = static_cast< duk_context * >( ctx_ );
-	const char *p = property.c_str();
-	if ( !duk_get_prop_string( context, -1, p ) ) {
+bool JsonReader::EnterChildNode( const std::string &property, bool silent )
+{
+	auto *		context = static_cast< duk_context * >( ctx_ );
+	const char *p		= property.c_str();
+	if ( !duk_get_prop_string( context, -1, p ) )
+	{
 		duk_pop( context );
-		if ( !silent ) {
+		if ( !silent )
+		{
 			LogMissingProperty( p );
 		}
 		return false;
@@ -338,16 +400,19 @@ bool JsonReader::EnterChildNode( const std::string &property, bool silent ) {
 	return true;
 }
 
-void JsonReader::EnterChildNode( unsigned int index ) {
+void JsonReader::EnterChildNode( unsigned int index )
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
-	if ( !duk_is_array( context, -1 ) ) {
+	if ( !duk_is_array( context, -1 ) )
+	{
 		duk_pop( context );
 		Warning( "Node is not an array!\n" );
 		return;
 	}
 
 	duk_size_t length = duk_get_length( context, -1 );
-	if ( index >= length ) {
+	if ( index >= length )
+	{
 		Warning( "Invalid index, %d (%d), in array!\n", index, length );
 		return;
 	}
@@ -355,17 +420,20 @@ void JsonReader::EnterChildNode( unsigned int index ) {
 	duk_get_prop_index( context, -1, index );
 }
 
-void JsonReader::LeaveChildNode() {
+void JsonReader::LeaveChildNode()
+{
 	auto *context = static_cast< duk_context * >( ctx_ );
 	duk_pop( context );
 }
 
-std::list< std::string > JsonReader::GetObjectKeys() {
+std::list< std::string > JsonReader::GetObjectKeys()
+{
 	std::list< std::string > lst;
 
 	auto *context = static_cast< duk_context * >( ctx_ );
 	duk_enum( context, -1, 0 );
-	while ( duk_next( context, -1, 1 ) ) {
+	while ( duk_next( context, -1, 1 ) )
+	{
 		lst.emplace_back( duk_safe_to_string( context, -2 ) );
 		duk_pop_2( context );
 	}

@@ -15,7 +15,8 @@
 
 #include "Entities/BaseCharacter.h"
 
-vc::GameMode::GameMode() {
+vc::GameMode::GameMode()
+{
 	// Cache all the data we're going to use...
 	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_LARGE );
 	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_SMALL );
@@ -35,18 +36,20 @@ vc::GameMode::GameMode() {
 	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
 
 	terrainManager = new Terrain();
-	entityManager = new EntityManager();
+	entityManager  = new EntityManager();
 
 	NewGame( "default.save" );
 }
 
-vc::GameMode::~GameMode() {
+vc::GameMode::~GameMode()
+{
 	delete entityManager;
 	delete terrainManager;
 	delete uiBasePanelPtr;
 }
 
-void vc::GameMode::SetupUserInterface() {
+void vc::GameMode::SetupUserInterface()
+{
 	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
 
 	// Now create the base GUI panels
@@ -64,23 +67,23 @@ void vc::GameMode::SetupUserInterface() {
 	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	new GUIButton( uiBasePanelPtr, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
-#define MINIMAP_WIDTH 128
+#define MINIMAP_WIDTH  128
 #define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
-	        uiBasePanelPtr,
-	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
-	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
-	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
-	        GUIPanel::Background::TEXTURE,
-	        GUIPanel::Border::OUTSET );
+			uiBasePanelPtr,
+			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
+			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+			MINIMAP_WIDTH, MINIMAP_HEIGHT,
+			GUIPanel::Background::TEXTURE,
+			GUIPanel::Border::OUTSET );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
 	new GUIPanel(
-	        minimapPanel,
-	        2, 2,
-	        MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
-	        GUIPanel::Background::SOLID,
-	        GUIPanel::Border::INSET );
+			minimapPanel,
+			2, 2,
+			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
+			GUIPanel::Background::SOLID,
+			GUIPanel::Border::INSET );
 
 	// Create the UI cursor
 	new GUICursor( uiBasePanelPtr );
@@ -88,44 +91,57 @@ void vc::GameMode::SetupUserInterface() {
 	uiPieMenu = new GUIPieMenu( uiBasePanelPtr );
 }
 
-void vc::GameMode::Tick() {
+void vc::GameMode::Tick()
+{
 	START_MEASURE();
 
 	// Always tick UI, because we still want to access it even if paused
 	uiBasePanelPtr->Tick();
 
-	if ( gameState == GameState::PAUSED ) {
+	if ( gameState == GameState::PAUSED )
+	{
 		END_MEASURE();
 		return;
 	}
 
-	if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) ) {
+	if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) )
+	{
 		playerCamera.velocity.y -= CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.y > CAMERA_MAXSPEED ) {
+		if ( playerCamera.velocity.y > CAMERA_MAXSPEED )
+		{
 			playerCamera.velocity.y = CAMERA_MAXSPEED;
 		}
-	} else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) ) {
+	}
+	else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) )
+	{
 		playerCamera.velocity.y += CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.y < -CAMERA_MAXSPEED ) {
+		if ( playerCamera.velocity.y < -CAMERA_MAXSPEED )
+		{
 			playerCamera.velocity.y = -CAMERA_MAXSPEED;
 		}
 	}
 
-	if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) ) {
+	if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) )
+	{
 		playerCamera.velocity.x -= CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.x > CAMERA_MAXSPEED ) {
+		if ( playerCamera.velocity.x > CAMERA_MAXSPEED )
+		{
 			playerCamera.velocity.x = CAMERA_MAXSPEED;
 		}
-	} else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) ) {
+	}
+	else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) )
+	{
 		playerCamera.velocity.x += CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.x < -CAMERA_MAXSPEED ) {
+		if ( playerCamera.velocity.x < -CAMERA_MAXSPEED )
+		{
 			playerCamera.velocity.x = -CAMERA_MAXSPEED;
 		}
 	}
 
 	playerCamera.oldPosition = playerCamera.position;
 	playerCamera.position += playerCamera.velocity;
-	if ( playerCamera.velocity != 0.f ) {
+	if ( playerCamera.velocity != 0.f )
+	{
 		playerCamera.velocity -= ( playerCamera.velocity / CAMERA_FRICTION );
 	}
 
@@ -153,7 +169,8 @@ void vc::GameMode::Tick() {
 	END_MEASURE();
 }
 
-void vc::GameMode::Draw() {
+void vc::GameMode::Draw()
+{
 	START_MEASURE();
 
 	ALLEGRO_TRANSFORM transform, oldTransform;
@@ -185,20 +202,24 @@ void vc::GameMode::Draw() {
 	END_MEASURE();
 }
 
-void vc::GameMode::NewGame( const char *path ) {
+void vc::GameMode::NewGame( const char *path )
+{
 	Print( "Generating terrain...\n" );
 	terrainManager->Generate();
 
 	Print( "Generating territories...\n" );
 	unsigned int n = random::GenerateRandomInteger( 4, 8 );
-	for ( unsigned int i = 0; i < n; ++i ) {
+	for ( unsigned int i = 0; i < n; ++i )
+	{
 		// Pick a random point in the world
 		float x, y;
-		for ( unsigned int j = 0; j < 16; ++j ) {
+		for ( unsigned int j = 0; j < 16; ++j )
+		{
 			// Try at least 16 times before we give up
 			x = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_WIDTH );
 			y = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_HEIGHT );
-			if ( !terrainManager->IsWater( x, y ) ) {
+			if ( !terrainManager->IsWater( x, y ) )
+			{
 				break;
 			}
 
@@ -206,7 +227,8 @@ void vc::GameMode::NewGame( const char *path ) {
 		}
 
 		// Never found a point without water, give up...
-		if ( x == -1.0f && y == -1.0f ) {
+		if ( x == -1.0f && y == -1.0f )
+		{
 			continue;
 		}
 
@@ -220,18 +242,22 @@ void vc::GameMode::NewGame( const char *path ) {
 #define TERRITORY_BOUNDS 256
 
 		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
-		for ( unsigned int j = 0; j < numAbodes; ++j ) {
+		for ( unsigned int j = 0; j < numAbodes; ++j )
+		{
 			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
 			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
-			if ( terrainManager->IsWater( x, y ) ) {
+			if ( terrainManager->IsWater( x, y ) )
+			{
 				continue;
 			}
 
 			// Assign some citizens to the abode.
 			int numCitizens = random::GenerateRandomInteger( 0, 4 );
-			for ( unsigned int k = 0; k < numCitizens; ++k ) {
+			for ( unsigned int k = 0; k < numCitizens; ++k )
+			{
 				BaseCharacter *citizen = dynamic_cast< BaseCharacter * >( entityManager->CreateEntity( "BaseCharacter" ) );
-				if ( citizen == nullptr ) {
+				if ( citizen == nullptr )
+				{
 					continue;
 				}
 
@@ -249,7 +275,8 @@ void vc::GameMode::NewGame( const char *path ) {
 	SaveGame( path );
 }
 
-void vc::GameMode::SaveGame( const char *path ) {
+void vc::GameMode::SaveGame( const char *path )
+{
 	Serializer serializer( path, Serializer::Mode::WRITE );
 	terrainManager->Serialize( &serializer );
 	entityManager->SerializeEntities( &serializer );
@@ -261,7 +288,8 @@ void vc::GameMode::SaveGame( const char *path ) {
 	serializer.WriteInteger( static_cast< int >( playerCamera.movementMode ) );
 }
 
-void vc::GameMode::RestoreGame( const char *path ) {
+void vc::GameMode::RestoreGame( const char *path )
+{
 	Serializer serializer( path, Serializer::Mode::READ );
 	terrainManager->Deserialize( &serializer );
 
@@ -271,80 +299,100 @@ void vc::GameMode::RestoreGame( const char *path ) {
 #endif
 
 	// Now restore the camera data
-	playerCamera.position = serializer.ReadCoordinate();
-	playerCamera.zoom = serializer.ReadFloat();
-	playerCamera.angle = serializer.ReadFloat();
+	playerCamera.position	  = serializer.ReadCoordinate();
+	playerCamera.zoom		  = serializer.ReadFloat();
+	playerCamera.angle		  = serializer.ReadFloat();
 	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
 }
 
-PLVector2 vc::GameMode::MousePosToWorld( int x, int y ) const {
+PLVector2 vc::GameMode::MousePosToWorld( int x, int y ) const
+{
 	return PLVector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
 }
 
-void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) {
+void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
+{
 	// Push input through to GUI first, so that can do whatever it needs to
-	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleMouseEvent( x, y, wheel, button, buttonUp ) ) {
+	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleMouseEvent( x, y, wheel, button, buttonUp ) )
+	{
 		return;
 	}
 
 	// And now we can do whatever
 
-	if ( wheel > 0 ) {
+	if ( wheel > 0 )
+	{
 		playerCamera.zoom += 0.015f;
-		if ( playerCamera.zoom > 1.0f ) {
+		if ( playerCamera.zoom > 1.0f )
+		{
 			playerCamera.zoom = 1.0f;
 		}
 		return;
-	} else if ( wheel < 0 ) {
+	}
+	else if ( wheel < 0 )
+	{
 		playerCamera.zoom -= 0.015f;
-		if ( playerCamera.zoom < 0.2f ) {
+		if ( playerCamera.zoom < 0.2f )
+		{
 			playerCamera.zoom = 0.2f;
 		}
 		return;
 	}
 
 	static Entity *waypoint = nullptr;
-	if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_LEFT ) && !buttonUp ) {
-		if ( waypoint == nullptr ) {
+	if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_LEFT ) && !buttonUp )
+	{
+		if ( waypoint == nullptr )
+		{
 			waypoint = entityManager->CreateEntity( "DebugWaypoint" );
 		}
 
 		waypoint->origin = MousePosToWorld( x, y );
-	} else if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_RIGHT ) && !buttonUp && ( waypoint != nullptr ) ) {
+	}
+	else if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_RIGHT ) && !buttonUp && ( waypoint != nullptr ) )
+	{
 		entityManager->DestroyEntity( waypoint );
 		waypoint = nullptr;
 	}
 }
 
-void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
+void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
+{
 	// Push input through to GUI first, so that can do whatever it needs to
-	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleKeyboardEvent( button, buttonUp ) ) {
+	if ( uiBasePanelPtr != nullptr && uiBasePanelPtr->HandleKeyboardEvent( button, buttonUp ) )
+	{
 		return;
 	}
 
-	if ( buttonUp ) {
+	if ( buttonUp )
+	{
 		return;
 	}
 
-	switch ( button ) {
+	switch ( button )
+	{
 		default:
 			break;
 
-		case ALLEGRO_KEY_F5: {
+		case ALLEGRO_KEY_F5:
+		{
 			// Quick save check
 			SaveGame( "quick.save" );
 			break;
 		}
-		case ALLEGRO_KEY_F6: {
+		case ALLEGRO_KEY_F6:
+		{
 			// Quick load check
 			RestoreGame( "quick.save" );
 			break;
 		}
 
 		case ALLEGRO_KEY_ESCAPE:
-		case ALLEGRO_KEY_PAUSE: {
+		case ALLEGRO_KEY_PAUSE:
+		{
 			// TODO: pause/unpause sounds
-			if ( gameState == GameState::PAUSED ) {
+			if ( gameState == GameState::PAUSED )
+			{
 				gameState = GameState::ACTIVE;
 				break;
 			}
@@ -357,14 +405,16 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp ) {
 
 vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager; }
-vc::Terrain *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager; }
+vc::Terrain *	   vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager; }
 
 ////////////////////////////////
 // Territory
 
-vc::GameMode::Territory::Territory( const PLVector2 &origin ) {
+vc::GameMode::Territory::Territory( const PLVector2 &origin )
+{
 	snprintf( name, sizeof( name ), "T%d", rand() % 100 );
 }
 
-void vc::GameMode::Territory::DrawBorder() {
+void vc::GameMode::Territory::DrawBorder()
+{
 }

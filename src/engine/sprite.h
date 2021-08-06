@@ -7,31 +7,32 @@
 
 struct ALLEGRO_BITMAP;
 
-class Sprite {
+class Sprite
+{
 public:
-    Sprite();
-    explicit Sprite(ALLEGRO_BITMAP *bitmap);
-    Sprite(ALLEGRO_BITMAP *bitmap, float x, float y);
-    virtual ~Sprite();
+	Sprite();
+	explicit Sprite( ALLEGRO_BITMAP *bitmap );
+	Sprite( ALLEGRO_BITMAP *bitmap, float x, float y );
+	virtual ~Sprite();
 
-    ALLEGRO_BITMAP *GetBitmap() { return bitmap_; }
-    virtual void SetBitmap(ALLEGRO_BITMAP *bitmap);
+	ALLEGRO_BITMAP *GetBitmap() { return bitmap_; }
+	virtual void	SetBitmap( ALLEGRO_BITMAP *bitmap );
 
-    virtual void Draw();
+	virtual void Draw();
 
-    bool IsVisible();
+	bool IsVisible();
 
-    PLVector2 position_;
-    PLVector2 origin_;
-    float angle;
+	PLVector2 position_;
+	PLVector2 origin_;
+	float	  angle;
 
 protected:
 private:
-    ALLEGRO_BITMAP *bitmap_;
+	ALLEGRO_BITMAP *bitmap_;
 
-    unsigned int frame_count_, current_frame_;
-    int frame_w_, frame_h_;
-    double frame_delay_;
+	unsigned int frame_count_, current_frame_;
+	int			 frame_w_, frame_h_;
+	double		 frame_delay_;
 
-    int _w, _h;
+	int _w, _h;
 };

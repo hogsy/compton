@@ -8,16 +8,21 @@
 #include "SimGame.h"
 #include "ConfigLoader.h"
 
-namespace vc {
-	ConfigLoader::ConfigLoader( const char *path ) {
+namespace vc
+{
+	ConfigLoader::ConfigLoader( const char *path )
+	{
 		std::ifstream fp( path );
-		if ( !fp ) {
+		if ( !fp )
+		{
 			Error( "Failed to open IDX file, \"%s\"!\n", path );
 		}
 
 		std::string line;
-		while ( std::getline( fp, line ) ) {
-			if ( line.empty() || line[ 0 ] == ';' ) {
+		while ( std::getline( fp, line ) )
+		{
+			if ( line.empty() || line[ 0 ] == ';' )
+			{
 				continue;
 			}
 			list_.push_back( line );

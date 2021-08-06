@@ -9,16 +9,20 @@
 vc::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}
 
-vc::GUICursor::~GUICursor() {
+vc::GUICursor::~GUICursor()
+{
 }
 
-void vc::GUICursor::DrawBackground() {
-	if ( !isDrawing || myStyleSheet == nullptr ) {
+void vc::GUICursor::DrawBackground()
+{
+	if ( !isDrawing || myStyleSheet == nullptr )
+	{
 		return;
 	}
 
 	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
-	if ( bmp == nullptr ) {
+	if ( bmp == nullptr )
+	{
 		return;
 	}
 
@@ -31,12 +35,14 @@ void vc::GUICursor::DrawBackground() {
 	al_draw_bitmap_region( bmp, sx, sy, sw, sh, x, y, 0 );
 }
 
-void vc::GUICursor::Tick() {
+void vc::GUICursor::Tick()
+{
 	GetApp()->GetCursorPosition( &x, &y );
 
-	int pX, pY, pW, pH;
+	int		  pX, pY, pW, pH;
 	GUIPanel *panel = GetParent();
-	if ( panel == nullptr ) {
+	if ( panel == nullptr )
+	{
 		return;
 	}
 
@@ -44,9 +50,12 @@ void vc::GUICursor::Tick() {
 	panel->GetSize( &pW, &pH );
 
 	// Check the cursor is in the bounds of the parent
-	if ( x + w < pX || x > pX + pW || y + h < pY || y > pY + pH ) {
+	if ( x + w < pX || x > pX + pW || y + h < pY || y > pY + pH )
+	{
 		isDrawing = false;
-	} else {
+	}
+	else
+	{
 		isDrawing = true;
 	}
 }

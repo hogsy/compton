@@ -6,7 +6,8 @@
 #include "SimGame.h"
 #include "GUIStyleSheet.h"
 
-vc::GUIStyleSheet::GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : SpriteSheet( path, bitmap ) {
+vc::GUIStyleSheet::GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : SpriteSheet( path, bitmap )
+{
 	// Outset
 	GetSpriteCoordinates( "gui_lu", &outset.lu.x, &outset.lu.y, &outset.lu.w, &outset.lu.h );
 	GetSpriteCoordinates( "gui_ru", &outset.ru.x, &outset.ru.y, &outset.ru.w, &outset.ru.h );
@@ -29,12 +30,14 @@ vc::GUIStyleSheet::GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap ) : S
 
 	// Backgrounds
 	numBackgrounds = 0;
-	for ( unsigned int i = 0; i < GUI_MAX_BACKGROUNDS; ++i ) {
+	for ( unsigned int i = 0; i < GUI_MAX_BACKGROUNDS; ++i )
+	{
 		char bgName[ 32 ];
 		snprintf( bgName, sizeof( bgName ), "gui_bg%d", i );
 
 		RectangleCoord background;
-		if ( !GetSpriteCoordinates( bgName, &background.x, &background.y, &background.w, &background.h ) ) {
+		if ( !GetSpriteCoordinates( bgName, &background.x, &background.y, &background.w, &background.h ) )
+		{
 			break;
 		}
 

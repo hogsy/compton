@@ -8,8 +8,10 @@
 #include "Entity.h"
 #include "Serializer.h"
 
-namespace vc {
-	class BaseBuilding : public Entity {
+namespace vc
+{
+	class BaseBuilding : public Entity
+	{
 		DECLARE_ENTITY_CLASS( BaseBuilding, Entity )
 
 	public:
@@ -21,4 +23,4 @@ namespace vc {
 	protected:
 	private:
 	};
-}
+}// namespace vc

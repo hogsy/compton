@@ -7,13 +7,16 @@
 
 #include "SpriteSheet.h"
 
-namespace vc {
-	struct RectangleCoord {
+namespace vc
+{
+	struct RectangleCoord
+	{
 		int x{ 0 }, y{ 0 };
 		int w{ 0 }, h{ 0 };
 	};
 
-	enum GUICursorMode {
+	enum GUICursorMode
+	{
 		GUI_MOUSE_DEFAULT,
 		GUI_MOUSE_DENY,
 		GUI_MOUSE_MOVE,
@@ -26,10 +29,12 @@ namespace vc {
 		MAX_MOUSE_STATES
 	};
 
-	struct GUIStyleSheet : public SpriteSheet {
+	struct GUIStyleSheet : public SpriteSheet
+	{
 		GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap );
 
-		struct GUIBorderStyle {
+		struct GUIBorderStyle
+		{
 			RectangleCoord lu;
 			RectangleCoord ru;
 			RectangleCoord ll;
@@ -46,9 +51,9 @@ namespace vc {
 
 #define GUI_MAX_BACKGROUNDS 8
 		RectangleCoord backgrounds[ GUI_MAX_BACKGROUNDS ];
-		unsigned int numBackgrounds{ 0 };
+		unsigned int   numBackgrounds{ 0 };
 
 		// Mouse cursor
 		RectangleCoord mouseStyles[ MAX_MOUSE_STATES ];
 	};
-}
+}// namespace vc

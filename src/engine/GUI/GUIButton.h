@@ -7,8 +7,10 @@
 
 #include "GUIPanel.h"
 
-namespace vc {
-	class GUIButton : public GUIPanel {
+namespace vc
+{
+	class GUIButton : public GUIPanel
+	{
 	public:
 		IMPLEMENT_SUPER( GUIPanel )
 

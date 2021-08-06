@@ -10,52 +10,61 @@
 
 /* PkgMan, the shitty package generator! */
 
-#define PKG_IDENTIFIER	"PKG1"
+#define PKG_IDENTIFIER "PKG1"
 
-typedef struct PkgHeader {
-	char 		identifier[ 4 ];
-	uint32_t	numFiles;
+typedef struct PkgHeader
+{
+	char	 identifier[ 4 ];
+	uint32_t numFiles;
 } PkgHeader;
 static PkgHeader packageHeader = {
 		.identifier = PKG_IDENTIFIER,
-		.numFiles	= 0
-};
+		.numFiles	= 0 };
 
-static FILE *fileOutPtr = NULL;
-static char outputPath[ 32 ] = { '\0' };
+static FILE *fileOutPtr		  = NULL;
+static char	 outputPath[ 32 ] = { '\0' };
 
-static const char *SkipSpaces( const char *buffer ) {
-	while( *buffer == ' ' ) {
+static const char *SkipSpaces( const char *buffer )
+{
+	while ( *buffer == ' ' )
+	{
 		buffer++;
 	}
 
 	return buffer;
 }
 
-static const char *SkipLine( const char *buffer ) {
-	while( *buffer != '\0' && *buffer != '\n' ) {
+static const char *SkipLine( const char *buffer )
+{
+	while ( *buffer != '\0' && *buffer != '\n' )
+	{
 		buffer++;
 	}
 
 	return ( *buffer == '\n' ) ? ++buffer : buffer;
 }
 
-static const char *ReadString( const char *buffer, char *destination, size_t length ) {
+static const char *ReadString( const char *buffer, char *destination, size_t length )
+{
 	bool isContained = false;
-	if ( *buffer == '"' ) {
+	if ( *buffer == '"' )
+	{
 		isContained = true;
 		buffer++;
 	}
 
 	unsigned int destPos = 0;
-	while ( *buffer != '\0' ) {
-		if ( ( *buffer == '\r' || *buffer == '\n' ) || ( isContained && *buffer == '"' ) || ( !isContained && *buffer == ' ' ) ) {
+	while ( *buffer != '\0' )
+	{
+		if ( ( *buffer == '\r' || *buffer == '\n' ) || ( isContained && *buffer == '"' ) || ( !isContained && *buffer == ' ' ) )
+		{
 			buffer++;
 			break;
 		}
 
 		destination[ destPos++ ] = *buffer;
-		if ( destPos >= length ) {
+		if ( destPos >= length )
+		{
 			Error( "Attempted to write string larger than destination size!\n" );
 		}
 
@@ -66,11 +75,13 @@ static const char *ReadString( const char *buffer, char *destination, size_t len
 	return SkipSpaces( buffer );
 }
 
-static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *fileName ) {
+static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *fileName )
+{
 	Print( "Adding %s...\n", filePath );
 
 	PLFile *filePtr = PlOpenFile( filePath, true );
-	if ( filePtr == NULL ) {
+	if ( filePtr == NULL )
+	{
 		Error( "Failed to add file \"%s\"!\nPL: %s\n", filePath, PlGetError() );
 	}
 
@@ -93,9 +104,11 @@ static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *
 /**
  * Callback used by ScanDirectory function.
  */
-static void Pkg_AddFileCallback( const char *filePath, void *userData ) {
+static void Pkg_AddFileCallback( const char *filePath, void *userData )
+{
 	const char *fileName = PlGetFileName( filePath );
-	if ( fileName == NULL ) {
+	if ( fileName == NULL )
+	{
 		Error( "Failed to get valid file name from \"%s\"!\n", filePath );
 	}
 
@@ -122,17 +135,23 @@ static void Pkg_AddFileCallback( const char *filePath, void *userData ) {
 	Pkg_AddFile( filePath, tag, packFileName );
 }
 
-static void ParseScript( const char *buffer, size_t length ) {
+static void ParseScript( const char *buffer, size_t length )
+{
 	const char *curPos = buffer;
-	while( curPos != NULL && *curPos != '\0' ) {
-		if ( *curPos == ';' ) { /* comment */
+	while ( curPos != NULL && *curPos != '\0' )
+	{
+		if ( *curPos == ';' )
+		{ /* comment */
 			curPos = SkipLine( curPos );
 			continue;
-		} else if ( strncmp( curPos, "output ", 7 ) == 0 ) { /* set output dir */
+		}
+		else if ( strncmp( curPos, "output ", 7 ) == 0 )
+		{ /* set output dir */
 			curPos += 7;
 			curPos = SkipSpaces( curPos );
 
-			if ( outputPath[ 0 ] != '\0' ) {
+			if ( outputPath[ 0 ] != '\0' )
+			{
 				Error( "Output was already specified previously in script!\n" );
 			}
 
@@ -142,7 +161,8 @@ static void ParseScript( const char *buffer, size_t length ) {
 			Print( "OUTPUT: %s\n", outputPath );
 
 			fileOutPtr = fopen( outputPath, "wb" );
-			if ( fileOutPtr == NULL ) {
+			if ( fileOutPtr == NULL )
+			{
 				Error( "Failed to open \"%s\" for writing!\n", outputPath );
 			}
 
@@ -150,22 +170,26 @@ static void ParseScript( const char *buffer, size_t length ) {
 			fwrite( &packageHeader, sizeof( PkgHeader ), 1, fileOutPtr );
 
 			continue;
-		} else if ( strncmp( curPos, "add ", 4 ) == 0 ) { /* add file */
+		}
+		else if ( strncmp( curPos, "add ", 4 ) == 0 )
+		{ /* add file */
 			curPos += 4;
-			curPos = SkipSpaces(curPos);
+			curPos = SkipSpaces( curPos );
 
-			char filePath[PL_SYSTEM_MAX_PATH];
-			curPos = ReadString(curPos, filePath, sizeof(filePath));
+			char filePath[ PL_SYSTEM_MAX_PATH ];
+			curPos = ReadString( curPos, filePath, sizeof( filePath ) );
 
-			char fileTag[64];
-			curPos = ReadString(curPos, fileTag, sizeof(fileTag));
+			char fileTag[ 64 ];
+			curPos = ReadString( curPos, fileTag, sizeof( fileTag ) );
 
-			char fileName[64];
-			curPos = ReadString(curPos, fileName, sizeof(fileName));
+			char fileName[ 64 ];
+			curPos = ReadString( curPos, fileName, sizeof( fileName ) );
 
-			Pkg_AddFile(filePath, fileTag, fileName);
+			Pkg_AddFile( filePath, fileTag, fileName );
 			continue;
-		} else if ( strncmp( curPos, "dir ", 4 ) == 0 ) {
+		}
+		else if ( strncmp( curPos, "dir ", 4 ) == 0 )
+		{
 			curPos += 4;
 			curPos = SkipSpaces( curPos );
 
@@ -190,27 +214,30 @@ static void ParseScript( const char *buffer, size_t length ) {
 	fclose( fileOutPtr );
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+{
 	PlInitialize( argc, argv );
 
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
 	Print( "Package Manager\nCopyright (C) 2020 Mark Sowden\n" );
-	if ( argc < 2 ) {
+	if ( argc < 2 )
+	{
 		Print( "Please provide a package script!\nExample: pkgman myscript.txt\n" );
 		return EXIT_SUCCESS;
 	}
 
 	/* open the file and read it all into memory */
-	const char *input = argv[ 1 ];
-	PLFile *filePtr = PlOpenFile( input, true );
-	if ( filePtr == NULL ) {
+	const char *input	= argv[ 1 ];
+	PLFile *	filePtr = PlOpenFile( input, true );
+	if ( filePtr == NULL )
+	{
 		Error( "Failed to open \"%s\"!\nPL: %s\n", argv[ 1 ], PlGetError() );
 	}
 
 	/* now fetch the buffer and length, and throw it to our parser */
-	const char *buffer = ( const char* ) PlGetFileData( filePtr );
-	size_t length = PlGetFileSize( filePtr );
+	const char *buffer = ( const char * ) PlGetFileData( filePtr );
+	size_t		length = PlGetFileSize( filePtr );
 	ParseScript( buffer, length );
 
 	PlCloseFile( filePtr );

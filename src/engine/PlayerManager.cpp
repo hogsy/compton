@@ -6,48 +6,55 @@
 #include "SimGame.h"
 #include "Entity.h"
 
-namespace vc {
-	class PlayerManager {
+namespace vc
+{
+	class PlayerManager
+	{
 	public:
-		struct Player {
+		struct Player
+		{
 			Player( const std::string &sName ) : name( sName ) {}
 
 			std::string name;
-			Entity *controlTarget{ nullptr };
+			Entity *	controlTarget{ nullptr };
 		};
 
 		unsigned int AddPlayer( const char *name );
-		void RemovePlayer( unsigned int id );
+		void		 RemovePlayer( unsigned int id );
 
 		void HandleInput();
 
 		typedef std::vector< Player > PlayerList;
-		inline const PlayerList *GetPlayers() const { return &players; }
-		inline unsigned int GetNumPlayers() const { return players.size(); }
+		inline const PlayerList *	  GetPlayers() const { return &players; }
+		inline unsigned int			  GetNumPlayers() const { return players.size(); }
 
 		Player *GetPlayer( unsigned int id );
 
 	private:
 		PlayerList players;
 	};
-}
+}// namespace vc
 
 /**
  * Adds a brand new player to the game.
  */
-unsigned int vc::PlayerManager::AddPlayer( const char *name ) {
+unsigned int vc::PlayerManager::AddPlayer( const char *name )
+{
 	players.push_back( Player( name ) );
 	return players.size();
 }
 
-void vc::PlayerManager::HandleInput() {
+void vc::PlayerManager::HandleInput()
+{
 }
 
 /**
  * Return a pointer to the specified player.
  */
-vc::PlayerManager::Player *vc::PlayerManager::GetPlayer( unsigned int id ) {
-	if ( id >= players.size() ) {
+vc::PlayerManager::Player *vc::PlayerManager::GetPlayer( unsigned int id )
+{
+	if ( id >= players.size() )
+	{
 		return nullptr;
 	}
 

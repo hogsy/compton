@@ -5,8 +5,10 @@
 
 #pragma once
 
-namespace vc {
-	class Drive {
+namespace vc
+{
+	class Drive
+	{
 	public:
 		Drive( const std::string &name );
 		~Drive();
@@ -14,12 +16,14 @@ namespace vc {
 	protected:
 	private:
 		const std::string &description_;
-		double weight_{ 0 };
+		double			   weight_{ 0 };
 	};
 
-	class MemoryStorage {
+	class MemoryStorage
+	{
 	public:
-		void Wipe() {
+		void Wipe()
+		{
 			identifiers_.clear();
 		}
 
@@ -32,7 +36,8 @@ namespace vc {
 		// which we use to fetch our disposition
 	};
 
-	class Brain {
+	class Brain
+	{
 	public:
 		Brain();
 		~Brain();
@@ -45,9 +50,9 @@ namespace vc {
 	protected:
 	private:
 		std::vector< Drive > drives_{
-		        Drive( "thirst" ),
-		        Drive( "hunger" ),
-		        Drive( "boredom" ),
+				Drive( "thirst" ),
+				Drive( "hunger" ),
+				Drive( "boredom" ),
 		};
 
 		MemoryStorage storage_;

@@ -5,10 +5,12 @@
 
 #pragma once
 
-#define MAX_SCRIPT_LENGTH   16384
+#define MAX_SCRIPT_LENGTH 16384
 
-namespace vc {
-	class ScriptParser {
+namespace vc
+{
+	class ScriptParser
+	{
 	public:
 		ScriptParser( const char *path );
 		~ScriptParser();
@@ -28,10 +30,10 @@ namespace vc {
 		const char *AdvanceBufferPosition();
 
 	private:
-		char scriptBuffer[ MAX_SCRIPT_LENGTH ]{ '\0' };
+		char		scriptBuffer[ MAX_SCRIPT_LENGTH ]{ '\0' };
 		const char *bufPos{ nullptr };
 
 		unsigned int lineNum{ 0 };
 		unsigned int linePos{ 0 };
 	};
-}
+}// namespace vc

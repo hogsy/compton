@@ -11,7 +11,8 @@
 #include "Utility.h"
 #include "Terrain.h"
 
-namespace vc {
+namespace vc
+{
 	/*
 	enum class CharacterDirective {
 		IDLE, // Do nothing
@@ -29,7 +30,8 @@ namespace vc {
 
 REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
 
-void vc::BaseCharacter::Spawn() {
+void vc::BaseCharacter::Spawn()
+{
 	SuperClass::Spawn();
 
 	char firstName[ 8 ], lastName[ 8 ];
@@ -38,22 +40,26 @@ void vc::BaseCharacter::Spawn() {
 	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation ) );
 }
 
-void vc::BaseCharacter::Deserialize( vc::Serializer *read ) {
+void vc::BaseCharacter::Deserialize( vc::Serializer *read )
+{
 	SuperClass::Deserialize( read );
 
 	read->ReadString( name, sizeof( name ) );
 }
 
-void vc::BaseCharacter::Serialize( vc::Serializer *write ) {
+void vc::BaseCharacter::Serialize( vc::Serializer *write )
+{
 	SuperClass::Serialize( write );
 
 	write->WriteString( name );
 }
 
-void vc::BaseCharacter::Draw( const Camera &camera ) {
+void vc::BaseCharacter::Draw( const Camera &camera )
+{
 	SuperClass::Draw( camera );
 
-	if ( !ShouldDraw( camera ) ) {
+	if ( !ShouldDraw( camera ) )
+	{
 		return;
 	}
 
@@ -66,28 +72,35 @@ void vc::BaseCharacter::Draw( const Camera &camera ) {
 	al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, name );
 }
 
-void vc::BaseCharacter::Tick() {
+void vc::BaseCharacter::Tick()
+{
 	SuperClass::Tick();
 
 	Terrain *terrainManager = App::GetGameMode()->GetTerrainManager();
-	if ( terrainManager == nullptr ) {
+	if ( terrainManager == nullptr )
+	{
 		return;
 	}
 
 	// Setup a goal for us to move to.
-	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() ) {
+	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() )
+	{
 		// Attempt to find a debug waypoint
 		EntityManager::EntitySlot slot = GameMode::GetEntityManager()->FindEntityByClassName( "DebugWaypoint", nullptr );
-		if ( slot.entity != nullptr ) {
+		if ( slot.entity != nullptr )
+		{
 			debugGoal.x = random::GenerateRandomInteger( slot.entity->origin.x - 64, slot.entity->origin.x + 64 );
 			debugGoal.y = random::GenerateRandomInteger( slot.entity->origin.y - 64, slot.entity->origin.y + 64 );
-		} else { // otherwise fallback
+		}
+		else
+		{// otherwise fallback
 			debugGoal.x = random::GenerateRandomInteger( origin.x - 64, origin.x + 64 );
 			debugGoal.y = random::GenerateRandomInteger( origin.y - 64, origin.y + 64 );
 		}
 
 		// If our goal is in water, return so we can try again next tick
-		if ( terrainManager->IsWater( debugGoal.x, debugGoal.y ) ) {
+		if ( terrainManager->IsWater( debugGoal.x, debugGoal.y ) )
+		{
 			debugGoalDelay = 0;
 			return;
 		}

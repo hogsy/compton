@@ -5,11 +5,13 @@
 
 #pragma once
 
-namespace vc {
+namespace vc
+{
 	class Camera;
 	class Serializer;
 
-	enum TerrainType {
+	enum TerrainType
+	{
 		TERRAIN_GRASS,
 		TERRAIN_SAND,
 		TERRAIN_SNOW,
@@ -20,28 +22,31 @@ namespace vc {
 		MAX_TERRAIN_TYPES
 	};
 
-	struct TerrainTileCorner {
+	struct TerrainTileCorner
+	{
 		TerrainType terrainType{ TERRAIN_GRASS };
 	};
 
-	struct TerrainTile {
+	struct TerrainTile
+	{
 		TerrainTileCorner corners[ 2 ];
-		float height[ 4 ];
+		float			  height[ 4 ];
 
 		void Draw( const Camera &camera, float offsetX, float offsetY );
 	};
 
 	// And here we go...
-#define TERRAIN_NUM_TILES_ROW 32
+#define TERRAIN_NUM_TILES_ROW	 32
 #define TERRAIN_NUM_TILES_COLUMN 32
-#define TERRAIN_NUM_TILES ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_TILE_WIDTH 64
-#define TERRAIN_TILE_HEIGHT 64
-#define TERRAIN_PIXEL_WIDTH ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
-#define TERRAIN_PIXEL_HEIGHT ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_PIXEL_SIZE ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
+#define TERRAIN_NUM_TILES		 ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
+#define TERRAIN_TILE_WIDTH		 64
+#define TERRAIN_TILE_HEIGHT		 64
+#define TERRAIN_PIXEL_WIDTH		 ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
+#define TERRAIN_PIXEL_HEIGHT	 ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
+#define TERRAIN_PIXEL_SIZE		 ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
 
-	class Terrain {
+	class Terrain
+	{
 	public:
 		Terrain();
 		~Terrain();

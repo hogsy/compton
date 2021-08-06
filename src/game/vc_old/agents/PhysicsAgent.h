@@ -7,33 +7,35 @@
 
 #include "SpriteAgent.h"
 
-class PhysicsAgent : public SpriteAgent {
- public:
-  IMPLEMENT_FACTORY(PhysicsAgent)
+class PhysicsAgent : public SpriteAgent
+{
+public:
+	IMPLEMENT_FACTORY( PhysicsAgent )
 
-  void SetupProperties(const AgentDefinitionLoader & adf_loader) override;
+	void SetupProperties( const AgentDefinitionLoader &adf_loader ) override;
 
-  void Tick() override;
-  void Draw() override;
+	void Tick() override;
+	void Draw() override;
 
-  virtual void Impact(Agent* agent);
+	virtual void Impact( Agent *agent );
 
-  PLVector2 GetVelocity() { return velocity_; }
-  virtual void SetVelocity(PLVector2 vel) {
-    old_velocity_ = velocity_;
-    velocity_ = vel;
-  }
+	PLVector2	 GetVelocity() { return velocity_; }
+	virtual void SetVelocity( PLVector2 vel )
+	{
+		old_velocity_ = velocity_;
+		velocity_	  = vel;
+	}
 
- protected:
-  PLVector2 velocity_, old_velocity_;
+protected:
+	PLVector2 velocity_, old_velocity_;
 
- private:
-  void TickPhysics();
+private:
+	void TickPhysics();
 
-  PLVector2 bounds_{0, 0};
+	PLVector2 bounds_{ 0, 0 };
 
-  float elasticity{0};
+	float elasticity{ 0 };
 
-  bool use_physics_{false};
-  bool is_grounded_{false};
+	bool use_physics_{ false };
+	bool is_grounded_{ false };
 };

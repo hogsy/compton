@@ -9,18 +9,22 @@
 vc::BaseBuilding::BaseBuilding() {}
 vc::BaseBuilding::~BaseBuilding() {}
 
-void vc::BaseBuilding::Deserialize( Serializer *read ) {
+void vc::BaseBuilding::Deserialize( Serializer *read )
+{
 	SuperClass::Deserialize( read );
 }
 
-void vc::BaseBuilding::Serialize( vc::Serializer *write ) {
+void vc::BaseBuilding::Serialize( vc::Serializer *write )
+{
 	SuperClass::Serialize( write );
 }
 
-void vc::BaseBuilding::Draw( const vc::Camera &camera ) {
+void vc::BaseBuilding::Draw( const vc::Camera &camera )
+{
 	Entity::Draw( camera );
 
-	if ( !ShouldDraw( camera ) ) {
+	if ( !ShouldDraw( camera ) )
+	{
 		return;
 	}
 

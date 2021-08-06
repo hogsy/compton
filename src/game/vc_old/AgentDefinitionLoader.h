@@ -7,7 +7,8 @@
 
 #pragma once
 
-class AgentDefinitionLoader {
+class AgentDefinitionLoader
+{
 public:
 	AgentDefinitionLoader();
 	explicit AgentDefinitionLoader( const std::string &path );

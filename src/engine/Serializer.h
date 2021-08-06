@@ -7,10 +7,13 @@
 
 #include "../shared.h"
 
-namespace vc {
-	class Serializer {
+namespace vc
+{
+	class Serializer
+	{
 	public:
-		enum class Mode {
+		enum class Mode
+		{
 			READ,
 			WRITE,
 		};
@@ -25,15 +28,16 @@ namespace vc {
 		void WriteString( const char *var );
 		void WriteCoordinate( const PLVector2 &var );
 
-		int ReadInteger();
-		float ReadFloat();
-		void ReadString( char *buffer, size_t bufLength );
+		int		  ReadInteger();
+		float	  ReadFloat();
+		void	  ReadString( char *buffer, size_t bufLength );
 		PLVector2 ReadCoordinate();
 
 		inline unsigned int GetVersion() const { return version; }
 
 	private:
-		enum : uint8_t {
+		enum : uint8_t
+		{
 			DATA_FORMAT_STRING,
 			DATA_FORMAT_COORDINATE,
 			DATA_FORMAT_INTEGER,
@@ -44,4 +48,4 @@ namespace vc {
 
 		FILE *filePtr{ nullptr };
 	};
-}
+}// namespace vc

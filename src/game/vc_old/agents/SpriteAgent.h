@@ -7,7 +7,8 @@
 
 #include "agent.h"
 
-class SpriteAgent : public Agent {
+class SpriteAgent : public Agent
+{
 public:
 	IMPLEMENT_FACTORY( SpriteAgent )
 

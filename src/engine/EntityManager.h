@@ -7,10 +7,12 @@
 
 #include "Camera.h"
 
-namespace vc {
+namespace vc
+{
 	class Serializer;
 	class Entity;
-	class EntityManager {
+	class EntityManager
+	{
 	protected:
 		typedef Entity *( *EntityConstructorFunction )();
 		static std::map< std::string, EntityConstructorFunction > entityClasses;
@@ -20,8 +22,8 @@ namespace vc {
 		~EntityManager();
 
 		vc::Entity *CreateEntity( const std::string &className );
-		void DestroyEntity( Entity *entity );
-		void DestroyEntities();
+		void		DestroyEntity( Entity *entity );
+		void		DestroyEntities();
 
 		void Tick();
 		void Draw( const Camera &camera );
@@ -31,14 +33,16 @@ namespace vc {
 
 		void SpawnEntities();
 
-		struct EntitySlot {
+		struct EntitySlot
+		{
 			EntitySlot( vc::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
-			vc::Entity *entity;
+			vc::Entity * entity;
 			unsigned int num;
 		};
 		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
 
-		class EntityClassRegistration {
+		class EntityClassRegistration
+		{
 		public:
 			const std::string myIdentifier;
 
@@ -48,12 +52,12 @@ namespace vc {
 
 	private:
 		typedef std::vector< Entity * > EntityVector;
-		static EntityVector entities;
-		static EntityVector destructionQueue;
+		static EntityVector				entities;
+		static EntityVector				destructionQueue;
 	};
 }// namespace vc
 
-#define REGISTER_ENTITY( NAME, CLASS )                                                       \
+#define REGISTER_ENTITY( NAME, CLASS )                                                           \
 	static vc::Entity *NAME##_make() { return new CLASS(); }                                     \
 	static vc::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
-	        _reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)
+	_reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)

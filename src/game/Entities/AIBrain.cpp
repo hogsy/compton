@@ -6,12 +6,14 @@
 #include "SimGame.h"
 #include "AIBrain.h"
 
-vc::AIBrain::AIBrain() {
+vc::AIBrain::AIBrain()
+{
 }
 
-vc::AIBrain::~AIBrain() {
+vc::AIBrain::~AIBrain()
+{
 }
 
-void vc::AIBrain::Tick() {
-
+void vc::AIBrain::Tick()
+{
 }

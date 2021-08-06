@@ -7,8 +7,10 @@
 
 #include "GUIPanel.h"
 
-namespace vc {
-	class GUIConsoleOutput : public GUIPanel {
+namespace vc
+{
+	class GUIConsoleOutput : public GUIPanel
+	{
 	public:
 		GUIConsoleOutput( GUIPanel *parent = nullptr, int x = 0, int y = 0, int w = 32, int h = 32 );
 		~GUIConsoleOutput();
@@ -21,4 +23,4 @@ namespace vc {
 	private:
 		std::vector< char[ 256 ] > consoleLines;
 	};
-}
+}// namespace vc

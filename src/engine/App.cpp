@@ -12,8 +12,10 @@
 
 // Draw Routines
 
-void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h ) {
-	if ( bitmap == nullptr ) {
+void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h )
+{
+	if ( bitmap == nullptr )
+	{
 		return;
 	}
 
@@ -23,16 +25,20 @@ void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h ) {
 	al_draw_scaled_bitmap( bitmap, 0, 0, bW, bH, x, y, w, h, 0 );
 }
 
-void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message ) {
-	if ( font == nullptr ) {
+void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
+{
+	if ( font == nullptr )
+	{
 		return;
 	}
 
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_LEFT, message );
 }
 
-void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message ) {
-	if ( font == nullptr ) {
+void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
+{
+	if ( font == nullptr )
+	{
 		return;
 	}
 
@@ -40,32 +46,36 @@ void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR col
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_LEFT, message );
 }
 
-void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message ) {
-	if ( font == nullptr ) {
+void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
+{
+	if ( font == nullptr )
+	{
 		return;
 	}
 
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_CENTER, message );
 }
 
-void DrawFilledRectangle( PLVector2 position, float w, float h, ALLEGRO_COLOR colour ) {
+void DrawFilledRectangle( PLVector2 position, float w, float h, ALLEGRO_COLOR colour )
+{
 	al_draw_filled_rectangle( position.x, position.y, w, h, colour );
 }
 
-void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom ) {
+void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom )
+{
 	ALLEGRO_VERTEX v[ 4 ];
 	memset( v, 0, sizeof( ALLEGRO_VERTEX ) * 4 );
-	v[ 0 ].x = x;
-	v[ 0 ].y = y;
+	v[ 0 ].x	 = x;
+	v[ 0 ].y	 = y;
 	v[ 0 ].color = top;
-	v[ 1 ].x = x + w;
-	v[ 1 ].y = y;
+	v[ 1 ].x	 = x + w;
+	v[ 1 ].y	 = y;
 	v[ 1 ].color = top;
-	v[ 2 ].x = x;
-	v[ 2 ].y = y + h;
+	v[ 2 ].x	 = x;
+	v[ 2 ].y	 = y + h;
 	v[ 2 ].color = bottom;
-	v[ 3 ].x = x + w;
-	v[ 3 ].y = y + h;
+	v[ 3 ].x	 = x + w;
+	v[ 3 ].y	 = y + h;
 	v[ 3 ].color = bottom;
 
 	al_draw_prim( v, nullptr, nullptr, 0, 4, ALLEGRO_PRIM_TRIANGLE_STRIP );
@@ -75,27 +85,29 @@ void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_
 // App Class
 
 static vc::App *appInstance;
-vc::App *vc::GetApp() {
+vc::App *		vc::GetApp()
+{
 	return appInstance;
 }
 
-#define VC_LOG      "debug"
-#define VC_TITLE    "SimGame"
+#define VC_LOG	 "debug"
+#define VC_TITLE "SimGame"
 
 #ifdef DEBUG_BUILD
-#   define WINDOW_TITLE "SimGame [DEBUG]"
+#define WINDOW_TITLE "SimGame [DEBUG]"
 #else
-#   define WINDOW_TITLE "SimGame"
+#define WINDOW_TITLE "SimGame"
 #endif
 
 extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 
-int VC_LOG_MSG; // generic message
-int VC_LOG_DEB; // debug message (won't be displayed in shipped build)
-int VC_LOG_WAR; // warning
-int VC_LOG_ERR; // error (kills application)
+int VC_LOG_MSG;// generic message
+int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
+int VC_LOG_WAR;// warning
+int VC_LOG_ERR;// error (kills application)
 
-vc::App::App( int argc, char **argv ) {
+vc::App::App( int argc, char **argv )
+{
 	// Initialize the platform library
 
 	PlInitialize( argc, argv );
@@ -118,10 +130,12 @@ vc::App::App( int argc, char **argv ) {
 	PlMountLocalLocation( appDataPath );
 	PlMountLocalLocation( "./" );
 
-	for ( unsigned int i = 0; i < 100; ++i ) {
+	for ( unsigned int i = 0; i < 100; ++i )
+	{
 		char packageName[ 64 ];
 		snprintf( packageName, sizeof( packageName ), "data%d.pkg", i );
-		if ( PlMountLocation( packageName ) == nullptr ) {
+		if ( PlMountLocation( packageName ) == nullptr )
+		{
 			break;
 		}
 	}
@@ -131,22 +145,26 @@ vc::App::App( int argc, char **argv ) {
 	// And now initialize Allegro
 
 	uint32_t version = al_get_allegro_version();
-	uint32_t major = version >> 24;
-	uint32_t minor = ( version >> 16 ) & 255;
+	uint32_t major	 = version >> 24;
+	uint32_t minor	 = ( version >> 16 ) & 255;
 	Print( "Initializing Allegro %d.%d\n", major, minor );
-	if ( !al_init() ) {
+	if ( !al_init() )
+	{
 		Error( "Failed to initialize Allegro library!\n" );
 	}
 
-	if ( !al_install_mouse() ) {
+	if ( !al_install_mouse() )
+	{
 		Error( "Failed to install mouse through Allegro!\n" );
 	}
 
-	if ( !al_install_audio() ) {
+	if ( !al_install_audio() )
+	{
 		Error( "Failed to install audio through Allegro!\n" );
 	}
 
-	if ( !al_init_acodec_addon() ) {
+	if ( !al_init_acodec_addon() )
+	{
 		Error( "Failed to install audio codecs through Allegro!\n" );
 	}
 
@@ -175,16 +193,19 @@ vc::App::App( int argc, char **argv ) {
 	running = true;
 }
 
-vc::App::~App() {
+vc::App::~App()
+{
 	Shutdown();
 }
 
-bool vc::App::IsRunning() {
+bool vc::App::IsRunning()
+{
 	// We're always running!
 	return true;
 }
 
-void vc::App::Loop() {
+void vc::App::Loop()
+{
 	Tick();
 	Draw();
 
@@ -192,17 +213,20 @@ void vc::App::Loop() {
 	performanceTimers.clear();
 }
 
-ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size ) {
+ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size )
+{
 	std::string fullName = std::string( path ) + ":" + std::to_string( size );
-	auto i = fonts.find( fullName );
-	if ( i != fonts.end() ) {
+	auto		i		 = fonts.find( fullName );
+	if ( i != fonts.end() )
+	{
 		return i->second;
 	}
 
 	Print( "Caching font, \"%s\" size %d\n", fullName.c_str(), size );
 
 	ALLEGRO_FONT *font = al_load_ttf_font( path, size, 0 );
-	if ( font == nullptr ) {
+	if ( font == nullptr )
+	{
 		Error( "Failed to load font, \"%s\"!\n", path );
 	}
 
@@ -211,16 +235,19 @@ ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size ) {
 	return font;
 }
 
-ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path ) {
+ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
+{
 	auto i = samples.find( path );
-	if ( i != samples.end() ) {
+	if ( i != samples.end() )
+	{
 		return i->second;
 	}
 
 	Print( "Caching sample, \"%s\"\n", path );
 
 	ALLEGRO_SAMPLE *sample = al_load_sample( path );
-	if ( sample == nullptr ) {
+	if ( sample == nullptr )
+	{
 		Error( "Failed to load sample, \"%s\"!\n", path );
 	}
 
@@ -229,16 +256,19 @@ ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path ) {
 	return sample;
 }
 
-ALLEGRO_BITMAP *vc::App::CacheImage( const char *path ) {
+ALLEGRO_BITMAP *vc::App::CacheImage( const char *path )
+{
 	auto i = bitmaps.find( path );
-	if ( i != bitmaps.end() ) {
+	if ( i != bitmaps.end() )
+	{
 		return i->second;
 	}
 
 	Print( "Caching image, \"%s\"\n", path );
 
 	ALLEGRO_BITMAP *bitmap = al_load_bitmap( path );
-	if ( bitmap == nullptr ) {
+	if ( bitmap == nullptr )
+	{
 		Error( "Failed to load bitmap, \"%s\"!\n", path );
 	}
 
@@ -247,7 +277,8 @@ ALLEGRO_BITMAP *vc::App::CacheImage( const char *path ) {
 	return bitmap;
 }
 
-void vc::App::ShowMessageBox( const char *title, const char *message, bool error ) {
+void vc::App::ShowMessageBox( const char *title, const char *message, bool error )
+{
 	al_show_native_message_box(
 			nullptr,
 			VC_TITLE,
@@ -257,20 +288,24 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 			error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
 }
 
-void vc::App::Shutdown() {
+void vc::App::Shutdown()
+{
 	delete gameMode;
 
-	if ( alDisplay != nullptr ) {
+	if ( alDisplay != nullptr )
+	{
 		al_destroy_display( alDisplay );
 		alDisplay = nullptr;
 	}
 
-	if ( alEventQueue != nullptr ) {
+	if ( alEventQueue != nullptr )
+	{
 		al_destroy_event_queue( alEventQueue );
 		alEventQueue = nullptr;
 	}
 
-	if ( alTimer != nullptr ) {
+	if ( alTimer != nullptr )
+	{
 		al_destroy_timer( alTimer );
 		alTimer = nullptr;
 	}
@@ -278,23 +313,25 @@ void vc::App::Shutdown() {
 
 // Display
 
-void vc::App::InitializeDisplay() {
+void vc::App::InitializeDisplay()
+{
 	Print( "Initializing display...\n" );
 
-	windowWidth = DISPLAY_WIDTH;
+	windowWidth	 = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
 #if !defined( DEBUG_BUILD )
 	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 #endif
 	alDisplay = al_create_display( windowWidth, windowHeight );
-	if ( alDisplay == nullptr ) {
+	if ( alDisplay == nullptr )
+	{
 		Error( "Failed to initialize display!\n" );
 	}
 
 	// Get the actual width and height
 #if !defined( DEBUG_BUILD )
-	windowWidth = al_get_display_width( alDisplay );
+	windowWidth	 = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
 #endif
 
@@ -302,7 +339,8 @@ void vc::App::InitializeDisplay() {
 
 	// Load in the default font for displaying debug info
 	defaultFont = al_create_builtin_font();
-	if ( defaultFont == nullptr ) {
+	if ( defaultFont == nullptr )
+	{
 		Error( "Failed to create default font!\n" );
 	}
 
@@ -310,13 +348,14 @@ void vc::App::InitializeDisplay() {
 	int flags = al_get_new_bitmap_flags();
 	//al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
 	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
-	if ( buffer == nullptr ) {
+	if ( buffer == nullptr )
+	{
 		Error( "Failed to create screen buffer!\n" );
 	}
 	al_set_new_bitmap_flags( flags );
 
-	int sx = windowWidth / DISPLAY_WIDTH;
-	int sy = windowHeight / DISPLAY_HEIGHT;
+	int sx	  = windowWidth / DISPLAY_WIDTH;
+	int sy	  = windowHeight / DISPLAY_HEIGHT;
 	int scale = std::min( sx, sy );
 
 	scaleW = DISPLAY_WIDTH * scale;
@@ -331,8 +370,10 @@ void vc::App::InitializeDisplay() {
 	redraw = true;
 }
 
-void vc::App::Draw() {
-	if ( !redraw ) {
+void vc::App::Draw()
+{
+	if ( !redraw )
+	{
 		return;
 	}
 
@@ -346,7 +387,8 @@ void vc::App::Draw() {
 
 	// Draw our debug data
 	float y = 0.0f;
-	for ( auto const &i : performanceTimers ) {
+	for ( auto const &i : performanceTimers )
+	{
 		al_draw_textf( defaultFont, al_map_rgb( 255, 0, 0 ), 0.0f, y, 0, "%s: %f", i.first.c_str(), i.second.GetTimeTaken() );
 		y += al_get_font_line_height( defaultFont );
 	}
@@ -368,14 +410,17 @@ void vc::App::Draw() {
 
 // Events
 
-void vc::App::InitializeEvents() {
+void vc::App::InitializeEvents()
+{
 	Print( "Initialize Events\n" );
 
-	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr ) {
+	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr )
+	{
 		Error( "Failed to initialize timer!\n" );
 	}
 
-	if ( ( alEventQueue = al_create_event_queue() ) == nullptr ) {
+	if ( ( alEventQueue = al_create_event_queue() ) == nullptr )
+	{
 		Error( "Failed to initialize events!\n" );
 	}
 
@@ -398,11 +443,13 @@ void vc::App::InitializeEvents() {
 	memset( keyStatus, 0, sizeof( bool ) * ALLEGRO_KEY_MAX );
 }
 
-void vc::App::InitializeGame() {
+void vc::App::InitializeGame()
+{
 	gameMode = new GameMode();
 }
 
-void vc::App::Tick() {
+void vc::App::Tick()
+{
 	START_MEASURE();
 
 	ALLEGRO_EVENT event{};
@@ -411,12 +458,13 @@ void vc::App::Tick() {
 	al_get_mouse_state( &mouseState );
 	al_get_keyboard_state( &keyboardState );
 
-	mouseStatus[ MOUSE_BUTTON_LEFT ] = ( mouseState.buttons & 1 ) != 0;
-	mouseStatus[ MOUSE_BUTTON_RIGHT ] = ( mouseState.buttons & 2 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_LEFT ]   = ( mouseState.buttons & 1 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_RIGHT ]  = ( mouseState.buttons & 2 ) != 0;
 	mouseStatus[ MOUSE_BUTTON_MIDDLE ] = ( mouseState.buttons & 3 ) != 0;
 
-	switch ( event.type ) {
-		default:break;
+	switch ( event.type )
+	{
+		default: break;
 
 		case ALLEGRO_EVENT_TIMER:
 			numTicks++;
@@ -430,13 +478,19 @@ void vc::App::Tick() {
 
 		case ALLEGRO_EVENT_MOUSE_AXES:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-		case ALLEGRO_EVENT_MOUSE_BUTTON_UP: {
+		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+		{
 			InputMouseButton button = MOUSE_BUTTON_LEFT;
-			if ( event.mouse.button & 1 ) {
+			if ( event.mouse.button & 1 )
+			{
 				button = MOUSE_BUTTON_LEFT;
-			} else if ( event.mouse.button & 2 ) {
+			}
+			else if ( event.mouse.button & 2 )
+			{
 				button = MOUSE_BUTTON_RIGHT;
-			} else if ( event.mouse.button & 3 ) {
+			}
+			else if ( event.mouse.button & 3 )
+			{
 				button = MOUSE_BUTTON_MIDDLE;
 			}
 
@@ -456,7 +510,8 @@ void vc::App::Tick() {
 			break;
 	}
 
-	if ( !al_is_event_queue_empty( alEventQueue ) ) {
+	if ( !al_is_event_queue_empty( alEventQueue ) )
+	{
 		redraw = false;
 	}
 
@@ -466,7 +521,8 @@ void vc::App::Tick() {
 /**
  * Returns cursor position, accounting for scaled size.
  */
-void vc::App::GetCursorPosition( int *dX, int *dY ) const {
+void vc::App::GetCursorPosition( int *dX, int *dY ) const
+{
 	ALLEGRO_MOUSE_STATE state;
 	al_get_mouse_state( &state );
 
@@ -474,13 +530,16 @@ void vc::App::GetCursorPosition( int *dX, int *dY ) const {
 	*dY = state.y * DISPLAY_HEIGHT / windowHeight;
 }
 
-bool vc::App::GetKeyState( int key ) const {
+bool vc::App::GetKeyState( int key ) const
+{
 	assert( key > 0 && key < ALLEGRO_KEY_MAX );
 	return keyStatus[ key ];
 }
 
-bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button ) {
-	if ( dX != nullptr && dY != nullptr ) {
+bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button )
+{
+	if ( dX != nullptr && dY != nullptr )
+	{
 		GetCursorPosition( dX, dY );
 	}
 
@@ -490,13 +549,16 @@ bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button ) {
 //////////////////////////////////////////////////////
 // PROFILING
 
-void vc::App::StartPerformanceTimer( const char *identifier ) {
+void vc::App::StartPerformanceTimer( const char *identifier )
+{
 	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
 }
 
-void vc::App::EndPerformanceTimer( const char *identifier ) {
+void vc::App::EndPerformanceTimer( const char *identifier )
+{
 	auto i = performanceTimers.find( identifier );
-	if ( i == performanceTimers.end() ) {
+	if ( i == performanceTimers.end() )
+	{
 		Warning( "Attempted to end an invalid timer, \"%s\"!\n", identifier );
 		return;
 	}
@@ -509,7 +571,8 @@ void vc::App::EndPerformanceTimer( const char *identifier ) {
 
 vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+{
 	// Stop buffering stdout!
 	setvbuf( stdout, nullptr, _IONBF, 0 );
 
@@ -519,7 +582,8 @@ int main( int argc, char **argv ) {
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
-	while ( appInstance->IsRunning() ) {
+	while ( appInstance->IsRunning() )
+	{
 		appInstance->Loop();
 	}
 

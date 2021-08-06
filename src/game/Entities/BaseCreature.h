@@ -8,12 +8,15 @@
 #include "Entity.h"
 #include "AIBrain.h"
 
-namespace vc {
-	class BaseCreature : public Entity {
+namespace vc
+{
+	class BaseCreature : public Entity
+	{
 		DECLARE_ENTITY_CLASS( BaseCreature, Entity )
 
 	public:
-		enum class Sex {
+		enum class Sex
+		{
 			MALE,
 			FEMALE,
 			INTERSEX,
@@ -40,7 +43,7 @@ namespace vc {
 		unsigned int maxAge{ 100 };
 		unsigned int generation{ 0 };
 
-		bool isPregnant{ false };
+		bool		 isPregnant{ false };
 		unsigned int timePregnant{ 0 };
 
 		int stamina{ 100 };
@@ -53,4 +56,4 @@ namespace vc {
 		unsigned int maxExperience{ 100 };
 		unsigned int currentLevel{ 0 };
 	};
-}
+}// namespace vc

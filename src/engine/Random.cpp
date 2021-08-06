@@ -28,7 +28,7 @@ const char *vc::random::GenerateRandomName( char *buffer, size_t size ) {
 	unsigned int maxSize = GenerateRandomInteger( 4, size - 1 );
 	char *p = buffer;
 	for ( size_t i = 0; i < maxSize; i += 2 ) {
-		unsigned int s = GenerateRandomInteger( 0, plArrayElements( segments ) - 1 );
+		unsigned int s = GenerateRandomInteger( 0, PL_MAX_ARRAY_INDEX( segments ) );
 		*p++ = segments[ s ][ 0 ];
 		*p++ = segments[ s ][ 1 ];
 	}

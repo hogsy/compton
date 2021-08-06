@@ -99,6 +99,7 @@ vc::App::App( int argc, char **argv ) {
 	// Initialize the platform library
 
 	PlInitialize( argc, argv );
+	PlInitializeSubSystems( PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IO );
 
 	PlGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
 	PlCreateDirectory( appDataPath );
@@ -125,7 +126,7 @@ vc::App::App( int argc, char **argv ) {
 		}
 	}
 
-	Print( "SimGame (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
+	Print( "WorldSim (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
 	// And now initialize Allegro
 
@@ -283,15 +284,19 @@ void vc::App::InitializeDisplay() {
 	windowWidth = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
+#if !defined( DEBUG_BUILD )
 	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+#endif
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr ) {
 		Error( "Failed to initialize display!\n" );
 	}
 
 	// Get the actual width and height
+#if !defined( DEBUG_BUILD )
 	windowWidth = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
+#endif
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
 

@@ -10,6 +10,8 @@ add_subdirectory(src/hei/plgraphics/)
 
 add_subdirectory(src/tools/pkgman/)
 
+#add_subdirectory(src/game/)
+
 project(VCritters)
 
 set(CMAKE_CXX_STANDARD 11)

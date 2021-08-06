@@ -12,28 +12,10 @@ uint8_t *Pkg_OpenFile( PLFile *file, PLPackageIndex *index ) {
 		return NULL;
 	}
 
-	uint8_t *data = new uint8_t[ index->compressedSize ];
-	if ( PlReadFile( file, data, index->compressedSize, 1 ) != 1 ) {
+	uint8_t *data = new uint8_t[ index->fileSize ];
+	if ( PlReadFile( file, data, index->fileSize, 1 ) != 1 ) {
 		delete[] data;
 		return NULL;
-	}
-
-	if ( index->compressionType == PL_COMPRESSION_ZLIB ) {
-		/* go ahead and decompress it */
-		uint8_t *uncompressedData = new uint8_t[ index->fileSize ];
-		unsigned long uncompressedLength;
-		int status = mz_uncompress( uncompressedData, &uncompressedLength, data, index->compressedSize );
-
-		/* don't need this anymore! */
-		delete[] data;
-		data = uncompressedData;
-
-		if ( status != MZ_OK ) {
-			free( uncompressedData );
-
-			Warning( "Failed to decompress \"%s\" from package \"%s\"!\n", index->fileName, PlGetFilePath( file ) );
-			return NULL;
-		}
 	}
 
 	return data;
@@ -54,7 +36,7 @@ PLPackage *Pkg_LoadPackage( const char *path ) {
 		return NULL;
 	}
 
-	if( !( identifier[ 0 ] == 'P' && identifier[ 1 ] == 'K' && identifier[ 2 ] == 'G' && identifier[ 3 ] == '2' ) ) {
+	if( !( identifier[ 0 ] == 'P' && identifier[ 1 ] == 'K' && identifier[ 2 ] == 'G' && identifier[ 3 ] == '1' ) ) {
 		Error( "Invalid package header, \"%s\", expected \"PKG2\"!\n", identifier );
 	}
 
@@ -65,7 +47,7 @@ PLPackage *Pkg_LoadPackage( const char *path ) {
 	}
 
 	PLPackage *package = PlCreatePackageHandle( path, numFiles, Pkg_OpenFile );
-	for ( unsigned int i = 0; i < numFiles; ++i ) {
+	for ( uint32_t i = 0; i < numFiles; ++i ) {
 		PLPackageIndex *index = &package->table[ i ];
 
 		/* read in the filename, it's a sized string... */
@@ -74,27 +56,16 @@ PLPackage *Pkg_LoadPackage( const char *path ) {
 			Error( "Failed to read in filename within the \"%s\" package!\nPL: %s\n", path, PlGetError() );
 		}
 
-		index->fileName[ nameLength + 1 ] = '\0';
-
 		/* file length/size */
 		index->fileSize = PlReadInt32( filePtr, false, &status );
-		index->compressedSize = PlReadInt32( filePtr, false, &status );
-		if ( !status ) {
-			Error( "Failed to read in the file sizes for \"%s\" within the \"%s\" package!\nPL: %s\n", index->fileName, path, PlGetError() );
-		}
-
-		if ( index->fileSize != index->compressedSize ) {
-			index->compressionType = PL_COMPRESSION_ZLIB;
-		}
-
 		index->offset = PlGetFileOffset( filePtr );
 
 		/* now seek to the next file */
-		if ( !PlFileSeek( filePtr, index->compressedSize, PL_SEEK_CUR ) ) {
+		if ( !PlFileSeek( filePtr, index->fileSize, PL_SEEK_CUR ) ) {
 			Error( "Failed to seek to the next file within the \"%s\" package!\nPL: %s\n", path, PlGetError() );
 		}
 
-		/* PrintMsg( " Registered %s\n", index->fileName ); */
+		Print( " Registered %s\n", index->fileName );
 	}
 
 	PlCloseFile( filePtr );

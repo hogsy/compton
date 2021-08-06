@@ -67,54 +67,22 @@ static const char *ReadString( const char *buffer, char *destination, size_t len
 }
 
 static void Pkg_AddFile( const char *filePath, const char *fileTag, const char *fileName ) {
-	Print( "Adding %s (%s)...\n", fileName, fileTag );
+	Print( "Adding %s...\n", filePath );
 
-	/* so we can do some path/name mangling */
-	char packPath[ PL_SYSTEM_MAX_PATH ];
-	strncpy( packPath, filePath, sizeof( packPath ) );
-	char packName[ 64 ];
-	strncpy( packName, fileName, sizeof( packName ) );
-
-	/* see if it's a file we can pack */
-	const char *extension = PlGetFileExtension( packPath );
-	if ( strcmp( extension, "png" ) == 0 || strcmp( extension, "gif" ) == 0 || strcmp( extension, "bmp" ) == 0 ) {
-		PLImage *image = PlLoadImage( packPath );
-		if ( image == NULL ) {
-			Error( "Failed to load \"%s\"!\nPL: %s\n", packPath, PlGetError() );
-		}
-
-		size_t strPos;
-		strPos = strlen( packPath ) - 4;
-		strncpy( packPath + strPos, ".gfx", 4 );
-
-		Print( "Converting \"%s\" to \"%s\"\n", filePath, packPath );
-
-		PackImage_Write( packPath, image );
-
-		PlDestroyImage( image );
-	}
-
-	PLFile *filePtr = PlOpenFile( packPath, true );
+	PLFile *filePtr = PlOpenFile( filePath, true );
 	if ( filePtr == NULL ) {
-		Error( "Failed to add file \"%s\"!\nPL: %s\n", packPath, PlGetError() );
+		Error( "Failed to add file \"%s\"!\nPL: %s\n", filePath, PlGetError() );
 	}
-
-	const uint8_t *data = PlGetFileData( filePtr );
-	size_t fileLength = PlGetFileSize( filePtr );
-
-	char indexName[ 128 ];
-	snprintf( indexName, sizeof( indexName ), "%s:%s", fileTag, packName );
 
 	/* write the index header */
-	uint8_t nameLength = ( uint8_t ) strlen( indexName );
+	uint8_t nameLength = ( uint8_t ) strlen( filePath ) + 1;
 	fwrite( &nameLength, sizeof( uint8_t ), 1, fileOutPtr );
-	char *name = malloc( nameLength );
-	strncpy( name, indexName, nameLength );
-	fwrite( name, sizeof( char ), nameLength, fileOutPtr );
-	free( name );
+	fwrite( filePath, sizeof( char ), nameLength, fileOutPtr );
+	uint32_t fileLength = ( uint32_t ) PlGetFileSize( filePtr );
 	fwrite( &fileLength, sizeof( uint32_t ), 1, fileOutPtr );
 
 	/* and now write out the file itself */
+	const uint8_t *data = PlGetFileData( filePtr );
 	fwrite( data, 1, fileLength, fileOutPtr );
 
 	PlCloseFile( filePtr );
@@ -224,6 +192,8 @@ static void ParseScript( const char *buffer, size_t length ) {
 
 int main( int argc, char **argv ) {
 	PlInitialize( argc, argv );
+
+	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
 	Print( "Package Manager\nCopyright (C) 2020 Mark Sowden\n" );
 	if ( argc < 2 ) {

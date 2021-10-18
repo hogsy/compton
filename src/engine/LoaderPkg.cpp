@@ -2,8 +2,6 @@
  * Project Yin
  * */
 
-#include <miniz.h>
-
 #include "../shared.h"
 #include "LoaderPkg.h"
 

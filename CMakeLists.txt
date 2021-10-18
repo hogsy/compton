@@ -77,10 +77,6 @@ add_executable(VCritters ${SOURCE_FILES}
         src/engine/Camera.h
         src/engine/Timer.h
 
-        # miniz
-        src/3rdparty/miniz/miniz.c
-        src/3rdparty/miniz/miniz.h
-
         # duktape
         src/3rdparty/duktape-2.2.0/src/duktape.c
 

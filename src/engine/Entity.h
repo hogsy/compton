@@ -40,10 +40,10 @@ namespace vc
 		PL_INLINE PLVector2 GetBounds() const { return bounds; }
 #endif
 
-		PLVector2 origin{ 0.0f, 0.0f };
-		PLVector2 velocity{ 0.0f, 0.0f };
-		PLVector2 myRenderBounds{ 0.0f, 0.0f };
-		PLVector2 bounds{ 0.0f, 0.0f };
+		hei::Vector2 origin{ 0.0f, 0.0f };
+		hei::Vector2 velocity{ 0.0f, 0.0f };
+		hei::Vector2 myRenderBounds{ 0.0f, 0.0f };
+		hei::Vector2 bounds{ 0.0f, 0.0f };
 
 	protected:
 		int myHealth{ 100 };

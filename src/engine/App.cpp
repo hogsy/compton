@@ -85,7 +85,7 @@ void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_
 // App Class
 
 static vc::App *appInstance;
-vc::App *		vc::GetApp()
+vc::App		*vc::GetApp()
 {
 	return appInstance;
 }
@@ -100,6 +100,17 @@ vc::App *		vc::GetApp()
 #endif
 
 extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
+
+// Override C++ new/delete operators, so we can track memory usage
+void *operator new( size_t size ) throw( std::bad_alloc ) { return PlMAllocA( size ); }
+void *operator new[]( size_t size ) throw( std::bad_alloc ) { return PlMAllocA( size ); }
+void  operator delete( void *p ) throw() { PlFree( p ); }
+void  operator delete[]( void *p ) throw() { PlFree( p ); }
+// And below is a wrapper for Allegro, so we can do the same there
+static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
+static void	 AlFree( void *p, int, const char *, const char	*) { PlFree( p ); }
+static void *AlReAlloc( void *p, size_t n, int, const char *, const char * ) { return PlReAllocA( p, n ); }
+static void *AlCAlloc( size_t c, size_t n, int, const char *, const char * ) { return PlCAllocA( c, n ); }
 
 int VC_LOG_MSG;// generic message
 int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
@@ -152,6 +163,14 @@ vc::App::App( int argc, char **argv )
 	{
 		Error( "Failed to initialize Allegro library!\n" );
 	}
+
+	static ALLEGRO_MEMORY_INTERFACE memoryInterface = {
+			AlMAlloc,
+			AlFree,
+			AlReAlloc,
+			AlCAlloc
+	};
+	al_set_memory_interface( &memoryInterface );
 
 	if ( !al_install_mouse() )
 	{
@@ -468,7 +487,10 @@ void vc::App::Tick()
 
 		case ALLEGRO_EVENT_TIMER:
 			numTicks++;
-			gameMode->Tick();
+			if ( gameMode != nullptr )
+			{
+				gameMode->Tick();
+			}
 			redraw = true;
 			break;
 
@@ -480,6 +502,11 @@ void vc::App::Tick()
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 		{
+			if ( gameMode == nullptr )
+			{
+				break;
+			}
+
 			InputMouseButton button = MOUSE_BUTTON_LEFT;
 			if ( event.mouse.button & 1 )
 			{
@@ -501,10 +528,18 @@ void vc::App::Tick()
 		}
 
 		case ALLEGRO_EVENT_KEY_DOWN:
+			if ( gameMode == nullptr )
+			{
+				break;
+			}
 			keyStatus[ event.keyboard.keycode ] = true;
 			gameMode->HandleKeyboardEvent( event.keyboard.keycode, false );
 			break;
 		case ALLEGRO_EVENT_KEY_UP:
+			if ( gameMode == nullptr )
+			{
+				break;
+			}
 			keyStatus[ event.keyboard.keycode ] = false;
 			gameMode->HandleKeyboardEvent( event.keyboard.keycode, true );
 			break;

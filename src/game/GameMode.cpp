@@ -233,11 +233,11 @@ void vc::GameMode::NewGame( const char *path )
 		}
 
 		// Now attempt to spawn in the territory
-		Territory territory( PLVector2( x, y ) );
+		Territory territory( hei::Vector2( x, y ) );
 
 		// Spawn one Storehouse at the center
 		Entity *hub = entityManager->CreateEntity( "StoreHouse" );
-		hub->origin = PLVector2( x, y );
+		hub->origin = hei::Vector2( x, y );
 
 #define TERRITORY_BOUNDS 256
 
@@ -261,7 +261,7 @@ void vc::GameMode::NewGame( const char *path )
 					continue;
 				}
 
-				citizen->origin = PLVector2( x, y );
+				citizen->origin = hei::Vector2( x, y );
 				citizen->Spawn();
 			}
 		}
@@ -305,9 +305,9 @@ void vc::GameMode::RestoreGame( const char *path )
 	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
 }
 
-PLVector2 vc::GameMode::MousePosToWorld( int x, int y ) const
+hei::Vector2 vc::GameMode::MousePosToWorld( int x, int y ) const
 {
-	return PLVector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
+	return hei::Vector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -405,12 +405,12 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 
 vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager; }
-vc::Terrain *	   vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager; }
+vc::Terrain		*vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager; }
 
 ////////////////////////////////
 // Territory
 
-vc::GameMode::Territory::Territory( const PLVector2 &origin )
+vc::GameMode::Territory::Territory( const hei::Vector2 &origin )
 {
 	snprintf( name, sizeof( name ), "T%d", rand() % 100 );
 }

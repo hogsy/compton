@@ -35,7 +35,7 @@ namespace vc
 		void SaveGame( const char *path );
 		void RestoreGame( const char *path );
 
-		PLVector2 MousePosToWorld( int x, int y ) const;
+		hei::Vector2 MousePosToWorld( int x, int y ) const;
 
 		void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 		void HandleKeyboardEvent( int button, bool buttonUp );
@@ -79,12 +79,12 @@ namespace vc
 
 		struct Territory
 		{
-			Territory( const PLVector2 &origin );
+			Territory( const hei::Vector2 &origin );
 
 			void DrawBorder();
 
 			char		name[ 32 ];
-			PLVector2	origin{ 0.0f, 0.0f };
+			hei::Vector2	origin{ 0.0f, 0.0f };
 			PLGPolygon *border{ nullptr };
 		};
 		std::vector< Territory > myTerritories;

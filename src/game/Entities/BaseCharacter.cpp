@@ -83,7 +83,9 @@ void vc::BaseCharacter::Tick()
 	}
 
 	// Setup a goal for us to move to.
-	if ( debugGoal == 0 || origin == debugGoal || debugGoalDelay < GetApp()->GetNumOfTicks() )
+	if ( ( debugGoal.x == 0.0f && debugGoal.y == 0.0f ) ||
+		 hei::Vector2( origin ) == debugGoal ||
+		 debugGoalDelay < GetApp()->GetNumOfTicks() )
 	{
 		// Attempt to find a debug waypoint
 		EntityManager::EntitySlot slot = GameMode::GetEntityManager()->FindEntityByClassName( "DebugWaypoint", nullptr );
@@ -108,7 +110,7 @@ void vc::BaseCharacter::Tick()
 		debugGoalDelay = GetApp()->GetNumOfTicks() + random::GenerateRandomInteger( 50, 200 );
 	}
 
-	PLVector2 direction = debugGoal - origin;
+	hei::Vector2 direction = debugGoal - origin;
 	velocity += direction * direction.Length();
 	velocity = PlClampVector2( &velocity, -1.0f, 1.0f );
 

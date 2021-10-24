@@ -48,6 +48,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "engine/Compton.h"
 #include "engine/Timer.h"
+#include "engine/ImageManager.h"
 
 #define DISPLAY_WIDTH   1024
 #define DISPLAY_HEIGHT  768
@@ -75,6 +76,8 @@ namespace vc {
 		App( int argc, char **argv );
 
 		static GameMode *GetGameMode();
+
+		void PrecacheResources();
 
 		void InitializeDisplay();
 		void InitializeEvents();
@@ -119,6 +122,8 @@ namespace vc {
 		void StartPerformanceTimer( const char *identifier );
 		void EndPerformanceTimer( const char *identifier );
 
+		inline ImageManager *GetImageManager() { return imageManager; }
+
 	protected:
 	private:
 		~App();
@@ -157,6 +162,9 @@ namespace vc {
 		double numTicks;
 
 		char appDataPath[ PL_SYSTEM_MAX_PATH ];
+
+		// Sub-Systems
+		ImageManager *imageManager{ nullptr };
 
 		ALLEGRO_BITMAP *buffer{ nullptr };
 	};

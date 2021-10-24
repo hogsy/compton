@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "../shared.h"
 
-#include "ImageBitmap.h"
+#include "ImageManager.h"
 #include "LoaderPkg.h"
 #include "GameMode.h"
 #include "EntityManager.h"
@@ -105,6 +105,9 @@ vc::App		*vc::GetApp()
 
 extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 
+///////////////////////////////////////////////////////////////////
+// Memory Management
+
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PlMAllocA( size ); }
 void *operator new[]( size_t size ) { return PlMAllocA( size ); }
@@ -116,6 +119,16 @@ static void	 AlFree( void *p, int, const char *, const char	*) { PlFree( p ); }
 static void *AlReAlloc( void *p, size_t n, int, const char *, const char * ) { return PlReAllocA( p, n ); }
 static void *AlCAlloc( size_t c, size_t n, int, const char *, const char * ) { return PlCAllocA( c, n ); }
 
+/**
+ * Callback, to catch any fail within hei.
+ */
+static void MemoryAbortCallback( size_t failSize )
+{
+	Error( "Failed to alloc of %lu bytes!\n", failSize );
+}
+
+///////////////////////////////////////////////////////////////////
+
 int VC_LOG_MSG;// generic message
 int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 int VC_LOG_WAR;// warning
@@ -124,6 +137,8 @@ int VC_LOG_ERR;// error (kills application)
 vc::App::App( int argc, char **argv )
 {
 	// Initialize the platform library
+
+	pl_memory_abort_cb = MemoryAbortCallback;
 
 	PlInitialize( argc, argv );
 	PlInitializeSubSystems( PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IO );
@@ -138,6 +153,8 @@ vc::App::App( int argc, char **argv )
 	VC_LOG_WAR = PlAddLogLevel( "warning", { 255, 255, 0 }, true );
 	VC_LOG_MSG = PlAddLogLevel( "info", { 255, 255, 255 }, true );
 	VC_LOG_DEB = PlAddLogLevel( "debug", { 0, 0, 255 }, true );
+
+	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
 	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage );
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
@@ -154,8 +171,6 @@ vc::App::App( int argc, char **argv )
 			break;
 		}
 	}
-
-	Print( "WorldSim (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
 	// And now initialize Allegro
 
@@ -197,21 +212,24 @@ vc::App::App( int argc, char **argv )
 	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
-	//al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );
 
 	al_reserve_samples( 512 );
 
+#if 0
 	ALLEGRO_PATH *path = al_get_standard_path( ALLEGRO_RESOURCES_PATH );
 	al_change_directory( al_path_cstr( path, '/' ) );
 	al_destroy_path( path );
+#endif
 
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
+
+	imageManager = new ImageManager( argc, argv );
 
 	running = true;
 }
@@ -314,6 +332,7 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 void vc::App::Shutdown()
 {
 	delete gameMode;
+	delete imageManager;
 
 	if ( alDisplay != nullptr )
 	{
@@ -415,6 +434,8 @@ void vc::App::Draw()
 		al_draw_textf( defaultFont, al_map_rgb( 255, 0, 0 ), 0.0f, y, 0, "%s: %f", i.first.c_str(), i.second.GetTimeTaken() );
 		y += al_get_font_line_height( defaultFont );
 	}
+
+	// todo: update output buffer with pal
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
@@ -610,12 +631,19 @@ void vc::App::EndPerformanceTimer( const char *identifier )
 
 vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 
+void vc::App::PrecacheResources()
+{
+	imageManager->PrecacheResources();
+}
+
 int main( int argc, char **argv )
 {
 	// Stop buffering stdout!
 	setvbuf( stdout, nullptr, _IONBF, 0 );
 
 	appInstance = new vc::App( argc, argv );
+
+	appInstance->PrecacheResources();
 
 	appInstance->InitializeDisplay();
 	appInstance->InitializeEvents();

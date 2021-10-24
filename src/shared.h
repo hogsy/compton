@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -46,11 +46,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define DEBUG_BUILD
 
-#include "engine/SimGame.h"
+#include "engine/Compton.h"
 #include "engine/Timer.h"
 
-#define DISPLAY_WIDTH   640
-#define DISPLAY_HEIGHT  360
+#define DISPLAY_WIDTH   1024
+#define DISPLAY_HEIGHT  768
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );

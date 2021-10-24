@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -16,6 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "Compton.h"
+#include "Brain.h"
 
-PLImage *Image_LoadPackedImage( const char *path );
+vc::ai::Brain::Brain()
+{
+}
+
+vc::ai::Brain::~Brain()
+{
+}
+
+void vc::ai::Brain::Tick()
+{
+}

@@ -18,4 +18,37 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
-const char *UTIL_GetRomanNumeralForNum( unsigned int num );
+#include "Brain.h"
+
+namespace vc::ai
+{
+	class Sensor
+	{
+	public:
+		enum class Type : uint8_t
+		{
+			SIGHT,
+			SOUND,
+			SMELL,
+			TASTE,
+			TOUCH,
+			PAIN,
+			TIME,
+
+			MAX_TYPES
+		};
+		static constexpr uint8_t MAX_SENSOR_TYPES = ( uint8_t ) Type::MAX_TYPES;
+
+		typedef void ( *SensorStateCallback )( Sensor *self );
+
+		inline Sensor() {}
+		inline Sensor( Type type, Brain *brain ) : myType( type ), myBrain( brain ) {}
+
+		void Tick();
+
+	private:
+		Brain *myBrain{ nullptr };
+
+		Type myType{ Type::SIGHT };
+	};
+}

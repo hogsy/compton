@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <plcore/pl_filesystem.h>
 
 #include "ScriptParser.h"
-#include "SimGame.h"
+#include "Compton.h"
 
 vc::ScriptParser::ScriptParser( const char *path )
 {

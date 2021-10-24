@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -30,12 +30,22 @@ extern int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 extern int VC_LOG_WAR;// warning
 extern int VC_LOG_ERR;// error (kills application)
 
+#define VC_LOG	 "debug"
+#define VC_TITLE "Compton"
+
+#ifdef DEBUG_BUILD
+#define WINDOW_TITLE VC_TITLE " [DEBUG]"
+#else
+#define WINDOW_TITLE VC_TITLE
+#endif
+
 #define Print( ... ) \
 	PlLogMessage( VC_LOG_MSG, __VA_ARGS__ )
 #define Warning( ... ) \
 	PlLogMessage( VC_LOG_WAR, __VA_ARGS__ )
 #define Error( ... )                         \
 	PlLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
+	abort();                                 \
 	exit( -1 )
 #if defined( DEBUG_BUILD )
 #define DebugMsg( ... ) \

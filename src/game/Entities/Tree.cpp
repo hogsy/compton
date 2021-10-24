@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *  Grows around the world, can be planted by characters.
  *------------------------------------------------------------------------------------*/
 
-#include "SimGame.h"
+#include "Compton.h"
 #include "Tree.h"
 #include "Random.h"
 

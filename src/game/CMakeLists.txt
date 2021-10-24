@@ -6,7 +6,9 @@ add_library(game STATIC
         Terrain.cpp
         Utility.cpp
 
-        Entities/AIBrain.cpp
+        Entities/ai/Brain.cpp
+        Entities/ai/Sensor.cpp
+
         Entities/BaseBuilding.cpp
         Entities/BaseCharacter.cpp
         Entities/BaseCreature.cpp

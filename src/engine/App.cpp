@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -103,20 +103,11 @@ vc::App		*vc::GetApp()
 	return appInstance;
 }
 
-#define VC_LOG	 "debug"
-#define VC_TITLE "SimGame"
-
-#ifdef DEBUG_BUILD
-#define WINDOW_TITLE "SimGame [DEBUG]"
-#else
-#define WINDOW_TITLE "SimGame"
-#endif
-
 extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 
 // Override C++ new/delete operators, so we can track memory usage
-void *operator new( size_t size ) throw( std::bad_alloc ) { return PlMAllocA( size ); }
-void *operator new[]( size_t size ) throw( std::bad_alloc ) { return PlMAllocA( size ); }
+void *operator new( size_t size ) { return PlMAllocA( size ); }
+void *operator new[]( size_t size ) { return PlMAllocA( size ); }
 void  operator delete( void *p ) throw() { PlFree( p ); }
 void  operator delete[]( void *p ) throw() { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
@@ -206,7 +197,7 @@ vc::App::App( int argc, char **argv )
 	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
-	al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
+	//al_register_bitmap_loader( ".gfx", ImageBitmap_LoadPacked );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );

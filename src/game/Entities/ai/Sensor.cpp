@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+/*--------------------------------------------------------------------------------------
+ * Sensor.cpp
+ *  For simple detection of external elements. Passes any information back to brain.
+ *------------------------------------------------------------------------------------*/
 
-#include "SimGame.h"
-#include "AIBrain.h"
+#include "Compton.h"
+#include "Sensor.h"
 
-vc::AIBrain::AIBrain()
+void vc::ai::Sensor::Tick()
 {
-}
-
-vc::AIBrain::~AIBrain()
-{
-}
-
-void vc::AIBrain::Tick()
-{
+	switch ( myType )
+	{
+		case Type::SIGHT:
+		{
+			break;
+		}
+		case Type::SOUND: break;
+		case Type::SMELL: break;
+		case Type::TASTE: break;
+		case Type::TOUCH: break;
+		case Type::PAIN: break;
+		case Type::TIME: break;
+		default: break;
+	}
 }

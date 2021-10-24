@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *  Foundation of everything with intelligence.
  *------------------------------------------------------------------------------------*/
 
-#include "SimGame.h"
+#include "Compton.h"
 #include "BaseCreature.h"
 #include "Random.h"
 #include "Serializer.h"
 
-vc::BaseCreature::BaseCreature() {}
+vc::BaseCreature::BaseCreature()
+{
+	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
+	{
+		mySensors[ i ] = ai::Sensor(
+				( ai::Sensor::Type )( ( uint8_t ) ai::Sensor::Type::SIGHT + i ),
+				&myBrain );
+	}
+}
+
 vc::BaseCreature::~BaseCreature() {}
 
 void vc::BaseCreature::Spawn()
@@ -130,4 +139,15 @@ void vc::BaseCreature::Draw( const vc::Camera &camera )
 void vc::BaseCreature::Tick()
 {
 	SuperClass::Tick();
+
+	// Check sensors - these will pass data to brain
+	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
+	{
+		mySensors[ i ].Tick();
+	}
+
+	// Brain will now process input from sensors
+	myBrain.Tick();
+
+	ai::Brain::Mood mood = myBrain.GetCurrentMood();
 }

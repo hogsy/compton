@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "ImageBitmap.h"
-#include "LoaderGfx.h"
 
 static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
 {
@@ -68,6 +67,7 @@ static ALLEGRO_BITMAP *ImageBitmap_ConvertPlatformImageToAllegroBitmap( PLImage 
 	return bitmap;
 }
 
+#if 0 // Pulled, this is part of Yin now
 ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags )
 {
 	PLImage *image = Image_LoadPackedImage( path );
@@ -82,6 +82,7 @@ ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags )
 
 	return bitmap;
 }
+#endif
 
 ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags )
 {

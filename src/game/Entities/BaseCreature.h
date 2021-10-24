@@ -1,5 +1,5 @@
 /*
-SimGame Engine
+Compton, 2D Game Engine
 Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 
 #include "Entity.h"
-#include "AIBrain.h"
+#include "Entities/ai/Brain.h"
+#include "Entities/ai/Sensor.h"
 
 namespace vc
 {
@@ -50,7 +51,8 @@ namespace vc
 	protected:
 		Sex mySex{ Sex::INTERSEX };
 
-		AIBrain myBrain;
+		ai::Brain myBrain;
+		ai::Sensor mySensors[ ai::Sensor::MAX_SENSOR_TYPES ];
 
 		unsigned int age{ 0 };
 		unsigned int maxAge{ 100 };

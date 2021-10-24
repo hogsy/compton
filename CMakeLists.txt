@@ -12,9 +12,9 @@ add_subdirectory(src/tools/pkgman/)
 
 #add_subdirectory(src/game/)
 
-project(VCritters)
+project(Compton)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
 # Get the current working branch
@@ -54,20 +54,21 @@ file(GLOB SOURCE_FILES
 
         src/game/*.cpp
         src/game/Entities/*.cpp
+        src/game/Entities/ai/Brain.cpp
+        src/game/Entities/ai/Sensor.cpp
         src/game/*.h
         )
 
-add_executable(VCritters ${SOURCE_FILES}
+add_executable(Compton ${SOURCE_FILES}
         # engine
         src/engine/SpriteSheet.cpp
         src/engine/SpriteSheet.h
-        src/engine/SimGame.h
+        src/engine/Compton.h
         src/engine/JsonReader.cpp
         src/engine/JsonReader.h
         src/engine/ScriptParser.cpp
         src/engine/ScriptParser.h
         src/engine/FileSystem.cpp
-        src/engine/LoaderGfx.cpp
         src/engine/LoaderPkg.cpp
         src/engine/Serializer.cpp
         src/engine/Serializer.h
@@ -82,17 +83,18 @@ add_executable(VCritters ${SOURCE_FILES}
 
         src/game/Entities/BaseCreature.cpp
         src/game/Entities/BaseCreature.h
-        src/game/Entities/AIBrain.cpp
-        src/game/Entities/AIBrain.h
+        src/game/Entities/ai/Brain.cpp
+        src/game/Entities/ai/Brain.h
         src/game/Entities/Tree.cpp
         src/game/Entities/Tree.h
         src/game/Entities/DebugWaypoint.cpp
         src/game/Utility.cpp
-        src/game/Utility.h)
+        src/game/Utility.h
+        )
 
-set_target_properties(VCritters PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
+set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 
-target_include_directories(VCritters PRIVATE
+target_include_directories(Compton PRIVATE
         src/engine/
         src/game/
         src/game/desktop/
@@ -103,11 +105,11 @@ target_include_directories(VCritters PRIVATE
         src/3rdparty/duktape-2.2.0/src/
         )
 if (WIN32)
-    target_include_directories(VCritters PRIVATE src/3rdparty/allegro/include/)
-    target_link_directories(VCritters PRIVATE src/3rdparty/allegro/lib/)
-    target_link_libraries(VCritters -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc)
+    target_include_directories(Compton PRIVATE src/3rdparty/allegro/include/)
+    target_link_directories(Compton PRIVATE src/3rdparty/allegro/lib/)
+    target_link_libraries(Compton -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc)
 endif (WIN32)
-target_link_libraries(VCritters
+target_link_libraries(Compton
         plcore
         plgraphics
 

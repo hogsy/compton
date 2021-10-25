@@ -25,17 +25,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "Random.h"
 #include "Serializer.h"
+#include "BitmapFont.h"
 
 #include "Entities/BaseCharacter.h"
 
 vc::GameMode::GameMode()
 {
 	// Cache all the data we're going to use...
-	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_LARGE );
-	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_SMALL );
-	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", 32 );
-	vc::GetApp()->CacheFont( "fonts/ps2p/PressStart2P.ttf", FONT_SIZE_MEDIUM );
-
+#if 0
 	vc::GetApp()->CacheSample( "sounds/00.wav" );
 	vc::GetApp()->CacheSample( "sounds/01.wav" );
 	vc::GetApp()->CacheSample( "sounds/02.wav" );
@@ -47,6 +44,7 @@ vc::GameMode::GameMode()
 	SetupUserInterface();
 
 	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
+#endif
 
 	terrainManager = new Terrain();
 	entityManager  = new EntityManager();
@@ -63,6 +61,7 @@ vc::GameMode::~GameMode()
 
 void vc::GameMode::SetupUserInterface()
 {
+#if 0
 	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
 
 	// Now create the base GUI panels
@@ -102,6 +101,7 @@ void vc::GameMode::SetupUserInterface()
 	new GUICursor( uiBasePanelPtr );
 
 	uiPieMenu = new GUIPieMenu( uiBasePanelPtr );
+#endif
 }
 
 void vc::GameMode::Tick()
@@ -109,7 +109,10 @@ void vc::GameMode::Tick()
 	START_MEASURE();
 
 	// Always tick UI, because we still want to access it even if paused
-	uiBasePanelPtr->Tick();
+	if ( uiBasePanelPtr != nullptr )
+	{
+		uiBasePanelPtr->Tick();
+	}
 
 	if ( gameState == GameState::PAUSED )
 	{
@@ -204,13 +207,25 @@ void vc::GameMode::Draw()
 	al_use_transform( &oldTransform );
 
 	// UI always comes last
-	uiBasePanelPtr->Draw();
+	if ( uiBasePanelPtr != nullptr )
+	{
+		uiBasePanelPtr->Draw();
+	}
 
-	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 0, 0 ), 0.0f, 128.0f, 0, "camera: %f %f %f", playerCamera.position.x, playerCamera.position.y, playerCamera.zoom );
-
-	unsigned int xr = PlRoundUp( playerCamera.position.x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
-	unsigned int yr = PlRoundUp( playerCamera.position.y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
-	al_draw_textf( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), 0.0f, 256.0f, 0, "camera_tile: %d %d", xr, yr );
+	BitmapFont *defaultFont = GetApp()->GetDefaultFont();
+	int			x = 100, y = 100;
+	defaultFont->DrawString( &x, &y, "Hello World!\n"
+									 "\t\tThis is a block of text :)\n"
+									 "\t\tThat's right, with indenting OwO\n"
+									 "ABCDEFGHIJkLMNOPQRSXYZ\n"
+									 "abcdefghijklmnopqrsxyz\n"
+									 "1234567890\n",
+							 hei::Colour( 255, 128, 50 ), true );
+	defaultFont->DrawString( &x, &y, "Oh, and multiple colours.\n", hei::Colour( 50, 128, 255 ), true );
+	defaultFont->DrawString( &x, &y, "Like this.\n", hei::Colour( 0, 255, 0 ), true );
+	defaultFont->DrawString( &x, &y, "Or this.\n", hei::Colour( 255, 0, 0 ), true );
+	defaultFont->DrawString( &x, &y, "Or even, this!\n", hei::Colour( 0, 0, 255 ), true );
+	defaultFont->DrawCharacter( 10, 10, 'A' );
 
 	END_MEASURE();
 }

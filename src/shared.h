@@ -50,8 +50,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "engine/Timer.h"
 #include "engine/ImageManager.h"
 
-#define DISPLAY_WIDTH   1024
-#define DISPLAY_HEIGHT  768
+#define DISPLAY_WIDTH   640
+#define DISPLAY_HEIGHT  480
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -71,6 +71,7 @@ enum InputMouseButton {
 namespace vc {
 	class GameMode;
 	class EntityManager;
+	class BitmapFont;
 	class App {
 	public:
 		App( int argc, char **argv );
@@ -90,8 +91,8 @@ namespace vc {
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 		ALLEGRO_BITMAP *CacheImage( const char *path );
 
-		inline ALLEGRO_FONT *GetDefaultFont() {
-			return defaultFont;
+		inline BitmapFont *GetDefaultFont() {
+			return defaultBitmapFont_;
 		}
 
 		void ShowMessageBox( const char *title, const char *message, bool error );
@@ -145,10 +146,12 @@ namespace vc {
 		GameMode *gameMode{ nullptr };
 
 		// Resources
-		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;
-		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;
-		std::unordered_map< std::string, ALLEGRO_FONT * > fonts;
-		ALLEGRO_FONT *defaultFont;
+		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps; // todo: make obsolete
+		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples; // todo: make obsolete
+		std::unordered_map< std::string, ALLEGRO_FONT * > fonts; // todo: make obsolete
+		ALLEGRO_FONT *defaultFont; // todo: make obsolete
+		BitmapFont *defaultBitmapFont_{ nullptr }; // todo: this should replace the above...
+		std::map< std::string, BitmapFont * > bitmapFonts_; // todo: this should replace the above...
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
@@ -166,6 +169,7 @@ namespace vc {
 		// Sub-Systems
 		ImageManager *imageManager{ nullptr };
 
+	public:
 		ALLEGRO_BITMAP *buffer{ nullptr };
 	};
 

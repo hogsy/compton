@@ -82,7 +82,7 @@ void vc::BaseCharacter::Draw( const Camera &camera )
 	al_draw_filled_circle( debugGoal.x, debugGoal.y, 5.0f, al_map_rgb( 255, 0, 0 ) );
 	al_draw_line( origin.x, origin.y, debugGoal.x, debugGoal.y, al_map_rgb( 255, 0, 0 ), 1.0f );
 
-	al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, name );
+	//al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, name );
 }
 
 void vc::BaseCharacter::Tick()

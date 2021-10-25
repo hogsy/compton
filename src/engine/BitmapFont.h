@@ -16,31 +16,32 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Compton.h"
-#include "BaseBuilding.h"
+#pragma once
 
-vc::BaseBuilding::BaseBuilding() {}
-vc::BaseBuilding::~BaseBuilding() {}
+#include "../shared.h"
 
-void vc::BaseBuilding::Deserialize( Serializer *read )
+namespace vc
 {
-	SuperClass::Deserialize( read );
-}
-
-void vc::BaseBuilding::Serialize( vc::Serializer *write )
-{
-	SuperClass::Serialize( write );
-}
-
-void vc::BaseBuilding::Draw( const vc::Camera &camera )
-{
-	Entity::Draw( camera );
-
-	if ( !ShouldDraw( camera ) )
+	class BitmapFont
 	{
-		return;
-	}
+	public:
+		inline BitmapFont() = default;
+		~BitmapFont();
 
-	al_draw_filled_rectangle( origin.x + 32, origin.y + 32, origin.x - 32, origin.y - 32, al_map_rgb( 64, 64, 64 ) );
-	//al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, "Building" );
-}
+		bool LoadFromFile( uint8_t cw, uint8_t ch, const char *path );
+
+		void DrawCharacter( int x, int y, char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) );
+		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false );
+
+	private:
+		static constexpr unsigned int MAX_CHARS = 128;
+
+		uint8_t cw_{ 0 };
+		uint8_t ch_{ 0 };
+
+		struct Character
+		{
+			std::vector< uint8_t > pixels;
+		} characters_[ MAX_CHARS ];
+	};
+}// namespace vc

@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "LoaderPkg.h"
 #include "GameMode.h"
 #include "EntityManager.h"
+#include "BitmapFont.h"
 
 // Draw Routines
 
@@ -362,9 +363,7 @@ void vc::App::InitializeDisplay()
 	windowWidth	 = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
-#if !defined( DEBUG_BUILD )
 	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
-#endif
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{
@@ -372,10 +371,8 @@ void vc::App::InitializeDisplay()
 	}
 
 	// Get the actual width and height
-#if !defined( DEBUG_BUILD )
 	windowWidth	 = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
-#endif
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
 
@@ -388,7 +385,6 @@ void vc::App::InitializeDisplay()
 
 	// Check to see how much we need to scale the buffer.
 	int flags = al_get_new_bitmap_flags();
-	//al_add_new_bitmap_flag( ALLEGRO_MAG_LINEAR );
 	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( buffer == nullptr )
 	{
@@ -428,14 +424,13 @@ void vc::App::Draw()
 	gameMode->Draw();
 
 	// Draw our debug data
-	float y = 0.0f;
+	int x = 8, y = 8;
 	for ( auto const &i : performanceTimers )
 	{
-		al_draw_textf( defaultFont, al_map_rgb( 255, 0, 0 ), 0.0f, y, 0, "%s: %f", i.first.c_str(), i.second.GetTimeTaken() );
-		y += al_get_font_line_height( defaultFont );
+		char buf[ 256 ];
+		snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
+		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 	}
-
-	// todo: update output buffer with pal
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
@@ -633,6 +628,12 @@ vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 
 void vc::App::PrecacheResources()
 {
+	defaultBitmapFont_ = new BitmapFont();
+	if ( !defaultBitmapFont_->LoadFromFile( 4, 8, "CHARSET.DTA" ) )
+	{
+		Error( "Failed to load default charset!\n" );
+	}
+
 	imageManager->PrecacheResources();
 }
 

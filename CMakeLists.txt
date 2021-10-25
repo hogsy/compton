@@ -46,36 +46,35 @@ add_definitions(-DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}")
 add_definitions(-DGIT_BRANCH="${GIT_BRANCH}")
 
 file(GLOB SOURCE_FILES
-        src/shared.h
-
-        src/engine/*.cpp
         src/engine/GUI/*.cpp
-        src/engine/*.h
-
         src/game/*.cpp
         src/game/Entities/*.cpp
-        src/game/Entities/ai/Brain.cpp
-        src/game/Entities/ai/Sensor.cpp
-        src/game/*.h
         )
 
 add_executable(Compton ${SOURCE_FILES}
         # engine
-        src/engine/SpriteSheet.cpp
-        src/engine/JsonReader.cpp
-        src/engine/ScriptParser.cpp
-        src/engine/ImageManager.cpp
+        src/engine/App.cpp
+        src/engine/BitmapFont.cpp
+        src/engine/Entity.cpp
+        src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
+        src/engine/ImageManager.cpp
+        src/engine/JsonReader.cpp
         src/engine/LoaderPkg.cpp
-        src/engine/Serializer.cpp
         src/engine/PlayerManager.cpp
         src/engine/Random.cpp
+        src/engine/ScriptParser.cpp
+        src/engine/Serializer.cpp
+        src/engine/SpriteSheet.cpp
+
+        # game
+        src/game/Entities/ai/Brain.cpp
+        src/game/Entities/ai/Sensor.cpp
 
         # duktape
         src/3rdparty/duktape-2.2.0/src/duktape.c
 
         src/game/Entities/BaseCreature.cpp
-        src/game/Entities/ai/Brain.cpp
         src/game/Entities/Tree.cpp
         src/game/Entities/DebugWaypoint.cpp
         src/game/Utility.cpp

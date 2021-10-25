@@ -116,6 +116,7 @@ void vc::ImageManager::PrecacheResources()
 	CachePalettes();
 	CacheSprites();
 
+#if 0
 	for ( unsigned int i = 0; i < NUM_SPRITE_GROUPS; ++i )
 	{
 		for ( unsigned int j = 0; j < spriteGroups_[ i ].numSprites; ++j )
@@ -123,6 +124,7 @@ void vc::ImageManager::PrecacheResources()
 			ConvertAndExportImage( i, j, "sprites/spr" + std::to_string( i ) + "_" + std::to_string( j ) + ".png" );
 		}
 	}
+#endif
 }
 
 void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNum, const std::string &path )
@@ -170,8 +172,6 @@ void vc::ImageManager::CachePalettes()
 {
 	for ( unsigned int i = 0; i < NUM_PALETTES; ++i )
 	{
-		Print( "Caching palette %d/%d...", i + 1, NUM_PALETTES );
-
 		std::string path = std::to_string( i ) + PALETTE_EXTENSION;
 		PLFile	   *file = PlOpenFile( path.c_str(), false );
 		if ( file == nullptr )
@@ -195,11 +195,6 @@ void vc::ImageManager::CachePalettes()
 		}
 
 		PlCloseFile( file );
-
-		if ( status )
-		{
-			Print( "done!\n" );
-		}
 	}
 }
 
@@ -211,8 +206,6 @@ void vc::ImageManager::CacheSprites()
 {
 	for ( unsigned int i = 0; i < NUM_SPRITE_GROUPS; ++i )
 	{
-		Print( "Caching sprite group %d/%d...", i + 1, NUM_SPRITE_GROUPS );
-
 		std::string numb = std::to_string( i );
 		std::string path = std::string( 3 - numb.length(), '0' ) + numb + SPRITE_EXTENSION;
 		PLFile	   *file = PlOpenFile( path.c_str(), false );
@@ -224,7 +217,7 @@ void vc::ImageManager::CacheSprites()
 
 		bool status;
 		spriteGroups_[ i ].numSprites = PlReadInt16( file, false, &status );
-		spriteGroups_[ i ].sprites.reserve( spriteGroups_[ i ].numSprites );
+		spriteGroups_[ i ].sprites.resize( spriteGroups_[ i ].numSprites );
 		for ( unsigned int j = 0; j < spriteGroups_[ i ].numSprites; ++j )
 		{
 			spriteGroups_[ i ].sprites[ j ] = {
@@ -235,7 +228,7 @@ void vc::ImageManager::CacheSprites()
 			// Reserve pixel buffer size (w*h)
 			unsigned int bufferSize = spriteGroups_[ i ].sprites[ j ].width *
 									  spriteGroups_[ i ].sprites[ j ].height;
-			spriteGroups_[ i ].sprites[ j ].pixels.reserve( bufferSize );
+			spriteGroups_[ i ].sprites[ j ].pixels.resize( bufferSize );
 			// Now save, read in pixels and restore
 			size_t p = PlGetFileOffset( file );
 			if ( !PlFileSeek( file, spriteGroups_[ i ].sprites[ j ].offset, PL_SEEK_SET ) )
@@ -252,10 +245,5 @@ void vc::ImageManager::CacheSprites()
 		}
 
 		PlCloseFile( file );
-
-		if ( status )
-		{
-			Print( "done!\n" );
-		}
 	}
 }

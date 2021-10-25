@@ -39,16 +39,16 @@ namespace vc
 		enum
 		{
 			// Backgrounds
-			IMAGESET_BACKGROUND_START = 0,
-			IMAGESET_BACKGROUND_END	  = 127,
+			SPR_BACKGROUND_START = 0,
+			SPR_BACKGROUND_END	 = 127,
 
 			// Creatures
-			IMAGESET_NORN_DEFAULT = 128,
+			SPR_NORN_DEFAULT	= 128,
+			SPR_GRENDAL_DEFAULT = 135,
 
 			// Other
-			IMAGESET_UI			 = 133,
-			IMAGESET_BALLOON	 = 134,
-			IMAGESET_UNKNOWN_135 = 135,
+			SPR_UI		= 133,
+			SPR_BALLOON = 134,
 		};
 
 		enum
@@ -63,6 +63,7 @@ namespace vc
 		static constexpr const char	*PALETTE_EXTENSION = ".PAL";
 		static constexpr unsigned int NUM_PALETTES		= 5;
 		// todo: multiple palettes likely for different tod, establish link...
+	public:
 		struct Palette
 		{
 			struct Index
@@ -73,10 +74,22 @@ namespace vc
 			};
 			Index colours[ 256 ];
 		};
+		inline const Palette *GetPalette( uint8_t index )
+		{
+			if ( index >= NUM_PALETTES )
+			{
+				Warning( "Invalid palette index: %u\n", index );
+				return nullptr;
+			}
+
+			return &colourGroups_[ index ];
+		}
+
+	private:
 		Palette colourGroups_[ NUM_PALETTES ];
 
 		static constexpr const char	*SPRITE_EXTENSION	= ".SPR";
-		static constexpr unsigned int NUM_SPRITE_GROUPS = 135;
+		static constexpr unsigned int NUM_SPRITE_GROUPS = 136;
 		struct SpriteGroup
 		{
 			uint16_t numSprites{ 0 };

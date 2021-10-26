@@ -32,36 +32,53 @@ namespace vc
 
 		void ConvertAndExportImage( unsigned int set, unsigned int sNum, const std::string &path );
 
-	private:
-		void CachePalettes();
-		void CacheSprites();
-
 		enum
 		{
 			// Backgrounds
-			SPR_BACKGROUND_START = 0,
-			SPR_BACKGROUND_END	 = 127,
+			SPR_GROUP_BACKGROUND_START = 0,
+			SPR_GROUP_BACKGROUND_END   = 127,
 
 			// Creatures
-			SPR_NORN_DEFAULT	= 128,
-			SPR_GRENDAL_DEFAULT = 135,
+			SPR_GROUP_NORN_DEFAULT    = 128,
+			SPR_GROUP_GRENDAL_DEFAULT = 135,
 
 			// Other
-			SPR_UI		= 133,
-			SPR_BALLOON = 134,
+			SPR_GROUP_OBJECTS_0 = 130,
+			SPR_GROUP_FRONTEND  = 133,
+			SPR_GROUP_BALLOON   = 134,
+		};
+
+		enum
+		{
+			SPR_CREATURE_HEAD_START        = 0,
+			SPR_CREATURE_HEAD_END          = 23,
+			SPR_CREATURE_TORSO_RIGHT_START = 24,
+			SPR_CREATURE_TORSO_RIGHT_END   = 27,
+			SPR_CREATURE_TORSO_LEFT_START  = 28,
+			SPR_CREATURE_TORSO_LEFT_END    = 31,
+			SPR_CREATURE_TORSO_START       = 24,
+			SPR_CREATURE_TORSO_END         = 33,
+
+			SPR_CURSOR = 0,
+
+			SPR_BALLOON_HANDLE_UP   = 2,
+			SPR_BALLOON_HANDLE_DOWN = 3,
 		};
 
 		enum
 		{
 			COLOUR_GROUP_DAWN,
 			COLOUR_GROUP_DAY,
-
 		};
+
+	private:
+		void CachePalettes();
+		void CacheSprites();
 
 	protected:
 	private:
-		static constexpr const char	*PALETTE_EXTENSION = ".PAL";
-		static constexpr unsigned int NUM_PALETTES		= 5;
+		static constexpr const char  *PALETTE_EXTENSION = ".PAL";
+		static constexpr unsigned int NUM_PALETTES      = 5;
 		// todo: multiple palettes likely for different tod, establish link...
 	public:
 		struct Palette
@@ -88,18 +105,45 @@ namespace vc
 	private:
 		Palette colourGroups_[ NUM_PALETTES ];
 
-		static constexpr const char	*SPRITE_EXTENSION	= ".SPR";
+	public:
+		struct Sprite
+		{
+			uint8_t                width{ 0 };
+			uint8_t                height{ 0 };
+			std::vector< uint8_t > pixels;
+
+			void Draw( int x, int y ) const;
+		};
+
+		/**
+		 * Fetch a sprite from the cache.
+		 * If it doesn't exist, returns null.
+		 */
+		inline const Sprite *GetSprite( uint16_t group, uint16_t id )
+		{
+			if ( group >= NUM_SPRITE_GROUPS )
+			{
+				Warning( "Invalid sprite group %su specified!\n", group );
+				return nullptr;
+			}
+
+			if ( id >= spriteGroups_[ group ].numSprites )
+			{
+				Warning( "Invalid sprite index %su specified!\n", id );
+				return nullptr;
+			}
+
+			return &spriteGroups_[ group ].sprites[ id ];
+		}
+
+		void DrawSprite( uint16_t group, uint16_t id, int x, int y );
+
+	private:
+		static constexpr const char  *SPRITE_EXTENSION  = ".SPR";
 		static constexpr unsigned int NUM_SPRITE_GROUPS = 136;
 		struct SpriteGroup
 		{
-			uint16_t numSprites{ 0 };
-			struct Sprite
-			{
-				uint16_t			   offset{ 0 };
-				uint8_t				   width{ 0 };
-				uint8_t				   height{ 0 };
-				std::vector< uint8_t > pixels;
-			};
+			uint16_t              numSprites{ 0 };
 			std::vector< Sprite > sprites;
 		};
 		SpriteGroup spriteGroups_[ NUM_SPRITE_GROUPS ];

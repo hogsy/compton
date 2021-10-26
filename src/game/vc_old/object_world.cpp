@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 World *game_worldmanager = nullptr;
 
 #define WORLD_NIGHT_START 18// Starting hour for night to roll in.
-#define WORLD_NIGHT_END	  6 // Final hour that night starts rolling out.
+#define WORLD_NIGHT_END   6 // Final hour that night starts rolling out.
 
 /*	Clouds	*/
 
@@ -66,7 +66,7 @@ public:
 
 		position_.Set( ( std::rand() % DISPLAY_WIDTH ) + 1, ( std::rand() % ( DISPLAY_HEIGHT / 2 ) ) + 1 );
 		_damping = DAMP;
-		_jiggle	 = ( float ) plGenerateUniformRandom( JIGGLE );
+		_jiggle  = ( float ) plGenerateUniformRandom( JIGGLE );
 	}
 
 	CloudObject( ALLEGRO_BITMAP *sprite, bool direction ) : Sprite( sprite )
@@ -76,20 +76,20 @@ public:
 
 		position_.Set( ( direction ? -( float ) w : DISPLAY_WIDTH ), std::rand() % ( DISPLAY_HEIGHT / 2 ) );
 		_damping = DAMP;
-		_jiggle	 = ( float ) plGenerateUniformRandom( JIGGLE );
+		_jiggle  = ( float ) plGenerateUniformRandom( JIGGLE );
 	}
 
 	void Move( float speed )
 	{
 		position_.x += speed / _damping;
 		static double s = std::rand() % 100;
-		angle			= std::cos( ( float ) s++ / 1000 ) * 0.05f;
+		angle           = std::cos( ( float ) s++ / 1000 ) * 0.05f;
 	}
 
 	void Draw() override
 	{
 		PLVector2 oldpos = position_;
-		position_.y		 = ( std::sin( ( float ) vc::GetApp()->GetNumOfTicks() / ( 120 / _jiggle ) ) * 5 + 5 ) + position_.y;
+		position_.y      = ( std::sin( ( float ) vc::GetApp()->GetNumOfTicks() / ( 120 / _jiggle ) ) * 5 + 5 ) + position_.y;
 
 		position_.x -= game.camera_x;
 		position_.y -= game.camera_y;
@@ -133,7 +133,7 @@ public:
 	EnvironmentBackground()
 	{
 		plScanDirectory( "./bin/sprites/environment/backgrounds/", "night.png",
-						 EnvironmentBackground::LoadNightBackground, false );
+		                 EnvironmentBackground::LoadNightBackground, false );
 
 		current_background = nullptr;
 	}
@@ -202,8 +202,8 @@ typedef struct SkyColourCycle
 SkyColourCycle sky_colourcycle[] =
 		{
 				// 	TOP					BOTTOM
-				{ { 20, 20, 20 }, { 0.33, 85, 85 }, 0 },	 // MIDNIGHT
-				{ { 29, 38, 55 }, { 0.96, 140, 72 }, 6 },	 // SUNRISE
+				{ { 20, 20, 20 }, { 0.33, 85, 85 }, 0 },     // MIDNIGHT
+				{ { 29, 38, 55 }, { 0.96, 140, 72 }, 6 },    // SUNRISE
 				{ { 118, 139, 156 }, { 0.96, 167, 80 }, 12 },// MIDDAY
 				{ { 99, 166, 253 }, { 0.87, 142, 109 }, 18 },// SUNSET
 };
@@ -259,11 +259,11 @@ World::World() : wind_speed_( DEFAULT_WIND_SPEED ),
 		cloud_sprites_[ i ] = vc::GetApp()->LoadImage( std::string( "clouds/" + std::to_string( i ) + ".png" ).c_str() );
 	}
 
-	sky_top_		  = sky_colourcycle[ 0 ].top;
-	sky_toptarget_	  = sky_colourcycle[ 1 ].top;
-	sky_bottom_		  = sky_colourcycle[ 0 ].bottom;
+	sky_top_          = sky_colourcycle[ 0 ].top;
+	sky_toptarget_    = sky_colourcycle[ 1 ].top;
+	sky_bottom_       = sky_colourcycle[ 0 ].bottom;
 	sky_bottomtarget_ = al_map_rgb( 0, 0, 0 );//sky_colourcycle[1].bottom;
-	sky_background_	  = vc::GetApp()->LoadImage( "sprites.png" );
+	sky_background_   = vc::GetApp()->LoadImage( "sprites.png" );
 
 	// Make initial set of clouds.
 	for ( unsigned int i = 0; i < cloud_density_; i++ )
@@ -330,7 +330,7 @@ void World::Tick()
 		{
 			if ( _hour >= i.hour )
 			{
-				sky_toptarget_	  = i.top;
+				sky_toptarget_    = i.top;
 				sky_bottomtarget_ = i.bottom;
 
 				difference = i.hour / _hour;
@@ -340,14 +340,14 @@ void World::Tick()
 	if ( _hour > 24 )
 	{
 		_day += 1;
-		_hour	= 0;
+		_hour   = 0;
 		_minute = 0;
 		_second = 0;
 	}
 	if ( _day > 6 )
 	{
-		_day	= 0;
-		_hour	= 0;
+		_day    = 0;
+		_hour   = 0;
 		_minute = 0;
 		_second = 0;
 	}

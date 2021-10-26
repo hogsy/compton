@@ -51,14 +51,14 @@ namespace vc
 	protected:
 		Sex mySex{ Sex::INTERSEX };
 
-		ai::Brain myBrain;
+		ai::Brain  myBrain;
 		ai::Sensor mySensors[ ai::Sensor::MAX_SENSOR_TYPES ];
 
 		unsigned int age{ 0 };
 		unsigned int maxAge{ 100 };
 		unsigned int generation{ 0 };
 
-		bool		 isPregnant{ false };
+		bool         isPregnant{ false };
 		unsigned int timePregnant{ 0 };
 
 		int stamina{ 100 };

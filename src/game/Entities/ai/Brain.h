@@ -44,7 +44,7 @@ namespace vc
 			struct Need
 			{
 				const char *description;
-				double		value;
+				double      value;
 			};
 			Need food{ "food", 0.0 };
 			Need water{ "water", 0.0 };
@@ -130,10 +130,10 @@ namespace vc
 
 			struct Directive
 			{
-				double		 weight{ 0 };
-				bool		 isCompleted{ false };
+				double       weight{ 0 };
+				bool         isCompleted{ false };
 				hei::Vector2 targetPosition;
-				std::string	 description;
+				std::string  description;
 			};
 			std::vector< Directive > myDirectives;
 		};

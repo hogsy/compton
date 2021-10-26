@@ -36,7 +36,7 @@ public:
 	void Tick();
 	void Draw();
 
-	void		SetName( std::string name );
+	void        SetName( std::string name );
 	std::string GetName() { return name_; }
 
 	unsigned int GetSecond() { return _second; }
@@ -65,11 +65,11 @@ protected:
 private:
 	World();
 
-	double		 time_;
+	double       time_;
 	unsigned int year_, m_Month, _day, _hour, _minute, _second;
 
-	ALLEGRO_COLOR	sky_top_{}, sky_bottom_{};
-	ALLEGRO_COLOR	sky_toptarget_{}, sky_bottomtarget_{};
+	ALLEGRO_COLOR   sky_top_{}, sky_bottom_{};
+	ALLEGRO_COLOR   sky_toptarget_{}, sky_bottomtarget_{};
 	ALLEGRO_BITMAP *sky_background_;
 
 	unsigned int width_, height_;
@@ -82,9 +82,9 @@ private:
 
 	std::string name_;// The name of the planet.
 
-	std::vector< CloudObject >		m_Clouds;
+	std::vector< CloudObject >      m_Clouds;
 	std::vector< ALLEGRO_BITMAP * > cloud_sprites_;
-	unsigned int					cloud_density_;
+	unsigned int                    cloud_density_;
 
 public:
 	static World *Get()

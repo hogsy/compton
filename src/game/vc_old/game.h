@@ -42,11 +42,11 @@ extern GameVars game;
 enum
 {
 	GAME_MENU_START,  // "Press start to begin the game!"
-	GAME_MENU_MAIN,	  // Main Menu
-	GAME_MENU_NEW,	  // New Game
-	GAME_MENU_LOAD,	  // Load Game
+	GAME_MENU_MAIN,   // Main Menu
+	GAME_MENU_NEW,    // New Game
+	GAME_MENU_LOAD,   // Load Game
 	GAME_MENU_OPTIONS,// Options
-	GAME_MENU_QUIT,	  // Quit
+	GAME_MENU_QUIT,   // Quit
 
 	GAME_MENU_PAUSED,// Paused screen
 

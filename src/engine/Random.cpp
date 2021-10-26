@@ -25,8 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 int vc::random::GenerateRandomInteger( int min, int max )
 {
-	static std::random_device		randomDevice;
-	static std::mt19937				generator( randomDevice() );
+	static std::random_device       randomDevice;
+	static std::mt19937             generator( randomDevice() );
 	std::uniform_int_distribution<> distribution( min, max );
 	return distribution( generator );
 }
@@ -61,16 +61,16 @@ const char *vc::random::GenerateRandomName( char *buffer, size_t size )
 	};
 
 	unsigned int maxSize = GenerateRandomInteger( 4, size - 1 );
-	char *		 p		 = buffer;
+	char        *p       = buffer;
 	for ( size_t i = 0; i < maxSize; i += 2 )
 	{
 		unsigned int s = GenerateRandomInteger( 0, PL_MAX_ARRAY_INDEX( segments ) );
-		*p++		   = segments[ s ][ 0 ];
-		*p++		   = segments[ s ][ 1 ];
+		*p++           = segments[ s ][ 0 ];
+		*p++           = segments[ s ][ 1 ];
 	}
 
 	// Ensure the first character is uppercase and null termination.
-	buffer[ 0 ]		  = std::toupper( buffer[ 0 ] );
+	buffer[ 0 ]       = std::toupper( buffer[ 0 ] );
 	buffer[ maxSize ] = '\0';
 	return buffer;
 }
@@ -134,9 +134,9 @@ double vc::random::PerlinNoise::Noise( double x, double y, double z )
 
 	// And add blended results from 8 corners of cube
 	return Lerp( w, Lerp( v, Lerp( u, Grad( p[ AA ], x, y, z ), Grad( p[ BA ], x - 1, y, z ) ), Lerp( u, Grad( p[ AB ], x, y - 1, z ), Grad( p[ BB ], x - 1, y - 1, z ) ) ),
-				 Lerp( v, Lerp( u, Grad( p[ AA + 1 ], x, y, z - 1 ), Grad( p[ BA + 1 ], x - 1, y, z - 1 ) ),
-					   Lerp( u, Grad( p[ AB + 1 ], x, y - 1, z - 1 ),
-							 Grad( p[ BB + 1 ], x - 1, y - 1, z - 1 ) ) ) );
+	             Lerp( v, Lerp( u, Grad( p[ AA + 1 ], x, y, z - 1 ), Grad( p[ BA + 1 ], x - 1, y, z - 1 ) ),
+	                   Lerp( u, Grad( p[ AB + 1 ], x, y - 1, z - 1 ),
+	                         Grad( p[ BB + 1 ], x - 1, y - 1, z - 1 ) ) ) );
 }
 
 double vc::random::PerlinNoise::Fade( double t )
@@ -152,9 +152,9 @@ double vc::random::PerlinNoise::Lerp( double t, double a, double b )
 double vc::random::PerlinNoise::Grad( int hash, double x, double y, double z )
 {
 	// Convert lo 4 bits of hash code into 12 gradient directions
-	int	   h = hash & 15;
+	int    h = hash & 15;
 	double u = h < 8 ? x : y,
 		   v = h < 4 ? y : h == 12 || h == 14 ? x
-											  : z;
+	                                          : z;
 	return ( ( h & 1 ) == 0 ? u : -u ) + ( ( h & 2 ) == 0 ? v : -v );
 }

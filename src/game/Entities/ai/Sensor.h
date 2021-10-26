@@ -51,4 +51,4 @@ namespace vc::ai
 
 		Type myType{ Type::SIGHT };
 	};
-}
+}// namespace vc::ai

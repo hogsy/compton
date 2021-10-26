@@ -32,11 +32,11 @@ public:
 
 	virtual void Impact( Agent *agent );
 
-	PLVector2	 GetVelocity() { return velocity_; }
+	PLVector2    GetVelocity() { return velocity_; }
 	virtual void SetVelocity( PLVector2 vel )
 	{
 		old_velocity_ = velocity_;
-		velocity_	  = vel;
+		velocity_     = vel;
 	}
 
 protected:

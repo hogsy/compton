@@ -79,17 +79,17 @@ void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_
 {
 	ALLEGRO_VERTEX v[ 4 ];
 	memset( v, 0, sizeof( ALLEGRO_VERTEX ) * 4 );
-	v[ 0 ].x	 = x;
-	v[ 0 ].y	 = y;
+	v[ 0 ].x     = x;
+	v[ 0 ].y     = y;
 	v[ 0 ].color = top;
-	v[ 1 ].x	 = x + w;
-	v[ 1 ].y	 = y;
+	v[ 1 ].x     = x + w;
+	v[ 1 ].y     = y;
 	v[ 1 ].color = top;
-	v[ 2 ].x	 = x;
-	v[ 2 ].y	 = y + h;
+	v[ 2 ].x     = x;
+	v[ 2 ].y     = y + h;
 	v[ 2 ].color = bottom;
-	v[ 3 ].x	 = x + w;
-	v[ 3 ].y	 = y + h;
+	v[ 3 ].x     = x + w;
+	v[ 3 ].y     = y + h;
 	v[ 3 ].color = bottom;
 
 	al_draw_prim( v, nullptr, nullptr, 0, 4, ALLEGRO_PRIM_TRIANGLE_STRIP );
@@ -116,7 +116,7 @@ void  operator delete( void *p ) throw() { PlFree( p ); }
 void  operator delete[]( void *p ) throw() { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
 static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
-static void	 AlFree( void *p, int, const char *, const char	*) { PlFree( p ); }
+static void  AlFree( void *p, int, const char *, const char  *) { PlFree( p ); }
 static void *AlReAlloc( void *p, size_t n, int, const char *, const char * ) { return PlReAllocA( p, n ); }
 static void *AlCAlloc( size_t c, size_t n, int, const char *, const char * ) { return PlCAllocA( c, n ); }
 
@@ -176,8 +176,8 @@ vc::App::App( int argc, char **argv )
 	// And now initialize Allegro
 
 	uint32_t version = al_get_allegro_version();
-	uint32_t major	 = version >> 24;
-	uint32_t minor	 = ( version >> 16 ) & 255;
+	uint32_t major   = version >> 24;
+	uint32_t minor   = ( version >> 16 ) & 255;
 	Print( "Initializing Allegro %d.%d\n", major, minor );
 	if ( !al_init() )
 	{
@@ -188,8 +188,7 @@ vc::App::App( int argc, char **argv )
 			AlMAlloc,
 			AlFree,
 			AlReAlloc,
-			AlCAlloc
-	};
+			AlCAlloc };
 	al_set_memory_interface( &memoryInterface );
 
 	if ( !al_install_mouse() )
@@ -258,7 +257,7 @@ void vc::App::Loop()
 ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size )
 {
 	std::string fullName = std::string( path ) + ":" + std::to_string( size );
-	auto		i		 = fonts.find( fullName );
+	auto        i        = fonts.find( fullName );
 	if ( i != fonts.end() )
 	{
 		return i->second;
@@ -360,18 +359,20 @@ void vc::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
-	windowWidth	 = DISPLAY_WIDTH;
+	windowWidth  = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
-	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{
 		Error( "Failed to initialize display!\n" );
 	}
 
+	//al_resize_display( alDisplay, 1024, 768 );
+
 	// Get the actual width and height
-	windowWidth	 = al_get_display_width( alDisplay );
+	windowWidth  = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
@@ -385,15 +386,15 @@ void vc::App::InitializeDisplay()
 
 	// Check to see how much we need to scale the buffer.
 	int flags = al_get_new_bitmap_flags();
-	buffer = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	buffer    = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( buffer == nullptr )
 	{
 		Error( "Failed to create screen buffer!\n" );
 	}
 	al_set_new_bitmap_flags( flags );
 
-	int sx	  = windowWidth / DISPLAY_WIDTH;
-	int sy	  = windowHeight / DISPLAY_HEIGHT;
+	int sx    = windowWidth / DISPLAY_WIDTH;
+	int sy    = windowHeight / DISPLAY_HEIGHT;
 	int scale = std::min( sx, sy );
 
 	scaleW = DISPLAY_WIDTH * scale;
@@ -421,6 +422,8 @@ void vc::App::Draw()
 
 	// Now draw everything we want
 
+	al_lock_bitmap( buffer, al_get_bitmap_format( buffer ), ALLEGRO_LOCK_READWRITE );
+
 	gameMode->Draw();
 
 	// Draw our debug data
@@ -431,6 +434,8 @@ void vc::App::Draw()
 		snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
 		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 	}
+
+	al_unlock_bitmap( buffer );
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
@@ -504,6 +509,13 @@ void vc::App::Tick()
 	switch ( event.type )
 	{
 		default: break;
+
+		case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
+			al_hide_mouse_cursor( alDisplay );
+			break;
+		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
+			al_show_mouse_cursor( alDisplay );
+			break;
 
 		case ALLEGRO_EVENT_TIMER:
 			numTicks++;

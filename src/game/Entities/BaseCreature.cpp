@@ -42,16 +42,16 @@ void vc::BaseCreature::Spawn()
 	SuperClass::Spawn();
 
 	// Age
-	age		   = random::GenerateRandomInteger( 1, 50 );
-	maxAge	   = random::GenerateRandomInteger( age, age + 50 );
+	age        = random::GenerateRandomInteger( 1, 50 );
+	maxAge     = random::GenerateRandomInteger( age, age + 50 );
 	generation = random::GenerateRandomInteger( 1, 10 );
 
 	// Health
-	myHealth	= random::GenerateRandomInteger( 50, 100 );
+	myHealth    = random::GenerateRandomInteger( 50, 100 );
 	myMaxHealth = random::GenerateRandomInteger( myHealth, myHealth + 100 );
 
 	// Stamina
-	stamina	   = random::GenerateRandomInteger( 30, 100 );
+	stamina    = random::GenerateRandomInteger( 30, 100 );
 	maxStamina = random::GenerateRandomInteger( stamina, stamina + 100 );
 
 	// Generate a random sex for the creature
@@ -95,13 +95,13 @@ void vc::BaseCreature::Deserialize( vc::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	myHealth	= read->ReadInteger();
+	myHealth    = read->ReadInteger();
 	myMaxHealth = read->ReadInteger();
 
-	stamina	   = read->ReadInteger();
+	stamina    = read->ReadInteger();
 	maxStamina = read->ReadInteger();
 
-	experience	  = read->ReadInteger();
+	experience    = read->ReadInteger();
 	maxExperience = read->ReadInteger();
 
 	mySex = static_cast< Sex >( read->ReadInteger() );

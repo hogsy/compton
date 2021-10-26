@@ -17,7 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "../shared.h"
+
 #include "ImageManager.h"
+#include "GameMode.h"
 
 static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
 {
@@ -41,7 +43,7 @@ static ALLEGRO_BITMAP *ImageBitmap_ConvertPlatformImageToAllegroBitmap( PLImage 
 		Error( "Failed to create bitmap!\n" );
 	}
 
-	int					   pixelFormat	= ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( image->format );
+	int                    pixelFormat  = ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( image->format );
 	ALLEGRO_LOCKED_REGION *bitmapRegion = al_lock_bitmap( bitmap, pixelFormat, ALLEGRO_LOCK_WRITEONLY );
 	if ( bitmapRegion == nullptr )
 	{
@@ -53,9 +55,9 @@ static ALLEGRO_BITMAP *ImageBitmap_ConvertPlatformImageToAllegroBitmap( PLImage 
 		for ( int x = 0; x < image->width; ++x )
 		{
 			uint8_t *sPos = ( uint8_t * ) ( bitmapRegion->data ) + ( bitmapRegion->pitch * y ) + ( x * bitmapRegion->pixel_size );
-			sPos[ 3 ]	  = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size ];
-			sPos[ 2 ]	  = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 1 ];
-			sPos[ 1 ]	  = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 2 ];
+			sPos[ 3 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size ];
+			sPos[ 2 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 1 ];
+			sPos[ 1 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 2 ];
 			if ( bitmapRegion->pixel_size > 3 )
 			{
 				sPos[ 0 ] = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 3 ];
@@ -141,7 +143,7 @@ void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNu
 		return;
 	}
 
-	const SpriteGroup::Sprite *sprite = &spriteGroups_[ set ].sprites[ sNum ];
+	const Sprite *sprite = &spriteGroups_[ set ].sprites[ sNum ];
 
 	PLImage *image = PlCreateImage( nullptr, sprite->width, sprite->height, PL_COLOURFORMAT_RGBA, PL_IMAGEFORMAT_RGBA8 );
 	if ( image == nullptr )
@@ -153,7 +155,7 @@ void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNu
 	unsigned int size = sprite->width * sprite->height;
 	for ( unsigned int i = 0, j = 0; j < size; i += 4, j++ )
 	{
-		image->data[ 0 ][ i ]	  = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].r;
+		image->data[ 0 ][ i ]     = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].r;
 		image->data[ 0 ][ i + 1 ] = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].g;
 		image->data[ 0 ][ i + 2 ] = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].b;
 		image->data[ 0 ][ i + 3 ] = ( sprite->pixels[ j ] == 0 ) ? 0 : 255;
@@ -173,7 +175,7 @@ void vc::ImageManager::CachePalettes()
 	for ( unsigned int i = 0; i < NUM_PALETTES; ++i )
 	{
 		std::string path = std::to_string( i ) + PALETTE_EXTENSION;
-		PLFile	   *file = PlOpenFile( path.c_str(), false );
+		PLFile     *file = PlOpenFile( path.c_str(), false );
 		if ( file == nullptr )
 		{
 			Warning( "failed to load palette: %s\n", PlGetError() );
@@ -208,7 +210,7 @@ void vc::ImageManager::CacheSprites()
 	{
 		std::string numb = std::to_string( i );
 		std::string path = std::string( 3 - numb.length(), '0' ) + numb + SPRITE_EXTENSION;
-		PLFile	   *file = PlOpenFile( path.c_str(), false );
+		PLFile     *file = PlOpenFile( path.c_str(), false );
 		if ( file == nullptr )
 		{
 			Warning( "failed to load sprite group: %s\n", PlGetError() );
@@ -220,18 +222,20 @@ void vc::ImageManager::CacheSprites()
 		spriteGroups_[ i ].sprites.resize( spriteGroups_[ i ].numSprites );
 		for ( unsigned int j = 0; j < spriteGroups_[ i ].numSprites; ++j )
 		{
+			uint16_t offset = ( uint16_t ) PlReadInt16( file, false, &status );
 			spriteGroups_[ i ].sprites[ j ] = {
-					( uint16_t ) PlReadInt16( file, false, &status ),// offset
-					( uint8_t ) PlReadInt8( file, &status ),		 // width
-					( uint8_t ) PlReadInt8( file, &status )			 // height
+					( uint8_t ) PlReadInt8( file, &status ),         // width
+					( uint8_t ) PlReadInt8( file, &status )          // height
 			};
+
 			// Reserve pixel buffer size (w*h)
 			unsigned int bufferSize = spriteGroups_[ i ].sprites[ j ].width *
-									  spriteGroups_[ i ].sprites[ j ].height;
+			                          spriteGroups_[ i ].sprites[ j ].height;
 			spriteGroups_[ i ].sprites[ j ].pixels.resize( bufferSize );
+
 			// Now save, read in pixels and restore
 			size_t p = PlGetFileOffset( file );
-			if ( !PlFileSeek( file, spriteGroups_[ i ].sprites[ j ].offset, PL_SEEK_SET ) )
+			if ( !PlFileSeek( file, offset, PL_SEEK_SET ) )
 			{
 				Warning( "failed to seek to offset: %s\n", PlGetError() );
 				break;
@@ -245,5 +249,51 @@ void vc::ImageManager::CacheSprites()
 		}
 
 		PlCloseFile( file );
+	}
+}
+
+void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y )
+{
+	const Sprite *sprite = GetSprite( group, id );
+	if ( sprite == nullptr )
+	{
+		return;
+	}
+
+	sprite->Draw( x, y );
+}
+
+void vc::ImageManager::Sprite::Draw( int x, int y ) const
+{
+	GameMode::TimeOfDay timeOfDay = GetApp()->GetGameMode()->GetTimeOfDay();
+	const Palette *palette = GetApp()->GetImageManager()->GetPalette( ( unsigned int ) timeOfDay );
+	for ( unsigned int row = 0; row < width; ++row )
+	{
+		for ( unsigned int column = 0; column < height; ++column )
+		{
+			int dx = x + row;
+			if ( dx < 0 || dx > DISPLAY_WIDTH )
+			{
+				continue;
+			}
+
+			int dy = y + column;
+			if ( dy < 0 || dy > DISPLAY_HEIGHT )
+			{
+				continue;
+			}
+
+			uint8_t pixel = pixels[ row + column * width ];
+			if ( pixel == 0 )
+			{
+				continue;
+			}
+
+			uint8_t r = palette->colours[ pixel ].r;
+			uint8_t g = palette->colours[ pixel ].g;
+			uint8_t b = palette->colours[ pixel ].b;
+
+			al_put_pixel( x + row, y + column, al_map_rgb( r, g, b ) );
+		}
 	}
 }

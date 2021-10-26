@@ -29,17 +29,17 @@ namespace vc
 			Player( const std::string &sName ) : name( sName ) {}
 
 			std::string name;
-			Entity *	controlTarget{ nullptr };
+			Entity     *controlTarget{ nullptr };
 		};
 
 		unsigned int AddPlayer( const char *name );
-		void		 RemovePlayer( unsigned int id );
+		void         RemovePlayer( unsigned int id );
 
 		void HandleInput();
 
 		typedef std::vector< Player > PlayerList;
-		inline const PlayerList *	  GetPlayers() const { return &players; }
-		inline unsigned int			  GetNumPlayers() const { return players.size(); }
+		inline const PlayerList      *GetPlayers() const { return &players; }
+		inline unsigned int           GetNumPlayers() const { return players.size(); }
 
 		Player *GetPlayer( unsigned int id );
 

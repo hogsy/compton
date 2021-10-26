@@ -39,6 +39,11 @@ namespace vc
 		uint8_t cw_{ 0 };
 		uint8_t ch_{ 0 };
 
+	public:
+		inline uint8_t GetCharacterWidth() const { return cw_; }
+		inline uint8_t GetCharacterHeight() const { return ch_; }
+
+	private:
 		struct Character
 		{
 			std::vector< uint8_t > pixels;

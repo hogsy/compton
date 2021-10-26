@@ -29,7 +29,7 @@ namespace vc
 	protected:
 	private:
 		const std::string &description_;
-		double			   weight_{ 0 };
+		double             weight_{ 0 };
 	};
 
 	class MemoryStorage

@@ -33,7 +33,7 @@ AgentDefinitionLoader::AgentDefinitionLoader( const std::string &path )
 	while ( std::getline( fp, line ) )
 	{
 		std::istringstream iss( line );
-		std::string		   a, b;
+		std::string        a, b;
 		if ( !( iss >> a >> b ) )
 		{
 			break;

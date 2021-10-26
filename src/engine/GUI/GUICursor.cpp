@@ -28,7 +28,15 @@ vc::GUICursor::~GUICursor()
 
 void vc::GUICursor::DrawBackground()
 {
-	if ( !isDrawing || myStyleSheet == nullptr )
+	if ( !isDrawing )
+	{
+		return;
+	}
+
+#if defined( GAME_TYPE_SFC )
+	GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, ImageManager::SPR_CURSOR, x, y );
+#else
+	if ( myStyleSheet == nullptr )
 	{
 		return;
 	}
@@ -46,13 +54,14 @@ void vc::GUICursor::DrawBackground()
 	sh = myStyleSheet->mouseStyles[ currentCursorMode ].h;
 
 	al_draw_bitmap_region( bmp, sx, sy, sw, sh, x, y, 0 );
+#endif
 }
 
 void vc::GUICursor::Tick()
 {
 	GetApp()->GetCursorPosition( &x, &y );
 
-	int		  pX, pY, pW, pH;
+	int       pX, pY, pW, pH;
 	GUIPanel *panel = GetParent();
 	if ( panel == nullptr )
 	{

@@ -30,7 +30,7 @@ extern int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 extern int VC_LOG_WAR;// warning
 extern int VC_LOG_ERR;// error (kills application)
 
-#define VC_LOG	 "debug"
+#define VC_LOG   "debug"
 #define VC_TITLE "Compton"
 
 #ifdef DEBUG_BUILD
@@ -62,6 +62,6 @@ extern int VC_LOG_ERR;// error (kills application)
 
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
 
-#define FONT_SIZE_LARGE	 50
+#define FONT_SIZE_LARGE  50
 #define FONT_SIZE_MEDIUM 32
-#define FONT_SIZE_SMALL	 8
+#define FONT_SIZE_SMALL  8

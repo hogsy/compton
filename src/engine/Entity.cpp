@@ -49,9 +49,9 @@ void vc::Entity::Draw( const Camera &camera )
  */
 void vc::Entity::Deserialize( Serializer *read )
 {
-	origin	 = read->ReadCoordinate();
+	origin   = read->ReadCoordinate();
 	velocity = read->ReadCoordinate();
-	bounds	 = read->ReadCoordinate();
+	bounds   = read->ReadCoordinate();
 }
 
 /**

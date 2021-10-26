@@ -38,8 +38,8 @@ namespace vc
 		struct SpriteRect
 		{
 			char identifier[ 32 ];
-			int	 x, y;
-			int	 w, h;
+			int  x, y;
+			int  w, h;
 		};
 		std::map< std::string, SpriteRect > sprites;
 

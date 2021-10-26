@@ -47,7 +47,6 @@ add_definitions(-DGIT_BRANCH="${GIT_BRANCH}")
 
 file(GLOB SOURCE_FILES
         src/engine/GUI/*.cpp
-        src/game/*.cpp
         src/game/Entities/*.cpp
         )
 
@@ -70,14 +69,17 @@ add_executable(Compton ${SOURCE_FILES}
         # game
         src/game/Entities/ai/Brain.cpp
         src/game/Entities/ai/Sensor.cpp
-
-        # duktape
-        src/3rdparty/duktape-2.2.0/src/duktape.c
-
         src/game/Entities/BaseCreature.cpp
         src/game/Entities/Tree.cpp
         src/game/Entities/DebugWaypoint.cpp
+        src/game/Background.cpp
+        src/game/ConfigLoader.cpp
+        src/game/GameMode.cpp
+        src/game/Terrain.cpp
         src/game/Utility.cpp
+
+        # duktape
+        src/3rdparty/duktape-2.2.0/src/duktape.c
         )
 
 set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
@@ -85,7 +87,6 @@ set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOUR
 target_include_directories(Compton PRIVATE
         src/engine/
         src/game/
-        src/game/desktop/
 
         # 3rd party libraries
         src/3rdparty/

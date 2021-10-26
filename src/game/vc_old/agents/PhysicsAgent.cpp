@@ -28,7 +28,7 @@ void PhysicsAgent::SetupProperties( const AgentDefinitionLoader &adf_loader )
 	SpriteAgent::SetupProperties( adf_loader );
 
 	use_physics_ = adf_loader.GetProperty( "physics" ) == "true";
-	elasticity	 = std::strtof( adf_loader.GetProperty( "elasticity", "0" ).c_str(), nullptr );
+	elasticity   = std::strtof( adf_loader.GetProperty( "elasticity", "0" ).c_str(), nullptr );
 }
 
 void PhysicsAgent::TickPhysics()
@@ -102,7 +102,7 @@ void PhysicsAgent::Impact( Agent *agent )
 		return;
 	}
 
-	float gain	= plClamp( 0, velocity_.Length() * 1.0f, 1 );
+	float gain  = plClamp( 0, velocity_.Length() * 1.0f, 1 );
 	float speed = plClamp( 0.5f, velocity_.Length() * 1.0f, 2 );
 
 	//printf( "speed: %f\n", speed );

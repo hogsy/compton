@@ -74,11 +74,11 @@ void CreatureObject::Simulate()
 		if ( !is_grabbed && engine_vars.mouse_status[ MOUSE_BUTTON_LEFT ] )
 		{
 			if ( ( engine_vars.mouse_state.x / 8 > ( ( position_.x - origin_.x ) - 10 ) ) &&
-				 ( engine_vars.mouse_state.x / 8 < ( ( position_.x - origin_.x ) + 10 ) ) &&
-				 ( engine_vars.mouse_state.y / 8 > ( ( position_.y - origin_.y ) - 10 ) ) &&
-				 ( engine_vars.mouse_state.y / 8 < ( ( position_.y - origin_.y ) + 10 ) ) )
+			     ( engine_vars.mouse_state.x / 8 < ( ( position_.x - origin_.x ) + 10 ) ) &&
+			     ( engine_vars.mouse_state.y / 8 > ( ( position_.y - origin_.y ) - 10 ) ) &&
+			     ( engine_vars.mouse_state.y / 8 < ( ( position_.y - origin_.y ) + 10 ) ) )
 			{
-				is_grabbed		 = true;
+				is_grabbed       = true;
 				game.is_grabbing = true;
 			}
 		}
@@ -89,15 +89,15 @@ void CreatureObject::Simulate()
 		static PLVector2 old_position = { 0, 0 };
 		if ( !engine_vars.mouse_status[ MOUSE_BUTTON_LEFT ] )
 		{
-			is_grabbed		 = false;
+			is_grabbed       = false;
 			game.is_grabbing = false;
-			velocity_		 = ( old_position - position_ ) * -1;
+			velocity_        = ( old_position - position_ ) * -1;
 			return;
 		}
 
 		old_position = position_;
-		position_.x	 = engine_vars.mouse_state.x / 8;
-		position_.y	 = engine_vars.mouse_state.y / 8;
+		position_.x  = engine_vars.mouse_state.x / 8;
+		position_.y  = engine_vars.mouse_state.y / 8;
 		return;
 	}
 
@@ -165,7 +165,7 @@ void CreatureToy::Simulate()
 }
 
 CreatureDrink *drink = nullptr;
-CreatureToy *  toy	 = nullptr;
+CreatureToy   *toy   = nullptr;
 
 ///////////////////////////////////////////////////////////////////
 
@@ -180,7 +180,7 @@ Creature::Creature() : Sprite( engine::LoadImage( "sprites" ) )
 
 	is_grabbed = false;
 
-	delay_look_	   = rand() % 100 + 200;
+	delay_look_    = rand() % 100 + 200;
 	delay_movement = rand() % 500 + 500;
 	delay_lastmove = 100;
 
@@ -223,7 +223,7 @@ void Creature::Draw()
 	{
 		if ( cloud == nullptr )
 		{
-			cloud			 = new SnoozeCloud();
+			cloud            = new SnoozeCloud();
 			cloud->position_ = position_;
 			cloud->position_.y -= 9;
 		}
@@ -242,11 +242,11 @@ void Creature::Draw()
 	{
 		s_x = 64;
 
-#define y_left	  11
-#define y_right	  22
+#define y_left    11
+#define y_right   22
 #define y_upleft  33
 #define y_upright 44
-#define y_up	  0
+#define y_up      0
 
 		switch ( target_look_ )
 		{
@@ -264,13 +264,13 @@ void Creature::Draw()
 					}
 
 					if ( ( relative_mousepos( x ) < ( position_.x - 20 ) &&
-						   ( relative_mousepos( y ) < ( position_.y - 20 ) ) ) )
+					       ( relative_mousepos( y ) < ( position_.y - 20 ) ) ) )
 					{
 						s_x = 108;
 						s_y = y_upleft;
 					}
 					else if ( ( relative_mousepos( x ) > ( position_.x + 20 ) &&
-								( relative_mousepos( y ) < ( position_.y - 20 ) ) ) )
+					            ( relative_mousepos( y ) < ( position_.y - 20 ) ) ) )
 					{
 						s_x = 108;
 						s_y = y_upright;
@@ -302,13 +302,13 @@ void Creature::Draw()
 				}
 
 				if ( ( look_object_->position_.x < ( position_.x - 8 ) &&
-					   ( look_object_->position_.y < ( position_.y - 8 ) ) ) )
+				       ( look_object_->position_.y < ( position_.y - 8 ) ) ) )
 				{
 					s_x = 108;
 					s_y = y_upleft;
 				}
 				else if ( ( look_object_->position_.x > ( position_.x + 8 ) &&
-							( look_object_->position_.y < ( position_.y - 8 ) ) ) )
+				            ( look_object_->position_.y < ( position_.y - 8 ) ) ) )
 				{
 					s_x = 108;
 					s_y = y_upright;
@@ -386,11 +386,11 @@ void Creature::PhysicsTick()
 		if ( !is_grabbed && engine_vars.mouse_status[ MOUSE_BUTTON_LEFT ] )
 		{
 			if ( ( relative_mousepos( x ) > ( ( position_.x - origin_.x ) - 10 ) ) &&
-				 ( relative_mousepos( x ) < ( ( position_.x - origin_.x ) + 10 ) ) &&
-				 ( relative_mousepos( y ) > ( ( position_.y - origin_.y ) - 10 ) ) &&
-				 ( relative_mousepos( y ) < ( ( position_.y - origin_.y ) + 10 ) ) )
+			     ( relative_mousepos( x ) < ( ( position_.x - origin_.x ) + 10 ) ) &&
+			     ( relative_mousepos( y ) > ( ( position_.y - origin_.y ) - 10 ) ) &&
+			     ( relative_mousepos( y ) < ( ( position_.y - origin_.y ) + 10 ) ) )
 			{
-				is_grabbed		 = true;
+				is_grabbed       = true;
 				game.is_grabbing = true;
 			}
 		}
@@ -401,15 +401,15 @@ void Creature::PhysicsTick()
 		static PLVector2 old_position = { 0, 0 };
 		if ( !engine_vars.mouse_status[ MOUSE_BUTTON_LEFT ] )
 		{
-			is_grabbed		 = false;
+			is_grabbed       = false;
 			game.is_grabbing = false;
-			velocity_		 = ( old_position - position_ ) * -1;
+			velocity_        = ( old_position - position_ ) * -1;
 			return;
 		}
 
 		old_position = position_;
-		position_.x	 = relative_mousepos( x );
-		position_.y	 = relative_mousepos( y );
+		position_.x  = relative_mousepos( x );
+		position_.y  = relative_mousepos( y );
 		return;
 	}
 
@@ -617,13 +617,13 @@ void Creature::Simulate()
 		}
 	}
 
-	double		 prev_emo = 0;
-	unsigned int h_emo	  = 0;
+	double       prev_emo = 0;
+	unsigned int h_emo    = 0;
 	for ( unsigned int i = 0; i < EMO_END; ++i )
 	{
 		if ( emotions_[ i ] > prev_emo )
 		{
-			h_emo	 = i;
+			h_emo    = i;
 			prev_emo = emotions_[ i ];
 		}
 	}
@@ -642,13 +642,13 @@ void Creature::Simulate()
 		{
 			look_object_ = toy;
 			target_look_ = LOO_OBJECT;
-			occupation_	 = OCU_PLAYING;
+			occupation_  = OCU_PLAYING;
 
 			if ( ( thirst_ < 30 ) || ( emotions_[ EMO_HAPPINESS ] >= 100 ) )
 			{
 				ClearLook();
 
-				directive_	= DIR_NONE;
+				directive_  = DIR_NONE;
 				occupation_ = OCU_NONE;
 
 				delay_play_ = get_gametime() + 100;
@@ -689,7 +689,7 @@ void Creature::Simulate()
 			{
 				ClearLook();
 
-				occupation_	 = OCU_SLEEPING;
+				occupation_  = OCU_SLEEPING;
 				delay_sleep_ = get_gametime() + 500;
 			}
 
@@ -698,7 +698,7 @@ void Creature::Simulate()
 				emotions_[ EMO_ANGER ] += 20.f;
 
 				occupation_ = OCU_NONE;
-				directive_	= DIR_NONE;
+				directive_  = DIR_NONE;
 
 				delay_sleep_ = get_gametime() + 100;
 				break;
@@ -707,7 +707,7 @@ void Creature::Simulate()
 			if ( delay_sleep_ < get_gametime() )
 			{
 				occupation_ = OCU_NONE;
-				directive_	= DIR_NONE;
+				directive_  = DIR_NONE;
 
 				delay_sleep_ = get_gametime() + 400;
 				break;
@@ -716,7 +716,7 @@ void Creature::Simulate()
 			if ( ( ( thirst_ < 20 ) && ( delay_drink_ < get_gametime() ) ) )
 			{
 				occupation_ = OCU_NONE;
-				directive_	= DIR_DRINK;
+				directive_  = DIR_DRINK;
 
 				if ( ( delay_sleep_ - get_gametime() ) > 0 )
 				{
@@ -752,7 +752,7 @@ void Creature::Simulate()
 			if ( delay_look_ < get_gametime() )
 			{
 				occupation_ = OCU_NONE;
-				directive_	= DIR_NONE;
+				directive_  = DIR_NONE;
 			}
 
 			Jump( 0.7f );
@@ -768,7 +768,7 @@ void Creature::Simulate()
 		{
 			look_object_ = drink;
 			target_look_ = LOO_OBJECT;
-			occupation_	 = OCU_DRINKING;
+			occupation_  = OCU_DRINKING;
 
 			if ( grabbed_object_ == drink )
 			{
@@ -777,7 +777,7 @@ void Creature::Simulate()
 				{
 					ClearLook();
 
-					directive_	= DIR_NONE;
+					directive_  = DIR_NONE;
 					occupation_ = OCU_NONE;
 
 					DropObject();
@@ -851,9 +851,9 @@ void Creature::Simulate()
 			if ( !look_object_->is_grabbed )
 			{
 				if ( !( relative_pos_x( look_object_ ) > ( relative_pos_x( this ) - 9 ) &&
-						( relative_pos_x( look_object_ ) < ( relative_pos_x( this ) + 9 ) ) &&
-						( relative_pos_y( look_object_ ) > ( relative_pos_y( this ) - 9 ) ) &&
-						( relative_pos_y( look_object_ ) < ( relative_pos_y( this ) + 9 ) ) ) )
+				        ( relative_pos_x( look_object_ ) < ( relative_pos_x( this ) + 9 ) ) &&
+				        ( relative_pos_y( look_object_ ) > ( relative_pos_y( this ) - 9 ) ) &&
+				        ( relative_pos_y( look_object_ ) < ( relative_pos_y( this ) + 9 ) ) ) )
 				{
 					if ( is_grounded_ )
 					{
@@ -1001,9 +1001,9 @@ void Creature::DropObject()
 		return;
 	}
 
-	grabbed_object_->parent_	= nullptr;
+	grabbed_object_->parent_    = nullptr;
 	grabbed_object_->is_grabbed = false;
-	grabbed_object_				= nullptr;
+	grabbed_object_             = nullptr;
 
 	al_play_sample( game.sample_pickup, 0.5, ALLEGRO_AUDIO_PAN_NONE, 0.2, ALLEGRO_PLAYMODE_ONCE, nullptr );
 }
@@ -1053,8 +1053,8 @@ bool Creature::PickupObject( CreatureObject *object )
 		return true;
 	}
 
-	grabbed_object_				= object;
-	grabbed_object_->parent_	= this;
+	grabbed_object_             = object;
+	grabbed_object_->parent_    = this;
 	grabbed_object_->is_grabbed = true;
 
 	al_play_sample( game.sample_pickup, 1, ALLEGRO_AUDIO_PAN_NONE, 1, ALLEGRO_PLAYMODE_ONCE, nullptr );

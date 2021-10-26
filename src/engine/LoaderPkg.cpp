@@ -59,7 +59,7 @@ PLPackage *Pkg_LoadPackage( const char *path )
 		Error( "Invalid package header, \"%s\", expected \"PKG2\"!\n", identifier );
 	}
 
-	bool	 status;
+	bool     status;
 	uint32_t numFiles = PlReadInt32( filePtr, false, &status );
 	if ( !status )
 	{
@@ -80,7 +80,7 @@ PLPackage *Pkg_LoadPackage( const char *path )
 
 		/* file length/size */
 		index->fileSize = PlReadInt32( filePtr, false, &status );
-		index->offset	= PlGetFileOffset( filePtr );
+		index->offset   = PlGetFileOffset( filePtr );
 
 		/* now seek to the next file */
 		if ( !PlFileSeek( filePtr, index->fileSize, PL_SEEK_CUR ) )

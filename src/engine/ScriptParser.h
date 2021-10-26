@@ -43,7 +43,7 @@ namespace vc
 		const char *AdvanceBufferPosition();
 
 	private:
-		char		scriptBuffer[ MAX_SCRIPT_LENGTH ]{ '\0' };
+		char        scriptBuffer[ MAX_SCRIPT_LENGTH ]{ '\0' };
 		const char *bufPos{ nullptr };
 
 		unsigned int lineNum{ 0 };

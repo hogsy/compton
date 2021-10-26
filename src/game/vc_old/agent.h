@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <utility>
 
-#include "../engine/sprite.h"
+#include "../engine/Sprite.h"
 #include "AgentDefinitionLoader.h"
 
 class Agent
@@ -43,7 +43,7 @@ public:
 	virtual void SetPosition( PLVector2 pos )
 	{
 		old_position_ = position_;
-		position_	  = pos;
+		position_     = pos;
 	}
 
 	PLVector2 GetPosition() { return position_; }
@@ -55,7 +55,7 @@ public:
 
 protected:
 	PLVector2 position_, old_position_;
-	float	  angle{ 0.0f };
+	float     angle{ 0.0f };
 
 private:
 	std::string description_{ "none" };
@@ -77,11 +77,11 @@ private:
 	{
 		AgentClassData( AgentSpawnFunction func, AgentDefinitionLoader data ) : spawn_function( func ),
 																				spawn_data( std::move( data ) ) {}
-		AgentSpawnFunction	  spawn_function{ nullptr };
+		AgentSpawnFunction    spawn_function{ nullptr };
 		AgentDefinitionLoader spawn_data;
 	};
 	typedef std::map< std::string, AgentClassData > AgentMap;
-	AgentMap										registered_;
+	AgentMap                                        registered_;
 
 	std::vector< Agent * > agents_;
 

@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 
 #include "../../shared.h"
-#include "../../engine/sprite.h"
+#include "../../engine/Sprite.h"
 
 class Creature;
 
@@ -138,7 +138,7 @@ public:
 	void SetState( unsigned int state )
 	{
 		old_state_ = state_;
-		state_	   = state;
+		state_     = state;
 	}
 
 	unsigned int GetState() { return state_; }
@@ -198,5 +198,5 @@ private:
 };
 
 extern CreatureDrink *drink;
-extern CreatureToy *  toy;
-extern Creature *	  creature;
+extern CreatureToy   *toy;
+extern Creature      *creature;

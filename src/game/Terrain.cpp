@@ -34,9 +34,9 @@ void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 			{ 0, 0, 255 } };
 
 	if ( offsetX + TERRAIN_TILE_WIDTH > camera.position.x + DISPLAY_WIDTH ||
-		 offsetX < camera.position.x - DISPLAY_WIDTH ||
-		 offsetY + TERRAIN_TILE_HEIGHT > camera.position.y + DISPLAY_HEIGHT ||
-		 offsetY < camera.position.y - DISPLAY_HEIGHT )
+	     offsetX < camera.position.x - DISPLAY_WIDTH ||
+	     offsetY + TERRAIN_TILE_HEIGHT > camera.position.y + DISPLAY_HEIGHT ||
+	     offsetY < camera.position.y - DISPLAY_HEIGHT )
 	{
 		return;
 	}
@@ -44,39 +44,39 @@ void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 	ALLEGRO_VERTEX vertices[ 6 ];
 	memset( vertices, 0, sizeof( ALLEGRO_VERTEX ) * 6 );
 
-	vertices[ 0 ].x		= offsetX;
-	vertices[ 0 ].y		= offsetY;
+	vertices[ 0 ].x     = offsetX;
+	vertices[ 0 ].y     = offsetY;
 	vertices[ 0 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
 			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
 			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
-	vertices[ 1 ].x		= offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 1 ].y		= offsetY;
+	vertices[ 1 ].x     = offsetX + TERRAIN_TILE_WIDTH;
+	vertices[ 1 ].y     = offsetY;
 	vertices[ 1 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
 			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
 			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
-	vertices[ 2 ].x		= offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 2 ].y		= offsetY + TERRAIN_TILE_HEIGHT;
+	vertices[ 2 ].x     = offsetX + TERRAIN_TILE_WIDTH;
+	vertices[ 2 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
 	vertices[ 2 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
 
-	vertices[ 3 ].x		= offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 3 ].y		= offsetY + TERRAIN_TILE_HEIGHT;
+	vertices[ 3 ].x     = offsetX + TERRAIN_TILE_WIDTH;
+	vertices[ 3 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
 	vertices[ 3 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
 			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
-	vertices[ 4 ].x		= offsetX;
-	vertices[ 4 ].y		= offsetY + TERRAIN_TILE_HEIGHT;
+	vertices[ 4 ].x     = offsetX;
+	vertices[ 4 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
 	vertices[ 4 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
 			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
 			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
-	vertices[ 5 ].x		= offsetX;
-	vertices[ 5 ].y		= offsetY;
+	vertices[ 5 ].x     = offsetX;
+	vertices[ 5 ].y     = offsetY;
 	vertices[ 5 ].color = al_map_rgb(
 			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
 			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
@@ -203,8 +203,8 @@ bool vc::Terrain::IsWater( float x, float y )
 		return true;
 	}
 
-	unsigned int xr		 = PlRoundUp( x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
-	unsigned int yr		 = PlRoundUp( y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
+	unsigned int xr      = PlRoundUp( x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
+	unsigned int yr      = PlRoundUp( y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
 	unsigned int tileNum = xr + yr * TERRAIN_NUM_TILES_ROW;
 	if ( tileNum >= TERRAIN_NUM_TILES )
 	{

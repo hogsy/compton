@@ -74,16 +74,13 @@ void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &col
 
 void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow )
 {
-	ALLEGRO_BITMAP *buffer = GetApp()->buffer;
-	al_lock_bitmap( buffer, al_get_bitmap_format( buffer ), ALLEGRO_LOCK_READWRITE );
-
 	if ( shadow )
 	{
 		int xx = *x + 1, yy = *y + 1;
 		DrawString( &xx, &yy, sentence, hei::Colour( 0, 0, 0 ), false );
 	}
 
-	int			ox = *x;
+	int         ox = *x;
 	const char *p  = sentence;
 	while ( *p != '\0' )
 	{
@@ -105,6 +102,4 @@ void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei
 
 		*x += cw_;
 	}
-
-	al_unlock_bitmap( buffer );
 }

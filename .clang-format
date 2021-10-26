@@ -69,5 +69,5 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
 TabWidth: 4
-UseTab: Always
+UseTab: AlignWithSpaces
 SortIncludes: Never

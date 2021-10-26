@@ -53,6 +53,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define DISPLAY_WIDTH   640
 #define DISPLAY_HEIGHT  480
 
+#define GAME_TYPE_SFC
+
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
 void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -72,6 +74,8 @@ namespace vc {
 	class GameMode;
 	class EntityManager;
 	class BitmapFont;
+	class Background;
+
 	class App {
 	public:
 		App( int argc, char **argv );

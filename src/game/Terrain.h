@@ -43,20 +43,20 @@ namespace vc
 	struct TerrainTile
 	{
 		TerrainTileCorner corners[ 2 ];
-		float			  height[ 4 ];
+		float             height[ 4 ];
 
 		void Draw( const Camera &camera, float offsetX, float offsetY );
 	};
 
 	// And here we go...
-#define TERRAIN_NUM_TILES_ROW	 32
+#define TERRAIN_NUM_TILES_ROW    32
 #define TERRAIN_NUM_TILES_COLUMN 32
-#define TERRAIN_NUM_TILES		 ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_TILE_WIDTH		 64
-#define TERRAIN_TILE_HEIGHT		 64
-#define TERRAIN_PIXEL_WIDTH		 ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
-#define TERRAIN_PIXEL_HEIGHT	 ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_PIXEL_SIZE		 ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
+#define TERRAIN_NUM_TILES        ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
+#define TERRAIN_TILE_WIDTH       64
+#define TERRAIN_TILE_HEIGHT      64
+#define TERRAIN_PIXEL_WIDTH      ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
+#define TERRAIN_PIXEL_HEIGHT     ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
+#define TERRAIN_PIXEL_SIZE       ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
 
 	class Terrain
 	{

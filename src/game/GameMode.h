@@ -30,6 +30,7 @@ namespace vc
 {
 	class PlayerManager;
 	class Terrain;
+	class Background;
 
 	class GameMode
 	{
@@ -53,13 +54,64 @@ namespace vc
 		void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 		void HandleKeyboardEvent( int button, bool buttonUp );
 
-		inline GUIPanel *GetBasePanel() const { return uiBasePanelPtr; }
+		inline GUIPanel *GetBasePanel() const { return baseGuiPanel_; }
 
-		// Simulation crap
+		// Simulation crap (todo: move into world class)
+
 		inline uint64_t GetTotalSeconds() const { return numSeconds; }
 		inline uint64_t GetTotalMinutes() const { return numSeconds / 60; }
 		inline uint64_t GetTotalHours() const { return GetTotalMinutes() / 60; }
-		inline uint64_t GetTotalDays() const { return GetTotalHours() / 25; }
+		inline uint64_t GetTotalDays() const { return GetTotalHours() / 24; }
+
+		inline unsigned int GetCurrentSecond() const
+		{
+			return ( GetTotalSeconds() - ( GetTotalMinutes() / 60 ) ) % 60;
+		}
+		inline unsigned int GetCurrentMinute() const
+		{
+			return ( GetTotalMinutes() - ( GetTotalHours() / 60 ) ) % 60;
+		}
+		inline unsigned int GetCurrentHour() const
+		{
+			return ( GetTotalHours() - ( GetTotalDays() / 24 ) ) % 24;
+		}
+
+		enum class TimeOfDay
+		{
+			DAWN,
+			MORNING,
+			AFTERNOON,
+			EVENING,
+			NIGHT
+		};
+		inline TimeOfDay GetTimeOfDay() const
+		{
+			unsigned int curHour = GetCurrentHour();
+			if ( curHour > 17 )
+			{
+				return TimeOfDay::NIGHT;
+			}
+			else if ( curHour > 15 )
+			{
+				return TimeOfDay::EVENING;
+			}
+			else if ( curHour > 12 )
+			{
+				return TimeOfDay::AFTERNOON;
+			}
+			else if ( curHour > 9 )
+			{
+				return TimeOfDay::MORNING;
+			}
+			else if ( curHour > 5 )
+			{
+				return TimeOfDay::DAWN;
+			}
+
+			return TimeOfDay::NIGHT;
+		}
+
+		////////////////////////////////////////////////
 
 		enum class GameState
 		{
@@ -70,9 +122,9 @@ namespace vc
 
 		static PlayerManager *GetPlayerManager();
 		static EntityManager *GetEntityManager();
-		static Terrain *	  GetTerrainManager();
+		static Terrain       *GetTerrainManager();
+		static Background    *GetBackgroundManager();
 
-	protected:
 	private:
 		Camera playerCamera;
 
@@ -81,14 +133,15 @@ namespace vc
 		uint64_t numSeconds{ 0 };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
-		GUIPanel *	   uiBasePanelPtr{ nullptr };
-		GUIPieMenu *   uiPieMenu{ nullptr };
+		GUIPanel      *baseGuiPanel_{ nullptr };
+		GUIPieMenu    *uiPieMenu{ nullptr };
 
 		PlayerManager *playerManager{ nullptr };
-		EntityManager *entityManager{ nullptr };
+		EntityManager *entityManager_{ nullptr };
 
 		SpriteSheet *terrainSheet;
-		Terrain *	 terrainManager;
+		Terrain     *terrainManager_;
+		Background  *backgroundManager_;
 
 		struct Territory
 		{
@@ -96,9 +149,9 @@ namespace vc
 
 			void DrawBorder();
 
-			char		name[ 32 ];
-			hei::Vector2	origin{ 0.0f, 0.0f };
-			PLGPolygon *border{ nullptr };
+			char         name[ 32 ];
+			hei::Vector2 origin{ 0.0f, 0.0f };
+			PLGPolygon  *border{ nullptr };
 		};
 		std::vector< Territory > myTerritories;
 	};

@@ -35,8 +35,8 @@ namespace vc
 		~EntityManager();
 
 		vc::Entity *CreateEntity( const std::string &className );
-		void		DestroyEntity( Entity *entity );
-		void		DestroyEntities();
+		void        DestroyEntity( Entity *entity );
+		void        DestroyEntities();
 
 		void Tick();
 		void Draw( const Camera &camera );
@@ -49,7 +49,7 @@ namespace vc
 		struct EntitySlot
 		{
 			EntitySlot( vc::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
-			vc::Entity * entity;
+			vc::Entity  *entity;
 			unsigned int num;
 		};
 		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
@@ -65,8 +65,8 @@ namespace vc
 
 	private:
 		typedef std::vector< Entity * > EntityVector;
-		static EntityVector				entities;
-		static EntityVector				destructionQueue;
+		static EntityVector             entities;
+		static EntityVector             destructionQueue;
 	};
 }// namespace vc
 

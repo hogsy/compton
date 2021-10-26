@@ -41,9 +41,9 @@ namespace vc
 		void WriteString( const char *var );
 		void WriteCoordinate( const PLVector2 &var );
 
-		int		  ReadInteger();
-		float	  ReadFloat();
-		void	  ReadString( char *buffer, size_t bufLength );
+		int       ReadInteger();
+		float     ReadFloat();
+		void      ReadString( char *buffer, size_t bufLength );
 		PLVector2 ReadCoordinate();
 
 		inline unsigned int GetVersion() const { return version; }

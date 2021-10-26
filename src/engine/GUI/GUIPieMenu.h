@@ -38,7 +38,7 @@ namespace vc
 		{
 			Option( const char *label_, OptionCallback callback_ ) : label( label_ ), callback( callback_ ) {}
 
-			std::string	   label;
+			std::string    label;
 			OptionCallback callback;
 		};
 		std::vector< Option > myOptions;

@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "agents/PhysicsAgent.h"
 #include "agent.h"
 
-Agent::Agent()	= default;
+Agent::Agent()  = default;
 Agent::~Agent() = default;
 
 void Agent::SetupProperties( const AgentDefinitionLoader &adf_loader )

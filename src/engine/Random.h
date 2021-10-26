@@ -22,7 +22,7 @@ namespace vc
 {
 	namespace random
 	{
-		int			GenerateRandomInteger( int min, int max );
+		int         GenerateRandomInteger( int min, int max );
 		const char *GenerateRandomName( char *buffer, size_t size );
 
 		class PerlinNoise
@@ -38,7 +38,7 @@ namespace vc
 			double Lerp( double t, double a, double b );
 			double Grad( int hash, double x, double y, double z );
 
-			int		   p[ 512 ];
+			int        p[ 512 ];
 			static int permutation[];
 		};
 	}// namespace random

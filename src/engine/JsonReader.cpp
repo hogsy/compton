@@ -25,7 +25,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "JsonReader.h"
 
 #define LogMissingProperty( P ) Warning( "Failed to get JSON property \"%s\"!\n", ( P ) )
-#define LogInvalidArray( P )	Warning( "Invalid JSON array for property \"%s\"!\n", ( P ) )
+#define LogInvalidArray( P )    Warning( "Invalid JSON array for property \"%s\"!\n", ( P ) )
 
 JsonReader::JsonReader( const std::string &path ) : JsonReader()
 {
@@ -188,7 +188,7 @@ PLColour JsonReader::GetColourProperty( const std::string &property, PLColour de
 	duk_pop( context );
 
 	std::stringstream stream( str );
-	int				  r, g, b, a;
+	int               r, g, b, a;
 	stream >> r >> expect< ' ' > >> g >> expect< ' ' > >> b;
 	if ( !( stream.rdstate() & std::stringstream::failbit ) )
 	{
@@ -225,7 +225,7 @@ PLVector4 JsonReader::GetVector4Property( const std::string &property, PLVector4
 	std::string str = duk_safe_to_string( context, -1 );
 	duk_pop( context );
 
-	PLVector4		  out;
+	PLVector4         out;
 	std::stringstream stream( str );
 	stream >> out.x >> expect< ' ' > >> out.y >> expect< ' ' > >> out.z >> expect< ' ' > >> out.w;
 	if ( stream.rdstate() & std::stringstream::failbit )
@@ -254,7 +254,7 @@ PLVector3 JsonReader::GetVector3Property( const std::string &property, PLVector3
 	std::string str = duk_safe_to_string( context, -1 );
 	duk_pop( context );
 
-	PLVector3		  out;
+	PLVector3         out;
 	std::stringstream stream( str );
 	stream >> out.x >> expect< ' ' > >> out.y >> expect< ' ' > >> out.z;
 	if ( stream.rdstate() & std::stringstream::failbit )
@@ -398,8 +398,8 @@ void JsonReader::ParseBuffer( const char *buf )
 
 bool JsonReader::EnterChildNode( const std::string &property, bool silent )
 {
-	auto *		context = static_cast< duk_context * >( ctx_ );
-	const char *p		= property.c_str();
+	auto       *context = static_cast< duk_context       *>( ctx_ );
+	const char *p       = property.c_str();
 	if ( !duk_get_prop_string( context, -1, p ) )
 	{
 		duk_pop( context );

@@ -28,7 +28,7 @@ namespace vc
 		void Draw() override
 		{
 			PLVector2 oldPosition = position_;
-			position_.y			  = ( std::sin( vc::GetApp()->GetNumOfTicks() / ( 120.0f / jiggle ) ) * 5.0f + 5.0f ) + position_.y;
+			position_.y           = ( std::sin( vc::GetApp()->GetNumOfTicks() / ( 120.0f / jiggle ) ) * 5.0f + 5.0f ) + position_.y;
 
 			//position_.x -= game.camera_x;
 			//position_.y -= game.camera_y;

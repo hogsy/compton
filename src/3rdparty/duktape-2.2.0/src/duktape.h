@@ -332,9 +332,9 @@ struct duk_time_components {
 #define DUK_ENUM_INCLUDE_SYMBOLS          (1U << 2)    /* enumerate symbols */
 #define DUK_ENUM_EXCLUDE_STRINGS          (1U << 3)    /* exclude strings */
 #define DUK_ENUM_OWN_PROPERTIES_ONLY      (1U << 4)    /* don't walk prototype chain, only check own properties */
-#define DUK_ENUM_ARRAY_INDICES_ONLY       (1U << 5)    /* only enumerate array indices */
+#define DUK_ENUM_ARRAY_INDICES_ONLY       (1U << 5)    /* only enumerate array sprites */
 /* XXX: misleading name */
-#define DUK_ENUM_SORT_ARRAY_INDICES       (1U << 6)    /* sort array indices (applied to full enumeration result, including inherited array indices); XXX: misleading name */
+#define DUK_ENUM_SORT_ARRAY_INDICES       (1U << 6)    /* sort array sprites (applied to full enumeration result, including inherited array sprites); XXX: misleading name */
 #define DUK_ENUM_NO_PROXY_BEHAVIOR        (1U << 7)    /* enumerate a proxy object itself without invoking proxy behavior */
 
 /* Compilation flags for duk_compile() and duk_eval() */
@@ -832,7 +832,7 @@ DUK_EXTERNAL_DECL duk_errcode_t duk_get_error_code(duk_context *ctx, duk_idx_t i
 
 /*
  *  Get operations: no coercion, returns default value for invalid
- *  indices and invalid value types.
+ *  sprites and invalid value types.
  *
  *  duk_get_undefined() and duk_get_null() would be pointless and
  *  are not included.
@@ -1274,7 +1274,7 @@ DUK_EXTERNAL_DECL duk_double_t duk_components_to_time(duk_context *ctx, duk_time
 #define DUK_DATE_MIN_ECMA_YEAR     (-271821L)
 #define DUK_DATE_MAX_ECMA_YEAR     275760L
 
-/* Part indices for internal breakdowns.  Part order from DUK_DATE_IDX_YEAR
+/* Part sprites for internal breakdowns.  Part order from DUK_DATE_IDX_YEAR
  * to DUK_DATE_IDX_MILLISECOND matches argument ordering of Ecmascript API
  * calls (like Date constructor call).  Some functions in duk_bi_date.c
  * depend on the specific ordering, so change with care.  16 bits are not

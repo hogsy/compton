@@ -124,5 +124,5 @@ private:
 	}
 
 	struct timespec clock;
-	double			timeTaken{ 0.0 };
+	double          timeTaken{ 0.0 };
 };

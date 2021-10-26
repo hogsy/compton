@@ -80,6 +80,11 @@ void vc::GUIPanel::DrawBackground()
 			break;
 		case Background::TEXTURE:
 		{
+			if ( myStyleSheet == nullptr )
+			{
+				return;
+			}
+
 			ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
 			if ( bmp == nullptr )
 			{

@@ -97,8 +97,8 @@ void vc::BaseCharacter::Tick()
 
 	// Setup a goal for us to move to.
 	if ( ( debugGoal.x == 0.0f && debugGoal.y == 0.0f ) ||
-		 hei::Vector2( origin ) == debugGoal ||
-		 debugGoalDelay < GetApp()->GetNumOfTicks() )
+	     hei::Vector2( origin ) == debugGoal ||
+	     debugGoalDelay < GetApp()->GetNumOfTicks() )
 	{
 		// Attempt to find a debug waypoint
 		EntityManager::EntitySlot slot = GameMode::GetEntityManager()->FindEntityByClassName( "DebugWaypoint", nullptr );

@@ -33,7 +33,7 @@ void vc::Tree::Spawn()
 {
 	SuperClass::Spawn();
 
-	myHealth	= random::GenerateRandomInteger( 1, 100 );
+	myHealth    = random::GenerateRandomInteger( 1, 100 );
 	myMaxHealth = random::GenerateRandomInteger( myHealth, 200 );
 }
 

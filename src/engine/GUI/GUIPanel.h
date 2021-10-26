@@ -51,10 +51,10 @@ namespace vc
 
 		virtual void Tick();
 
-		void		   SetStyleSheet( GUIStyleSheet *styleSheet );
+		void           SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return myStyleSheet; }
 
-		inline void		SetBackgroundColour( const PLColour &colour ) { backgroundColour = colour; }
+		inline void     SetBackgroundColour( const PLColour &colour ) { backgroundColour = colour; }
 		inline PLColour GetBackgroundColour() const { return backgroundColour; }
 
 		inline void SetBorder( Border border ) { myBorder = border; }
@@ -67,7 +67,7 @@ namespace vc
 			*xd = x;
 			*yd = y;
 		}
-		void		GetContentPosition( int *xd, int *yd ) const;
+		void        GetContentPosition( int *xd, int *yd ) const;
 		inline void GetSize( int *wd, int *hd ) const
 		{
 			*wd = w;
@@ -117,7 +117,7 @@ namespace vc
 		void DrawBorderEdge( int dx, int dy, int dw, int dh, const RectangleCoord &tileCoord );
 
 		Background myBackground{ Background::NONE };
-		Border	   myBorder{ Border::NONE };
+		Border     myBorder{ Border::NONE };
 
 		PLColour backgroundColour;
 

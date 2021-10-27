@@ -143,6 +143,23 @@ namespace vc
 		Terrain     *terrainManager_;
 		Background  *backgroundManager_;
 
+		// Rooms
+
+		struct Room
+		{
+			int x;
+			int w;
+			int y;
+			int h;
+			uint16_t type;
+		};
+		std::vector< Room > rooms_;
+
+		void LoadRooms();
+		void DrawRoomsDebug( const vc::Camera &camera );
+
+		///////////////////////////////////////////////
+
 		struct Territory
 		{
 			Territory( const hei::Vector2 &origin );

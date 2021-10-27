@@ -70,9 +70,39 @@ void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR c
 	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_CENTER, message );
 }
 
-void DrawFilledRectangle( PLVector2 position, float w, float h, ALLEGRO_COLOR colour )
+void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
 {
-	al_draw_filled_rectangle( position.x, position.y, w, h, colour );
+	if ( colour.a == 0 )
+	{
+		return;
+	}
+
+	for ( unsigned int row = 0; row < w; ++row )
+	{
+		for ( unsigned int column = 0; column < h; ++column )
+		{
+			int dx = x + row;
+			if ( dx < 0 || dx > DISPLAY_WIDTH )
+			{
+				continue;
+			}
+
+			int dy = y + column;
+			if ( dy < 0 || dy > DISPLAY_HEIGHT )
+			{
+				continue;
+			}
+
+			if ( colour.a != 255 )
+			{
+				al_put_blended_pixel( x + row, y + column, al_map_rgba( colour.r, colour.g, colour.b, colour.a ) );
+			}
+			else
+			{
+				al_put_pixel( x + row, y + column, al_map_rgb( colour.r, colour.g, colour.b ) );
+			}
+		}
+	}
 }
 
 void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom )

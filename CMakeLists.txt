@@ -70,6 +70,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/ai/Brain.cpp
         src/game/Entities/ai/Sensor.cpp
         src/game/Entities/BaseCreature.cpp
+        src/game/Entities/Boid.cpp
         src/game/Entities/Tree.cpp
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp

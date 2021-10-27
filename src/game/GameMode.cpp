@@ -50,6 +50,8 @@ vc::GameMode::GameMode()
 	terrainManager_ = new Terrain();
 	entityManager_  = new EntityManager();
 
+	LoadRooms();
+
 	NewGame( "default.save" );
 }
 
@@ -109,8 +111,6 @@ void vc::GameMode::SetupUserInterface()
 void vc::GameMode::Tick()
 {
 	START_MEASURE();
-
-	numSeconds += 10;
 
 	// Always tick UI, because we still want to access it even if paused
 	if ( baseGuiPanel_ != nullptr )
@@ -180,10 +180,12 @@ void vc::GameMode::Tick()
 		playerCamera.position.y = Background::PIXEL_HEIGHT - DISPLAY_HEIGHT;
 	}
 
-	if ( playerCamera.velocity != 0.f )
+	if ( playerCamera.velocity.x != 0 || playerCamera.velocity.y != 0 )
 	{
 		playerCamera.velocity -= ( playerCamera.velocity / CAMERA_FRICTION );
 	}
+
+	numSeconds += 15;
 
 #if !defined( GAME_TYPE_SFC )
 	terrainManager_->Tick();
@@ -216,6 +218,8 @@ void vc::GameMode::Draw()
 #endif
 	entityManager_->Draw( playerCamera );
 
+	DrawRoomsDebug( playerCamera );
+
 	al_use_transform( &oldTransform );
 
 	// UI always comes last
@@ -226,13 +230,13 @@ void vc::GameMode::Draw()
 
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "D:%lu\n%02lu:%02lu:%02lu\n",
+		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02lu:M%02lu:S%02lu\n",
 		          GetTotalDays(),
 		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
 
 		BitmapFont *font = GetApp()->GetDefaultFont();
 
-		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 10;
+		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
 
@@ -317,31 +321,37 @@ void vc::GameMode::NewGame( const char *path )
 void vc::GameMode::SaveGame( const char *path )
 {
 	Serializer serializer( path, Serializer::Mode::WRITE );
-	terrainManager_->Serialize( &serializer );
+
+	//terrainManager_->Serialize( &serializer );
 	entityManager_->SerializeEntities( &serializer );
+
+	// World state
+	serializer.WriteInteger( numSeconds );
 
 	// Write camera data
 	serializer.WriteCoordinate( playerCamera.position );
-	serializer.WriteFloat( playerCamera.zoom );
-	serializer.WriteFloat( playerCamera.angle );
 	serializer.WriteInteger( static_cast< int >( playerCamera.movementMode ) );
+
+	Print( "Game saved to \"%s\"\n", path );
 }
 
 void vc::GameMode::RestoreGame( const char *path )
 {
-	Serializer serializer( path, Serializer::Mode::READ );
-	terrainManager_->Deserialize( &serializer );
-
-#if 0
 	entityManager_->DestroyEntities();
+
+	Serializer serializer( path, Serializer::Mode::READ );
+
+	//terrainManager_->Deserialize( &serializer );
 	entityManager_->DeserializeEntities( &serializer );
-#endif
+
+	// World state
+	numSeconds = serializer.ReadInteger();
 
 	// Now restore the camera data
 	playerCamera.position     = serializer.ReadCoordinate();
-	playerCamera.zoom         = serializer.ReadFloat();
-	playerCamera.angle        = serializer.ReadFloat();
 	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
+
+	Print( "Game restored from \"%s\"\n", path );
 }
 
 hei::Vector2 vc::GameMode::MousePosToWorld( int x, int y ) const
@@ -356,29 +366,6 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 	{
 		return;
 	}
-
-	// And now we can do whatever
-
-#if !defined( GAME_TYPE_SFC )
-	if ( wheel > 0 )
-	{
-		playerCamera.zoom += 0.015f;
-		if ( playerCamera.zoom > 1.0f )
-		{
-			playerCamera.zoom = 1.0f;
-		}
-		return;
-	}
-	else if ( wheel < 0 )
-	{
-		playerCamera.zoom -= 0.015f;
-		if ( playerCamera.zoom < 0.2f )
-		{
-			playerCamera.zoom = 0.2f;
-		}
-		return;
-	}
-#endif
 
 	static Entity *waypoint = nullptr;
 	if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_LEFT ) && !buttonUp )
@@ -448,6 +435,78 @@ vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()-
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
 vc::Terrain       *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
 vc::Background    *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
+
+void vc::GameMode::LoadRooms()
+{
+	Print( "Loading rooms...\n" );
+
+	PLFile *file = PlOpenFile( "ROOMS.DTA", false );
+	if ( file == nullptr )
+	{
+		Warning( "Failed to load rooms: %s\n", PlGetError() );
+		return;
+	}
+
+	uint16_t numRooms = ( uint16_t ) PlReadInt16( file, false, nullptr );
+	for ( unsigned int i = 0; i < numRooms; ++i )
+	{
+		rooms_.push_back( {
+				PlReadInt16( file, false, nullptr ),            // x
+				PlReadInt16( file, false, nullptr ),            // w
+				PlReadInt16( file, false, nullptr ),            // y
+				PlReadInt16( file, false, nullptr ),            // h
+				( uint16_t ) PlReadInt16( file, false, nullptr )// type
+		} );
+	}
+
+	Print( "Read %lu rooms successfully!\n", numRooms );
+}
+
+void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
+{
+	BitmapFont *font = GetApp()->GetDefaultFont();
+
+	for ( auto room : rooms_ )
+	{
+		DrawFilledRectangle( room.x - ( int ) camera.position.x,
+		                     room.y - ( int ) camera.position.y,
+		                     room.w - room.x,
+		                     room.h - room.y,
+		                     hei::Colour( 0, 0, 128, 100 ) );
+
+		int tx = room.x - ( int ) camera.position.x;
+		int ty = room.y - ( int ) camera.position.y;
+		for ( unsigned int i = 0; i < 16; ++i )
+		{
+			al_put_pixel( tx, ty + i, al_map_rgb( 0, 0, 255 ) );
+			al_put_pixel( tx + i, ty, al_map_rgb( 0, 0, 255 ) );
+		}
+
+		// w/h are explicit
+		tx = room.w - ( int ) camera.position.x;
+		ty = room.h - ( int ) camera.position.y;
+		for ( unsigned int i = 0; i < 16; ++i )
+		{
+			al_put_pixel( tx, ty - i, al_map_rgb( 0, 0, 255 ) );
+			al_put_pixel( tx - i, ty, al_map_rgb( 0, 0, 255 ) );
+		}
+
+		tx = ( ( room.w - room.x ) / 2 ) + room.x - ( int ) camera.position.x;
+		ty = ( ( room.h - room.y ) / 2 ) + room.y - ( int ) camera.position.y;
+
+		static const char *roomType[] = {
+				"INTERIOR",
+				"EXTERIOR",
+		};
+
+		char buf[ 32 ];
+		snprintf( buf, sizeof( buf ), "ROOM (%s)\n", roomType[ room.type ] );
+		size_t l   = strlen( buf );
+		int    scx = tx - ( ( font->GetCharacterWidth() * l ) / 2 );
+
+		font->DrawString( &scx, &ty, buf );
+	}
+}
 
 ////////////////////////////////
 // Territory

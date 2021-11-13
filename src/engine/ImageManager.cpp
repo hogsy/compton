@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../shared.h"
 
 #include "ImageManager.h"
+#include "Background.h"
 #include "GameMode.h"
 
 static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
@@ -131,7 +132,7 @@ void vc::ImageManager::PrecacheResources()
 
 void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNum, const std::string &path )
 {
-	if ( set >= NUM_SPRITE_GROUPS )
+	if ( set >= spriteGroups_.size() )
 	{
 		Warning( "Invalid image set: %lu/%lu\n", set, NUM_SPRITE_GROUPS );
 		return;
@@ -206,32 +207,40 @@ void vc::ImageManager::CachePalettes()
  */
 void vc::ImageManager::CacheSprites()
 {
-	for ( unsigned int i = 0; i < NUM_SPRITE_GROUPS; ++i )
+	for ( unsigned int i = 0; i < 999; ++i )
 	{
 		std::string numb = std::to_string( i );
 		std::string path = std::string( 3 - numb.length(), '0' ) + numb + SPRITE_EXTENSION;
-		PLFile     *file = PlOpenFile( path.c_str(), false );
+
+		if ( !PlFileExists( path.c_str() ) )
+		{
+			break;
+		}
+
+		PLFile *file = PlOpenFile( path.c_str(), false );
 		if ( file == nullptr )
 		{
-			Warning( "failed to load sprite group: %s\n", PlGetError() );
+			Warning( "Failed to load sprite group: %s\n", PlGetError() );
 			continue;
 		}
 
+		SpriteGroup group;
+
 		bool status;
-		spriteGroups_[ i ].numSprites = PlReadInt16( file, false, &status );
-		spriteGroups_[ i ].sprites.resize( spriteGroups_[ i ].numSprites );
-		for ( unsigned int j = 0; j < spriteGroups_[ i ].numSprites; ++j )
+		group.numSprites = PlReadInt16( file, false, &status );
+		group.sprites.resize( group.numSprites );
+		for ( unsigned int j = 0; j < group.numSprites; ++j )
 		{
-			uint16_t offset = ( uint16_t ) PlReadInt16( file, false, &status );
-			spriteGroups_[ i ].sprites[ j ] = {
-					( uint8_t ) PlReadInt8( file, &status ),         // width
-					( uint8_t ) PlReadInt8( file, &status )          // height
+			uint16_t offset    = ( uint16_t ) PlReadInt16( file, false, &status );
+			group.sprites[ j ] = {
+					( uint8_t ) PlReadInt8( file, &status ),// width
+					( uint8_t ) PlReadInt8( file, &status ) // height
 			};
 
 			// Reserve pixel buffer size (w*h)
-			unsigned int bufferSize = spriteGroups_[ i ].sprites[ j ].width *
-			                          spriteGroups_[ i ].sprites[ j ].height;
-			spriteGroups_[ i ].sprites[ j ].pixels.resize( bufferSize );
+			unsigned int bufferSize = group.sprites[ j ].width *
+			                          group.sprites[ j ].height;
+			group.sprites[ j ].pixels.resize( bufferSize );
 
 			// Now save, read in pixels and restore
 			size_t p = PlGetFileOffset( file );
@@ -240,7 +249,7 @@ void vc::ImageManager::CacheSprites()
 				Warning( "failed to seek to offset: %s\n", PlGetError() );
 				break;
 			}
-			if ( PlReadFile( file, spriteGroups_[ i ].sprites[ j ].pixels.data(), sizeof( uint8_t ), bufferSize ) != bufferSize )
+			if ( PlReadFile( file, group.sprites[ j ].pixels.data(), sizeof( uint8_t ), bufferSize ) != bufferSize )
 			{
 				Warning( "failed to read in pixel buffer: %s\n", PlGetError() );
 				break;
@@ -248,7 +257,14 @@ void vc::ImageManager::CacheSprites()
 			PlFileSeek( file, p, PL_SEEK_SET );
 		}
 
+		spriteGroups_.push_back( group );
+
 		PlCloseFile( file );
+	}
+
+	if ( spriteGroups_.size() <= Background::SPRITE_SETS )
+	{
+		Warning( "Failed to load in all background tiles!\n" );
 	}
 }
 
@@ -266,34 +282,18 @@ void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y )
 void vc::ImageManager::Sprite::Draw( int x, int y ) const
 {
 	GameMode::TimeOfDay timeOfDay = GetApp()->GetGameMode()->GetTimeOfDay();
-	const Palette *palette = GetApp()->GetImageManager()->GetPalette( ( unsigned int ) timeOfDay );
+	const Palette      *palette   = GetApp()->GetImageManager()->GetPalette( ( unsigned int ) timeOfDay );
 	for ( unsigned int row = 0; row < width; ++row )
 	{
 		for ( unsigned int column = 0; column < height; ++column )
 		{
-			int dx = x + row;
-			if ( dx < 0 || dx > DISPLAY_WIDTH )
-			{
-				continue;
-			}
-
-			int dy = y + column;
-			if ( dy < 0 || dy > DISPLAY_HEIGHT )
-			{
-				continue;
-			}
-
 			uint8_t pixel = pixels[ row + column * width ];
 			if ( pixel == 0 )
 			{
 				continue;
 			}
 
-			uint8_t r = palette->colours[ pixel ].r;
-			uint8_t g = palette->colours[ pixel ].g;
-			uint8_t b = palette->colours[ pixel ].b;
-
-			al_put_pixel( x + row, y + column, al_map_rgb( r, g, b ) );
+			DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
 		}
 	}
 }

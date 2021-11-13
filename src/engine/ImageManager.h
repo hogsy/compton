@@ -121,7 +121,7 @@ namespace vc
 		 */
 		inline const Sprite *GetSprite( uint16_t group, uint16_t id )
 		{
-			if ( group >= NUM_SPRITE_GROUPS )
+			if ( group >= spriteGroups_.size() )
 			{
 				Warning( "Invalid sprite group %su specified!\n", group );
 				return nullptr;
@@ -146,7 +146,7 @@ namespace vc
 			uint16_t              numSprites{ 0 };
 			std::vector< Sprite > sprites;
 		};
-		SpriteGroup spriteGroups_[ NUM_SPRITE_GROUPS ];
+		std::vector< SpriteGroup > spriteGroups_;
 	};
 }// namespace vc
 

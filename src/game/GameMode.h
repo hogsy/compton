@@ -158,6 +158,9 @@ namespace vc
 		void LoadRooms();
 		void DrawRoomsDebug( const vc::Camera &camera );
 
+		bool enableRoomDraw_{ false };
+		bool enableHelpPrompt_{ true };
+
 		///////////////////////////////////////////////
 
 		struct Territory

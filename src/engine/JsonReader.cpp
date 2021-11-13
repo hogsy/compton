@@ -188,7 +188,7 @@ PLColour JsonReader::GetColourProperty( const std::string &property, PLColour de
 	duk_pop( context );
 
 	std::stringstream stream( str );
-	int               r, g, b, a;
+	unsigned char     r, g, b, a;
 	stream >> r >> expect< ' ' > >> g >> expect< ' ' > >> b;
 	if ( !( stream.rdstate() & std::stringstream::failbit ) )
 	{

@@ -49,14 +49,13 @@ namespace vc
 		virtual bool ShouldDraw( const Camera &camera ) const;
 
 #if 0
-		PL_INLINE PLVector2 GetOrigin() const { return origin; }
-		PL_INLINE PLVector2 GetBounds() const { return bounds; }
+		inline PLVector2 GetBounds() const { return bounds; }
 #endif
 
-		hei::Vector2 origin{ 0.0f, 0.0f };
 		hei::Vector2 velocity{ 0.0f, 0.0f };
 		hei::Vector2 myRenderBounds{ 0.0f, 0.0f };
 		hei::Vector2 bounds{ 0.0f, 0.0f };
+		hei::Vector2 origin{ 0.0f, 0.0f };
 
 	protected:
 		int myHealth{ 100 };

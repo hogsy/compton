@@ -41,6 +41,6 @@ void vc::BaseBuilding::Draw( const vc::Camera &camera )
 		return;
 	}
 
-	al_draw_filled_rectangle( origin.x + 32, origin.y + 32, origin.x - 32, origin.y - 32, al_map_rgb( 64, 64, 64 ) );
+	//al_draw_filled_rectangle( origin.x + 32, origin.y + 32, origin.x - 32, origin.y - 32, al_map_rgb( 64, 64, 64 ) );
 	//al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, "Building" );
 }

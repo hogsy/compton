@@ -132,8 +132,8 @@ void vc::BaseCreature::Draw( const vc::Camera &camera )
 		return;
 	}
 
-	al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
-	al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );
+	//al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
+	//al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );
 }
 
 void vc::BaseCreature::Tick()

@@ -26,6 +26,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 REGISTER_ENTITY( Boid, vc::Boid )
 
+vc::Boid::Boid() = default;
+vc::Boid::~Boid() = default;
+
 void vc::Boid::Spawn()
 {
 	SuperClass::Spawn();

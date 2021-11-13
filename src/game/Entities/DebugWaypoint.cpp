@@ -47,5 +47,5 @@ void DebugWaypoint::Draw( const Camera &camera )
 	}
 
 	// Draw a lil flag so we know it's there...
-	al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
+	//al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
 }

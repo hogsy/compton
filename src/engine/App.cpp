@@ -18,13 +18,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "../shared.h"
 
-#include "ImageManager.h"
 #include "LoaderPkg.h"
 #include "GameMode.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
 
 // Draw Routines
+
+void DrawPixel( int x, int y, const hei::Colour &colour )
+{
+	if ( x < 0 || x > DISPLAY_WIDTH )
+	{
+		return;
+	}
+
+	if ( y < 0 || y > DISPLAY_HEIGHT )
+	{
+		return;
+	}
+
+	if ( colour.a != 255 )
+	{
+		al_put_blended_pixel( x, y, al_map_rgba( colour.r, colour.g, colour.b, colour.a ) );
+	}
+	else
+	{
+		al_put_pixel( x, y, al_map_rgb( colour.r, colour.g, colour.b ) );
+	}
+}
 
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h )
 {
@@ -81,26 +102,7 @@ void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour 
 	{
 		for ( unsigned int column = 0; column < h; ++column )
 		{
-			int dx = x + row;
-			if ( dx < 0 || dx > DISPLAY_WIDTH )
-			{
-				continue;
-			}
-
-			int dy = y + column;
-			if ( dy < 0 || dy > DISPLAY_HEIGHT )
-			{
-				continue;
-			}
-
-			if ( colour.a != 255 )
-			{
-				al_put_blended_pixel( x + row, y + column, al_map_rgba( colour.r, colour.g, colour.b, colour.a ) );
-			}
-			else
-			{
-				al_put_pixel( x + row, y + column, al_map_rgb( colour.r, colour.g, colour.b ) );
-			}
+			DrawPixel( x + row, y + column, colour );
 		}
 	}
 }
@@ -486,7 +488,7 @@ void vc::App::Draw()
 
 void vc::App::InitializeEvents()
 {
-	Print( "Initialize Events\n" );
+	Print( "Initialize events...\n" );
 
 	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr )
 	{

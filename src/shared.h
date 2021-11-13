@@ -50,11 +50,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "engine/Timer.h"
 #include "engine/ImageManager.h"
 
-#define DISPLAY_WIDTH   640
-#define DISPLAY_HEIGHT  480
+#define DISPLAY_WIDTH  640
+#define DISPLAY_HEIGHT 480
 
 #define GAME_TYPE_SFC
 
+void DrawPixel( int x, int y, const hei::Colour &colour );
 void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
 void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -62,7 +63,8 @@ void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR c
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom );
 
-enum InputMouseButton {
+enum InputMouseButton
+{
 	MOUSE_BUTTON_LEFT,
 	MOUSE_BUTTON_RIGHT,
 	MOUSE_BUTTON_MIDDLE,
@@ -70,13 +72,15 @@ enum InputMouseButton {
 	MAX_MOUSE_BUTTONS
 };
 
-namespace vc {
+namespace vc
+{
 	class GameMode;
 	class EntityManager;
 	class BitmapFont;
 	class Background;
 
-	class App {
+	class App
+	{
 	public:
 		App( int argc, char **argv );
 
@@ -91,11 +95,12 @@ namespace vc {
 		bool IsRunning();
 		void Loop();
 
-		ALLEGRO_FONT *CacheFont( const char *path, unsigned int size );
+		ALLEGRO_FONT   *CacheFont( const char *path, unsigned int size );
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 		ALLEGRO_BITMAP *CacheImage( const char *path );
 
-		inline BitmapFont *GetDefaultFont() {
+		inline BitmapFont *GetDefaultFont()
+		{
 			return defaultBitmapFont_;
 		}
 
@@ -105,12 +110,14 @@ namespace vc {
 
 		unsigned int GetNumOfTicks() { return numTicks; }
 
-		inline void GetWindowSize( int *dW, int *dH ) const {
+		inline void GetWindowSize( int *dW, int *dH ) const
+		{
 			*dW = windowWidth;
 			*dH = windowHeight;
 		}
 
-		inline void GetScaledSize( int *dW, int *dH ) const {
+		inline void GetScaledSize( int *dW, int *dH ) const
+		{
 			*dW = scaleW;
 			*dH = scaleH;
 		}
@@ -138,24 +145,24 @@ namespace vc {
 
 		std::map< std::string, Timer > performanceTimers;
 
-		ALLEGRO_DISPLAY *alDisplay;
+		ALLEGRO_DISPLAY     *alDisplay;
 		ALLEGRO_EVENT_QUEUE *alEventQueue;
-		ALLEGRO_TIMER *alTimer;
-		ALLEGRO_TEXTLOG *alLog;
+		ALLEGRO_TIMER       *alTimer;
+		ALLEGRO_TEXTLOG     *alLog;
 
-		ALLEGRO_MOUSE_STATE mouseState;
+		ALLEGRO_MOUSE_STATE    mouseState;
 		ALLEGRO_KEYBOARD_STATE keyboardState;
 
 		// Game state
 		GameMode *gameMode{ nullptr };
 
 		// Resources
-		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps; // todo: make obsolete
-		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples; // todo: make obsolete
-		std::unordered_map< std::string, ALLEGRO_FONT * > fonts; // todo: make obsolete
-		ALLEGRO_FONT *defaultFont; // todo: make obsolete
-		BitmapFont *defaultBitmapFont_{ nullptr }; // todo: this should replace the above...
-		std::map< std::string, BitmapFont * > bitmapFonts_; // todo: this should replace the above...
+		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;                      // todo: make obsolete
+		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;                      // todo: make obsolete
+		std::unordered_map< std::string, ALLEGRO_FONT * >   fonts;                        // todo: make obsolete
+		ALLEGRO_FONT                                       *defaultFont;                  // todo: make obsolete
+		BitmapFont                                         *defaultBitmapFont_{ nullptr };// todo: this should replace the above...
+		std::map< std::string, BitmapFont * >               bitmapFonts_;                 // todo: this should replace the above...
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
@@ -164,7 +171,7 @@ namespace vc {
 		bool running;
 
 		unsigned int windowWidth, windowHeight;
-		int scaleX, scaleY, scaleW, scaleH;
+		int          scaleX, scaleY, scaleW, scaleH;
 
 		double numTicks;
 
@@ -181,11 +188,11 @@ namespace vc {
 }// namespace vc
 
 #if defined( DEBUG_BUILD )
-#   define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
-#   define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
+#define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
+#define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
 #else
-#   define START_MEASURE()
-#   define END_MEASURE()
+#define START_MEASURE()
+#define END_MEASURE()
 #endif
 
 /*	Game	*/

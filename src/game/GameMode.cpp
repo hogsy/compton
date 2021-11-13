@@ -228,13 +228,22 @@ void vc::GameMode::Draw()
 		baseGuiPanel_->Draw();
 	}
 
+	BitmapFont *font = GetApp()->GetDefaultFont();
+	if ( enableHelpPrompt_ )
+	{
+		int x = 10;
+		int y = DISPLAY_HEIGHT / 2;
+		font->DrawString( &x, &y, "HELP INFO:\n"
+		                          "Press R to display room volumes\n"
+		                          "Press H to toggle this help\n"
+		                          "Press Q to quit\n" );
+	}
+
 	{
 		char buf[ 256 ];
 		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02lu:M%02lu:S%02lu\n",
 		          GetTotalDays(),
 		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
-
-		BitmapFont *font = GetApp()->GetDefaultFont();
 
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
@@ -402,6 +411,16 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 		default:
 			break;
 
+		case ALLEGRO_KEY_R:
+			enableRoomDraw_ = !enableRoomDraw_;
+			break;
+		case ALLEGRO_KEY_H:
+			enableHelpPrompt_ = !enableHelpPrompt_;
+			break;
+		case ALLEGRO_KEY_Q:
+			exit( EXIT_SUCCESS );
+            break;
+
 		case ALLEGRO_KEY_F5:
 		{
 			// Quick save check
@@ -464,6 +483,11 @@ void vc::GameMode::LoadRooms()
 
 void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 {
+	if ( !enableRoomDraw_ )
+	{
+		return;
+	}
+
 	BitmapFont *font = GetApp()->GetDefaultFont();
 
 	for ( auto room : rooms_ )

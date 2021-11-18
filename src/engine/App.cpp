@@ -47,17 +47,67 @@ void DrawPixel( int x, int y, const hei::Colour &colour )
 	}
 }
 
-void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h )
+void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest )
 {
-	if ( bitmap == nullptr )
+	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
 	{
 		return;
 	}
 
-	float bW = al_get_bitmap_width( bitmap );
-	float bH = al_get_bitmap_height( bitmap );
+	if ( alphaTest )
+	{
+		for ( unsigned int row = 0; row < w; ++row )
+		{
+			for ( unsigned int column = 0; column < h; ++column )
+			{
+				uint8_t pixel = pixels[ row + column * w ];
+				if ( pixel == 0 )
+				{
+					continue;
+				}
 
-	al_draw_scaled_bitmap( bitmap, 0, 0, bW, bH, x, y, w, h, 0 );
+				DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
+			}
+		}
+	}
+	else
+	{
+		int dw = w;
+		if ( x + dw > DISPLAY_WIDTH )
+		{
+			dw = DISPLAY_WIDTH - x;
+		}
+		int dh = h;
+		if ( y + dh > DISPLAY_HEIGHT )
+		{
+			dh = DISPLAY_HEIGHT - y;
+		}
+
+		ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
+		if ( region == nullptr )
+		{
+			return;
+		}
+
+		unsigned int rw = dw * region->pixel_size; // total byte width of row
+		uint8_t *rowb = new uint8_t[ rw ];
+		uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
+		for ( unsigned int row = 0; row < dh; ++row )
+		{
+			for ( unsigned int column = 0; column < dw; ++column )
+            {
+                uint8_t pixel = pixels[ column + row * w ];
+                rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
+                rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
+                rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
+            }
+
+			memcpy( dst, rowb, rw );
+
+			dst += DISPLAY_WIDTH * region->pixel_size;
+		}
+		delete[] rowb;
+	}
 }
 
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
@@ -401,8 +451,6 @@ void vc::App::InitializeDisplay()
 		Error( "Failed to initialize display!\n" );
 	}
 
-	//al_resize_display( alDisplay, 1024, 768 );
-
 	// Get the actual width and height
 	windowWidth  = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
@@ -417,13 +465,13 @@ void vc::App::InitializeDisplay()
 	}
 
 	// Check to see how much we need to scale the buffer.
-	int flags = al_get_new_bitmap_flags();
-	buffer    = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
-	if ( buffer == nullptr )
+	al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
+	al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
+	buffer_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	if ( buffer_ == nullptr )
 	{
-		Error( "Failed to create screen buffer!\n" );
+		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
 	}
-	al_set_new_bitmap_flags( flags );
 
 	int sx    = windowWidth / DISPLAY_WIDTH;
 	int sy    = windowHeight / DISPLAY_HEIGHT;
@@ -449,12 +497,12 @@ void vc::App::Draw()
 	}
 
 	// Setup the target buffer and then clear it to red
-	al_set_target_bitmap( buffer );
+	al_set_target_bitmap( buffer_ );
 	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
 
 	// Now draw everything we want
 
-	al_lock_bitmap( buffer, al_get_bitmap_format( buffer ), ALLEGRO_LOCK_READWRITE );
+	region_ = al_lock_bitmap( buffer_, al_get_bitmap_format( buffer_ ), ALLEGRO_LOCK_READWRITE );
 
 	gameMode->Draw();
 
@@ -467,12 +515,12 @@ void vc::App::Draw()
 		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 	}
 
-	al_unlock_bitmap( buffer );
+	al_unlock_bitmap( buffer_ );
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
 	al_draw_scaled_bitmap(
-			buffer,
+			buffer_,
 			0, 0,
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
 			scaleX, scaleY,

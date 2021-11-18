@@ -268,7 +268,7 @@ void vc::ImageManager::CacheSprites()
 	}
 }
 
-void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y )
+void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y, bool alphaTest )
 {
 	const Sprite *sprite = GetSprite( group, id );
 	if ( sprite == nullptr )
@@ -276,13 +276,15 @@ void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y )
 		return;
 	}
 
-	sprite->Draw( x, y );
+	sprite->Draw( x, y, alphaTest );
 }
 
-void vc::ImageManager::Sprite::Draw( int x, int y ) const
+void vc::ImageManager::Sprite::Draw( int x, int y, bool alphaTest ) const
 {
-	GameMode::TimeOfDay timeOfDay = GetApp()->GetGameMode()->GetTimeOfDay();
-	const Palette      *palette   = GetApp()->GetImageManager()->GetPalette( ( unsigned int ) timeOfDay );
+	// todo: this api sucks balls
+	const Palette *palette = GetApp()->GetImageManager()->GetPalette(
+			( unsigned int ) GetApp()->GetGameMode()->GetTimeOfDay() );
+#if 0
 	for ( unsigned int row = 0; row < width; ++row )
 	{
 		for ( unsigned int column = 0; column < height; ++column )
@@ -296,4 +298,7 @@ void vc::ImageManager::Sprite::Draw( int x, int y ) const
 			DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
 		}
 	}
+#else
+	DrawBitmap( pixels.data(), x, y, width, height, palette, alphaTest );
+#endif
 }

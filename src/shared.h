@@ -56,7 +56,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GAME_TYPE_SFC
 
 void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( ALLEGRO_BITMAP *bitmap, float x, float y, int w, int h );
+void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest = false );
 void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
 void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
 void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
@@ -181,7 +181,10 @@ namespace vc
 		ImageManager *imageManager{ nullptr };
 
 	public:
-		ALLEGRO_BITMAP *buffer{ nullptr };
+		ALLEGRO_LOCKED_REGION *region_{ nullptr };
+
+	private:
+		ALLEGRO_BITMAP *buffer_{ nullptr };
 	};
 
 	App *GetApp();

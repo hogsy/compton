@@ -18,56 +18,35 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "Boid.h"
+
 namespace vc
 {
-	class Drive
+	class BoidManager : public Entity
 	{
-	public:
-		Drive( const std::string &name );
-		~Drive();
+		DECLARE_ENTITY_CLASS( BoidManager, Entity )
 
-	protected:
+	public:
+		void Spawn() override;
+		void Tick() override;
+
+		//void Deserialize( Serializer *read ) override;
+		//void Serialize( Serializer *write ) override;
+
 	private:
-		const std::string &description_;
-		double             weight_{ 0 };
-	};
-
-	class MemoryStorage
-	{
-	public:
-		void Wipe()
+		struct Flock
 		{
-			identifiers_.clear();
-		}
-
-	protected:
-	private:
-		std::map< std::string, double > identifiers_;
-		// the above is used for carrying identifications for
-		// each agent in the world. each agent carries a unique
-		// descriptor for it's "classification", e.g. honey, water, ice, gremlin
-		// which we use to fetch our disposition
-	};
-
-	class Brain
-	{
-	public:
-		Brain();
-		~Brain();
-
-		void Tick();
-
-		void Serialise();
-		void Deserialise();
-
-	protected:
-	private:
-		std::vector< Drive > drives_{
-				Drive( "thirst" ),
-				Drive( "hunger" ),
-				Drive( "boredom" ),
+			enum
+			{
+				MOVE_DIRECTION_LEFT,
+				MOVE_DIRECTION_RIGHT,
+			};
+			int direction{ MOVE_DIRECTION_RIGHT };
+			std::vector< Entity * > boids;
 		};
+		std::vector< Flock > flocks_;
 
-		MemoryStorage storage_;
+		void SpawnFlock( );
+		void SimulateFlock( Flock &flock );
 	};
 }// namespace vc

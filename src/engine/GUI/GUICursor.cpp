@@ -34,7 +34,7 @@ void vc::GUICursor::DrawBackground()
 	}
 
 #if defined( GAME_TYPE_SFC )
-	GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, ImageManager::SPR_CURSOR, x, y );
+	GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, ImageManager::SPR_CURSOR, x, y, true );
 #else
 	if ( myStyleSheet == nullptr )
 	{

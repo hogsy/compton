@@ -43,18 +43,12 @@ namespace vc
 		void Serialize( Serializer *write ) override;
 
 	private:
-		static constexpr unsigned int numFrames[ ( unsigned int ) Type::NUM_TYPES ] =
+		static constexpr unsigned int NUM_FRAMES[ ( unsigned int ) Type::NUM_TYPES ] =
 				{
-						3,// small bird
-						4 // big bird
+						6,// small bird
+						8 // big bird
 				};
-
-		enum
-		{
-			MOVE_DIRECTION_LEFT,
-			MOVE_DIRECTION_RIGHT,
-		};
-		int moveDirection_{ MOVE_DIRECTION_RIGHT };
+		ImageManager::Sprite *sprites_[ ( unsigned int ) Type::NUM_TYPES ];
 
 		Type type_{ Type::SMALL_BIRD };
 	};

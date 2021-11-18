@@ -112,7 +112,7 @@ namespace vc
 			uint8_t                height{ 0 };
 			std::vector< uint8_t > pixels;
 
-			void Draw( int x, int y ) const;
+			void Draw( int x, int y, bool alphaTest ) const;
 		};
 
 		/**
@@ -136,7 +136,7 @@ namespace vc
 			return &spriteGroups_[ group ].sprites[ id ];
 		}
 
-		void DrawSprite( uint16_t group, uint16_t id, int x, int y );
+		void DrawSprite( uint16_t group, uint16_t id, int x, int y, bool alphaTest = false );
 
 	private:
 		static constexpr const char  *SPRITE_EXTENSION  = ".SPR";

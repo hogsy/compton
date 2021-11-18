@@ -50,8 +50,6 @@ vc::GameMode::GameMode()
 	terrainManager_ = new Terrain();
 	entityManager_  = new EntityManager();
 
-	LoadRooms();
-
 	NewGame( "default.save" );
 }
 
@@ -199,28 +197,10 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-	ALLEGRO_TRANSFORM transform, oldTransform;
-	oldTransform = *al_get_current_transform();
-
-	al_identity_transform( &transform );
-
-	al_rotate_transform( &transform, playerCamera.angle );
-	al_scale_transform( &transform, playerCamera.zoom, playerCamera.zoom );
-	al_translate_transform( &transform, -playerCamera.position.x, -playerCamera.position.y );
-	al_translate_transform( &transform, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2 );
-
-	al_use_transform( &transform );
-
-#if defined( GAME_TYPE_SFC )
 	backgroundManager_->Draw( playerCamera );
-#else
-	terrainManager_->Draw( playerCamera );
-#endif
 	entityManager_->Draw( playerCamera );
 
 	DrawRoomsDebug( playerCamera );
-
-	al_use_transform( &oldTransform );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
@@ -319,9 +299,12 @@ void vc::GameMode::NewGame( const char *path )
 	}
 #endif
 
+	LoadRooms();
 
 	playerCamera.position.x = 450;
 	playerCamera.position.y = Background::CENTER_Y - ( DISPLAY_HEIGHT / 2 );
+
+	entityManager_->CreateEntity( "BoidManager" );
 
 	// Then automatically save it
 	SaveGame( path );
@@ -376,6 +359,7 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 		return;
 	}
 
+#if 0
 	static Entity *waypoint = nullptr;
 	if ( GetApp()->GetMouseState( &x, &y, MOUSE_BUTTON_LEFT ) && !buttonUp )
 	{
@@ -391,6 +375,7 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 		entityManager_->DestroyEntity( waypoint );
 		waypoint = nullptr;
 	}
+#endif
 }
 
 void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
@@ -530,6 +515,43 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 
 		font->DrawString( &scx, &ty, buf );
 	}
+}
+
+/**
+ * Get room by given coords, useful for checking if an entity
+ * is occupying that space.
+ */
+const vc::GameMode::Room *vc::GameMode::GetRoom( int x, int y ) const
+{
+	for ( auto &room : rooms_ )
+    {
+        if ( x >= room.x && x < room.w && y >= room.y && y < room.h )
+        {
+            return &room;
+        }
+    }
+
+	return nullptr;
+}
+
+const vc::GameMode::Room *vc::GameMode::GetRoomByType( uint16_t type, unsigned int startIndex ) const
+{
+	if ( startIndex >= rooms_.size() )
+    {
+        return nullptr;
+    }
+
+	for ( unsigned int i = startIndex; i < rooms_.size(); ++i )
+    {
+		if ( rooms_[ i ].type != type )
+		{
+			continue;
+		}
+
+        return &rooms_[ i ];
+    }
+
+	return nullptr;
 }
 
 ////////////////////////////////

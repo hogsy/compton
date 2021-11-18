@@ -16,46 +16,44 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /*--------------------------------------------------------------------------------------
- * Boid.cpp
- *  Dumb replicant of Boid's in SFC, only possibly a bit more fleshed out.
+ * BoidManager.cpp
+ *  It manages boids...
  *------------------------------------------------------------------------------------*/
 
 #include "Compton.h"
 #include "Serializer.h"
-#include "Boid.h"
+#include "BoidManager.h"
+#include "GameMode.h"
 
-REGISTER_ENTITY( Boid, vc::Boid )
+REGISTER_ENTITY( BoidManager, vc::BoidManager )
 
-vc::Boid::Boid() = default;
-vc::Boid::~Boid() = default;
+vc::BoidManager::BoidManager()  = default;
+vc::BoidManager::~BoidManager() = default;
 
-void vc::Boid::Spawn()
+void vc::BoidManager::Spawn()
 {
 	SuperClass::Spawn();
+
+	// Go ahead and determine where each flock will be spawned
+	unsigned int          i = 0;
+	const GameMode::Room *room;
+	while ( ( room = GetApp()->GetGameMode()->GetRoomByType( GameMode::Room::Type::ROOM_TYPE_EXTERIOR, i++ ) ) != nullptr )
+	{
+		// Spawn the flock
+		//SpawnFlock( room );
+	}
 }
 
-void vc::Boid::Draw( const vc::Camera &camera )
+void vc::BoidManager::Tick()
 {
-	SuperClass::Draw( camera );
+	SuperClass::Tick();
 
-	GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, 6,
-	                                         ( int ) origin.x, ( int ) origin.y, true );
+	for ( auto i : flocks_ )
+	{
+		SimulateFlock( i );
+	}
 }
 
-void vc::Boid::Tick()
+void vc::BoidManager::SimulateFlock( vc::BoidManager::Flock &flock )
 {
-}
-
-void vc::Boid::Deserialize( vc::Serializer *read )
-{
-	SuperClass::Deserialize( read );
-
-	type_ = ( Type ) read->ReadInteger();
-}
-
-void vc::Boid::Serialize( vc::Serializer *write )
-{
-	SuperClass::Serialize( write );
-
-	write->WriteInteger( ( int ) type_ );
 }

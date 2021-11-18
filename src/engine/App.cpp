@@ -318,7 +318,6 @@ vc::App::App( int argc, char **argv )
 
 vc::App::~App()
 {
-	Shutdown();
 }
 
 bool vc::App::IsRunning()
@@ -416,6 +415,12 @@ void vc::App::Shutdown()
 	delete gameMode;
 	delete imageManager;
 
+	if ( screenBitmap_ != nullptr )
+	{
+		al_destroy_bitmap( screenBitmap_ );
+		screenBitmap_ = nullptr;
+	}
+
 	if ( alDisplay != nullptr )
 	{
 		al_destroy_display( alDisplay );
@@ -433,6 +438,8 @@ void vc::App::Shutdown()
 		al_destroy_timer( alTimer );
 		alTimer = nullptr;
 	}
+
+	exit( 0 );
 }
 
 // Display
@@ -467,8 +474,8 @@ void vc::App::InitializeDisplay()
 	// Check to see how much we need to scale the buffer.
 	al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
 	al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
-	buffer_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
-	if ( buffer_ == nullptr )
+	screenBitmap_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	if ( screenBitmap_ == nullptr )
 	{
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
 	}
@@ -497,12 +504,12 @@ void vc::App::Draw()
 	}
 
 	// Setup the target buffer and then clear it to red
-	al_set_target_bitmap( buffer_ );
+	al_set_target_bitmap( screenBitmap_ );
 	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
 
 	// Now draw everything we want
 
-	region_ = al_lock_bitmap( buffer_, al_get_bitmap_format( buffer_ ), ALLEGRO_LOCK_READWRITE );
+	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
 
 	gameMode->Draw();
 
@@ -515,12 +522,12 @@ void vc::App::Draw()
 		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 	}
 
-	al_unlock_bitmap( buffer_ );
+	al_unlock_bitmap( screenBitmap_ );
 
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
 	al_draw_scaled_bitmap(
-			buffer_,
+			screenBitmap_,
 			0, 0,
 			DISPLAY_WIDTH, DISPLAY_HEIGHT,
 			scaleX, scaleY,

@@ -184,7 +184,7 @@ namespace vc
 		ALLEGRO_LOCKED_REGION *region_{ nullptr };
 
 	private:
-		ALLEGRO_BITMAP *buffer_{ nullptr };
+		ALLEGRO_BITMAP *screenBitmap_{ nullptr };
 	};
 
 	App *GetApp();

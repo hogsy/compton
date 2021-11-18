@@ -403,7 +403,7 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 			enableHelpPrompt_ = !enableHelpPrompt_;
 			break;
 		case ALLEGRO_KEY_Q:
-			exit( EXIT_SUCCESS );
+			GetApp()->Shutdown();
             break;
 
 		case ALLEGRO_KEY_F5:
@@ -462,6 +462,8 @@ void vc::GameMode::LoadRooms()
 				( uint16_t ) PlReadInt16( file, false, nullptr )// type
 		} );
 	}
+
+	PlCloseFile( file );
 
 	Print( "Read %lu rooms successfully!\n", numRooms );
 }

@@ -126,6 +126,10 @@ namespace vc
 		bool GetKeyState( int key ) const;
 		bool GetMouseState( int *dX, int *dY, InputMouseButton button );
 
+	private:
+		void GrabCursor( bool state = true );
+
+	public:
 		inline const char *GetAppDataPath() const { return appDataPath; }
 
 		//////////////////////////////////////////////////////

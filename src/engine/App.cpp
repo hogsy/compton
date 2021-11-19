@@ -558,10 +558,7 @@ void vc::App::InitializeEvents()
 	al_install_mouse();
 	al_install_keyboard();
 
-	al_grab_mouse( alDisplay );
-#if 0// enable once we're happy with everything else.
-	al_hide_mouse_cursor(engine_vars.display);
-#endif
+	GrabCursor();
 
 	al_register_event_source( alEventQueue, al_get_display_event_source( alDisplay ) );
 	al_register_event_source( alEventQueue, al_get_timer_event_source( alTimer ) );
@@ -602,6 +599,15 @@ void vc::App::Tick()
 			break;
 		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
 			al_show_mouse_cursor( alDisplay );
+			break;
+
+		case ALLEGRO_EVENT_DISPLAY_DISCONNECTED:
+		case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
+			GrabCursor( false );
+			break;
+		case ALLEGRO_EVENT_DISPLAY_CONNECTED:
+		case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
+			GrabCursor( true );
 			break;
 
 		case ALLEGRO_EVENT_TIMER:
@@ -698,6 +704,19 @@ bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button )
 	}
 
 	return mouseStatus[ button ];
+}
+
+void vc::App::GrabCursor( bool status )
+{
+	if ( status )
+	{
+		al_grab_mouse( alDisplay );
+		al_hide_mouse_cursor( alDisplay );
+		return;
+	}
+
+	al_ungrab_mouse();
+	al_show_mouse_cursor( alDisplay );
 }
 
 //////////////////////////////////////////////////////

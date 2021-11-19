@@ -89,18 +89,18 @@ void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::Im
 			return;
 		}
 
-		unsigned int rw = dw * region->pixel_size; // total byte width of row
-		uint8_t *rowb = new uint8_t[ rw ];
-		uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
+		unsigned int rw   = dw * region->pixel_size;// total byte width of row
+		uint8_t     *rowb = new uint8_t[ rw ];
+		uint8_t     *dst  = ( uint8_t      *) region->data + x * region->pixel_size + region->pitch * y;
 		for ( unsigned int row = 0; row < dh; ++row )
 		{
 			for ( unsigned int column = 0; column < dw; ++column )
-            {
-                uint8_t pixel = pixels[ column + row * w ];
-                rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
-                rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
-                rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
-            }
+			{
+				uint8_t pixel          = pixels[ column + row * w ];
+				rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
+				rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
+				rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
+			}
 
 			memcpy( dst, rowb, rw );
 
@@ -110,37 +110,6 @@ void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::Im
 	}
 }
 
-void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
-{
-	if ( font == nullptr )
-	{
-		return;
-	}
-
-	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_LEFT, message );
-}
-
-void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
-{
-	if ( font == nullptr )
-	{
-		return;
-	}
-
-	al_draw_text( font, al_map_rgb( 0, 0, 0 ), x + 1, y + 1, ALLEGRO_ALIGN_LEFT, message );
-	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_LEFT, message );
-}
-
-void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message )
-{
-	if ( font == nullptr )
-	{
-		return;
-	}
-
-	al_draw_text( font, colour, x, y, ALLEGRO_ALIGN_CENTER, message );
-}
-
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
 {
 	if ( colour.a == 0 )
@@ -148,33 +117,13 @@ void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour 
 		return;
 	}
 
-	for ( unsigned int row = 0; row < w; ++row )
+	for ( int row = 0; row < w; ++row )
 	{
-		for ( unsigned int column = 0; column < h; ++column )
+		for ( int column = 0; column < h; ++column )
 		{
 			DrawPixel( x + row, y + column, colour );
 		}
 	}
-}
-
-void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom )
-{
-	ALLEGRO_VERTEX v[ 4 ];
-	memset( v, 0, sizeof( ALLEGRO_VERTEX ) * 4 );
-	v[ 0 ].x     = x;
-	v[ 0 ].y     = y;
-	v[ 0 ].color = top;
-	v[ 1 ].x     = x + w;
-	v[ 1 ].y     = y;
-	v[ 1 ].color = top;
-	v[ 2 ].x     = x;
-	v[ 2 ].y     = y + h;
-	v[ 2 ].color = bottom;
-	v[ 3 ].x     = x + w;
-	v[ 3 ].y     = y + h;
-	v[ 3 ].color = bottom;
-
-	al_draw_prim( v, nullptr, nullptr, 0, 4, ALLEGRO_PRIM_TRIANGLE_STRIP );
 }
 
 ////////////////////////////////
@@ -316,9 +265,7 @@ vc::App::App( int argc, char **argv )
 	running = true;
 }
 
-vc::App::~App()
-{
-}
+vc::App::~App() = default;
 
 bool vc::App::IsRunning()
 {

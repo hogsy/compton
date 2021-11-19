@@ -43,10 +43,11 @@ extern int VC_LOG_ERR;// error (kills application)
 	PlLogMessage( VC_LOG_MSG, __VA_ARGS__ )
 #define Warning( ... ) \
 	PlLogMessage( VC_LOG_WAR, __VA_ARGS__ )
-#define Error( ... )                         \
-	PlLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
-	abort();                                 \
-	exit( -1 )
+#define Error( ... )                             \
+	{                                            \
+		PlLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
+		abort();                                 \
+	}
 #if defined( DEBUG_BUILD )
 #define DebugMsg( ... ) \
 	PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
@@ -61,7 +62,3 @@ extern int VC_LOG_ERR;// error (kills application)
 #endif
 
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;
-
-#define FONT_SIZE_LARGE  50
-#define FONT_SIZE_MEDIUM 32
-#define FONT_SIZE_SMALL  8

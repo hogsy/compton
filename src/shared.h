@@ -57,11 +57,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 void DrawPixel( int x, int y, const hei::Colour &colour );
 void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest = false );
-void DrawString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
-void DrawShadowString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
-void DrawCenteredString( const ALLEGRO_FONT *font, int x, int y, ALLEGRO_COLOR colour, const char *message );
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
-void DrawVerticalGradientRectangle( float x, float y, float w, float h, ALLEGRO_COLOR top, ALLEGRO_COLOR bottom );
 
 enum InputMouseButton
 {
@@ -174,8 +170,8 @@ namespace vc
 		bool redraw;
 		bool running;
 
-		unsigned int windowWidth, windowHeight;
-		int          scaleX, scaleY, scaleW, scaleH;
+		int   windowWidth, windowHeight;
+		float scaleX, scaleY, scaleW, scaleH;
 
 		double numTicks;
 

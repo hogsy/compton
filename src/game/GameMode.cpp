@@ -221,7 +221,7 @@ void vc::GameMode::Draw()
 
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02lu:M%02lu:S%02lu\n",
+		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02u:M%02u:S%02u\n",
 		          GetTotalDays(),
 		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
 

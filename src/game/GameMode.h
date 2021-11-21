@@ -159,6 +159,8 @@ namespace vc
 			int y;
 			int h;
 			uint16_t type;
+
+			unsigned int id;
 		};
 
 	private:
@@ -170,6 +172,7 @@ namespace vc
 	public:
 		const Room *GetRoom( int x, int y ) const;
 		const Room *GetRoomByType( uint16_t type, unsigned int startIndex = 0 ) const;
+		const Room *GetRoomByIndex( unsigned int index ) const;
 
 	private:
 

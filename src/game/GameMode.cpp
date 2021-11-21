@@ -404,7 +404,7 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 			break;
 		case ALLEGRO_KEY_Q:
 			GetApp()->Shutdown();
-            break;
+			break;
 
 		case ALLEGRO_KEY_F5:
 		{
@@ -455,11 +455,12 @@ void vc::GameMode::LoadRooms()
 	for ( unsigned int i = 0; i < numRooms; ++i )
 	{
 		rooms_.push_back( {
-				PlReadInt16( file, false, nullptr ),            // x
-				PlReadInt16( file, false, nullptr ),            // w
-				PlReadInt16( file, false, nullptr ),            // y
-				PlReadInt16( file, false, nullptr ),            // h
-				( uint16_t ) PlReadInt16( file, false, nullptr )// type
+				PlReadInt16( file, false, nullptr ),             // x
+				PlReadInt16( file, false, nullptr ),             // w
+				PlReadInt16( file, false, nullptr ),             // y
+				PlReadInt16( file, false, nullptr ),             // h
+				( uint16_t ) PlReadInt16( file, false, nullptr ),// type
+				i                                                // id
 		} );
 	}
 
@@ -526,12 +527,12 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 const vc::GameMode::Room *vc::GameMode::GetRoom( int x, int y ) const
 {
 	for ( auto &room : rooms_ )
-    {
-        if ( x >= room.x && x < room.w && y >= room.y && y < room.h )
-        {
-            return &room;
-        }
-    }
+	{
+		if ( x >= room.x && x < room.w && y >= room.y && y < room.h )
+		{
+			return &room;
+		}
+	}
 
 	return nullptr;
 }
@@ -539,21 +540,31 @@ const vc::GameMode::Room *vc::GameMode::GetRoom( int x, int y ) const
 const vc::GameMode::Room *vc::GameMode::GetRoomByType( uint16_t type, unsigned int startIndex ) const
 {
 	if ( startIndex >= rooms_.size() )
-    {
-        return nullptr;
-    }
+	{
+		return nullptr;
+	}
 
 	for ( unsigned int i = startIndex; i < rooms_.size(); ++i )
-    {
+	{
 		if ( rooms_[ i ].type != type )
 		{
 			continue;
 		}
 
-        return &rooms_[ i ];
-    }
+		return &rooms_[ i ];
+	}
 
 	return nullptr;
+}
+
+const vc::GameMode::Room *vc::GameMode::GetRoomByIndex( unsigned int index ) const
+{
+	if ( index >= rooms_.size() )
+	{
+		return nullptr;
+	}
+
+	return &rooms_[ index ];
 }
 
 ////////////////////////////////

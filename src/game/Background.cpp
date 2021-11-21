@@ -23,13 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Background.h"
 #include "Camera.h"
 
-vc::Background::Background()
-{
-}
-
-vc::Background::~Background()
-{
-}
+vc::Background::Background() = default;
+vc::Background::~Background() = default;
 
 void vc::Background::Draw( const Camera &camera )
 {

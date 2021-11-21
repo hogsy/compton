@@ -53,7 +53,6 @@ namespace vc
 #endif
 
 		hei::Vector2 velocity{ 0.0f, 0.0f };
-		hei::Vector2 myRenderBounds{ 0.0f, 0.0f };
 		hei::Vector2 bounds{ 0.0f, 0.0f };
 		hei::Vector2 origin{ 0.0f, 0.0f };
 

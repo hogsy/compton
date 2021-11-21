@@ -75,7 +75,6 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/BoidManager.cpp
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp
-        src/game/ConfigLoader.cpp
         src/game/GameMode.cpp
         src/game/Terrain.cpp
         src/game/Utility.cpp

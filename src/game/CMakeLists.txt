@@ -1,7 +1,6 @@
 project(game)
 
 add_library(game STATIC
-        ConfigLoader.cpp
         GameMode.cpp
         Terrain.cpp
         Utility.cpp

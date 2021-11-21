@@ -20,13 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "Serializer.h"
 
-vc::Entity::Entity()
-{
-}
-
-vc::Entity::~Entity()
-{
-}
+vc::Entity::Entity() = default;
+vc::Entity::~Entity() = default;
 
 /**
  * Called if the entity is spawning anew.

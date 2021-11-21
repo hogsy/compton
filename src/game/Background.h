@@ -57,12 +57,5 @@ namespace vc
 
 	private:
 		void DrawBlock( const Camera &camera, unsigned int block, int x, int y );
-
-		void LoadBackgroundTiles();
-
-		struct Block
-		{
-
-		} blocks_[ NUM_BLOCKS ];
 	};
 }// namespace vc

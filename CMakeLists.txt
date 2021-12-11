@@ -107,7 +107,6 @@ target_link_libraries(Compton
         allegro_dialog
         allegro_font
         allegro_ttf
-        allegro_primitives
         allegro_audio
         allegro_acodec
         )

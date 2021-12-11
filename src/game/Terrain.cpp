@@ -26,6 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 {
+#if 0 // todo: rewrite this, we we decide to retain it
 	static const PLColour tileColour[ MAX_TERRAIN_TYPES ] = {
 			{ 0, 255, 0 },
 			{ 205, 203, 74 },
@@ -89,6 +90,7 @@ void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 	unsigned char rectAlpha = PlFloatToByte( camera.zoom ) * 50;
 	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, rectAlpha ), rectThick );
 #endif
+#endif
 }
 
 vc::Terrain::Terrain() {}
@@ -135,7 +137,7 @@ void vc::Terrain::Draw( const Camera &camera )
 {
 	START_MEASURE();
 
-	al_draw_rectangle( 0.0f, 0.0f, TERRAIN_PIXEL_WIDTH, TERRAIN_PIXEL_HEIGHT, al_map_rgb( 0, 0, 255 ), 16.0f );
+	//al_draw_rectangle( 0.0f, 0.0f, TERRAIN_PIXEL_WIDTH, TERRAIN_PIXEL_HEIGHT, al_map_rgb( 0, 0, 255 ), 16.0f );
 
 	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
 

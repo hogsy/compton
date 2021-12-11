@@ -54,8 +54,8 @@ namespace vc
 		void           SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return myStyleSheet; }
 
-		inline void     SetBackgroundColour( const PLColour &colour ) { backgroundColour = colour; }
-		inline PLColour GetBackgroundColour() const { return backgroundColour; }
+		inline void        SetBackgroundColour( const hei::Colour &colour ) { backgroundColour = colour; }
+		inline hei::Colour GetBackgroundColour() const { return backgroundColour; }
 
 		inline void SetBorder( Border border ) { myBorder = border; }
 		inline void SetBackground( Background background ) { myBackground = background; }
@@ -119,7 +119,7 @@ namespace vc
 		Background myBackground{ Background::NONE };
 		Border     myBorder{ Border::NONE };
 
-		PLColour backgroundColour;
+		hei::Colour backgroundColour;
 
 		GUIPanel *parentPtr{ nullptr };
 	};

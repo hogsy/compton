@@ -76,7 +76,7 @@ void vc::GUIPanel::DrawBackground()
 	{
 		default: break;
 		case Background::SOLID:
-			al_draw_filled_rectangle( dx, dy, dx + dw, dy + dh, al_map_rgba( backgroundColour.r, backgroundColour.g, backgroundColour.b, backgroundColour.a ) );
+			DrawFilledRectangle( dx, dy, dw, dh, backgroundColour );
 			break;
 		case Background::TEXTURE:
 		{

@@ -197,13 +197,30 @@ vc::App::App( int argc, char **argv )
 	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage );
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
-	PlMountLocalLocation( appDataPath );
 	PlMountLocalLocation( "./" );
+	PlMountLocalLocation( appDataPath );
+
+	bool mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
+	const char *localDataPath = PlGetCommandLineArgumentValue( "--local-data-path" );
 
 	if ( !PlLocalFileExists( "./data0.pkg" ) )
 	{
 		// Executable is probably under a runtime directory
 		PlMountLocalLocation( "../../" );
+		if ( localDataPath == nullptr )
+		{
+			localDataPath = "../../data/";
+		}
+	}
+
+	if ( mountLocalData )
+	{
+		if ( localDataPath == nullptr )
+		{
+			localDataPath = "./data/";
+		}
+
+		PlMountLocalLocation( localDataPath );
 	}
 
 	for ( unsigned int i = 0; i < 100; ++i )

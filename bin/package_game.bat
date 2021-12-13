@@ -1,4 +1,4 @@
 echo off
 cls
-@pkgman.exe dev_assets/pkg_data0.txt
+@pkgman.exe data/pkg_data0.txt
 pause

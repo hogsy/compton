@@ -1,0 +1,47 @@
+; identifier w h x y
+
+; outset
+; corners
+gui_lu 2 2 0 0
+gui_ru 2 2 6 0
+gui_ll 2 2 0 6
+gui_lr 2 2 6 6
+; mid sections
+gui_u 2 2 3 0
+gui_r 2 2 6 3
+gui_d 2 2 3 6
+gui_l 2 2 0 3
+
+; inset
+; corners
+gui_ilu 2 2 8 0
+gui_iru 2 2 14 0
+gui_ill 2 2 8 6
+gui_ilr 2 2 14 6
+; mid sections
+gui_iu 2 2 11 0
+gui_ir 2 2 14 3
+gui_id 2 2 11 6
+gui_il 2 2 8 3
+
+; backgrounds
+gui_bg0 16 16 16 0
+gui_bg1 16 16 32 0
+gui_bg2 16 16 48 0
+
+; cursors
+gui_mouse_pointer 11 19 0 16
+gui_mouse_deny 23 28 11 16
+gui_mouse_move 22 22 34 16
+gui_mouse_sizer0 15 15 56 16
+gui_mouse_sizer1 10 19 71 16
+gui_mouse_sizer2 15 15 81 16
+gui_mouse_sizer3 19 10 96 16
+
+; icons
+gui_icon_hunger 16 16 16 112
+gui_icon_thirst 16 16 32 112
+gui_icon_dead 16 16 48 112
+gui_icon_speak 16 16 64 112
+gui_icon_eye 16 16 80 112
+gui_icon_sword 16 16 96 112

@@ -184,7 +184,13 @@ vc::App::App( int argc, char **argv )
 	VC_LOG_ERR = PlAddLogLevel( "error", { 255, 0, 0 }, true );
 	VC_LOG_WAR = PlAddLogLevel( "warning", { 255, 255, 0 }, true );
 	VC_LOG_MSG = PlAddLogLevel( "info", { 255, 255, 255 }, true );
-	VC_LOG_DEB = PlAddLogLevel( "debug", { 0, 0, 255 }, true );
+	VC_LOG_DEB = PlAddLogLevel( "debug", { 0, 0, 255 },
+#if !defined( NDEBUG )
+	                            true
+#else
+	                            false
+#endif
+	                            );
 
 	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 

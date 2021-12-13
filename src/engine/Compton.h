@@ -39,6 +39,10 @@ extern int VC_LOG_ERR;// error (kills application)
 #define WINDOW_TITLE VC_TITLE
 #endif
 
+#if !defined( NDEBUG )
+#define COMPTON_ENABLE_ASSERTS
+#endif
+
 #define Print( ... ) \
 	PlLogMessage( VC_LOG_MSG, __VA_ARGS__ )
 #define Warning( ... ) \
@@ -48,14 +52,10 @@ extern int VC_LOG_ERR;// error (kills application)
 		PlLogMessage( VC_LOG_ERR, __VA_ARGS__ ); \
 		abort();                                 \
 	}
-#if defined( DEBUG_BUILD )
 #define DebugMsg( ... ) \
 	PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
-#else
-#define DebugMsg( ... )
-#endif
 
-#if defined( DEBUG_BUILD )
+#if defined( COMPTON_ENABLE_ASSERTS )
 #define SgAssert( A, ... ) assert( ( __VA_ARGS__, A ) )
 #else
 #define SgAssert( A, ... )

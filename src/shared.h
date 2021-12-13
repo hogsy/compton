@@ -34,7 +34,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_native_dialog.h>
-#include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
 
 #include <plcore/pl_console.h>

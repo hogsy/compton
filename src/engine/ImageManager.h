@@ -150,5 +150,4 @@ namespace vc
 	};
 }// namespace vc
 
-ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags );
 ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags );

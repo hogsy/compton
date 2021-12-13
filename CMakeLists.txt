@@ -1,9 +1,36 @@
 cmake_minimum_required(VERSION 3.6)
 
+##############################################################
 # Set all of our output directories.
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_SOURCE_DIR}/lib/")
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/")
+
+include(DetermineTargetArchitecture.cmake)
+determine_target_architecture(COMPTON_SYSTEM_ARCH)
+
+if(UNIX)
+    message("Assuming Unix - " ${COMPTON_SYSTEM_ARCH})
+    set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/unix-${COMPTON_SYSTEM_ARCH}/")
+elseif(WIN32)
+    message("Assuming Win32 - " ${COMPTON_SYSTEM_ARCH})
+    set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/win32-${COMPTON_SYSTEM_ARCH}/")
+elseif(APPLE)
+    message("Assuming Apple - " ${COMPTON_SYSTEM_ARCH})
+    set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/apple-${COMPTON_SYSTEM_ARCH}/")
+else()
+    message("Unknown platform - " ${COMPTON_SYSTEM_ARCH})
+    set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/${COMPTON_SYSTEM_ARCH}/")
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${COMPTON_OUTPUT_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${COMPTON_OUTPUT_DIR}")
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
+endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+
+##############################################################
 
 add_subdirectory(src/hei/plcore/)
 add_subdirectory(src/hei/plgraphics/)
@@ -82,8 +109,6 @@ add_executable(Compton ${SOURCE_FILES}
         # duktape
         src/3rdparty/duktape-2.2.0/src/duktape.c
         )
-
-set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 
 target_include_directories(Compton PRIVATE
         src/engine/

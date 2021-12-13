@@ -200,6 +200,12 @@ vc::App::App( int argc, char **argv )
 	PlMountLocalLocation( appDataPath );
 	PlMountLocalLocation( "./" );
 
+	if ( !PlLocalFileExists( "./data0.pkg" ) )
+	{
+		// Executable is probably under a runtime directory
+		PlMountLocalLocation( "../../" );
+	}
+
 	for ( unsigned int i = 0; i < 100; ++i )
 	{
 		char packageName[ 64 ];

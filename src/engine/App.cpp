@@ -277,12 +277,6 @@ vc::App::App( int argc, char **argv )
 
 	al_reserve_samples( 512 );
 
-#if 0
-	ALLEGRO_PATH *path = al_get_standard_path( ALLEGRO_RESOURCES_PATH );
-	al_change_directory( al_path_cstr( path, '/' ) );
-	al_destroy_path( path );
-#endif
-
 	// Doing this to ensure that rand is truly random
 	// otherwise, for example, clouds will always spawn
 	// in the same places every time.

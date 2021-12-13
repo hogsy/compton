@@ -1,7 +1,7 @@
 /cmake-build-debug/
-/bin/*.exe
 /.idea/
 
 /bin/default.save
 /bin/quick.save
-/bin/libplatform.dll
+
+/bin/runtime/win32-x86_64/*.exe

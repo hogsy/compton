@@ -90,9 +90,7 @@ namespace vc
 		bool IsRunning();
 		void Loop();
 
-		ALLEGRO_FONT   *CacheFont( const char *path, unsigned int size );
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
-		ALLEGRO_BITMAP *CacheImage( const char *path );
 
 		inline BitmapFont *GetDefaultFont()
 		{
@@ -156,9 +154,7 @@ namespace vc
 		GameMode *gameMode{ nullptr };
 
 		// Resources
-		std::unordered_map< std::string, ALLEGRO_BITMAP * > bitmaps;                      // todo: make obsolete
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;                      // todo: make obsolete
-		std::unordered_map< std::string, ALLEGRO_FONT * >   fonts;                        // todo: make obsolete
 		ALLEGRO_FONT                                       *defaultFont;                  // todo: make obsolete
 		BitmapFont                                         *defaultBitmapFont_{ nullptr };// todo: this should replace the above...
 

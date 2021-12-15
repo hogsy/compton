@@ -116,7 +116,7 @@ vc::ImageManager::~ImageManager()
 
 void vc::ImageManager::PrecacheResources()
 {
-	CachePalettes();
+	//CachePalettes();
 	CacheSprites();
 
 #if 0

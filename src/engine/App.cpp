@@ -304,28 +304,6 @@ void vc::App::Loop()
 	performanceTimers.clear();
 }
 
-ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size )
-{
-	std::string fullName = std::string( path ) + ":" + std::to_string( size );
-	auto        i        = fonts.find( fullName );
-	if ( i != fonts.end() )
-	{
-		return i->second;
-	}
-
-	Print( "Caching font, \"%s\" size %d\n", fullName.c_str(), size );
-
-	ALLEGRO_FONT *font = al_load_ttf_font( path, size, 0 );
-	if ( font == nullptr )
-	{
-		Error( "Failed to load font, \"%s\"!\n", path );
-	}
-
-	fonts.emplace( fullName, font );
-
-	return font;
-}
-
 ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 {
 	auto i = samples.find( path );
@@ -345,27 +323,6 @@ ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 	samples.emplace( path, sample );
 
 	return sample;
-}
-
-ALLEGRO_BITMAP *vc::App::CacheImage( const char *path )
-{
-	auto i = bitmaps.find( path );
-	if ( i != bitmaps.end() )
-	{
-		return i->second;
-	}
-
-	Print( "Caching image, \"%s\"\n", path );
-
-	ALLEGRO_BITMAP *bitmap = al_load_bitmap( path );
-	if ( bitmap == nullptr )
-	{
-		Error( "Failed to load bitmap, \"%s\"!\n", path );
-	}
-
-	bitmaps.emplace( path, bitmap );
-
-	return bitmap;
 }
 
 void vc::App::ShowMessageBox( const char *title, const char *message, bool error )
@@ -716,7 +673,7 @@ vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 void vc::App::PrecacheResources()
 {
 	defaultBitmapFont_ = new BitmapFont();
-	if ( !defaultBitmapFont_->LoadFromFile( 4, 8, "CHARSET.DTA" ) )
+	if ( !defaultBitmapFont_->LoadFromImage( 5, 7, 32, "fonts/bitmaps/oldschool/charmap-oldschool_white.png" ) )
 	{
 		Error( "Failed to load default charset!\n" );
 	}

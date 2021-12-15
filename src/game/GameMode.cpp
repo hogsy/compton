@@ -197,15 +197,15 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-	backgroundManager_->Draw( playerCamera );
-	entityManager_->Draw( playerCamera );
+//	backgroundManager_->Draw( playerCamera );
+//	entityManager_->Draw( playerCamera );
 
-	DrawRoomsDebug( playerCamera );
+//	DrawRoomsDebug( playerCamera );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
 	{
-		baseGuiPanel_->Draw();
+//		baseGuiPanel_->Draw();
 	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();

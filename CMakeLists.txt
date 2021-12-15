@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
+project(Compton)
+
 ##############################################################
 # Set all of our output directories.
 
@@ -38,8 +40,6 @@ add_subdirectory(src/hei/plgraphics/)
 add_subdirectory(src/tools/pkgman/)
 
 #add_subdirectory(src/game/)
-
-project(Compton)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)

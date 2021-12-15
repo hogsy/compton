@@ -377,7 +377,7 @@ void vc::App::InitializeDisplay()
 	windowWidth  = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
-	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{
@@ -673,7 +673,7 @@ vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
 void vc::App::PrecacheResources()
 {
 	defaultBitmapFont_ = new BitmapFont();
-	if ( !defaultBitmapFont_->LoadFromImage( 5, 7, 32, "fonts/bitmaps/oldschool/charmap-oldschool_white.png" ) )
+	if ( !defaultBitmapFont_->LoadFromImage( 7, 7, 0, "fonts/bitmaps/mbf/mbf_small_00.png" ) )
 	{
 		Error( "Failed to load default charset!\n" );
 	}

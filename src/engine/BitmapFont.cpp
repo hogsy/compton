@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 vc::BitmapFont::~BitmapFont()
 {
-#if 1 // Need to jog my memory to see if this is even necessary...
+#if 1// Need to jog my memory to see if this is even necessary...
 	for ( auto &i : glyphs_ )
 	{
 		i.pixels.clear();
@@ -90,14 +90,19 @@ bool vc::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, cons
 	{
 		glyphs_[ i ].pixels.resize( cw_ * ch_ );
 
+		unsigned int iw = w / cw;
+		unsigned int ir = i / iw;
+		unsigned int ic = i % iw;
+		unsigned int ix = ic * cw;
+		unsigned int iy = ir * ch;
+
 		// Now we need to copy the glyph from the image's
 		// pixel buffer into our glyph's pixel buffer
 		for ( unsigned int y = 0; y < ch_; ++y )
 		{
 			for ( unsigned int x = 0; x < cw_; ++x )
 			{
-				uint8_t pixel = imageBuffer[ x + y * w ];
-				glyphs_[ i ].pixels[ x + y ] = pixel;
+				glyphs_[ i ].pixels[ x + y * cw_ ] = imageBuffer[ ( ix + x + ( iy + y ) * w ) * pixelSize ];
 			}
 		}
 	}

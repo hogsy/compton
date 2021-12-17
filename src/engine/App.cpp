@@ -47,7 +47,7 @@ void DrawPixel( int x, int y, const hei::Colour &colour )
 	}
 }
 
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest )
+void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTest )
 {
 	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
 	{
@@ -377,7 +377,7 @@ void vc::App::InitializeDisplay()
 	windowWidth  = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
-	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{

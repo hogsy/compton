@@ -143,40 +143,7 @@ namespace vc
 		Terrain     *terrainManager_;
 		Background  *backgroundManager_;
 
-		// Rooms
-
-	public:
-		struct Room
-		{
-			enum Type
-			{
-				ROOM_TYPE_INTERIOR,
-				ROOM_TYPE_EXTERIOR,
-			};
-
-			int x;
-			int w;
-			int y;
-			int h;
-			uint16_t type;
-
-			unsigned int id;
-		};
-
 	private:
-		std::vector< Room > rooms_;
-
-		void LoadRooms();
-		void DrawRoomsDebug( const vc::Camera &camera );
-
-	public:
-		const Room *GetRoom( int x, int y ) const;
-		const Room *GetRoomByType( uint16_t type, unsigned int startIndex = 0 ) const;
-		const Room *GetRoomByIndex( unsigned int index ) const;
-
-	private:
-
-		bool enableRoomDraw_{ false };
 		bool enableHelpPrompt_{ true };
 
 		///////////////////////////////////////////////

@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "../shared.h"
+
 #include "GUICursor.h"
 
 vc::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )

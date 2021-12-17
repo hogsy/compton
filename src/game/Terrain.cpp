@@ -99,12 +99,12 @@ vc::Terrain::~Terrain() {}
 void vc::Terrain::Deserialize( vc::Serializer *read )
 {
 	unsigned int numTiles = read->ReadInteger();
-	if ( numTiles != TERRAIN_NUM_TILES )
+	if ( numTiles != NUM_TILES )
 	{
 		Error( "Invalid number of tiles stored in save data!\n" );
 	}
 
-	for ( unsigned int i = 0; i < TERRAIN_NUM_TILES; ++i )
+	for ( unsigned int i = 0; i < NUM_TILES; ++i )
 	{
 		tiles[ i ].corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadInteger() );
 		tiles[ i ].corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadInteger() );
@@ -117,8 +117,8 @@ void vc::Terrain::Deserialize( vc::Serializer *read )
 
 void vc::Terrain::Serialize( vc::Serializer *write )
 {
-	write->WriteInteger( TERRAIN_NUM_TILES );
-	for ( unsigned int i = 0; i < TERRAIN_NUM_TILES; ++i )
+	write->WriteInteger( NUM_TILES );
+	for ( unsigned int i = 0; i < NUM_TILES; ++i )
 	{
 		write->WriteInteger( tiles[ i ].corners[ 0 ].terrainType );
 		write->WriteInteger( tiles[ i ].corners[ 1 ].terrainType );
@@ -129,10 +129,6 @@ void vc::Terrain::Serialize( vc::Serializer *write )
 	}
 }
 
-void vc::Terrain::Tick()
-{
-}
-
 void vc::Terrain::Draw( const Camera &camera )
 {
 	START_MEASURE();
@@ -141,18 +137,18 @@ void vc::Terrain::Draw( const Camera &camera )
 
 	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
 
-	for ( unsigned int y = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y )
+	for ( unsigned int y = 0; y < NUM_TILES_COLUMN; ++y )
 	{
-		for ( unsigned int x = 0; x < TERRAIN_NUM_TILES_ROW; ++x )
+		for ( unsigned int x = 0; x < NUM_TILES_ROW; ++x )
 		{
-			unsigned int tileNum = x + y * TERRAIN_NUM_TILES_ROW;
-			if ( tileNum >= TERRAIN_NUM_TILES )
+			unsigned int tileNum = x + y * NUM_TILES_ROW;
+			if ( tileNum >= NUM_TILES )
 			{
 				break;
 			}
 
-			float offsetX = x * TERRAIN_TILE_WIDTH;
-			float offsetY = y * TERRAIN_TILE_HEIGHT;
+			float offsetX = x * TILE_WIDTH;
+			float offsetY = y * TILE_HEIGHT;
 			tiles[ tileNum ].Draw( camera, offsetX, offsetY );
 		}
 	}
@@ -166,22 +162,22 @@ void vc::Terrain::Generate()
 {
 	vc::random::PerlinNoise perlinNoise( ( int ) time( nullptr ) );
 
-	float fx = TERRAIN_PIXEL_WIDTH / 3.0f;
-	float fy = TERRAIN_PIXEL_HEIGHT / 3.0f;
+	float fx = PIXEL_WIDTH / 3.0f;
+	float fy = PIXEL_HEIGHT / 3.0f;
 
 	double pz = PlClamp( 0.0f, PlGenerateRandomFloat( 100.0f ), 100.0f );
 
-	for ( unsigned int y = 0, yOfs = 0; y < TERRAIN_NUM_TILES_COLUMN; ++y, yOfs += TERRAIN_TILE_HEIGHT )
+	for ( unsigned int y = 0, yOfs = 0; y < NUM_TILES_COLUMN; ++y, yOfs += TILE_HEIGHT )
 	{
-		for ( unsigned int x = 0, xOfs = 0; x < TERRAIN_NUM_TILES_ROW; ++x, xOfs += TERRAIN_TILE_WIDTH )
+		for ( unsigned int x = 0, xOfs = 0; x < NUM_TILES_ROW; ++x, xOfs += TILE_WIDTH )
 		{
-			unsigned int tileNum = x + y * TERRAIN_NUM_TILES_ROW;
+			unsigned int tileNum = x + y * NUM_TILES_ROW;
 
 			// Generate the heightmap based on perlin noise
 			tiles[ tileNum ].height[ 0 ] = perlinNoise.Noise( xOfs / fx, yOfs / fy, pz );
-			tiles[ tileNum ].height[ 1 ] = perlinNoise.Noise( ( xOfs + TERRAIN_TILE_WIDTH ) / fx, yOfs / fy, pz );
-			tiles[ tileNum ].height[ 2 ] = perlinNoise.Noise( xOfs / fx, ( yOfs + TERRAIN_TILE_HEIGHT ) / fy, pz );
-			tiles[ tileNum ].height[ 3 ] = perlinNoise.Noise( ( xOfs + TERRAIN_TILE_WIDTH ) / fx, ( yOfs + TERRAIN_TILE_HEIGHT ) / fy, pz );
+			tiles[ tileNum ].height[ 1 ] = perlinNoise.Noise( ( xOfs + TILE_WIDTH ) / fx, yOfs / fy, pz );
+			tiles[ tileNum ].height[ 2 ] = perlinNoise.Noise( xOfs / fx, ( yOfs + TILE_HEIGHT ) / fy, pz );
+			tiles[ tileNum ].height[ 3 ] = perlinNoise.Noise( ( xOfs + TILE_WIDTH ) / fx, ( yOfs + TILE_HEIGHT ) / fy, pz );
 
 #if 1
 			// Determine if it's underwater or not
@@ -205,10 +201,10 @@ bool vc::Terrain::IsWater( float x, float y )
 		return true;
 	}
 
-	unsigned int xr      = PlRoundUp( x * TERRAIN_TILE_WIDTH / TERRAIN_PIXEL_WIDTH, 1 );
-	unsigned int yr      = PlRoundUp( y * TERRAIN_TILE_HEIGHT / TERRAIN_PIXEL_HEIGHT, 1 );
-	unsigned int tileNum = xr + yr * TERRAIN_NUM_TILES_ROW;
-	if ( tileNum >= TERRAIN_NUM_TILES )
+	unsigned int xr      = PlRoundUp( x * TILE_WIDTH / PIXEL_WIDTH, 1 );
+	unsigned int yr      = PlRoundUp( y * TILE_HEIGHT / PIXEL_HEIGHT, 1 );
+	unsigned int tileNum = xr + yr * NUM_TILES_ROW;
+	if ( tileNum >= NUM_TILES )
 	{
 		return false;
 	}

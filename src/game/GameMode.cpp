@@ -185,9 +185,6 @@ void vc::GameMode::Tick()
 
 	numSeconds += 15;
 
-#if !defined( GAME_TYPE_SFC )
-	terrainManager_->Tick();
-#endif
 	entityManager_->Tick();
 
 	END_MEASURE();
@@ -205,7 +202,7 @@ void vc::GameMode::Draw()
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
 	{
-//		baseGuiPanel_->Draw();
+		//baseGuiPanel_->Draw();
 	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();
@@ -234,7 +231,6 @@ void vc::GameMode::Draw()
 
 void vc::GameMode::NewGame( const char *path )
 {
-#if !defined( GAME_TYPE_SFC )
 	Print( "Generating terrain...\n" );
 	terrainManager_->Generate();
 
@@ -247,8 +243,8 @@ void vc::GameMode::NewGame( const char *path )
 		for ( unsigned int j = 0; j < 16; ++j )
 		{
 			// Try at least 16 times before we give up
-			x = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_WIDTH );
-			y = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_HEIGHT );
+			x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
+			y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
 			if ( !terrainManager_->IsWater( x, y ) )
 			{
 				break;
@@ -297,9 +293,6 @@ void vc::GameMode::NewGame( const char *path )
 			}
 		}
 	}
-#endif
-
-	LoadRooms();
 
 	playerCamera.position.x = 450;
 	playerCamera.position.y = Background::CENTER_Y - ( DISPLAY_HEIGHT / 2 );
@@ -396,9 +389,6 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 		default:
 			break;
 
-		case ALLEGRO_KEY_R:
-			enableRoomDraw_ = !enableRoomDraw_;
-			break;
 		case ALLEGRO_KEY_H:
 			enableHelpPrompt_ = !enableHelpPrompt_;
 			break;
@@ -440,35 +430,7 @@ vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()-
 vc::Terrain       *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
 vc::Background    *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
 
-void vc::GameMode::LoadRooms()
-{
-	Print( "Loading rooms...\n" );
-
-	PLFile *file = PlOpenFile( "ROOMS.DTA", false );
-	if ( file == nullptr )
-	{
-		Warning( "Failed to load rooms: %s\n", PlGetError() );
-		return;
-	}
-
-	uint16_t numRooms = ( uint16_t ) PlReadInt16( file, false, nullptr );
-	for ( unsigned int i = 0; i < numRooms; ++i )
-	{
-		rooms_.push_back( {
-				PlReadInt16( file, false, nullptr ),             // x
-				PlReadInt16( file, false, nullptr ),             // w
-				PlReadInt16( file, false, nullptr ),             // y
-				PlReadInt16( file, false, nullptr ),             // h
-				( uint16_t ) PlReadInt16( file, false, nullptr ),// type
-				i                                                // id
-		} );
-	}
-
-	PlCloseFile( file );
-
-	Print( "Read %lu rooms successfully!\n", numRooms );
-}
-
+#if 0
 void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 {
 	if ( !enableRoomDraw_ )
@@ -519,53 +481,7 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 		font->DrawString( &scx, &ty, buf );
 	}
 }
-
-/**
- * Get room by given coords, useful for checking if an entity
- * is occupying that space.
- */
-const vc::GameMode::Room *vc::GameMode::GetRoom( int x, int y ) const
-{
-	for ( auto &room : rooms_ )
-	{
-		if ( x >= room.x && x < room.w && y >= room.y && y < room.h )
-		{
-			return &room;
-		}
-	}
-
-	return nullptr;
-}
-
-const vc::GameMode::Room *vc::GameMode::GetRoomByType( uint16_t type, unsigned int startIndex ) const
-{
-	if ( startIndex >= rooms_.size() )
-	{
-		return nullptr;
-	}
-
-	for ( unsigned int i = startIndex; i < rooms_.size(); ++i )
-	{
-		if ( rooms_[ i ].type != type )
-		{
-			continue;
-		}
-
-		return &rooms_[ i ];
-	}
-
-	return nullptr;
-}
-
-const vc::GameMode::Room *vc::GameMode::GetRoomByIndex( unsigned int index ) const
-{
-	if ( index >= rooms_.size() )
-	{
-		return nullptr;
-	}
-
-	return &rooms_[ index ];
-}
+#endif
 
 ////////////////////////////////
 // Territory

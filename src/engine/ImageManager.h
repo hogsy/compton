@@ -20,6 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "../shared.h"
 
+#include "Sprite.h"
+
 namespace vc
 {
 	class ImageManager
@@ -106,15 +108,6 @@ namespace vc
 		Palette colourGroups_[ NUM_PALETTES ];
 
 	public:
-		struct Sprite
-		{
-			uint8_t                width{ 0 };
-			uint8_t                height{ 0 };
-			std::vector< uint8_t > pixels;
-
-			void Draw( int x, int y, bool alphaTest ) const;
-		};
-
 		/**
 		 * Fetch a sprite from the cache.
 		 * If it doesn't exist, returns null.

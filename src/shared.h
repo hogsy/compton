@@ -55,7 +55,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GAME_TYPE_SFC
 
 void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest = false );
+void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTest );
+void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 
 enum InputMouseButton

@@ -30,7 +30,6 @@ namespace vc
 		TERRAIN_SNOW,
 		TERRAIN_STONE,
 		TERRAIN_WATER,
-		TERRAIN_WATER_DEEP,
 
 		MAX_TERRAIN_TYPES
 	};
@@ -48,16 +47,6 @@ namespace vc
 		void Draw( const Camera &camera, float offsetX, float offsetY );
 	};
 
-	// And here we go...
-#define TERRAIN_NUM_TILES_ROW    32
-#define TERRAIN_NUM_TILES_COLUMN 32
-#define TERRAIN_NUM_TILES        ( TERRAIN_NUM_TILES_ROW * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_TILE_WIDTH       64
-#define TERRAIN_TILE_HEIGHT      64
-#define TERRAIN_PIXEL_WIDTH      ( TERRAIN_TILE_WIDTH * TERRAIN_NUM_TILES_ROW )
-#define TERRAIN_PIXEL_HEIGHT     ( TERRAIN_TILE_HEIGHT * TERRAIN_NUM_TILES_COLUMN )
-#define TERRAIN_PIXEL_SIZE       ( TERRAIN_PIXEL_WIDTH * TERRAIN_PIXEL_HEIGHT )
-
 	class Terrain
 	{
 	public:
@@ -67,14 +56,25 @@ namespace vc
 		void Deserialize( Serializer *read );
 		void Serialize( Serializer *write );
 
-		void Tick();
 		void Draw( const Camera &camera );
 
 		void Generate();
 
 		bool IsWater( float x, float y );
 
+		static constexpr unsigned int NUM_TILES_ROW    = 32;
+		static constexpr unsigned int NUM_TILES_COLUMN = 32;
+		static constexpr unsigned int NUM_TILES        = NUM_TILES_ROW * NUM_TILES_COLUMN;
+
+		static constexpr unsigned int TILE_WIDTH      = 64;
+		static constexpr unsigned int TILE_HEIGHT     = 64;
+		static constexpr unsigned int TILE_PIXEL_SIZE = TILE_WIDTH * TILE_HEIGHT;
+
+		static constexpr unsigned int PIXEL_WIDTH  = TILE_WIDTH * NUM_TILES_COLUMN;
+		static constexpr unsigned int PIXEL_HEIGHT = TILE_HEIGHT * NUM_TILES_ROW;
+		static constexpr unsigned int PIXEL_SIZE   = PIXEL_WIDTH * PIXEL_HEIGHT;
+
 	private:
-		TerrainTile tiles[ TERRAIN_NUM_TILES ];
+		TerrainTile tiles[ NUM_TILES ];
 	};
 }// namespace vc

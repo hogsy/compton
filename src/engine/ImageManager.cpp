@@ -278,27 +278,3 @@ void vc::ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y, bo
 
 	sprite->Draw( x, y, alphaTest );
 }
-
-void vc::ImageManager::Sprite::Draw( int x, int y, bool alphaTest ) const
-{
-	// todo: this api sucks balls
-	const Palette *palette = GetApp()->GetImageManager()->GetPalette(
-			( unsigned int ) GetApp()->GetGameMode()->GetTimeOfDay() );
-#if 0
-	for ( unsigned int row = 0; row < width; ++row )
-	{
-		for ( unsigned int column = 0; column < height; ++column )
-		{
-			uint8_t pixel = pixels[ row + column * width ];
-			if ( pixel == 0 )
-			{
-				continue;
-			}
-
-			DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
-		}
-	}
-#else
-	DrawBitmap( pixels.data(), x, y, width, height, palette, alphaTest );
-#endif
-}

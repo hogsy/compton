@@ -90,6 +90,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Random.cpp
         src/engine/ScriptParser.cpp
         src/engine/Serializer.cpp
+        src/engine/Sprite.cpp
         src/engine/SpriteSheet.cpp
 
         # game

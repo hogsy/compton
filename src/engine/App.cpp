@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "../shared.h"
 
@@ -22,6 +7,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "GameMode.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
+
+vc::SpriteManager *vc::spriteManager = nullptr;
 
 // Draw Routines
 
@@ -54,19 +41,24 @@ void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTe
 		return;
 	}
 
+	struct RGBA8
+	{
+		uint8_t r, g, b, a;
+	};
+
 	if ( alphaTest )
 	{
 		for ( unsigned int row = 0; row < w; ++row )
 		{
 			for ( unsigned int column = 0; column < h; ++column )
 			{
-				uint8_t pixel = pixels[ row + column * w ];
-				if ( pixel == 0 )
+				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ row + column * w * 4 ];
+				if ( pixel.a == 0 )
 				{
 					continue;
 				}
 
-				DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
+				DrawPixel( x + row, y + column, { pixel.r, pixel.g, pixel.b, pixel.a } );
 			}
 		}
 	}
@@ -96,10 +88,11 @@ void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTe
 		{
 			for ( unsigned int column = 0; column < dw; ++column )
 			{
-				uint8_t pixel          = pixels[ column + row * w ];
-				rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
-				rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
-				rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
+				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ column + row * w * 4 ];
+
+				rowb[ column * 3 + 0 ] = pixel.b;
+				rowb[ column * 3 + 1 ] = pixel.g;
+				rowb[ column * 3 + 2 ] = pixel.r;
 			}
 
 			memcpy( dst, rowb, rw );
@@ -190,7 +183,7 @@ vc::App::App( int argc, char **argv )
 #else
 	                            false
 #endif
-	                            );
+	);
 
 	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
@@ -200,8 +193,8 @@ vc::App::App( int argc, char **argv )
 	PlMountLocalLocation( "./" );
 	PlMountLocalLocation( appDataPath );
 
-	bool mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
-	const char *localDataPath = PlGetCommandLineArgumentValue( "--local-data-path" );
+	bool        mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
+	const char *localDataPath  = PlGetCommandLineArgumentValue( "--local-data-path" );
 
 	if ( !PlLocalFileExists( "./data0.pkg" ) )
 	{
@@ -267,8 +260,6 @@ vc::App::App( int argc, char **argv )
 	}
 
 	al_init_native_dialog_addon();
-	al_init_font_addon();
-	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
@@ -282,7 +273,7 @@ vc::App::App( int argc, char **argv )
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
 
-	imageManager = new ImageManager( argc, argv );
+	spriteManager = new SpriteManager( argc, argv );
 
 	running = true;
 }
@@ -339,7 +330,7 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 void vc::App::Shutdown()
 {
 	delete gameMode;
-	delete imageManager;
+	delete spriteManager;
 
 	if ( screenBitmap_ != nullptr )
 	{
@@ -389,13 +380,6 @@ void vc::App::InitializeDisplay()
 	windowHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
-
-	// Load in the default font for displaying debug info
-	defaultFont = al_create_builtin_font();
-	if ( defaultFont == nullptr )
-	{
-		Error( "Failed to create default font!\n" );
-	}
 
 	// Check to see how much we need to scale the buffer.
 	al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
@@ -678,7 +662,7 @@ void vc::App::PrecacheResources()
 		Error( "Failed to load default charset!\n" );
 	}
 
-	imageManager->PrecacheResources();
+	spriteManager->PrecacheResources();
 }
 
 int main( int argc, char **argv )

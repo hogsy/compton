@@ -44,29 +44,38 @@ namespace vc
 
 	struct GUIStyleSheet : public SpriteSheet
 	{
-		GUIStyleSheet( const char *path, ALLEGRO_BITMAP *bitmap );
+		GUIStyleSheet( const char *path, const PLImage *bitmap );
 
-		struct GUIBorderStyle
+		static constexpr unsigned int GUI_MAX_BACKGROUNDS = 8;
+
+		enum
 		{
-			RectangleCoord lu;
-			RectangleCoord ru;
-			RectangleCoord ll;
-			RectangleCoord lr;
-			// Mid
-			RectangleCoord u;
-			RectangleCoord r;
-			RectangleCoord d;
-			RectangleCoord l;
+			// Outset
+			GUI_FRAME_UL,// Upper Left
+			GUI_FRAME_UR,// Upper Right
+			GUI_FRAME_LL,// Lower Left
+			GUI_FRAME_LR,// Lower Right
+			GUI_FRAME_U, // Upper
+			GUI_FRAME_R, // Right
+			GUI_FRAME_D, // Down
+			GUI_FRAME_L, // Left
+
+			// Inset
+			GUI_FRAME_IUL,// Upper Left
+			GUI_FRAME_IUR,// Upper Right
+			GUI_FRAME_ILL,// Lower Left
+			GUI_FRAME_ILR,// Lower Right
+			GUI_FRAME_IU, // Upper
+			GUI_FRAME_IR, // Right
+			GUI_FRAME_ID, // Down
+			GUI_FRAME_IL, // Left
+
+			GUI_MAX_FRAME_ELEMENTS
 		};
 
-		GUIBorderStyle outset;
-		GUIBorderStyle inset;
-
-#define GUI_MAX_BACKGROUNDS 8
-		RectangleCoord backgrounds[ GUI_MAX_BACKGROUNDS ];
-		unsigned int   numBackgrounds{ 0 };
-
-		// Mouse cursor
-		RectangleCoord mouseStyles[ MAX_MOUSE_STATES ];
+		const Sprite *mouseSprites[ MAX_MOUSE_STATES ];
+		const Sprite *frameSprites[ GUI_MAX_FRAME_ELEMENTS ];
+		const Sprite *backgrounds[ GUI_MAX_BACKGROUNDS ];
+		unsigned int  numBackgrounds{ 0 };
 	};
 }// namespace vc

@@ -83,7 +83,6 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
-        src/engine/ImageManager.cpp
         src/engine/JsonReader.cpp
         src/engine/LoaderPkg.cpp
         src/engine/PlayerManager.cpp
@@ -91,6 +90,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/ScriptParser.cpp
         src/engine/Serializer.cpp
         src/engine/Sprite.cpp
+        src/engine/SpriteManager.cpp
         src/engine/SpriteSheet.cpp
 
         # game
@@ -99,13 +99,14 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/BaseBuilding.cpp
         src/game/Entities/BaseCharacter.cpp
         src/game/Entities/BaseCreature.cpp
-        src/game/Entities/Boid.cpp
-        src/game/Entities/BoidManager.cpp
+        #src/game/Entities/Boid.cpp
+        #src/game/Entities/BoidManager.cpp
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp
         src/game/GameMode.cpp
         src/game/Terrain.cpp
         src/game/Utility.cpp
+        src/game/World.cpp
 
         # duktape
         src/3rdparty/duktape-2.2.0/src/duktape.c
@@ -131,8 +132,8 @@ target_link_libraries(Compton
 
         allegro
         allegro_dialog
-        allegro_font
-        allegro_ttf
+        #allegro_font
+        #allegro_ttf
         allegro_audio
         allegro_acodec
         )

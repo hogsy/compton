@@ -1,23 +1,7 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_primitives.h>
 
 #include "Compton.h"
 #include "GUIPanel.h"
@@ -25,7 +9,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../../shared.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
-	: myBackground( background ), myBorder( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
+	: myBackground( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
 	{
@@ -36,7 +20,7 @@ vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GU
 	parent->children.push_back( this );
 
 	// Style should be the same as the parent
-	myStyleSheet = parent->myStyleSheet;
+	styleSheet_ = parent->styleSheet_;
 
 	this->x += parent->x;
 	this->y += parent->y;
@@ -80,22 +64,23 @@ void vc::GUIPanel::DrawBackground()
 			break;
 		case Background::TEXTURE:
 		{
-			if ( myStyleSheet == nullptr )
+			if ( styleSheet_ == nullptr )
 			{
 				return;
 			}
 
-			ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
+#if 0
+			ALLEGRO_BITMAP *bmp = styleSheet_->GetBitmap();
 			if ( bmp == nullptr )
 			{
 				return;
 			}
 
 			float sx, sy, sw, sh;
-			sx = myStyleSheet->backgrounds[ 0 ].x;
-			sy = myStyleSheet->backgrounds[ 0 ].y;
-			sw = myStyleSheet->backgrounds[ 0 ].w;
-			sh = myStyleSheet->backgrounds[ 0 ].h;
+			sx = styleSheet_->backgrounds[ 0 ].x;
+			sy = styleSheet_->backgrounds[ 0 ].y;
+			sw = styleSheet_->backgrounds[ 0 ].w;
+			sh = styleSheet_->backgrounds[ 0 ].h;
 
 			al_draw_tinted_scaled_rotated_bitmap_region(
 					bmp,
@@ -110,6 +95,7 @@ void vc::GUIPanel::DrawBackground()
 					dx, dy, dw / sw, dh / sh,
 					0.0f,
 					0 );
+#endif
 			break;
 		}
 	}
@@ -117,16 +103,17 @@ void vc::GUIPanel::DrawBackground()
 
 void vc::GUIPanel::DrawBorder()
 {
+#if 0
 	const GUIStyleSheet::GUIBorderStyle *borderStyle;
-	switch ( myBorder )
+	switch ( border_ )
 	{
 		default:
 			return;
 		case Border::INSET:
-			borderStyle = &myStyleSheet->inset;
+			borderStyle = &styleSheet_->inset;
 			break;
 		case Border::OUTSET:
-			borderStyle = &myStyleSheet->outset;
+			borderStyle = &styleSheet_->outset;
 			break;
 	}
 
@@ -143,27 +130,23 @@ void vc::GUIPanel::DrawBorder()
 	DrawBorderCorner( x + w - borderStyle->ru.w, y, borderStyle->ru );
 	DrawBorderCorner( x, y + h - borderStyle->ll.h, borderStyle->ll );
 	DrawBorderCorner( x + w - borderStyle->lr.w, y + h - borderStyle->lr.h, borderStyle->lr );
+#endif
 }
 
 void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &tileCoord )
 {
-	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
-	if ( bmp == nullptr )
+	if ( styleSheet_ == nullptr )
 	{
 		return;
 	}
 
-	al_draw_bitmap_region(
-			bmp,
-			tileCoord.x, tileCoord.y,
-			tileCoord.w, tileCoord.h,
-			dx, dy,
-			0 );
+
 }
 
 void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::RectangleCoord &tileCoord )
 {
-	ALLEGRO_BITMAP *bmp = myStyleSheet->GetBitmap();
+#if 0
+	ALLEGRO_BITMAP *bmp = styleSheet_->GetBitmap();
 	if ( bmp == nullptr )
 	{
 		return;
@@ -182,6 +165,7 @@ void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::Rec
 			dx, dy, dw / tileCoord.w, dh / tileCoord.h,
 			0.0f,
 			0 );
+#endif
 }
 
 void vc::GUIPanel::Tick()
@@ -197,12 +181,12 @@ void vc::GUIPanel::Tick()
 
 void vc::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet )
 {
-	myStyleSheet = styleSheet;
+	styleSheet_ = styleSheet;
 }
 
 void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const
 {
-	if ( myBorder == Border::NONE )
+	if ( border_ == Border::NONE )
 	{
 		GetPosition( xd, yd );
 		return;
@@ -215,7 +199,7 @@ void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const
 
 void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const
 {
-	if ( myBorder == Border::NONE )
+	if ( border_ == Border::NONE )
 	{
 		GetSize( wd, hd );
 		return;

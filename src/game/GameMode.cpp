@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "GameMode.h"
@@ -23,7 +8,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
-#include "Random.h"
 #include "Serializer.h"
 #include "BitmapFont.h"
 #include "Background.h"
@@ -67,8 +51,9 @@ void vc::GameMode::SetupUserInterface()
 
 	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 
-#if !defined( GAME_TYPE_SFC )
-	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
+	PLImage *image = PlLoadImage( "sheets/interface.png" );
+
+	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", image );
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
 	new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
@@ -81,8 +66,8 @@ void vc::GameMode::SetupUserInterface()
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
-#define MINIMAP_WIDTH  128
-#define MINIMAP_HEIGHT 128
+#	define MINIMAP_WIDTH  128
+#	define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
 			baseGuiPanel_,
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
@@ -98,7 +83,6 @@ void vc::GameMode::SetupUserInterface()
 			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
 			GUIPanel::Background::SOLID,
 			GUIPanel::Border::INSET );
-#endif
 
 	// Create the UI cursor
 	new GUICursor( baseGuiPanel_ );
@@ -183,9 +167,11 @@ void vc::GameMode::Tick()
 		playerCamera.velocity -= ( playerCamera.velocity / CAMERA_FRICTION );
 	}
 
-	numSeconds += 15;
-
-	entityManager_->Tick();
+	if ( world_ != nullptr )
+	{
+		world_->Tick();
+		entityManager_->Tick();
+	}
 
 	END_MEASURE();
 }
@@ -194,10 +180,8 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-//	backgroundManager_->Draw( playerCamera );
-//	entityManager_->Draw( playerCamera );
-
-//	DrawRoomsDebug( playerCamera );
+	//	backgroundManager_->Draw( playerCamera );
+	//	entityManager_->Draw( playerCamera );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
@@ -216,21 +200,27 @@ void vc::GameMode::Draw()
 		                          "Press Q to quit\n" );
 	}
 
+	if ( world_ != nullptr )
 	{
 		char buf[ 256 ];
 		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02u:M%02u:S%02u\n",
-		          GetTotalDays(),
-		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
+		          world_->GetTotalDays(),
+		          world_->GetCurrentHour(),
+		          world_->GetCurrentMinute(),
+		          world_->GetCurrentSecond() );
 
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
+
+	vc::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
 	END_MEASURE();
 }
 
 void vc::GameMode::NewGame( const char *path )
 {
+#if 0
 	Print( "Generating terrain...\n" );
 	terrainManager_->Generate();
 
@@ -301,6 +291,7 @@ void vc::GameMode::NewGame( const char *path )
 
 	// Then automatically save it
 	SaveGame( path );
+#endif
 }
 
 void vc::GameMode::SaveGame( const char *path )
@@ -311,7 +302,7 @@ void vc::GameMode::SaveGame( const char *path )
 	entityManager_->SerializeEntities( &serializer );
 
 	// World state
-	serializer.WriteInteger( numSeconds );
+	world_->Serialize( &serializer );
 
 	// Write camera data
 	serializer.WriteCoordinate( playerCamera.position );
@@ -329,8 +320,10 @@ void vc::GameMode::RestoreGame( const char *path )
 	//terrainManager_->Deserialize( &serializer );
 	entityManager_->DeserializeEntities( &serializer );
 
-	// World state
-	numSeconds = serializer.ReadInteger();
+	char tmp[ 128 ];
+	serializer.ReadString( tmp, sizeof( tmp ) );
+	world_ = new World( tmp );
+	world_->Deserialize( &serializer );
 
 	// Now restore the camera data
 	playerCamera.position     = serializer.ReadCoordinate();
@@ -482,15 +475,3 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 	}
 }
 #endif
-
-////////////////////////////////
-// Territory
-
-vc::GameMode::Territory::Territory( const hei::Vector2 &origin )
-{
-	snprintf( name, sizeof( name ), "T%d", rand() % 100 );
-}
-
-void vc::GameMode::Territory::DrawBorder()
-{
-}

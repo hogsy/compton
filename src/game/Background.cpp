@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 /*--------------------------------------------------------------------------------------
  * Background.cpp
  *  Drawing SFC style background.
@@ -39,6 +24,7 @@ void vc::Background::Draw( const Camera &camera )
 
 void vc::Background::DrawBlock( const Camera &camera, unsigned int block, int x, int y )
 {
+#if 0
 	if ( x > camera.position.x + DISPLAY_WIDTH || x + BLOCK_WIDTH < camera.position.x - DISPLAY_WIDTH ||
 	     y > camera.position.y + DISPLAY_HEIGHT || y + BLOCK_HEIGHT < camera.position.y - DISPLAY_HEIGHT )
 	{
@@ -55,10 +41,11 @@ void vc::Background::DrawBlock( const Camera &camera, unsigned int block, int x,
 	{
 		for ( unsigned int j = 0; j < NUM_BLOCK_SPRITE_COLUMNS; ++j )
 		{
-			GetApp()->GetImageManager()->DrawSprite( block, sprite++, nx, ny );
+			spriteManager->DrawSprite( sprite++, block, nx, ny );
 			nx += SPRITE_WIDTH;
 		}
 		nx = x;
 		ny += SPRITE_HEIGHT;
 	}
+#endif
 }

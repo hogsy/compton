@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "../shared.h"
 
@@ -22,5 +7,70 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 void vc::Sprite::Draw( int x, int y, bool alpha ) const
 {
-	DrawBitmap( pixels.data(), x, y, width, height, alpha );
+	if ( ( x + width < 0 || x >= DISPLAY_WIDTH ) || ( y + height < 0 || y >= DISPLAY_HEIGHT ) )
+	{
+		return;
+	}
+
+	struct RGBA8
+	{
+		uint8_t r, g, b, a;
+	};
+
+	unsigned int stride = hasAlpha ? 4 : 3;
+	if ( alpha && hasAlpha )
+	{
+		for ( unsigned int row = 0; row < width; ++row )
+		{
+			for ( unsigned int column = 0; column < height; ++column )
+			{
+				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( row + column * width ) * stride ];
+				if ( pixel.a == 0 )
+				{
+					continue;
+				}
+
+				DrawPixel( x + row, y + column, { pixel.r, pixel.g, pixel.b, pixel.a } );
+			}
+		}
+	}
+	else
+	{
+		int dw = width;
+		if ( x + dw > DISPLAY_WIDTH )
+		{
+			dw = DISPLAY_WIDTH - x;
+		}
+		int dh = height;
+		if ( y + dh > DISPLAY_HEIGHT )
+		{
+			dh = DISPLAY_HEIGHT - y;
+		}
+
+		ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
+		if ( region == nullptr )
+		{
+			return;
+		}
+
+		unsigned int rw   = dw * region->pixel_size;// total byte width of row
+		uint8_t     *rowb = new uint8_t[ rw ];
+		uint8_t     *dst  = ( uint8_t      *) region->data + x * region->pixel_size + region->pitch * y;
+		for ( unsigned int row = 0; row < dh; ++row )
+		{
+			for ( unsigned int column = 0; column < dw; ++column )
+			{
+				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( column + row * width ) * stride ];
+
+				rowb[ column * 3 + 0 ] = pixel.b;
+				rowb[ column * 3 + 1 ] = pixel.g;
+				rowb[ column * 3 + 2 ] = pixel.r;
+			}
+
+			memcpy( dst, rowb, rw );
+
+			dst += DISPLAY_WIDTH * region->pixel_size;
+		}
+		delete[] rowb;
+	}
 }

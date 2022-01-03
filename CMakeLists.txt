@@ -83,11 +83,9 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
-        src/engine/JsonReader.cpp
         src/engine/LoaderPkg.cpp
         src/engine/PlayerManager.cpp
         src/engine/Random.cpp
-        src/engine/ScriptParser.cpp
         src/engine/Serializer.cpp
         src/engine/Sprite.cpp
         src/engine/SpriteManager.cpp
@@ -107,9 +105,6 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Terrain.cpp
         src/game/Utility.cpp
         src/game/World.cpp
-
-        # duktape
-        src/3rdparty/duktape-2.2.0/src/duktape.c
         )
 
 target_include_directories(Compton PRIVATE
@@ -119,7 +114,6 @@ target_include_directories(Compton PRIVATE
         # 3rd party libraries
         src/3rdparty/
         src/3rdparty/miniz/
-        src/3rdparty/duktape-2.2.0/src/
         )
 if (WIN32)
     target_include_directories(Compton PRIVATE src/3rdparty/allegro/include/)
@@ -132,8 +126,6 @@ target_link_libraries(Compton
 
         allegro
         allegro_dialog
-        #allegro_font
-        #allegro_ttf
         allegro_audio
         allegro_acodec
         )

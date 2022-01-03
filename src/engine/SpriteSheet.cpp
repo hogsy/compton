@@ -2,116 +2,162 @@
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <plcore/pl_image.h>
+#include <plcore/pl_parse.h>
+#include <memory>
 
 #include "Compton.h"
 #include "SpriteSheet.h"
 
-vc::SpriteSheet::SpriteSheet( const char *path, const PLImage *bitmap ) : ScriptParser( path )
+vc::SpriteSheet::~SpriteSheet() = default;
+
+bool vc::SpriteSheet::LoadFile( const char *path )
 {
-	Print( "Parsing sprite definition file, \"%s\"\n", path );
-
-	PLImageFormat format      = PlGetImageFormat( bitmap );
-	unsigned int  pixelSize   = PlGetImageFormatPixelSize( format );
-	unsigned int  colourCount = PlGetNumImageFormatChannels( format );
-
-	// This is dumb, but only support explicit pixel sizes relative to colour count for now
-	if ( colourCount != pixelSize )
+	PLFile *file = PlOpenFile( path, true );
+	if ( file == nullptr )
 	{
-		Warning( "Unsupported bitmap pixel/colour size for spritesheet!\n" );
-		return;
+		Warning( "Failed to load sprite sheet: %s\n", PlGetError() );
+		return false;
 	}
 
-	unsigned int imageW = PlGetImageWidth( bitmap );
-	unsigned int imageH = PlGetImageHeight( bitmap );
+	Print( "Parsing sprite sheet, \"%s\"\n", path );
 
-	bool hasAlpha = PlImageHasAlpha( bitmap );
+	unsigned int size   = PlGetFileSize( file );
+	char        *buffer = new char[ size + 1 ];
+	memcpy( buffer, PlGetFileData( file ), size );
+	PlCloseFile( file );
 
-	while ( !IsEndOfFile() )
+	bool status = ParseFile( buffer, size );
+
+	delete[] buffer;
+
+	if ( status )
 	{
-		char token[ 4096 ];
-		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		SetupElementTable();
+	}
+
+	return status;
+}
+
+bool vc::SpriteSheet::ParseFile( const char *buffer, unsigned int bufferSize )
+{
+	bool status = false;
+
+	PLImage     *image = nullptr;
+	unsigned int pixelSize;
+
+	const char *p = buffer;
+	while ( true )
+	{
+		if ( *p == '\0' )
 		{
+			// Made it to the end, yay!
+			status = true;
+			break;
+		}
+
+		char token[ 256 ];
+		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
+		{
+			break;
+		}
+
+		if ( *token == ';' || PlIsEndOfLine( p ) )// Comment
+		{
+			PlSkipLine( &p );
 			continue;
 		}
 
-		if ( token[ 0 ] == ';' )
-		{// Comment
-			SkipLine();
+		// Check for built-in commands
+		if ( pl_strcasecmp( token, "$sheet" ) == 0 )
+		{
+			const char *path = PlParseToken( &p, token, sizeof( token ) );
+
+			image = PlLoadImage( path );
+			if ( image == nullptr )
+			{
+				Warning( "Failed to open sprite sheet: %s\n", PlGetError() );
+				break;
+			}
+
+			PLImageFormat format = PlGetImageFormat( image );
+			if ( format != PL_IMAGEFORMAT_RGBA8 && format != PL_IMAGEFORMAT_RGB8 )
+			{
+				Warning( "Unsupported pixel format!\n" );
+				break;
+			}
+
+			pixelSize = ( format == PL_IMAGEFORMAT_RGBA8 ) ? 4 : 3;
+
+			PlSkipLine( &p );
 			continue;
 		}
-		else if ( token[ 0 ] == '$' )
+
+		if ( image == nullptr )
 		{
-			SkipLine();
-			continue;
+			Warning( "Attempted to specify elements before providing sheet!\n" );
+			break;
 		}
 
-		// Otherwise, assume it's an index into the sheet!
+		DebugMsg( "Element: %s\n", token );
+		std::string elementName = token;
 
-		char id[ 16 ];
-
-		if ( strlen( token ) >= sizeof( id ) )
+		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
-			Warning( "Token, \"%s\", is longer than maximum identifier length!\n", token );
+			break;
 		}
+		DebugMsg( "W: %s\n", token );
+		unsigned int w = strtoul( token, nullptr, 10 );
 
-		strncpy( id, token, sizeof( id ) );
-
-		// Width
-		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
-			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
-			continue;
+			break;
 		}
-		int w = strtol( token, nullptr, 10 );
+		DebugMsg( "H: %s\n", token );
+		unsigned int h = strtoul( token, nullptr, 10 );
 
-		// Height
-		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
-			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
-			continue;
+			break;
 		}
-		int h = strtol( token, nullptr, 10 );
+		DebugMsg( "X: %s\n", token );
+		unsigned int x = strtoul( token, nullptr, 10 );
 
-		// X
-		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
-			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
-			continue;
+			break;
 		}
-		int x = strtol( token, nullptr, 10 );
+		DebugMsg( "Y: %s\n", token );
+		unsigned int y = strtoul( token, nullptr, 10 );
 
-		// Y
-		if ( GetToken( token, sizeof( token ) ) == nullptr )
+		// Validate it
+		if ( x + w >= PlGetImageWidth( image ) || y + h >= PlGetImageHeight( image ) )
 		{
-			Warning( "Unexpected end of line at %d:%d!\n", GetLineNumber(), GetLinePosition() );
-			continue;
+			Warning( "Invalid coordinates provided for element %u (%s)!\n", elements_.size(), elementName.c_str() );
+			break;
 		}
-		int y = strtol( token, nullptr, 10 );
 
 		Sprite sprite( w, h );
 		sprite.pixels.reserve( w * h * pixelSize );
-		sprite.hasAlpha = hasAlpha;
+		sprite.hasAlpha = PlImageHasAlpha( image );
 
+		//elements_.emplace( id, sprite );
 
-
-		sprites.emplace( id, sprite );
-
-		Print( "Added \"%s\" to sprite table\n", id );
+		Print( "Added \"%s\" to sprite table\n", elementName.c_str() );
 	}
 
-	Print( "Done!\n" );
+	PlDestroyImage( image );
+
+	return status;
 }
 
-vc::SpriteSheet::~SpriteSheet() = default;
-
-const vc::Sprite *vc::SpriteSheet::GetSprite( const char *spriteName ) const
+const vc::Sprite *vc::SpriteSheet::LookupElement( const char *spriteName ) const
 {
-	const auto &key = sprites.find( spriteName );
-	if ( key == sprites.end() )
+	const auto &key = elements_.find( spriteName );
+	if ( key == elements_.end() )
 	{
 		Warning( "Failed to find sprite index, \"%s\"!\n", spriteName );
 		return nullptr;
 	}
 
-	return &key->second;
+	return key->second;
 }

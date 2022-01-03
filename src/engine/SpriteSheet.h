@@ -3,22 +3,26 @@
 
 #pragma once
 
-#include "ScriptParser.h"
 #include "Sprite.h"
-
-typedef struct PLImage PLImage;
 
 namespace vc
 {
-	class SpriteSheet : public ScriptParser
+	class SpriteSheet
 	{
 	public:
-		SpriteSheet( const char *path, const PLImage *bitmap );
+		SpriteSheet() = default;
 		~SpriteSheet();
 
-		const Sprite *GetSprite( const char *spriteName ) const;
+		bool LoadFile( const char *path );
+	private:
+		bool ParseFile( const char *buffer, unsigned int bufferSize );
+
+		virtual void SetupElementTable() {}
+
+	public:
+		const Sprite *LookupElement( const char *spriteName ) const;
 
 	private:
-		std::map< std::string, Sprite > sprites;
+		std::map< std::string, const Sprite * > elements_;
 	};
 }// namespace vc

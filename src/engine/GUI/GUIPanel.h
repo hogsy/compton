@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "GUIStyleSheet.h"
 #include <vector>
 
 struct ALLEGRO_BITMAP;
@@ -11,6 +10,7 @@ struct ALLEGRO_BITMAP;
 namespace vc
 {
 	class SpriteSheet;
+	class GUIStyleSheet;
 
 	class GUIPanel
 	{
@@ -98,8 +98,8 @@ namespace vc
 
 	private:
 		void DrawBorder();
-		void DrawBorderCorner( int dx, int dy, const RectangleCoord &tileCoord );
-		void DrawBorderEdge( int dx, int dy, int dw, int dh, const RectangleCoord &tileCoord );
+		void DrawBorderCorner( int dx, int dy );
+		void DrawBorderEdge( int dx, int dy, int dw, int dh );
 
 		Background myBackground{ Background::NONE };
 		Border     border_{ Border::NONE };

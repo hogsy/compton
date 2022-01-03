@@ -4,6 +4,7 @@
 #include "../shared.h"
 
 #include "GUICursor.h"
+#include "GUIStyleSheet.h"
 
 vc::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}

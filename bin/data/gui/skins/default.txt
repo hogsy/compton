@@ -1,9 +1,11 @@
 ; identifier w h x y
 
+$sheet gui/skins/default.png
+
 ; outset
 ; corners
-gui_lu 2 2 0 0
-gui_ru 2 2 6 0
+gui_ul 2 2 0 0
+gui_ur 2 2 6 0
 gui_ll 2 2 0 6
 gui_lr 2 2 6 6
 ; mid sections
@@ -14,8 +16,8 @@ gui_l 2 2 0 3
 
 ; inset
 ; corners
-gui_ilu 2 2 8 0
-gui_iru 2 2 14 0
+gui_iul 2 2 8 0
+gui_iur 2 2 14 0
 gui_ill 2 2 8 6
 gui_ilr 2 2 14 6
 ; mid sections

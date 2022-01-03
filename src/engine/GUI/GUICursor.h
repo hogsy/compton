@@ -7,6 +7,20 @@
 
 namespace vc
 {
+	enum GUICursorMode
+	{
+		GUI_MOUSE_DEFAULT,
+		GUI_MOUSE_DENY,
+		GUI_MOUSE_MOVE,
+
+		GUI_MOUSE_SIZER0,
+		GUI_MOUSE_SIZER1,
+		GUI_MOUSE_SIZER2,
+		GUI_MOUSE_SIZER3,
+
+		MAX_MOUSE_STATES
+	};
+
 	class GUICursor : public GUIPanel
 	{
 	public:

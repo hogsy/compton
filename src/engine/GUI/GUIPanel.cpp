@@ -133,7 +133,7 @@ void vc::GUIPanel::DrawBorder()
 #endif
 }
 
-void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &tileCoord )
+void vc::GUIPanel::DrawBorderCorner( int dx, int dy )
 {
 	if ( styleSheet_ == nullptr )
 	{
@@ -143,7 +143,7 @@ void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &t
 
 }
 
-void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::RectangleCoord &tileCoord )
+void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh )
 {
 #if 0
 	ALLEGRO_BITMAP *bmp = styleSheet_->GetBitmap();

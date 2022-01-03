@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -28,23 +13,10 @@ namespace vc
 		int w{ 0 }, h{ 0 };
 	};
 
-	enum GUICursorMode
+	class GUIStyleSheet : public SpriteSheet
 	{
-		GUI_MOUSE_DEFAULT,
-		GUI_MOUSE_DENY,
-		GUI_MOUSE_MOVE,
-
-		GUI_MOUSE_SIZER0,
-		GUI_MOUSE_SIZER1,
-		GUI_MOUSE_SIZER2,
-		GUI_MOUSE_SIZER3,
-
-		MAX_MOUSE_STATES
-	};
-
-	struct GUIStyleSheet : public SpriteSheet
-	{
-		GUIStyleSheet( const char *path, const PLImage *bitmap );
+	public:
+		GUIStyleSheet() = default;
 
 		static constexpr unsigned int GUI_MAX_BACKGROUNDS = 8;
 
@@ -77,5 +49,53 @@ namespace vc
 		const Sprite *frameSprites[ GUI_MAX_FRAME_ELEMENTS ];
 		const Sprite *backgrounds[ GUI_MAX_BACKGROUNDS ];
 		unsigned int  numBackgrounds{ 0 };
+
+	private:
+		inline void SetupElementTable() override
+		{
+			// Outset
+			frameSprites[ GUI_FRAME_UL ] = LookupElement( "gui_ul" );
+			frameSprites[ GUI_FRAME_UR ] = LookupElement( "gui_ur" );
+			frameSprites[ GUI_FRAME_LL ] = LookupElement( "gui_ll" );
+			frameSprites[ GUI_FRAME_LR ] = LookupElement( "gui_lr" );
+			frameSprites[ GUI_FRAME_U ]  = LookupElement( "gui_u" );
+			frameSprites[ GUI_FRAME_R ]  = LookupElement( "gui_r" );
+			frameSprites[ GUI_FRAME_D ]  = LookupElement( "gui_d" );
+			frameSprites[ GUI_FRAME_L ]  = LookupElement( "gui_l" );
+
+			// Inset
+			frameSprites[ GUI_FRAME_IUL ] = LookupElement( "gui_iul" );
+			frameSprites[ GUI_FRAME_IUR ] = LookupElement( "gui_iur" );
+			frameSprites[ GUI_FRAME_ILL ] = LookupElement( "gui_ill" );
+			frameSprites[ GUI_FRAME_ILR ] = LookupElement( "gui_ilr" );
+			frameSprites[ GUI_FRAME_IU ]  = LookupElement( "gui_iu" );
+			frameSprites[ GUI_FRAME_IR ]  = LookupElement( "gui_ir" );
+			frameSprites[ GUI_FRAME_ID ]  = LookupElement( "gui_id" );
+			frameSprites[ GUI_FRAME_IL ]  = LookupElement( "gui_il" );
+
+			// Backgrounds
+			numBackgrounds = 0;
+			for ( unsigned int i = 0; i < GUI_MAX_BACKGROUNDS; ++i )
+			{
+				char bgName[ 32 ];
+				snprintf( bgName, sizeof( bgName ), "gui_bg%d", i );
+				backgrounds[ i ] = LookupElement( bgName );
+				if ( backgrounds[ i ] == nullptr )
+				{
+					break;
+				}
+
+				numBackgrounds++;
+			}
+
+			// Mouse cursor
+			mouseSprites[ vc::GUI_MOUSE_DEFAULT ] = LookupElement( "gui_mouse_pointer" );
+			mouseSprites[ vc::GUI_MOUSE_DENY ]    = LookupElement( "gui_mouse_deny" );
+			mouseSprites[ vc::GUI_MOUSE_MOVE ]    = LookupElement( "gui_mouse_move" );
+			mouseSprites[ vc::GUI_MOUSE_SIZER0 ]  = LookupElement( "gui_mouse_sizer0" );
+			mouseSprites[ vc::GUI_MOUSE_SIZER1 ]  = LookupElement( "gui_mouse_sizer1" );
+			mouseSprites[ vc::GUI_MOUSE_SIZER2 ]  = LookupElement( "gui_mouse_sizer2" );
+			mouseSprites[ vc::GUI_MOUSE_SIZER3 ]  = LookupElement( "gui_mouse_sizer3" );
+		}
 	};
 }// namespace vc

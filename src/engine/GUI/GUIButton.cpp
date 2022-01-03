@@ -4,8 +4,6 @@
 #include "Compton.h"
 #include "GUIButton.h"
 
-#include "../shared.h"
-
 vc::GUIButton::GUIButton( vc::GUIPanel *parent, const char *label, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::TEXTURE, Border::OUTSET )
 {

@@ -3,8 +3,6 @@
 
 #include "Compton.h"
 #include "GameMode.h"
-#include "GUI/GUIButton.h"
-#include "GUI/GUICursor.h"
 #include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
@@ -12,23 +10,14 @@
 #include "BitmapFont.h"
 #include "Background.h"
 
+#include "GUI/GUIButton.h"
+#include "GUI/GUICursor.h"
+#include "GUI/GUIStyleSheet.h"
+
 #include "Entities/BaseCharacter.h"
 
 vc::GameMode::GameMode()
 {
-	// Cache all the data we're going to use...
-#if 0
-	vc::GetApp()->CacheSample( "sounds/00.wav" );
-	vc::GetApp()->CacheSample( "sounds/01.wav" );
-	vc::GetApp()->CacheSample( "sounds/02.wav" );
-	vc::GetApp()->CacheSample( "sounds/03.wav" );
-	vc::GetApp()->CacheSample( "sounds/04.wav" );
-	vc::GetApp()->CacheSample( "sounds/05.wav" );
-	vc::GetApp()->CacheSample( "sounds/06.wav" );
-
-	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
-#endif
-
 	SetupUserInterface();
 
 	terrainManager_ = new Terrain();
@@ -51,9 +40,12 @@ void vc::GameMode::SetupUserInterface()
 
 	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 
-	PLImage *image = PlLoadImage( "sheets/interface.png" );
+	uiDefaultStyleSheet = new GUIStyleSheet();
+	if ( !uiDefaultStyleSheet->LoadFile( "gui/skins/default.txt" ) )
+	{
+		Error( "Failed to load default style sheet!\n" );
+	}
 
-	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", image );
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
 	new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
@@ -66,8 +58,8 @@ void vc::GameMode::SetupUserInterface()
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
-#	define MINIMAP_WIDTH  128
-#	define MINIMAP_HEIGHT 128
+#define MINIMAP_WIDTH  128
+#define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
 			baseGuiPanel_,
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
@@ -87,7 +79,7 @@ void vc::GameMode::SetupUserInterface()
 	// Create the UI cursor
 	new GUICursor( baseGuiPanel_ );
 
-	//uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
+	uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
 }
 
 void vc::GameMode::Tick()
@@ -256,7 +248,7 @@ void vc::GameMode::NewGame( const char *path )
 		Entity *hub = entityManager_->CreateEntity( "StoreHouse" );
 		hub->origin = hei::Vector2( x, y );
 
-#define TERRITORY_BOUNDS 256
+#	define TERRITORY_BOUNDS 256
 
 		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
 		for ( unsigned int j = 0; j < numAbodes; ++j )

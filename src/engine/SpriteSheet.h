@@ -23,6 +23,6 @@ namespace vc
 		const Sprite *LookupElement( const char *spriteName ) const;
 
 	private:
-		std::map< std::string, const Sprite * > elements_;
+		std::map< std::string, Sprite > elements_;
 	};
 }// namespace vc

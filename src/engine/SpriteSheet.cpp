@@ -130,17 +130,18 @@ bool vc::SpriteSheet::ParseFile( const char *buffer, unsigned int bufferSize )
 		unsigned int y = strtoul( token, nullptr, 10 );
 
 		// Validate it
-		if ( x + w >= PlGetImageWidth( image ) || y + h >= PlGetImageHeight( image ) )
+		if ( x + w > PlGetImageWidth( image ) || y + h > PlGetImageHeight( image ) )
 		{
 			Warning( "Invalid coordinates provided for element %u (%s)!\n", elements_.size(), elementName.c_str() );
-			break;
+			PlSkipLine( &p );
+			continue;
 		}
 
 		Sprite sprite( w, h );
 		sprite.pixels.reserve( w * h * pixelSize );
 		sprite.hasAlpha = PlImageHasAlpha( image );
 
-		//elements_.emplace( id, sprite );
+		elements_.emplace( elementName, sprite );
 
 		Print( "Added \"%s\" to sprite table\n", elementName.c_str() );
 	}
@@ -159,5 +160,5 @@ const vc::Sprite *vc::SpriteSheet::LookupElement( const char *spriteName ) const
 		return nullptr;
 	}
 
-	return key->second;
+	return &key->second;
 }

@@ -9,10 +9,10 @@ gui_ur 2 2 6 0
 gui_ll 2 2 0 6
 gui_lr 2 2 6 6
 ; mid sections
-gui_u 2 2 3 0
-gui_r 2 2 6 3
-gui_d 2 2 3 6
-gui_l 2 2 0 3
+gui_u 1 2 3 0
+gui_r 2 1 6 3
+gui_d 1 2 3 6
+gui_l 2 1 0 3
 
 ; inset
 ; corners

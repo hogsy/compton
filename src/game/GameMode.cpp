@@ -65,7 +65,7 @@ void vc::GameMode::SetupUserInterface()
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
 			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
 			MINIMAP_WIDTH, MINIMAP_HEIGHT,
-			GUIPanel::Background::TEXTURE,
+			GUIPanel::Background::DEFAULT,
 			GUIPanel::Border::OUTSET );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );

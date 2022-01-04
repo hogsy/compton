@@ -5,7 +5,7 @@
 #include "GUIButton.h"
 
 vc::GUIButton::GUIButton( vc::GUIPanel *parent, const char *label, int x, int y, int w, int h )
-	: GUIPanel( parent, x, y, w, h, Background::TEXTURE, Border::OUTSET )
+	: GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
 {
 	strncpy( myLabel, label, sizeof( myLabel ) );
 }

@@ -4,15 +4,10 @@
 #pragma once
 
 #include "SpriteSheet.h"
+#include "GUICursor.h"
 
 namespace vc
 {
-	struct RectangleCoord
-	{
-		int x{ 0 }, y{ 0 };
-		int w{ 0 }, h{ 0 };
-	};
-
 	class GUIStyleSheet : public SpriteSheet
 	{
 	public:
@@ -89,13 +84,13 @@ namespace vc
 			}
 
 			// Mouse cursor
-			mouseSprites[ vc::GUI_MOUSE_DEFAULT ] = LookupElement( "gui_mouse_pointer" );
-			mouseSprites[ vc::GUI_MOUSE_DENY ]    = LookupElement( "gui_mouse_deny" );
-			mouseSprites[ vc::GUI_MOUSE_MOVE ]    = LookupElement( "gui_mouse_move" );
-			mouseSprites[ vc::GUI_MOUSE_SIZER0 ]  = LookupElement( "gui_mouse_sizer0" );
-			mouseSprites[ vc::GUI_MOUSE_SIZER1 ]  = LookupElement( "gui_mouse_sizer1" );
-			mouseSprites[ vc::GUI_MOUSE_SIZER2 ]  = LookupElement( "gui_mouse_sizer2" );
-			mouseSprites[ vc::GUI_MOUSE_SIZER3 ]  = LookupElement( "gui_mouse_sizer3" );
+			mouseSprites[ GUI_MOUSE_DEFAULT ] = LookupElement( "gui_mouse_pointer" );
+			mouseSprites[ GUI_MOUSE_DENY ]    = LookupElement( "gui_mouse_deny" );
+			mouseSprites[ GUI_MOUSE_MOVE ]    = LookupElement( "gui_mouse_move" );
+			mouseSprites[ GUI_MOUSE_SIZER0 ]  = LookupElement( "gui_mouse_sizer0" );
+			mouseSprites[ GUI_MOUSE_SIZER1 ]  = LookupElement( "gui_mouse_sizer1" );
+			mouseSprites[ GUI_MOUSE_SIZER2 ]  = LookupElement( "gui_mouse_sizer2" );
+			mouseSprites[ GUI_MOUSE_SIZER3 ]  = LookupElement( "gui_mouse_sizer3" );
 		}
 	};
 }// namespace vc

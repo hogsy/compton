@@ -18,8 +18,8 @@ namespace vc
 		enum class Background
 		{
 			NONE,
+			DEFAULT,
 			SOLID,
-			TEXTURE,
 		};
 		enum class Border
 		{
@@ -39,11 +39,11 @@ namespace vc
 		void           SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return styleSheet_; }
 
-		inline void        SetBackgroundColour( const hei::Colour &colour ) { backgroundColour = colour; }
-		inline hei::Colour GetBackgroundColour() const { return backgroundColour; }
+		inline void        SetBackgroundColour( const hei::Colour &colour ) { backgroundColour_ = colour; }
+		inline hei::Colour GetBackgroundColour() const { return backgroundColour_; }
 
 		inline void SetBorder( Border border ) { border_ = border; }
-		inline void SetBackground( Background background ) { myBackground = background; }
+		inline void SetBackground( Background background ) { background_ = background; }
 
 		inline GUIPanel *GetParent() const { return parentPtr; }
 
@@ -88,7 +88,7 @@ namespace vc
 	protected:
 		GUIStyleSheet *styleSheet_{ nullptr };
 
-		std::vector< GUIPanel * > children;
+		std::vector< GUIPanel * > children_;
 
 		int x{ 0 }, y{ 0 };
 		int w{ 640 }, h{ 480 };
@@ -98,13 +98,16 @@ namespace vc
 
 	private:
 		void DrawBorder();
-		void DrawBorderCorner( int dx, int dy );
-		void DrawBorderEdge( int dx, int dy, int dw, int dh );
+		void DrawBorderCorner( int dx, int dy, unsigned int index );
+		void DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index );
 
-		Background myBackground{ Background::NONE };
+		Background background_{ Background::NONE };
 		Border     border_{ Border::NONE };
 
-		hei::Colour backgroundColour;
+		static constexpr uint8_t INSET_COLOUR[ 4 ]  = { 122, 122, 122, 255 };
+		static constexpr uint8_t OUTSET_COLOUR[ 4 ] = { 192, 192, 192, 255 };
+
+		hei::Colour backgroundColour_{ INSET_COLOUR };
 
 		GUIPanel *parentPtr{ nullptr };
 	};

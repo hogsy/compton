@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include <allegro5/allegro.h>
-
 #include "Compton.h"
+
 #include "GUIPanel.h"
+#include "GUIStyleSheet.h"
 
 #include "../../shared.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
-	: myBackground( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
+	: background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
 	{
@@ -17,7 +17,7 @@ vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GU
 	}
 
 	// Push it onto the list of children
-	parent->children.push_back( this );
+	parent->children_.push_back( this );
 
 	// Style should be the same as the parent
 	styleSheet_ = parent->styleSheet_;
@@ -39,7 +39,7 @@ void vc::GUIPanel::Draw()
 	DrawBorder();
 
 	// Draw all of the children
-	for ( auto i : children )
+	for ( auto i : children_ )
 	{
 		i->Draw();
 	}
@@ -47,125 +47,114 @@ void vc::GUIPanel::Draw()
 
 void vc::GUIPanel::DrawBackground()
 {
-	if ( myBackground == Background::NONE )
+	hei::Colour colour;
+	switch ( background_ )
 	{
-		return;
+		case Background::NONE:
+			return;
+		case Background::DEFAULT:
+		{
+			if ( border_ == Border::INSET )
+			{
+				colour = INSET_COLOUR;
+				break;
+			}
+
+			colour = OUTSET_COLOUR;
+			break;
+		}
+		case Background::SOLID:
+			colour = backgroundColour_;
+			break;
 	}
 
 	int dx, dy, dw, dh;
 	GetContentPosition( &dx, &dy );
 	GetContentSize( &dw, &dh );
 
-	switch ( myBackground )
-	{
-		default: break;
-		case Background::SOLID:
-			DrawFilledRectangle( dx, dy, dw, dh, backgroundColour );
-			break;
-		case Background::TEXTURE:
-		{
-			if ( styleSheet_ == nullptr )
-			{
-				return;
-			}
-
-#if 0
-			ALLEGRO_BITMAP *bmp = styleSheet_->GetBitmap();
-			if ( bmp == nullptr )
-			{
-				return;
-			}
-
-			float sx, sy, sw, sh;
-			sx = styleSheet_->backgrounds[ 0 ].x;
-			sy = styleSheet_->backgrounds[ 0 ].y;
-			sw = styleSheet_->backgrounds[ 0 ].w;
-			sh = styleSheet_->backgrounds[ 0 ].h;
-
-			al_draw_tinted_scaled_rotated_bitmap_region(
-					bmp,
-					sx, sy,
-					sw, sh,
-					al_map_rgba(
-							backgroundColour.r,
-							backgroundColour.g,
-							backgroundColour.b,
-							backgroundColour.a ),
-					0.0f, 0.0f,
-					dx, dy, dw / sw, dh / sh,
-					0.0f,
-					0 );
-#endif
-			break;
-		}
-	}
+	DrawFilledRectangle( dx, dy, dw, dh, colour );
 }
 
 void vc::GUIPanel::DrawBorder()
-{
-#if 0
-	const GUIStyleSheet::GUIBorderStyle *borderStyle;
-	switch ( border_ )
-	{
-		default:
-			return;
-		case Border::INSET:
-			borderStyle = &styleSheet_->inset;
-			break;
-		case Border::OUTSET:
-			borderStyle = &styleSheet_->outset;
-			break;
-	}
-
-	// Top
-	DrawBorderEdge( x, y, w, borderStyle->u.h, borderStyle->u );
-	// Bottom
-	DrawBorderEdge( x, y + h - borderStyle->d.h, w, borderStyle->d.h, borderStyle->d );
-	// Left
-	DrawBorderEdge( x, y, borderStyle->l.w, h, borderStyle->l );
-	// Right
-	DrawBorderEdge( x + w - borderStyle->r.w, y, borderStyle->r.w, h, borderStyle->r );
-
-	DrawBorderCorner( x, y, borderStyle->lu );
-	DrawBorderCorner( x + w - borderStyle->ru.w, y, borderStyle->ru );
-	DrawBorderCorner( x, y + h - borderStyle->ll.h, borderStyle->ll );
-	DrawBorderCorner( x + w - borderStyle->lr.w, y + h - borderStyle->lr.h, borderStyle->lr );
-#endif
-}
-
-void vc::GUIPanel::DrawBorderCorner( int dx, int dy )
 {
 	if ( styleSheet_ == nullptr )
 	{
 		return;
 	}
 
-
-}
-
-void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh )
-{
-#if 0
-	ALLEGRO_BITMAP *bmp = styleSheet_->GetBitmap();
-	if ( bmp == nullptr )
+	unsigned int ul, ur, ll, lr;
+	unsigned int u, r, d, l;
+	switch ( border_ )
 	{
-		return;
+		case Border::INSET:
+			ul = GUIStyleSheet::GUI_FRAME_IUL;
+			ur = GUIStyleSheet::GUI_FRAME_IUR;
+			ll = GUIStyleSheet::GUI_FRAME_ILL;
+			lr = GUIStyleSheet::GUI_FRAME_ILR;
+			u  = GUIStyleSheet::GUI_FRAME_IU;
+			r  = GUIStyleSheet::GUI_FRAME_IR;
+			d  = GUIStyleSheet::GUI_FRAME_ID;
+			l  = GUIStyleSheet::GUI_FRAME_IL;
+			break;
+		case Border::OUTSET:
+			ul = GUIStyleSheet::GUI_FRAME_UL;
+			ur = GUIStyleSheet::GUI_FRAME_UR;
+			ll = GUIStyleSheet::GUI_FRAME_LL;
+			lr = GUIStyleSheet::GUI_FRAME_LR;
+			u  = GUIStyleSheet::GUI_FRAME_U;
+			r  = GUIStyleSheet::GUI_FRAME_R;
+			d  = GUIStyleSheet::GUI_FRAME_D;
+			l  = GUIStyleSheet::GUI_FRAME_L;
+			break;
+		case Border::NONE:
+			return;
 	}
 
-	al_draw_tinted_scaled_rotated_bitmap_region(
-			bmp,
-			tileCoord.x, tileCoord.y,
-			tileCoord.w, tileCoord.h,
-			al_map_rgba(
-					backgroundColour.r,
-					backgroundColour.g,
-					backgroundColour.b,
-					backgroundColour.a ),
-			0.0f, 0.0f,
-			dx, dy, dw / tileCoord.w, dh / tileCoord.h,
-			0.0f,
-			0 );
-#endif
+	DrawBorderEdge( x, y, w, 0, u );                                             // top
+	DrawBorderEdge( x, y + h - styleSheet_->frameSprites[ d ]->height, w, 0, d );// bottom
+	DrawBorderEdge( x, y, 0, h, l );// left
+	DrawBorderEdge( x + w - styleSheet_->frameSprites[ r ]->width, y, 0, h, r );// right
+
+	DrawBorderCorner( x, y, ul );
+	DrawBorderCorner( x + w - styleSheet_->frameSprites[ ur ]->width, y, ur );
+	DrawBorderCorner( x, y + h - styleSheet_->frameSprites[ ll ]->height, ll );
+	DrawBorderCorner( x + w - styleSheet_->frameSprites[ lr ]->width, y + h - styleSheet_->frameSprites[ lr ]->height, lr );
+}
+
+void vc::GUIPanel::DrawBorderCorner( int dx, int dy, unsigned int index )
+{
+	const Sprite *sprite = styleSheet_->frameSprites[ index ];
+	sprite->Draw( dx, dy, false );
+}
+
+void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index )
+{
+	const Sprite *sprite = styleSheet_->frameSprites[ index ];
+
+	// God this is awful...
+
+	int ox = dx;
+	int oy = dy;
+	while ( true )
+	{
+		sprite->Draw( dx, dy, false );
+		if ( dw != 0 )
+		{
+			dx += sprite->width;
+			if ( ( dx - ox ) >= dw )
+			{
+				break;
+			}
+		}
+		else
+		{
+			dy += sprite->height;
+			if ( ( dy - oy ) >= dh )
+			{
+				break;
+			}
+		}
+	}
 }
 
 void vc::GUIPanel::Tick()
@@ -173,7 +162,7 @@ void vc::GUIPanel::Tick()
 	isDrawing = ShouldDraw();
 
 	// Tick all of the children
-	for ( auto i : children )
+	for ( auto i : children_ )
 	{
 		i->Tick();
 	}
@@ -229,7 +218,7 @@ bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool
 		return false;
 	}
 
-	for ( auto i : children )
+	for ( auto i : children_ )
 	{
 		// If the child handles the event, return true
 		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) )
@@ -248,7 +237,7 @@ bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool
 
 bool vc::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp )
 {
-	for ( auto i : children )
+	for ( auto i : children_ )
 	{
 		// If the child handles the event, return true
 		if ( i->HandleKeyboardEvent( button, buttonUp ) )

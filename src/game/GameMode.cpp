@@ -48,15 +48,23 @@ void vc::GameMode::SetupUserInterface()
 
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
-	new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
+	for ( unsigned int i = 0; i < 256; ++i )
+	{
+		GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, i * 16, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	}
+	//GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
 
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	//->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
+
+	//new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
+
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
 #define MINIMAP_WIDTH  128
 #define MINIMAP_HEIGHT 128

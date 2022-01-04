@@ -17,12 +17,19 @@ public:
 	{
 		struct timespec end;
 		clock_gettime( CLOCK_MONOTONIC, &end );
-		timeTaken = TimespecToDouble( TimespecSub( end, clock ) );
+		timeTaken = TimespecToDouble( TimespecSub( end, clock ) ) * 1000;
 	}
 
 	double GetTimeTaken() const
 	{
 		return timeTaken;
+	}
+
+	static double GetCurrentTime()
+	{
+		struct timespec ts;
+		clock_gettime( CLOCK_MONOTONIC, &ts );
+		return TimespecToDouble( ts );
 	}
 
 private:

@@ -38,7 +38,7 @@
 #define DISPLAY_HEIGHT 480
 
 void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTest );
+void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest );
 void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 
@@ -70,6 +70,8 @@ namespace vc
 	{
 	public:
 		App( int argc, char **argv );
+
+		static constexpr unsigned int MAX_FPS = 60;
 
 		static GameMode *GetGameMode();
 
@@ -158,6 +160,14 @@ namespace vc
 
 		double numTicks;
 
+		double fps_{ 0 };
+	public:
+		double GetLastFPS() const
+		{
+			return fps_;
+		}
+
+	private:
 		char appDataPath[ PL_SYSTEM_MAX_PATH ];
 
 	public:

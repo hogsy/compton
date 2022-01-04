@@ -58,6 +58,14 @@ namespace vc
 	class BitmapFont;
 	class Background;
 
+	// Common misc types
+
+	struct RGBA8
+	{
+		uint8_t r, g, b, a;
+	};
+
+	// Main app class
 	class App
 	{
 	public:

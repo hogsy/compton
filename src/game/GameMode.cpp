@@ -178,7 +178,7 @@ void vc::GameMode::Draw()
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
 	{
-		//baseGuiPanel_->Draw();
+		baseGuiPanel_->Draw();
 	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();

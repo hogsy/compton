@@ -5,6 +5,7 @@
 #include <plcore/pl_parse.h>
 #include <memory>
 
+#include "../shared.h"
 #include "Compton.h"
 #include "SpriteSheet.h"
 
@@ -98,35 +99,30 @@ bool vc::SpriteSheet::ParseFile( const char *buffer, unsigned int bufferSize )
 			break;
 		}
 
-		DebugMsg( "Element: %s\n", token );
 		std::string elementName = token;
 
 		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
 			break;
 		}
-		DebugMsg( "W: %s\n", token );
 		unsigned int w = strtoul( token, nullptr, 10 );
 
 		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
 			break;
 		}
-		DebugMsg( "H: %s\n", token );
 		unsigned int h = strtoul( token, nullptr, 10 );
 
 		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
 			break;
 		}
-		DebugMsg( "X: %s\n", token );
 		unsigned int x = strtoul( token, nullptr, 10 );
 
 		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
 		{
 			break;
 		}
-		DebugMsg( "Y: %s\n", token );
 		unsigned int y = strtoul( token, nullptr, 10 );
 
 		// Validate it
@@ -138,8 +134,18 @@ bool vc::SpriteSheet::ParseFile( const char *buffer, unsigned int bufferSize )
 		}
 
 		Sprite sprite( w, h );
-		sprite.pixels.reserve( w * h * pixelSize );
+		sprite.pixels.resize( w * h * pixelSize );
 		sprite.hasAlpha = PlImageHasAlpha( image );
+
+		// We're now going to copy the image pixels into our sprite
+		unsigned int   imageW = PlGetImageWidth( image );
+		const uint8_t *src    = PlGetImageData( image, 0 );
+		src += ( x + y * imageW ) * pixelSize;
+		for ( unsigned int py = 0; py < h; ++py )
+		{
+			memcpy( &sprite.pixels[ ( py * w ) * pixelSize ], src, w * pixelSize );
+			src += imageW * pixelSize;
+		}
 
 		elements_.emplace( elementName, sprite );
 

@@ -12,11 +12,6 @@ void vc::Sprite::Draw( int x, int y, bool alpha ) const
 		return;
 	}
 
-	struct RGBA8
-	{
-		uint8_t r, g, b, a;
-	};
-
 	unsigned int stride = hasAlpha ? 4 : 3;
 	if ( alpha && hasAlpha )
 	{
@@ -56,15 +51,15 @@ void vc::Sprite::Draw( int x, int y, bool alpha ) const
 		unsigned int rw   = dw * region->pixel_size;// total byte width of row
 		uint8_t     *rowb = new uint8_t[ rw ];
 		uint8_t     *dst  = ( uint8_t      *) region->data + x * region->pixel_size + region->pitch * y;
-		for ( unsigned int row = 0; row < dh; ++row )
+		for ( unsigned int c = 0; c < dh; ++c )
 		{
-			for ( unsigned int column = 0; column < dw; ++column )
+			for ( unsigned int r = 0; r < dw; ++r )
 			{
-				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( column + row * width ) * stride ];
+				RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( r + c * width ) * stride ];
 
-				rowb[ column * 3 + 0 ] = pixel.b;
-				rowb[ column * 3 + 1 ] = pixel.g;
-				rowb[ column * 3 + 2 ] = pixel.r;
+				rowb[ r * 3 + 0 ] = pixel.b;
+				rowb[ r * 3 + 1 ] = pixel.g;
+				rowb[ r * 3 + 2 ] = pixel.r;
 			}
 
 			memcpy( dst, rowb, rw );

@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -31,10 +16,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
-#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_native_dialog.h>
-#include <allegro5/allegro_ttf.h>
 
 #include <plcore/pl_console.h>
 #include <plcore/pl_filesystem.h>
@@ -45,17 +28,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define DEBUG_BUILD
 
+// Core services
 #include "engine/Compton.h"
 #include "engine/Timer.h"
-#include "engine/ImageManager.h"
+#include "engine/SpriteManager.h"
+#include "engine/Serializer.h"
 
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 480
 
-#define GAME_TYPE_SFC
-
 void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTest );
+void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest );
 void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 
@@ -75,10 +58,20 @@ namespace vc
 	class BitmapFont;
 	class Background;
 
+	// Common misc types
+
+	struct RGBA8
+	{
+		uint8_t r, g, b, a;
+	};
+
+	// Main app class
 	class App
 	{
 	public:
 		App( int argc, char **argv );
+
+		static constexpr unsigned int MAX_FPS = 60;
 
 		static GameMode *GetGameMode();
 
@@ -132,8 +125,6 @@ namespace vc
 		void StartPerformanceTimer( const char *identifier );
 		void EndPerformanceTimer( const char *identifier );
 
-		inline ImageManager *GetImageManager() { return imageManager; }
-
 	protected:
 	private:
 		~App();
@@ -156,7 +147,6 @@ namespace vc
 
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;                      // todo: make obsolete
-		ALLEGRO_FONT                                       *defaultFont;                  // todo: make obsolete
 		BitmapFont                                         *defaultBitmapFont_{ nullptr };// todo: this should replace the above...
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
@@ -170,10 +160,15 @@ namespace vc
 
 		double numTicks;
 
-		char appDataPath[ PL_SYSTEM_MAX_PATH ];
+		double fps_{ 0 };
+	public:
+		double GetLastFPS() const
+		{
+			return fps_;
+		}
 
-		// Sub-Systems
-		ImageManager *imageManager{ nullptr };
+	private:
+		char appDataPath[ PL_SYSTEM_MAX_PATH ];
 
 	public:
 		ALLEGRO_LOCKED_REGION *region_{ nullptr };
@@ -183,14 +178,16 @@ namespace vc
 	};
 
 	App *GetApp();
+
+	extern SpriteManager *spriteManager;
 }// namespace vc
 
 #if defined( DEBUG_BUILD )
-#define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
-#define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
+#	define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
+#	define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
 #else
-#define START_MEASURE()
-#define END_MEASURE()
+#	define START_MEASURE()
+#	define END_MEASURE()
 #endif
 
 /*	Game	*/

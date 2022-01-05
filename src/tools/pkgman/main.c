@@ -1,6 +1,5 @@
-/* Copyright (C) 2020 Mark Sowden <markelswo@gmail.com>
- * Project Yin
- * */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <plcore/pl.h>
 #include <plcore/pl_filesystem.h>

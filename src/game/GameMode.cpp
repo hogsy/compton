@@ -1,50 +1,23 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "GameMode.h"
-#include "GUI/GUIButton.h"
-#include "GUI/GUICursor.h"
 #include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
-#include "Random.h"
 #include "Serializer.h"
 #include "BitmapFont.h"
 #include "Background.h"
+
+#include "GUI/GUIButton.h"
+#include "GUI/GUICursor.h"
+#include "GUI/GUIStyleSheet.h"
 
 #include "Entities/BaseCharacter.h"
 
 vc::GameMode::GameMode()
 {
-	// Cache all the data we're going to use...
-#if 0
-	vc::GetApp()->CacheSample( "sounds/00.wav" );
-	vc::GetApp()->CacheSample( "sounds/01.wav" );
-	vc::GetApp()->CacheSample( "sounds/02.wav" );
-	vc::GetApp()->CacheSample( "sounds/03.wav" );
-	vc::GetApp()->CacheSample( "sounds/04.wav" );
-	vc::GetApp()->CacheSample( "sounds/05.wav" );
-	vc::GetApp()->CacheSample( "sounds/06.wav" );
-
-	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
-#endif
-
 	SetupUserInterface();
 
 	terrainManager_ = new Terrain();
@@ -67,19 +40,31 @@ void vc::GameMode::SetupUserInterface()
 
 	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 
-#if !defined( GAME_TYPE_SFC )
-	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
+	uiDefaultStyleSheet = new GUIStyleSheet();
+	if ( !uiDefaultStyleSheet->LoadFile( "gui/skins/default.txt" ) )
+	{
+		Error( "Failed to load default style sheet!\n" );
+	}
+
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
-	new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
+	for ( unsigned int i = 0; i < 256; ++i )
+	{
+		GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, i * 16, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	}
+	//GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
 
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	//->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
+
+	//new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
+
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
+	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
 #define MINIMAP_WIDTH  128
 #define MINIMAP_HEIGHT 128
@@ -88,7 +73,7 @@ void vc::GameMode::SetupUserInterface()
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
 			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
 			MINIMAP_WIDTH, MINIMAP_HEIGHT,
-			GUIPanel::Background::TEXTURE,
+			GUIPanel::Background::DEFAULT,
 			GUIPanel::Border::OUTSET );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
@@ -98,12 +83,11 @@ void vc::GameMode::SetupUserInterface()
 			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
 			GUIPanel::Background::SOLID,
 			GUIPanel::Border::INSET );
-#endif
 
 	// Create the UI cursor
 	new GUICursor( baseGuiPanel_ );
 
-	//uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
+	uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
 }
 
 void vc::GameMode::Tick()
@@ -183,9 +167,11 @@ void vc::GameMode::Tick()
 		playerCamera.velocity -= ( playerCamera.velocity / CAMERA_FRICTION );
 	}
 
-	numSeconds += 15;
-
-	entityManager_->Tick();
+	if ( world_ != nullptr )
+	{
+		world_->Tick();
+		entityManager_->Tick();
+	}
 
 	END_MEASURE();
 }
@@ -194,15 +180,13 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-//	backgroundManager_->Draw( playerCamera );
-//	entityManager_->Draw( playerCamera );
-
-//	DrawRoomsDebug( playerCamera );
+	//	backgroundManager_->Draw( playerCamera );
+	//	entityManager_->Draw( playerCamera );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
 	{
-		//baseGuiPanel_->Draw();
+		baseGuiPanel_->Draw();
 	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();
@@ -216,21 +200,27 @@ void vc::GameMode::Draw()
 		                          "Press Q to quit\n" );
 	}
 
+	if ( world_ != nullptr )
 	{
 		char buf[ 256 ];
 		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02u:M%02u:S%02u\n",
-		          GetTotalDays(),
-		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
+		          world_->GetTotalDays(),
+		          world_->GetCurrentHour(),
+		          world_->GetCurrentMinute(),
+		          world_->GetCurrentSecond() );
 
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
+
+	vc::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
 	END_MEASURE();
 }
 
 void vc::GameMode::NewGame( const char *path )
 {
+#if 0
 	Print( "Generating terrain...\n" );
 	terrainManager_->Generate();
 
@@ -266,7 +256,7 @@ void vc::GameMode::NewGame( const char *path )
 		Entity *hub = entityManager_->CreateEntity( "StoreHouse" );
 		hub->origin = hei::Vector2( x, y );
 
-#define TERRITORY_BOUNDS 256
+#	define TERRITORY_BOUNDS 256
 
 		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
 		for ( unsigned int j = 0; j < numAbodes; ++j )
@@ -301,6 +291,7 @@ void vc::GameMode::NewGame( const char *path )
 
 	// Then automatically save it
 	SaveGame( path );
+#endif
 }
 
 void vc::GameMode::SaveGame( const char *path )
@@ -311,7 +302,7 @@ void vc::GameMode::SaveGame( const char *path )
 	entityManager_->SerializeEntities( &serializer );
 
 	// World state
-	serializer.WriteInteger( numSeconds );
+	world_->Serialize( &serializer );
 
 	// Write camera data
 	serializer.WriteCoordinate( playerCamera.position );
@@ -329,8 +320,10 @@ void vc::GameMode::RestoreGame( const char *path )
 	//terrainManager_->Deserialize( &serializer );
 	entityManager_->DeserializeEntities( &serializer );
 
-	// World state
-	numSeconds = serializer.ReadInteger();
+	char tmp[ 128 ];
+	serializer.ReadString( tmp, sizeof( tmp ) );
+	world_ = new World( tmp );
+	world_->Deserialize( &serializer );
 
 	// Now restore the camera data
 	playerCamera.position     = serializer.ReadCoordinate();
@@ -482,15 +475,3 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 	}
 }
 #endif
-
-////////////////////////////////
-// Territory
-
-vc::GameMode::Territory::Territory( const hei::Vector2 &origin )
-{
-	snprintf( name, sizeof( name ), "T%d", rand() % 100 );
-}
-
-void vc::GameMode::Territory::DrawBorder()
-{
-}

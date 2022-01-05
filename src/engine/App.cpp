@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "../shared.h"
 
@@ -22,6 +7,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "GameMode.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
+
+vc::SpriteManager *vc::spriteManager = nullptr;
+
+static double oldTime;
 
 // Draw Routines
 
@@ -47,66 +36,54 @@ void DrawPixel( int x, int y, const hei::Colour &colour )
 	}
 }
 
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, bool alphaTest )
+void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest )
 {
 	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
 	{
 		return;
 	}
 
-	if ( alphaTest )
+	struct RGBA8
 	{
-		for ( unsigned int row = 0; row < w; ++row )
+		uint8_t r, g, b, a;
+	};
+
+	int dw = w;
+	if ( x + dw > DISPLAY_WIDTH )
+	{
+		dw = DISPLAY_WIDTH - x;
+	}
+	int dh = h;
+	if ( y + dh > DISPLAY_HEIGHT )
+	{
+		dh = DISPLAY_HEIGHT - y;
+	}
+
+	bool hasAlpha = ( pixelSize == 4 );
+	ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
+	uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
+	for ( unsigned int c = 0; c < dh; ++c )
+	{
+		for ( unsigned int r = 0; r < dw; ++r )
 		{
-			for ( unsigned int column = 0; column < h; ++column )
+			RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( r + c * w ) * pixelSize ];
+			if ( alphaTest && hasAlpha && ( pixel.a != 255 ) )
 			{
-				uint8_t pixel = pixels[ row + column * w ];
-				if ( pixel == 0 )
+				if ( pixel.a == 0 )
 				{
 					continue;
 				}
 
-				DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
-			}
-		}
-	}
-	else
-	{
-		int dw = w;
-		if ( x + dw > DISPLAY_WIDTH )
-		{
-			dw = DISPLAY_WIDTH - x;
-		}
-		int dh = h;
-		if ( y + dh > DISPLAY_HEIGHT )
-		{
-			dh = DISPLAY_HEIGHT - y;
-		}
-
-		ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
-		if ( region == nullptr )
-		{
-			return;
-		}
-
-		unsigned int rw   = dw * region->pixel_size;// total byte width of row
-		uint8_t     *rowb = new uint8_t[ rw ];
-		uint8_t     *dst  = ( uint8_t      *) region->data + x * region->pixel_size + region->pitch * y;
-		for ( unsigned int row = 0; row < dh; ++row )
-		{
-			for ( unsigned int column = 0; column < dw; ++column )
-			{
-				uint8_t pixel          = pixels[ column + row * w ];
-				rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
-				rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
-				rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
+				al_put_blended_pixel( x, y, al_map_rgba( pixel.r, pixel.g, pixel.b, pixel.a ) );
+				continue;
 			}
 
-			memcpy( dst, rowb, rw );
-
-			dst += DISPLAY_WIDTH * region->pixel_size;
+			dst[ r * 3 + 0 ] = pixel.b;
+			dst[ r * 3 + 1 ] = pixel.g;
+			dst[ r * 3 + 2 ] = pixel.r;
 		}
-		delete[] rowb;
+
+		dst += DISPLAY_WIDTH * region->pixel_size;
 	}
 }
 
@@ -130,7 +107,7 @@ void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour 
 // App Class
 
 static vc::App *appInstance;
-vc::App		*vc::GetApp()
+vc::App *vc::GetApp()
 {
 	return appInstance;
 }
@@ -143,11 +120,11 @@ extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PlMAllocA( size ); }
 void *operator new[]( size_t size ) { return PlMAllocA( size ); }
-void  operator delete( void *p ) throw() { PlFree( p ); }
-void  operator delete[]( void *p ) throw() { PlFree( p ); }
+void operator delete( void *p ) throw() { PlFree( p ); }
+void operator delete[]( void *p ) throw() { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
 static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
-static void  AlFree( void *p, int, const char *, const char  *) { PlFree( p ); }
+static void AlFree( void *p, int, const char *, const char * ) { PlFree( p ); }
 static void *AlReAlloc( void *p, size_t n, int, const char *, const char * ) { return PlReAllocA( p, n ); }
 static void *AlCAlloc( size_t c, size_t n, int, const char *, const char * ) { return PlCAllocA( c, n ); }
 
@@ -190,7 +167,7 @@ vc::App::App( int argc, char **argv )
 #else
 	                            false
 #endif
-	                            );
+	);
 
 	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
@@ -236,8 +213,8 @@ vc::App::App( int argc, char **argv )
 	// And now initialize Allegro
 
 	uint32_t version = al_get_allegro_version();
-	uint32_t major   = version >> 24;
-	uint32_t minor   = ( version >> 16 ) & 255;
+	uint32_t major = version >> 24;
+	uint32_t minor = ( version >> 16 ) & 255;
 	Print( "Initializing Allegro %d.%d\n", major, minor );
 	if ( !al_init() )
 	{
@@ -267,8 +244,6 @@ vc::App::App( int argc, char **argv )
 	}
 
 	al_init_native_dialog_addon();
-	al_init_font_addon();
-	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
@@ -282,7 +257,7 @@ vc::App::App( int argc, char **argv )
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
 
-	imageManager = new ImageManager( argc, argv );
+	spriteManager = new SpriteManager( argc, argv );
 
 	running = true;
 }
@@ -339,7 +314,7 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 void vc::App::Shutdown()
 {
 	delete gameMode;
-	delete imageManager;
+	delete spriteManager;
 
 	if ( screenBitmap_ != nullptr )
 	{
@@ -374,7 +349,7 @@ void vc::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
-	windowWidth  = DISPLAY_WIDTH;
+	windowWidth = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
 	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
@@ -385,17 +360,10 @@ void vc::App::InitializeDisplay()
 	}
 
 	// Get the actual width and height
-	windowWidth  = al_get_display_width( alDisplay );
+	windowWidth = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
-
-	// Load in the default font for displaying debug info
-	defaultFont = al_create_builtin_font();
-	if ( defaultFont == nullptr )
-	{
-		Error( "Failed to create default font!\n" );
-	}
 
 	// Check to see how much we need to scale the buffer.
 	al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
@@ -406,8 +374,8 @@ void vc::App::InitializeDisplay()
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
 	}
 
-	int sx    = windowWidth / DISPLAY_WIDTH;
-	int sy    = windowHeight / DISPLAY_HEIGHT;
+	int sx = windowWidth / DISPLAY_WIDTH;
+	int sy = windowHeight / DISPLAY_HEIGHT;
 	int scale = std::min( sx, sy );
 
 	scaleW = DISPLAY_WIDTH * scale;
@@ -429,9 +397,13 @@ void vc::App::Draw()
 		return;
 	}
 
+	double newTime = Timer::GetCurrentTime();
+	fps_ = 1.0 / ( newTime - oldTime );
+	oldTime = newTime;
+
 	// Setup the target buffer and then clear it to red
 	al_set_target_bitmap( screenBitmap_ );
-	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+	al_clear_to_color( al_map_rgb( 0, 0, 128 ) );
 
 	// Now draw everything we want
 
@@ -440,12 +412,32 @@ void vc::App::Draw()
 	gameMode->Draw();
 
 	// Draw our debug data
-	int x = 8, y = 8;
-	for ( auto const &i : performanceTimers )
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
-		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+		int x = 8, y = 8;
+
+		snprintf( buf, sizeof( buf ), "FPS = %u\n", ( unsigned int ) fps_ );
+		hei::Colour colour;
+		if ( fps_ <= 30 )
+		{
+			colour = hei::Colour( 255, 0, 0 );
+		}
+		else if ( fps_ <= 45 )
+		{
+			colour = hei::Colour( 255, 255, 0 );
+		}
+		else
+		{
+			colour = hei::Colour( 0, 255, 0 );
+		}
+		defaultBitmapFont_->DrawString( &x, &y, buf, colour );
+
+		for ( auto const &i : performanceTimers )
+		{
+
+			snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
+			defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+		}
 	}
 
 	al_unlock_bitmap( screenBitmap_ );
@@ -471,7 +463,7 @@ void vc::App::InitializeEvents()
 {
 	Print( "Initialize events...\n" );
 
-	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr )
+	if ( ( alTimer = al_create_timer( 1.0 / MAX_FPS ) ) == nullptr )
 	{
 		Error( "Failed to initialize timer!\n" );
 	}
@@ -512,8 +504,8 @@ void vc::App::Tick()
 	al_get_mouse_state( &mouseState );
 	al_get_keyboard_state( &keyboardState );
 
-	mouseStatus[ MOUSE_BUTTON_LEFT ]   = ( mouseState.buttons & 1 ) != 0;
-	mouseStatus[ MOUSE_BUTTON_RIGHT ]  = ( mouseState.buttons & 2 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_LEFT ] = ( mouseState.buttons & 1 ) != 0;
+	mouseStatus[ MOUSE_BUTTON_RIGHT ] = ( mouseState.buttons & 2 ) != 0;
 	mouseStatus[ MOUSE_BUTTON_MIDDLE ] = ( mouseState.buttons & 3 ) != 0;
 
 	switch ( event.type )
@@ -678,7 +670,7 @@ void vc::App::PrecacheResources()
 		Error( "Failed to load default charset!\n" );
 	}
 
-	imageManager->PrecacheResources();
+	spriteManager->PrecacheResources();
 }
 
 int main( int argc, char **argv )
@@ -694,6 +686,7 @@ int main( int argc, char **argv )
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
+	oldTime = Timer::GetCurrentTime();
 	while ( appInstance->IsRunning() )
 	{
 		appInstance->Loop();

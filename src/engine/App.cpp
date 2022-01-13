@@ -14,6 +14,11 @@ static double oldTime;
 
 // Draw Routines
 
+void ClearDisplay( void ) {
+	ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
+	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+}
+
 void DrawPixel( int x, int y, const hei::Colour &colour )
 {
 	if ( x < 0 || x > DISPLAY_WIDTH )
@@ -405,11 +410,11 @@ void vc::App::Draw()
 
 	// Setup the target buffer and then clear it to red
 	al_set_target_bitmap( screenBitmap_ );
-	al_clear_to_color( al_map_rgb( 0, 0, 128 ) );
 
 	// Now draw everything we want
-
 	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
+
+	ClearDisplay();
 
 	gameMode->Draw();
 

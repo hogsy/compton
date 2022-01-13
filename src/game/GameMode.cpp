@@ -48,13 +48,13 @@ void vc::GameMode::SetupUserInterface()
 
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
-	for ( unsigned int i = 0; i < 256; ++i )
-	{
-		GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, i * 16, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
-	}
-	//GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	//for ( unsigned int i = 0; i < 256; ++i )
+	//{
+	//	GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, i * 16, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	//}
 
-	//->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
+	GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	statusBar_->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
 
 	//new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );

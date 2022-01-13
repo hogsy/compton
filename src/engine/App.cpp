@@ -397,8 +397,10 @@ void vc::App::Draw()
 		return;
 	}
 
-	double newTime = Timer::GetCurrentTime();
-	fps_ = 1.0 / ( newTime - oldTime );
+	double newTime = PlGetCurrentSeconds();
+	static unsigned int ci = 0;
+	fps_[ ci++ ] = 1.0 / ( newTime - oldTime );
+	if ( ci >= MAX_FPS_READINGS ) ci = 0;
 	oldTime = newTime;
 
 	// Setup the target buffer and then clear it to red
@@ -416,13 +418,15 @@ void vc::App::Draw()
 		char buf[ 256 ];
 		int x = 8, y = 8;
 
-		snprintf( buf, sizeof( buf ), "FPS = %u\n", ( unsigned int ) fps_ );
+		unsigned int fps = GetAverageFPS();
+
+		snprintf( buf, sizeof( buf ), "FPS = %u\n", fps );
 		hei::Colour colour;
-		if ( fps_ <= 30 )
+		if ( fps <= 30 )
 		{
 			colour = hei::Colour( 255, 0, 0 );
 		}
-		else if ( fps_ <= 45 )
+		else if ( fps <= 45 )
 		{
 			colour = hei::Colour( 255, 255, 0 );
 		}
@@ -434,7 +438,6 @@ void vc::App::Draw()
 
 		for ( auto const &i : performanceTimers )
 		{
-
 			snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
 			defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 		}
@@ -686,7 +689,7 @@ int main( int argc, char **argv )
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
-	oldTime = Timer::GetCurrentTime();
+	oldTime = PlGetCurrentSeconds();
 	while ( appInstance->IsRunning() )
 	{
 		appInstance->Loop();

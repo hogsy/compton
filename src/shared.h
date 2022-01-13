@@ -23,6 +23,7 @@
 #include <plcore/pl_filesystem.h>
 #include <plcore/pl_package.h>
 #include <plcore/pl_math.h>
+#include <plcore/pl_timer.h>
 
 #include <plgraphics/plg.h>
 
@@ -37,6 +38,7 @@
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 480
 
+void ClearDisplay( void );
 void DrawPixel( int x, int y, const hei::Colour &colour );
 void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest );
 void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
@@ -134,20 +136,20 @@ namespace vc
 
 		std::map< std::string, Timer > performanceTimers;
 
-		ALLEGRO_DISPLAY     *alDisplay;
+		ALLEGRO_DISPLAY *alDisplay;
 		ALLEGRO_EVENT_QUEUE *alEventQueue;
-		ALLEGRO_TIMER       *alTimer;
-		ALLEGRO_TEXTLOG     *alLog;
+		ALLEGRO_TIMER *alTimer;
+		ALLEGRO_TEXTLOG *alLog;
 
-		ALLEGRO_MOUSE_STATE    mouseState;
+		ALLEGRO_MOUSE_STATE mouseState;
 		ALLEGRO_KEYBOARD_STATE keyboardState;
 
 		// Game state
 		GameMode *gameMode{ nullptr };
 
 		// Resources
-		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;                      // todo: make obsolete
-		BitmapFont                                         *defaultBitmapFont_{ nullptr };// todo: this should replace the above...
+		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;// todo: make obsolete
+		BitmapFont *defaultBitmapFont_{ nullptr };                  // todo: this should replace the above...
 
 		bool keyStatus[ ALLEGRO_KEY_MAX ];
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
@@ -155,16 +157,23 @@ namespace vc
 		bool redraw;
 		bool running;
 
-		int   windowWidth, windowHeight;
+		int windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;
 
 		double numTicks;
 
-		double fps_{ 0 };
+		static constexpr unsigned int MAX_FPS_READINGS = 64;
+		double fps_[ MAX_FPS_READINGS ]{};
+
 	public:
-		double GetLastFPS() const
+		unsigned int GetAverageFPS() const
 		{
-			return fps_;
+			double t = 0.0;
+			for ( unsigned int i = 0; i < MAX_FPS_READINGS; ++i )
+			{
+				t += fps_[ i ];
+			}
+			return ( unsigned int ) ( t / MAX_FPS_READINGS );
 		}
 
 	private:

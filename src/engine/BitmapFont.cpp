@@ -62,8 +62,8 @@ bool vc::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, cons
 	}
 
 	// Determine how many glyphs the image could support
-	unsigned int w         = PlGetImageWidth( image );
-	unsigned int h         = PlGetImageHeight( image );
+	unsigned int w = PlGetImageWidth( image );
+	unsigned int h = PlGetImageHeight( image );
 	unsigned int numGlyphs = ( w / cw ) * ( h / ch );
 	glyphs_.resize( numGlyphs );
 
@@ -97,7 +97,7 @@ bool vc::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, cons
 	return true;
 }
 
-#if 0 // Meh...
+#if 0// Meh...
 bool vc::BitmapFont::LoadFromPSF( const char *path )
 {
 	PLFile *file = PlOpenFile( path, false );
@@ -133,9 +133,9 @@ bool vc::BitmapFont::LoadFromPSF( const char *path )
 }
 #endif
 
-void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &colour )
+void vc::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour )
 {
-	if ( c < 0 )
+	if ( c >= glyphs_.size() )
 	{
 		return;
 	}
@@ -156,7 +156,7 @@ void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &col
 				continue;
 			}
 
-			al_put_pixel( x + row, y + column, al_map_rgba( pixel * colour.r, pixel * colour.g, pixel * colour.b, 255 ) );
+			DrawPixel( x + row, y + column, hei::Colour( pixel * colour.r, pixel * colour.g, pixel * colour.b ) );
 		}
 	}
 }
@@ -169,8 +169,8 @@ void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei
 		DrawString( &xx, &yy, sentence, hei::Colour( 0, 0, 0 ), false );
 	}
 
-	int         ox = *x;
-	const char *p  = sentence;
+	int ox = *x;
+	const unsigned char *p = ( unsigned char * ) sentence;
 	while ( *p != '\0' )
 	{
 		if ( *p == '\n' )

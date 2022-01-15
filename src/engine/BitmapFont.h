@@ -15,7 +15,7 @@ namespace vc
 
 		bool LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, const char *path );
 
-		void DrawCharacter( int x, int y, char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) );
+		void DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) );
 		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false );
 
 	private:

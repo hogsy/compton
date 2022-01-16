@@ -17,11 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Compton.h"
-#include "GameMode.h"
+#include "Game.h"
 #include "BaseCharacter.h"
-#include "Random.h"
-#include "Serializer.h"
-#include "Utility.h"
 #include "Terrain.h"
 
 namespace vc
@@ -46,6 +43,8 @@ REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
 void vc::BaseCharacter::Spawn()
 {
 	SuperClass::Spawn();
+
+	// Cache the sprites we need
 
 	char firstName[ 8 ], lastName[ 8 ];
 	random::GenerateRandomName( firstName, sizeof( firstName ) );

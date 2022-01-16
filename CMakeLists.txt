@@ -78,6 +78,7 @@ file(GLOB SOURCE_FILES
 
 add_executable(Compton ${SOURCE_FILES}
         # engine
+        src/engine/Renderer/DrawRoutines.cpp
         src/engine/App.cpp
         src/engine/BitmapFont.cpp
         src/engine/Entity.cpp

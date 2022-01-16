@@ -10,6 +10,17 @@ If you do decide to use it [then I'd love to hear from you](mailto:hogsy@oldtime
 
 Keep in mind it's also unlikely I'm going to be accepting contributions given I'm not going to be actively maintaining it.
 
+----
+
+**Please note that while the main project itself is considered under GPL Version 3, 
+the contents of the `bin/data/` directory is *not* considered under 
+an open license, particularly as there may be temporary place-holder 
+assets that I may not necessarily have copyright to, or assets that 
+I've created myself that I would like to retain some semblence of 
+ownership over.**
+
+----
+
 ## Features
 - Open-source! 😎
 - Cross-platform, at least between Windows and Linux 🐧

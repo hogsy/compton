@@ -38,9 +38,19 @@
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 480
 
+namespace vc::render
+{
+	enum class FlipDirection
+	{
+		FLIP_NONE,
+		FLIP_HORIZONTAL,
+		FLIP_VERTICAL,
+	};
+}
+
 void ClearDisplay( void );
 void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest );
+void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection = vc::render::FlipDirection::FLIP_NONE );
 void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 

@@ -190,15 +190,6 @@ void vc::GameMode::Draw()
 	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();
-	if ( enableHelpPrompt_ )
-	{
-		int x = 10;
-		int y = DISPLAY_HEIGHT / 2;
-		font->DrawString( &x, &y, "HELP INFO:\n"
-		                          "Press R to display room volumes\n"
-		                          "Press H to toggle this help\n"
-		                          "Press Q to quit\n" );
-	}
 
 	if ( world_ != nullptr )
 	{

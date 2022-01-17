@@ -8,6 +8,9 @@
 
 #include "../../shared.h"
 
+const hei::Colour vc::GUIPanel::INSET_COLOUR = { 122, 122, 122, 255 };
+const hei::Colour vc::GUIPanel::OUTSET_COLOUR = { 192, 192, 192, 255 };
+
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
 	: background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {

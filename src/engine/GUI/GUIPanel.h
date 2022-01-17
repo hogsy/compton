@@ -36,10 +36,10 @@ namespace vc
 
 		virtual void Tick();
 
-		void           SetStyleSheet( GUIStyleSheet *styleSheet );
+		void SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return styleSheet_; }
 
-		inline void        SetBackgroundColour( const hei::Colour &colour ) { backgroundColour_ = colour; }
+		inline void SetBackgroundColour( const hei::Colour &colour ) { backgroundColour_ = colour; }
 		inline hei::Colour GetBackgroundColour() const { return backgroundColour_; }
 
 		inline void SetBorder( Border border ) { border_ = border; }
@@ -52,7 +52,7 @@ namespace vc
 			*xd = x;
 			*yd = y;
 		}
-		void        GetContentPosition( int *xd, int *yd ) const;
+		void GetContentPosition( int *xd, int *yd ) const;
 		inline void GetSize( int *wd, int *hd ) const
 		{
 			*wd = w;
@@ -60,8 +60,8 @@ namespace vc
 		}
 		void GetContentSize( int *wd, int *hd ) const;
 
-		bool IsMouseOver( int mx, int my ) const;
-		bool IsMouseOver() const;
+		[[nodiscard]] bool IsMouseOver( int mx, int my ) const;
+		[[nodiscard]] bool IsMouseOver() const;
 
 		bool HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp );
 		bool HandleKeyboardEvent( int button, bool buttonUp );
@@ -71,13 +71,9 @@ namespace vc
 			isVisible = flag;
 		}
 
-		inline bool ShouldDraw()
+		[[nodiscard]] inline bool ShouldDraw() const
 		{
-			if ( !isVisible )
-			{
-				return false;
-			}
-			else if ( x + w < 0 || x > 640 || y + h < 0 || y > 480 )
+			if ( !isVisible || ( x + w < 0 || x > 640 || y + h < 0 || y > 480 ) )
 			{
 				return false;
 			}
@@ -102,10 +98,10 @@ namespace vc
 		void DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index );
 
 		Background background_{ Background::NONE };
-		Border     border_{ Border::NONE };
+		Border border_{ Border::NONE };
 
-		static constexpr uint8_t INSET_COLOUR[ 4 ]  = { 122, 122, 122, 255 };
-		static constexpr uint8_t OUTSET_COLOUR[ 4 ] = { 192, 192, 192, 255 };
+		static const hei::Colour INSET_COLOUR;
+		static const hei::Colour OUTSET_COLOUR;
 
 		hei::Colour backgroundColour_{ INSET_COLOUR };
 

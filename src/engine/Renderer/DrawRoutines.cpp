@@ -62,7 +62,15 @@ void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, 
 	{
 		for ( unsigned int r = 0; r < dw; ++r )
 		{
-			RGBA8 pixel = ( const struct RGBA8 & ) pixels[ ( r + c * w ) * pixelSize ];
+			RGBA8 pixel;
+			//if ( flipDirection == vc::render::FlipDirection::FLIP_VERTICAL )
+			{
+				pixel = ( const struct RGBA8 & ) pixels[ ( (dh - c - 1) * w ) * pixelSize ];
+			}
+			//else
+			//{
+			//	pixel = ( const struct RGBA8 & ) pixels[ ( r + c * w ) * pixelSize ];
+			//}
 			if ( alphaTest && hasAlpha && ( pixel.a != 255 ) )
 			{
 				if ( pixel.a == 0 )

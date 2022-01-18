@@ -8,29 +8,29 @@ project(Compton)
 include(DetermineTargetArchitecture.cmake)
 determine_target_architecture(COMPTON_SYSTEM_ARCH)
 
-if(UNIX)
+if (UNIX)
     message("Assuming Unix - " ${COMPTON_SYSTEM_ARCH})
     set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/unix-${COMPTON_SYSTEM_ARCH}/")
-elseif(WIN32)
+elseif (WIN32)
     message("Assuming Win32 - " ${COMPTON_SYSTEM_ARCH})
     set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/win32-${COMPTON_SYSTEM_ARCH}/")
-elseif(APPLE)
+elseif (APPLE)
     message("Assuming Apple - " ${COMPTON_SYSTEM_ARCH})
     set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/apple-${COMPTON_SYSTEM_ARCH}/")
-else()
+else ()
     message("Unknown platform - " ${COMPTON_SYSTEM_ARCH})
     set(COMPTON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/runtime/${COMPTON_SYSTEM_ARCH}/")
-endif()
+endif ()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${COMPTON_OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${COMPTON_OUTPUT_DIR}")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
-foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${COMPTON_OUTPUT_DIR})
-endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 ##############################################################
 
@@ -116,16 +116,27 @@ target_include_directories(Compton PRIVATE
         src/3rdparty/
         src/3rdparty/miniz/
         )
+
 if (WIN32)
     target_include_directories(Compton PRIVATE src/3rdparty/allegro/include/)
     target_link_directories(Compton PRIVATE src/3rdparty/allegro/lib/)
     target_link_libraries(Compton -Wl,-Bstatic stdc++ winpthread -Wl,-Bdynamic -static-libstdc++ -static-libgcc)
 endif (WIN32)
+
+# On Apple target, need to use pkgconfig to find allegro :(
+if (APPLE)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ALLEGRO REQUIRED allegro-5)
+    target_include_directories(Compton PRIVATE ${ALLEGRO_INCLUDE_DIRS})
+    target_link_directories(Compton PRIVATE ${ALLEGRO_LIBRARY_DIRS})
+endif (APPLE)
+
 target_link_libraries(Compton
         plcore
         plgraphics
 
         allegro
+        allegro_main
         allegro_dialog
         allegro_audio
         allegro_acodec

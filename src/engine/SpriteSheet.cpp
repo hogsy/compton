@@ -3,9 +3,9 @@
 
 #include <plcore/pl_image.h>
 #include <plcore/pl_parse.h>
+
 #include <memory>
 
-#include "../shared.h"
 #include "Compton.h"
 #include "SpriteSheet.h"
 

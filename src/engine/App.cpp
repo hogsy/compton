@@ -261,7 +261,7 @@ void vc::App::InitializeDisplay()
 	windowWidth = DISPLAY_WIDTH;
 	windowHeight = DISPLAY_HEIGHT;
 
-	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{
@@ -318,7 +318,7 @@ void vc::App::Draw()
 	// Now draw everything we want
 	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
 
-	ClearDisplay();
+	render::ClearDisplay();
 
 	gameMode->Draw();
 

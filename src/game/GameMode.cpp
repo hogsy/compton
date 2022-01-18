@@ -21,7 +21,7 @@ vc::GameMode::GameMode()
 	SetupUserInterface();
 
 	terrainManager_ = new Terrain();
-	entityManager_  = new EntityManager();
+	entityManager_ = new EntityManager();
 
 	NewGame( "default.save" );
 }
@@ -317,7 +317,7 @@ void vc::GameMode::RestoreGame( const char *path )
 	world_->Deserialize( &serializer );
 
 	// Now restore the camera data
-	playerCamera.position     = serializer.ReadCoordinate();
+	playerCamera.position = serializer.ReadCoordinate();
 	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
 
 	Print( "Game restored from \"%s\"\n", path );
@@ -411,8 +411,8 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 
 vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
-vc::Terrain       *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
-vc::Background    *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
+vc::Terrain *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
+vc::Background *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
 
 #if 0
 void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )

@@ -5,12 +5,12 @@
 
 // Draw Routines
 
-void ClearDisplay( void ) {
+void vc::render::ClearDisplay( void ) {
 	ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
 	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
-void DrawPixel( int x, int y, const hei::Colour &colour )
+void vc::render::DrawPixel( int x, int y, const hei::Colour &colour )
 {
 	if ( x < 0 || x > DISPLAY_WIDTH )
 	{
@@ -32,7 +32,7 @@ void DrawPixel( int x, int y, const hei::Colour &colour )
 	}
 }
 
-void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection )
+void vc::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection )
 {
 	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
 	{
@@ -58,19 +58,23 @@ void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, 
 	bool hasAlpha = ( pixelSize == 4 );
 	ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
 	uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
-	for ( unsigned int c = 0; c < dh; ++c )
+	for ( unsigned int row = 0; row < dh; ++row )
 	{
-		for ( unsigned int r = 0; r < dw; ++r )
+		for ( unsigned int column = 0; column < dw; ++column )
 		{
 			RGBA8 pixel;
-			//if ( flipDirection == vc::render::FlipDirection::FLIP_VERTICAL )
+			if ( flipDirection == vc::render::FlipDirection::FLIP_VERTICAL )
 			{
-				pixel = ( const struct RGBA8 & ) pixels[ ( (dh - c - 1) * w ) * pixelSize ];
+				pixel = ( const struct RGBA8 & ) pixels[ ( ( ( h - 1 ) - row ) * w + column ) * pixelSize ];
 			}
-			//else
-			//{
-			//	pixel = ( const struct RGBA8 & ) pixels[ ( r + c * w ) * pixelSize ];
-			//}
+			else if ( flipDirection == vc::render::FlipDirection::FLIP_HORIZONTAL )
+			{
+				pixel = ( const struct RGBA8 & ) pixels[ ( ( w - 1 - column ) + row * w ) * pixelSize ];
+			}
+			else
+			{
+				pixel = ( const struct RGBA8 & ) pixels[ ( column + row * w ) * pixelSize ];
+			}
 			if ( alphaTest && hasAlpha && ( pixel.a != 255 ) )
 			{
 				if ( pixel.a == 0 )
@@ -82,16 +86,16 @@ void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, 
 				continue;
 			}
 
-			dst[ r * 3 + 0 ] = pixel.b;
-			dst[ r * 3 + 1 ] = pixel.g;
-			dst[ r * 3 + 2 ] = pixel.r;
+			dst[ column * 3 + 0 ] = pixel.b;
+			dst[ column * 3 + 1 ] = pixel.g;
+			dst[ column * 3 + 2 ] = pixel.r;
 		}
 
 		dst += DISPLAY_WIDTH * region->pixel_size;
 	}
 }
 
-void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
+void vc::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
 {
 	if ( colour.a == 0 )
 	{

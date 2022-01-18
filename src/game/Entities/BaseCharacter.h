@@ -8,8 +8,6 @@
 
 namespace vc
 {
-#define MAX_CHARACTER_NAME 64
-
 	class BaseCharacter : public BaseCreature
 	{
 	public:
@@ -25,6 +23,7 @@ namespace vc
 
 	protected:
 	private:
+		static constexpr unsigned int MAX_CHARACTER_NAME = 64;
 		char name[ MAX_CHARACTER_NAME ];
 
 		static constexpr unsigned int NUM_SPRITES = 5;

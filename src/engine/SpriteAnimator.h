@@ -4,7 +4,9 @@
 #pragma once
 
 #include "../shared.h"
+
 #include "Sprite.h"
+#include "SpriteSheet.h"
 
 namespace vc
 {
@@ -12,6 +14,7 @@ namespace vc
 	{
 	public:
 		SpriteAnimation( const std::vector< Sprite * > sprites, unsigned int playbackSpeed = 1, bool mirror = false );
+		~SpriteAnimation();
 
 	private:
 		std::vector< const Sprite * > sprites_;

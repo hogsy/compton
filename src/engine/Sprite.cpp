@@ -7,5 +7,5 @@
 
 void vc::Sprite::Draw( int x, int y, bool alpha ) const
 {
-	DrawBitmap( pixels.data(), hasAlpha ? 4 : 3, x, y, width, height, alpha );
+	render::DrawBitmap( pixels.data(), hasAlpha ? 4 : 3, x, y, width, height, alpha );
 }

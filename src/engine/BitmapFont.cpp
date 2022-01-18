@@ -156,7 +156,7 @@ void vc::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Co
 				continue;
 			}
 
-			DrawPixel( x + row, y + column, hei::Colour( pixel * colour.r, pixel * colour.g, pixel * colour.b ) );
+			render::DrawPixel( x + row, y + column, hei::Colour( pixel * colour.r, pixel * colour.g, pixel * colour.b ) );
 		}
 	}
 }

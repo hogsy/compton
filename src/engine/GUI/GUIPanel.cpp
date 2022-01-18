@@ -72,7 +72,7 @@ void vc::GUIPanel::DrawBackground()
 	GetContentPosition( &dx, &dy );
 	GetContentSize( &dw, &dh );
 
-	DrawFilledRectangle( dx, dy, dw, dh, colour );
+	render::DrawFilledRectangle( dx, dy, dw, dh, colour );
 }
 
 void vc::GUIPanel::DrawBorder()

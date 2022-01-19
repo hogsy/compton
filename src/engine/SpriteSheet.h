@@ -14,8 +14,12 @@ namespace vc
 		~SpriteSheet();
 
 		bool LoadFile( const char *path );
+
 	private:
-		bool ParseFile( const char *buffer, unsigned int bufferSize );
+		void ExtractSprite( const struct PLImage *image, const std::string &name, int x, int y, int w, int h );
+		bool ParseSprite( const char **p, const PLImage *image );
+		bool ParseGroup( const char **p, const PLImage *image );
+		bool ParseFile( const char *buffer );
 
 		virtual void SetupElementTable() {}
 

@@ -6,73 +6,6 @@
 #include "SpriteManager.h"
 #include "GameMode.h"
 
-static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
-{
-	switch ( imageFormat )
-	{
-		default: break;
-		case PL_IMAGEFORMAT_RGBA8:
-			return ALLEGRO_PIXEL_FORMAT_RGBA_8888;
-	}
-
-	Error( "Unexpected pixel format, %d!\n", imageFormat );
-}
-
-static ALLEGRO_BITMAP *ImageBitmap_ConvertPlatformImageToAllegroBitmap( PLImage *image )
-{
-	al_set_new_bitmap_flags( ALLEGRO_ALPHA_TEST );
-
-	ALLEGRO_BITMAP *bitmap = al_create_bitmap( image->width, image->height );
-	if ( bitmap == nullptr )
-	{
-		Error( "Failed to create bitmap!\n" );
-	}
-
-	int                    pixelFormat  = ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( image->format );
-	ALLEGRO_LOCKED_REGION *bitmapRegion = al_lock_bitmap( bitmap, pixelFormat, ALLEGRO_LOCK_WRITEONLY );
-	if ( bitmapRegion == nullptr )
-	{
-		Error( "Failed to lock bitmap for writing, possibly not unlocked?!\n" );
-	}
-
-	for ( int y = 0; y < image->height; ++y )
-	{
-		for ( int x = 0; x < image->width; ++x )
-		{
-			uint8_t *sPos = ( uint8_t * ) ( bitmapRegion->data ) + ( bitmapRegion->pitch * y ) + ( x * bitmapRegion->pixel_size );
-			sPos[ 3 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size ];
-			sPos[ 2 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 1 ];
-			sPos[ 1 ]     = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 2 ];
-			if ( bitmapRegion->pixel_size > 3 )
-			{
-				sPos[ 0 ] = image->data[ 0 ][ ( y * image->width + x ) * bitmapRegion->pixel_size + 3 ];
-			}
-		}
-	}
-
-	al_unlock_bitmap( bitmap );
-
-	return bitmap;
-}
-
-ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags )
-{
-	PLImage *image = PlLoadImage( path );
-	if ( image == NULL )
-	{
-		Warning( "Failed to load specified image, \"%s\" (%s)!", path, PlGetError() );
-		return nullptr;
-	}
-
-	ALLEGRO_BITMAP *bitmap = ImageBitmap_ConvertPlatformImageToAllegroBitmap( image );
-
-	PlDestroyImage( image );
-
-	return bitmap;
-}
-
-///////////////////////////////////////////////////////////////////
-
 vc::SpriteManager::SpriteManager( int argc, char **argv )
 {
 }
@@ -116,12 +49,12 @@ const vc::Sprite *vc::SpriteManager::GetSprite( const char *path, unsigned int g
 
 	// Set up the sprite handle
 	Sprite sprite;
-	sprite.width    = PlGetImageWidth( image );
-	sprite.height   = PlGetImageHeight( image );
+	sprite.width = PlGetImageWidth( image );
+	sprite.height = PlGetImageHeight( image );
 	sprite.hasAlpha = PlImageHasAlpha( image );
 
 	// We're now going to copy the image pixels into our sprite
-	unsigned int   size = PlGetImageDataSize( image );
+	unsigned int size = PlGetImageDataSize( image );
 	const uint8_t *data = PlGetImageData( image, 0 );
 	sprite.pixels.insert( sprite.pixels.end(), data, data + size );
 
@@ -141,4 +74,24 @@ void vc::SpriteManager::DrawSprite( const char *path, unsigned int group, int x,
 	}
 
 	sprite->Draw( x, y, alphaTest );
+}
+
+const vc::SpriteSheet *vc::SpriteManager::GetSpriteSheet( const char *path )
+{
+	auto i = spriteSheets_.find( path );
+	if ( i != spriteSheets_.end() )
+	{
+		return i->second;
+	}
+
+	auto sheet = new SpriteSheet();
+	if ( !sheet->LoadFile( path ) )
+	{
+		delete sheet;
+		return nullptr;
+	}
+
+	spriteSheets_.emplace( path, sheet );
+
+	return sheet;
 }

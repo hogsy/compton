@@ -24,6 +24,8 @@ namespace vc
 		GameMode();
 		~GameMode();
 
+		void PrecacheResources();
+
 	private:
 		void SetupUserInterface();
 

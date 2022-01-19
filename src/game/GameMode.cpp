@@ -90,6 +90,11 @@ void vc::GameMode::SetupUserInterface()
 	uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
 }
 
+void vc::GameMode::PrecacheResources()
+{
+	vc::spriteManager->GetSpriteSheet( "sprites/creatures/human/human_sprites.sdf" );
+}
+
 void vc::GameMode::Tick()
 {
 	START_MEASURE();

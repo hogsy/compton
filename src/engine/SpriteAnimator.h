@@ -13,13 +13,17 @@ namespace vc
 	class SpriteAnimation
 	{
 	public:
-		SpriteAnimation( const std::vector< Sprite * > sprites, unsigned int playbackSpeed = 1, bool mirror = false );
+		SpriteAnimation() = default;
+		SpriteAnimation( const std::vector< Sprite * > &sprites, unsigned int playbackSpeed = 1, bool mirror = false );
 		~SpriteAnimation();
 
 	private:
 		std::vector< const Sprite * > sprites_;
-		unsigned int playbackSpeed_;
-		bool mirror;
+
+		unsigned int playbackSpeed_{ 1 };
+
+		bool mirror{ false };
+		bool loop{ false };
 	};
 
 	class SpriteAnimator

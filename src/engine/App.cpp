@@ -155,9 +155,6 @@ vc::App::App( int argc, char **argv )
 	al_init_native_dialog_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
-	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
-	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
-	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );
 
 	al_reserve_samples( 512 );
 
@@ -583,28 +580,25 @@ void vc::App::PrecacheResources()
 	}
 
 	spriteManager->PrecacheResources();
+	gameMode->PrecacheResources();
 }
 
-int main( int argc, char **argv )
+[[noreturn]] int main( int argc, char **argv )
 {
 	// Stop buffering stdout!
 	setvbuf( stdout, nullptr, _IONBF, 0 );
 
 	appInstance = new vc::App( argc, argv );
 
-	appInstance->PrecacheResources();
-
 	appInstance->InitializeDisplay();
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
+	appInstance->PrecacheResources();
+
 	oldTime = PlGetCurrentSeconds();
-	while ( appInstance->IsRunning() )
+	while ( true )
 	{
 		appInstance->Loop();
 	}
-
-	appInstance->Shutdown();
-
-	return 0;
 }

@@ -252,10 +252,12 @@ void vc::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
-	windowWidth = DISPLAY_WIDTH;
-	windowHeight = DISPLAY_HEIGHT;
+	windowWidth = DISPLAY_WIDTH * 2;
+	windowHeight = DISPLAY_HEIGHT * 2;
 
-	al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	if ( !PlHasCommandLineArgument( "--window" ) )
+		al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
 	{

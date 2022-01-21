@@ -130,6 +130,20 @@ void vc::EntityManager::SpawnEntities()
 	}
 }
 
+/**
+ * Interate over each entity, create it and
+ * then precache it before then deleting it.
+ */
+void vc::EntityManager::PrecacheEntities()
+{
+	for ( auto i : entityClasses )
+	{
+		Entity *entity = CreateEntity( i.first );
+		entity->Precache();
+		DestroyEntity( entity );
+	}
+}
+
 vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const char *className, const vc::EntityManager::EntitySlot *curSlot ) const
 {
 	// Allow us to iterate from a previous position if desired

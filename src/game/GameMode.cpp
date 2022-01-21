@@ -92,7 +92,7 @@ void vc::GameMode::SetupUserInterface()
 
 void vc::GameMode::PrecacheResources()
 {
-	vc::spriteManager->GetSpriteSheet( "sprites/creatures/human/human_sprites.sdf" );
+	entityManager_->PrecacheEntities();
 }
 
 void vc::GameMode::Tick()

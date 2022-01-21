@@ -49,23 +49,23 @@ namespace vc
 		virtual void Tick() override;
 
 	protected:
-		Sex mySex{ Sex::INTERSEX };
+		Sex sex_{ Sex::INTERSEX };
 
-		ai::Brain  myBrain;
-		ai::Sensor mySensors[ ai::Sensor::MAX_SENSOR_TYPES ];
+		ai::Brain brain_;
+		ai::Sensor sensors_[ ai::Sensor::MAX_SENSOR_TYPES ];
 
-		unsigned int age{ 0 };
-		unsigned int maxAge{ 100 };
-		unsigned int generation{ 0 };
+		unsigned int age_{ 0 };
+		unsigned int maxAge_{ 100 };
+		unsigned int generation_{ 0 };
 
-		bool         isPregnant{ false };
-		unsigned int timePregnant{ 0 };
+		bool isPregnant_{ false };
+		unsigned int timePregnant_{ 0 };
 
-		int stamina{ 100 };
-		int maxStamina{ 100 };
+		int stamina_{ 100 };
+		int maxStamina_{ 100 };
 
-		int myHunger{ 0 };
-		int myThirst{ 0 };
+		int hunger_{ 0 };
+		int thirst_{ 0 };
 
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };

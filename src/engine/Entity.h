@@ -24,6 +24,7 @@ namespace vc
 		virtual const char *GetClassIdentifier() const { return "Entity"; }
 
 		virtual void Spawn();
+		virtual void Precache() {}
 
 		virtual void Tick();
 		virtual void Draw( const Camera &camera );
@@ -32,10 +33,6 @@ namespace vc
 		virtual void Serialize( Serializer *write );
 
 		virtual bool ShouldDraw( const Camera &camera ) const;
-
-#if 0
-		inline PLVector2 GetBounds() const { return bounds; }
-#endif
 
 		hei::Vector2 velocity{ 0.0f, 0.0f };
 		hei::Vector2 bounds{ 0.0f, 0.0f };

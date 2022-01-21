@@ -30,6 +30,7 @@ namespace vc
 		void DeserializeEntities( Serializer *read );
 
 		void SpawnEntities();
+		void PrecacheEntities();
 
 		struct EntitySlot
 		{

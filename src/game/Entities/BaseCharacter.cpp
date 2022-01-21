@@ -49,7 +49,7 @@ void vc::BaseCharacter::Spawn()
 	char firstName[ 8 ], lastName[ 8 ];
 	random::GenerateRandomName( firstName, sizeof( firstName ) );
 	random::GenerateRandomName( lastName, sizeof( lastName ) );
-	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation ) );
+	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation_ ) );
 }
 
 void vc::BaseCharacter::Deserialize( vc::Serializer *read )

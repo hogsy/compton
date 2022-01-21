@@ -93,8 +93,7 @@ namespace vc
 		void InitializeEvents();
 		void InitializeGame();
 
-		bool IsRunning();
-		void Loop();
+		[[noreturn]] void Loop();
 
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 

@@ -170,19 +170,16 @@ vc::App::App( int argc, char **argv )
 
 vc::App::~App() = default;
 
-bool vc::App::IsRunning()
+[[noreturn]] void vc::App::Loop()
 {
-	// We're always running!
-	return true;
-}
+	while ( true )
+	{
+		Tick();
+		Draw();
 
-void vc::App::Loop()
-{
-	Tick();
-	Draw();
-
-	// Now clear all the performance timers
-	performanceTimers.clear();
+		// Now clear all the performance timers
+		performanceTimers.clear();
+	}
 }
 
 ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
@@ -583,7 +580,7 @@ void vc::App::PrecacheResources()
 	gameMode->PrecacheResources();
 }
 
-[[noreturn]] int main( int argc, char **argv )
+int main( int argc, char **argv )
 {
 	// Stop buffering stdout!
 	setvbuf( stdout, nullptr, _IONBF, 0 );
@@ -597,8 +594,5 @@ void vc::App::PrecacheResources()
 	appInstance->PrecacheResources();
 
 	oldTime = PlGetCurrentSeconds();
-	while ( true )
-	{
-		appInstance->Loop();
-	}
+	appInstance->Loop();
 }

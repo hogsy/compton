@@ -66,6 +66,7 @@ void vc::GameMode::SetupUserInterface()
 	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
+#if 0
 #define MINIMAP_WIDTH  128
 #define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
@@ -83,6 +84,7 @@ void vc::GameMode::SetupUserInterface()
 			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
 			GUIPanel::Background::SOLID,
 			GUIPanel::Border::INSET );
+#endif
 
 	// Create the UI cursor
 	new GUICursor( baseGuiPanel_ );

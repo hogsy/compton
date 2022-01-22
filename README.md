@@ -1,14 +1,9 @@
 # Compton, 2D Game Engine
 
-Compton is a small open-source 2D game engine using Allegro and written in C++.
+Compton is a small open-source 2D game engine using Allegro 5 and written in C++.
+It's purposefully designed to be simplistic with as few dependencies as possible.
 
-It's important to note that I consider it **deprecated**, 
-as I've since started developing a new engine called [Yin](https://hogsy.itch.io/yin-3d-game-engine),
-but I still sometimes use this for quick prototyping and thus I've decided to share it
-on the off-chance someone might find it useful for something.
-If you do decide to use it [then I'd love to hear from you](mailto:hogsy@oldtimes-software.com)! ❤️
-
-Keep in mind it's also unlikely I'm going to be accepting contributions given I'm not going to be actively maintaining it.
+If you decide to use it for anything [then I'd love to hear from you](mailto:hogsy@oldtimes-software.com)! ❤️
 
 ----
 
@@ -35,7 +30,7 @@ ownership over.**
 
 ## Roadmap
 
-- [ ] Remove dependence on Allegro 5
+- [ ] Remove dependence on Allegro 5 and replace it with SDL2
 - [ ] Add support for using SDL2 as a backend, as opposed to Allegro 5
 
 ## Games

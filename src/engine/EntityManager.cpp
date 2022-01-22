@@ -136,6 +136,7 @@ void vc::EntityManager::SpawnEntities()
  */
 void vc::EntityManager::PrecacheEntities()
 {
+	Print( "Precaching for %lu entities...\n", entityClasses.size() );
 	for ( auto i : entityClasses )
 	{
 		Entity *entity = CreateEntity( i.first );

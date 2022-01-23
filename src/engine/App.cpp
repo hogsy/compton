@@ -384,6 +384,8 @@ void vc::App::InitializeEvents()
 	al_install_mouse();
 	al_install_keyboard();
 
+	debugMouse_ = PlHasCommandLineArgument( "--debug-mouse" );
+
 	GrabCursor();
 
 	al_register_event_source( alEventQueue, al_get_display_event_source( alDisplay ) );
@@ -534,6 +536,10 @@ bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button )
 
 void vc::App::GrabCursor( bool status )
 {
+	// If the debug mouse mode is set, we don't grab the cursor!
+	if ( debugMouse_ )
+		return;
+
 	if ( status )
 	{
 		al_grab_mouse( alDisplay );

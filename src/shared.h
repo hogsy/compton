@@ -127,6 +127,7 @@ namespace vc
 
 	private:
 		void GrabCursor( bool state = true );
+		bool debugMouse_{ false };
 
 	public:
 		inline const char *GetAppDataPath() const { return appDataPath; }

@@ -99,3 +99,43 @@ ALLEGRO_FILE_INTERFACE g_fsIOInterface = {
 		FS_fungetc,
 		FS_fsize,
 };
+
+/////////////////////////////////////////////////////////////////
+
+/// Attempt to load the file provided by path into a null-terminated
+/// buffer.
+/// \param path Path to the file to load.
+/// \param length Returns the length of the allocated buffer that's returned.
+/// \return
+char *vc::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
+{
+	PLFile *file = PlOpenFile( path, true );
+	if ( file == nullptr )
+	{
+		Warning( "Failed to open file: %s\n", PlGetError() );
+		return nullptr;
+	}
+
+	unsigned int fileSize = PlGetFileSize( file );
+	char *buffer = new char[ fileSize + 1 ];
+	unsigned int bytesRead = PlReadFile( file, buffer, 1, fileSize );
+	if ( bytesRead != fileSize )
+	{
+		Warning( "Failed to read file: %s\n", PlGetError() );
+		delete[] buffer;
+		buffer = nullptr;
+	}
+	else
+	{
+		buffer[ fileSize ] = '\0';
+	}
+
+	PlCloseFile( file );
+
+	if ( length != nullptr )
+	{
+		*length = ( buffer != nullptr ) ? fileSize : 0;
+	}
+
+	return buffer;
+}

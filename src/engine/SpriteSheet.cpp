@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Compton.h"
+#include "FileSystem.h"
 #include "SpriteSheet.h"
 
 vc::SpriteSheet::~SpriteSheet() = default;
@@ -16,19 +17,12 @@ vc::SpriteSheet::~SpriteSheet() = default;
 /// \return True on success, false on fail.
 bool vc::SpriteSheet::LoadFile( const char *path )
 {
-	PLFile *file = PlOpenFile( path, true );
-	if ( file == nullptr )
-	{
-		Warning( "Failed to load sprite sheet: %s\n", PlGetError() );
+	unsigned int length;
+	char *buffer = fs::LoadFileIntoBuffer( path, &length );
+	if ( buffer == nullptr )
 		return false;
-	}
 
 	Print( "Parsing sprite sheet, \"%s\"\n", path );
-
-	unsigned int size = PlGetFileSize( file );
-	char *buffer = new char[ size + 1 ];
-	memcpy( buffer, PlGetFileData( file ), size );
-	PlCloseFile( file );
 
 	bool status = ParseFile( buffer );
 

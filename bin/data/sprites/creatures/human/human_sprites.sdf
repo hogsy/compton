@@ -1,0 +1,15 @@
+; identifier w h x y
+
+$image sprites/creatures/human/human.gif
+
+$sprite idle_n 16 24 0 0
+$sprite idle_ne 16 24 0 24
+$sprite idle_e 16 24 0 48
+$sprite idle_se 16 24 0 72
+$sprite idle_s 16 24 0 96
+
+$group run_n 64 24 16 0 4 1
+$group run_ne 64 24 16 24 4 1
+$group run_e 64 24 16 48 4 1
+$group run_se 64 24 16 72 4 1
+$group run_s 64 24 16 96 4 1

@@ -66,6 +66,7 @@ enum InputMouseButton
 namespace vc
 {
 	class GameMode;
+	class SpriteManager;
 	class EntityManager;
 	class BitmapFont;
 	class Background;

@@ -76,6 +76,10 @@ file(GLOB SOURCE_FILES
         src/engine/GUI/*.cpp
         )
 
+set(DS_SOURCE_FILES
+        src/game/DS/HumanCreature.cpp
+        )
+
 add_executable(Compton ${SOURCE_FILES}
         # engine
         src/engine/Renderer/DrawRoutines.cpp
@@ -106,6 +110,9 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Terrain.cpp
         src/game/Utility.cpp
         src/game/World.cpp
+        
+        # DS specific files
+        ${DS_SOURCE_FILES}
         )
 
 target_include_directories(Compton PRIVATE

@@ -42,6 +42,9 @@ namespace vc
 			bool loop{ false };
 		};
 
+		// < filename, < animation name, animation > >
+		static std::map< std::string, std::map< std::string, SpriteAnimation > > cachedAnimations_;
+
 		std::map< std::string, SpriteAnimation > animations_;
 		const SpriteAnimation *currentAnimation_{ nullptr };
 	};

@@ -8,18 +8,21 @@
 
 bool vc::SpriteAnimator::LoadFile( const char *path )
 {
+	// It's already been cached...
+	auto i = cachedAnimations_.find( path );
+	if ( i != cachedAnimations_.end() )
+		return true;
+
 	unsigned int length;
 	char *buffer = fs::LoadFileIntoBuffer( path, &length );
 	if ( buffer == nullptr )
 		return false;
 
 	bool status = ParseFile( buffer );
+	if ( status )
+		cachedAnimations_.emplace( path, animations_ );
 
 	delete[] buffer;
-
-	if ( status )
-	{
-	}
 
 	return status;
 }

@@ -19,14 +19,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 
 #include "Entity.h"
+#include "BaseAnimated.h"
 #include "Entities/ai/Brain.h"
 #include "Entities/ai/Sensor.h"
 
 namespace vc
 {
-	class BaseCreature : public Entity
+	class BaseCreature : public BaseAnimated
 	{
-		DECLARE_ENTITY_CLASS( BaseCreature, Entity )
+		DECLARE_ENTITY_CLASS( BaseCreature, BaseAnimated )
 
 	public:
 		enum class Sex

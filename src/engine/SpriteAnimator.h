@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -10,23 +10,39 @@
 
 namespace vc
 {
-	class SpriteAnimation
-	{
-	public:
-		SpriteAnimation() = default;
-		SpriteAnimation( const std::vector< Sprite * > &sprites, unsigned int playbackSpeed = 1, bool mirror = false );
-		~SpriteAnimation();
-
-	private:
-		std::vector< const Sprite * > sprites_;
-
-		unsigned int playbackSpeed_{ 1 };
-
-		bool mirror{ false };
-		bool loop{ false };
-	};
-
 	class SpriteAnimator
 	{
+	public:
+		SpriteAnimator() = default;
+
+		bool LoadFile( const char *path );
+
+	private:
+		bool ParseFile( const char *buffer );
+
+	public:
+		void SetAnimation( const char *name );
+
+		void Tick();
+		void Draw( const hei::Vector2 &position );
+
+	private:
+		struct SpriteAnimation
+		{
+			struct Frame
+			{
+				const Sprite *sprite{ nullptr };
+				bool mirror{ false };
+				hei::Vector2 origin;
+			};
+
+			std::vector< Frame > frames;
+			unsigned int currentFrame{ 0 };
+			unsigned int playbackSpeed{ 0 };
+			bool loop{ false };
+		};
+
+		std::map< std::string, SpriteAnimation > animations_;
+		const SpriteAnimation *currentAnimation_{ nullptr };
 	};
 }// namespace vc

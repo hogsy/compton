@@ -93,12 +93,14 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Random.cpp
         src/engine/Serializer.cpp
         src/engine/Sprite.cpp
+        src/engine/SpriteAnimator.cpp
         src/engine/SpriteManager.cpp
         src/engine/SpriteSheet.cpp
 
         # game
         src/game/Entities/ai/Brain.cpp
         src/game/Entities/ai/Sensor.cpp
+        src/game/Entities/BaseAnimated.cpp
         src/game/Entities/BaseBuilding.cpp
         src/game/Entities/BaseCharacter.cpp
         src/game/Entities/BaseCreature.cpp

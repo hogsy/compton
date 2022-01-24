@@ -38,7 +38,7 @@ namespace vc
 
 			std::vector< Frame > frames;
 			unsigned int currentFrame{ 0 };
-			unsigned int playbackSpeed{ 0 };
+			unsigned int playbackSpeed{ 0 }, nextFrameTime{ 0 };
 			bool loop{ false };
 		};
 
@@ -46,6 +46,6 @@ namespace vc
 		static std::map< std::string, std::map< std::string, SpriteAnimation > > cachedAnimations_;
 
 		std::map< std::string, SpriteAnimation > animations_;
-		const SpriteAnimation *currentAnimation_{ nullptr };
+		SpriteAnimation *currentAnimation_{ nullptr };
 	};
 }// namespace vc

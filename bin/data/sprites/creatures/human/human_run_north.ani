@@ -1,8 +1,0 @@
-$sheet sprites/creatures/human/human_sprites.sdf
-$speed 2
-$loop
-$frame run_n0 0 8 0
-$frame run_n1 0 8 0
-$frame run_n2 0 8 0
-$frame run_n3 0 8 0
-$push human_run_north

@@ -13,6 +13,12 @@ namespace vc
 	public:
 		IMPLEMENT_SUPER( Entity );
 
+		virtual void Tick() override;
+		virtual void Draw( const Camera &camera ) override;
+
+		void CacheAnimation( const char *path );
+		virtual void SetAnimation( const char *name );
+
 	protected:
 		SpriteAnimator animator_;
 	};

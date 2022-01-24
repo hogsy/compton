@@ -177,8 +177,9 @@ void vc::GameMode::Tick()
 	if ( world_ != nullptr )
 	{
 		world_->Tick();
-		entityManager_->Tick();
 	}
+
+	GetEntityManager()->Tick();
 
 	END_MEASURE();
 }
@@ -210,6 +211,8 @@ void vc::GameMode::Draw()
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
+
+	GetEntityManager()->Draw( playerCamera );
 
 	vc::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
@@ -290,6 +293,11 @@ void vc::GameMode::NewGame( const char *path )
 	// Then automatically save it
 	SaveGame( path );
 #endif
+
+	Entity *testEntity = entityManager_->CreateEntity( "HumanCreature" );
+	testEntity->origin = hei::Vector2( 256, 256 );
+
+	entityManager_->SpawnEntities();
 }
 
 void vc::GameMode::SaveGame( const char *path )

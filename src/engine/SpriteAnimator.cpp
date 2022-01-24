@@ -6,6 +6,9 @@
 #include "SpriteAnimator.h"
 #include "SpriteSheet.h"
 
+std::map< std::string, std::map< std::string, vc::SpriteAnimator::SpriteAnimation > >
+		vc::SpriteAnimator::cachedAnimations_;
+
 bool vc::SpriteAnimator::LoadFile( const char *path )
 {
 	// It's already been cached...
@@ -20,7 +23,10 @@ bool vc::SpriteAnimator::LoadFile( const char *path )
 
 	bool status = ParseFile( buffer );
 	if ( status )
+	{
 		cachedAnimations_.emplace( path, animations_ );
+		Print( "Cached animation, \"%s\"\n", path );
+	}
 
 	delete[] buffer;
 
@@ -46,7 +52,7 @@ bool vc::SpriteAnimator::ParseFile( const char *buffer )
 		if ( PlParseToken( &p, token, MAX_TOKEN ) == nullptr )
 			break;
 
-		if ( *token == ';' || PlIsEndOfLine( p ) )
+		if ( *token == ';' || PlIsEndOfLine( token ) )
 		{
 			PlSkipLine( &p );
 			continue;
@@ -117,6 +123,8 @@ bool vc::SpriteAnimator::ParseFile( const char *buffer )
 			animations_.emplace( name, animation );
 			PL_ZERO_( animation );
 
+			Print( "Pushed anim: %s\n", name );
+
 			PlSkipLine( &p );
 			continue;
 		}
@@ -141,6 +149,25 @@ void vc::SpriteAnimator::SetAnimation( const char *name )
 
 void vc::SpriteAnimator::Tick()
 {
+	if ( currentAnimation_ == nullptr || currentAnimation_->frames.empty() )
+		return;
+
+	if ( currentAnimation_->nextFrameTime > vc::GetApp()->GetNumOfTicks() )
+		return;
+
+	currentAnimation_->nextFrameTime = vc::GetApp()->GetNumOfTicks() + currentAnimation_->playbackSpeed;
+	currentAnimation_->currentFrame++;
+	if ( currentAnimation_->currentFrame >= currentAnimation_->frames.size() )
+	{
+		if ( !currentAnimation_->loop )
+		{
+			currentAnimation_->currentFrame = currentAnimation_->frames.size() - 1;
+			return;
+		}
+
+		currentAnimation_->currentFrame = 0;
+		return;
+	}
 }
 
 void vc::SpriteAnimator::Draw( const hei::Vector2 &position )

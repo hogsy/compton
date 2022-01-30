@@ -5,10 +5,12 @@
 
 #include "LoaderPkg.h"
 #include "GameMode.h"
+#include "Input/InputManager.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
 
 vc::SpriteManager *vc::spriteManager = nullptr;
+vc::input::InputManager *vc::input::inputManager = nullptr;
 
 static double oldTime;
 
@@ -163,6 +165,7 @@ vc::App::App( int argc, char **argv )
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
 
+	input::inputManager = new input::InputManager();
 	spriteManager = new SpriteManager( argc, argv );
 
 	running = true;
@@ -186,17 +189,13 @@ ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 {
 	auto i = samples.find( path );
 	if ( i != samples.end() )
-	{
 		return i->second;
-	}
 
 	Print( "Caching sample, \"%s\"\n", path );
 
 	ALLEGRO_SAMPLE *sample = al_load_sample( path );
 	if ( sample == nullptr )
-	{
 		Error( "Failed to load sample, \"%s\"!\n", path );
-	}
 
 	samples.emplace( path, sample );
 
@@ -218,6 +217,7 @@ void vc::App::Shutdown()
 {
 	delete gameMode;
 	delete spriteManager;
+	delete input::inputManager;
 
 	if ( screenBitmap_ != nullptr )
 	{
@@ -260,9 +260,7 @@ void vc::App::InitializeDisplay()
 
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
-	{
 		Error( "Failed to initialize display!\n" );
-	}
 
 	// Get the actual width and height
 	windowWidth = al_get_display_width( alDisplay );
@@ -275,9 +273,7 @@ void vc::App::InitializeDisplay()
 	al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
 	screenBitmap_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( screenBitmap_ == nullptr )
-	{
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
-	}
 
 	int sx = windowWidth / DISPLAY_WIDTH;
 	int sy = windowHeight / DISPLAY_HEIGHT;
@@ -298,9 +294,7 @@ void vc::App::InitializeDisplay()
 void vc::App::Draw()
 {
 	if ( !redraw )
-	{
 		return;
-	}
 
 	double newTime = PlGetCurrentSeconds();
 	static unsigned int ci = 0;
@@ -316,7 +310,8 @@ void vc::App::Draw()
 
 	render::ClearDisplay();
 
-	gameMode->Draw();
+	if ( gameMode != nullptr )
+		gameMode->Draw();
 
 	// Draw our debug data
 	{
@@ -328,17 +323,12 @@ void vc::App::Draw()
 		snprintf( buf, sizeof( buf ), "FPS = %u\n", fps );
 		hei::Colour colour;
 		if ( fps <= 30 )
-		{
 			colour = hei::Colour( 255, 0, 0 );
-		}
 		else if ( fps <= 45 )
-		{
 			colour = hei::Colour( 255, 255, 0 );
-		}
 		else
-		{
 			colour = hei::Colour( 0, 255, 0 );
-		}
+
 		defaultBitmapFont_->DrawString( &x, &y, buf, colour );
 
 		for ( auto const &i : performanceTimers )
@@ -402,6 +392,7 @@ void vc::App::InitializeEvents()
 void vc::App::InitializeGame()
 {
 	gameMode = new GameMode();
+	gameMode->RegisterActions();
 }
 
 void vc::App::Tick()

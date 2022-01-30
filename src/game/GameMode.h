@@ -12,6 +12,8 @@
 #include "Camera.h"
 #include "World.h"
 
+#include "Input/Action.h"
+
 namespace vc
 {
 	class PlayerManager;
@@ -24,7 +26,7 @@ namespace vc
 		GameMode();
 		~GameMode();
 
-		void PrecacheResources();
+		virtual void PrecacheResources();
 
 	private:
 		void SetupUserInterface();
@@ -33,14 +35,14 @@ namespace vc
 		void Tick();
 		void Draw();
 
-		void NewGame( const char *path );
-		void SaveGame( const char *path );
-		void RestoreGame( const char *path );
+		virtual void NewGame( const char *path );
+		virtual void SaveGame( const char *path );
+		virtual void RestoreGame( const char *path );
 
 		hei::Vector2 MousePosToWorld( int x, int y ) const;
 
-		void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
-		void HandleKeyboardEvent( int button, bool buttonUp );
+		virtual void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
+		virtual void HandleKeyboardEvent( int button, bool buttonUp );
 
 		inline GUIPanel *GetBasePanel() const { return baseGuiPanel_; }
 
@@ -61,7 +63,7 @@ namespace vc
 		unsigned int GetGameSpeed() const { return gameSpeed_; }
 
 	private:
-		Camera playerCamera;
+		Camera camera;
 
 		GameState gameState{ GameState::ACTIVE };
 
@@ -69,8 +71,8 @@ namespace vc
 		GUIPanel      *baseGuiPanel_{ nullptr };
 		GUIPieMenu    *uiPieMenu{ nullptr };
 
-		PlayerManager *playerManager{ nullptr };
-		EntityManager *entityManager_{ nullptr };
+		PlayerManager *playerManager;
+		EntityManager *entityManager_;
 
 		SpriteSheet *terrainSheet;
 		Terrain     *terrainManager_;
@@ -80,5 +82,22 @@ namespace vc
 		bool enableHelpPrompt_{ true };
 
 		unsigned int gameSpeed_{ 5 };
+
+		////////////////////////////////////////////////
+		// Actions
+
+		enum
+		{
+			ACTION_MOVE_UP,
+			ACTION_MOVE_DOWN,
+			ACTION_MOVE_LEFT,
+			ACTION_MOVE_RIGHT,
+
+			ACTION_USE,
+			ACTION_ATTACK,
+		};
+
+	public:
+		void RegisterActions();
 	};
 }// namespace vc

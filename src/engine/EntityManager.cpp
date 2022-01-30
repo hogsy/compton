@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "../shared.h"
@@ -12,13 +12,8 @@ std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::Entity
 vc::EntityManager::EntityVector vc::EntityManager::entities;
 vc::EntityManager::EntityVector vc::EntityManager::destructionQueue;
 
-vc::EntityManager::EntityManager()
-{
-}
-
-vc::EntityManager::~EntityManager()
-{
-}
+vc::EntityManager::EntityManager() = default;
+vc::EntityManager::~EntityManager() = default;
 
 vc::Entity *vc::EntityManager::CreateEntity( const std::string &className )
 {
@@ -51,9 +46,7 @@ void vc::EntityManager::DestroyEntity( Entity *entity )
 void vc::EntityManager::DestroyEntities()
 {
 	for ( auto &entity : entities )
-	{
 		delete entity;
-	}
 
 	destructionQueue.clear();
 	entities.clear();
@@ -64,9 +57,7 @@ void vc::EntityManager::Tick()
 	START_MEASURE();
 
 	for ( const auto &entity : entities )
-	{
 		entity->Tick();
-	}
 
 	// Now clean everything up that was marked for destruction
 	for ( auto &entity : destructionQueue )
@@ -85,9 +76,7 @@ void vc::EntityManager::Draw( const Camera &camera )
 	START_MEASURE();
 
 	for ( const auto &entity : entities )
-	{
 		entity->Draw( camera );
-	}
 
 	END_MEASURE();
 }
@@ -125,9 +114,7 @@ void vc::EntityManager::DeserializeEntities( Serializer *read )
 void vc::EntityManager::SpawnEntities()
 {
 	for ( auto &entity : entities )
-	{
 		entity->Spawn();
-	}
 }
 
 /**
@@ -157,9 +144,7 @@ vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const ch
 	for ( ; i < entities.size(); ++i )
 	{
 		if ( strcmp( entities[ i ]->GetClassIdentifier(), className ) != 0 )
-		{
 			continue;
-		}
 
 		return EntitySlot( entities[ i ], i );
 	}

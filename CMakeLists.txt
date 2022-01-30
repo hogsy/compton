@@ -83,6 +83,10 @@ set(DS_SOURCE_FILES
 add_executable(Compton ${SOURCE_FILES}
         # engine
         src/engine/Renderer/DrawRoutines.cpp
+
+        src/engine/Input/Action.cpp
+        src/engine/Input/InputManager.cpp
+
         src/engine/App.cpp
         src/engine/BitmapFont.cpp
         src/engine/Entity.cpp
@@ -112,7 +116,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Terrain.cpp
         src/game/Utility.cpp
         src/game/World.cpp
-        
+
         # DS specific files
         ${DS_SOURCE_FILES}
         )

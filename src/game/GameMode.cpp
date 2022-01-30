@@ -15,6 +15,7 @@
 #include "GUI/GUIStyleSheet.h"
 
 #include "Entities/BaseCharacter.h"
+#include "Input/InputManager.h"
 
 vc::GameMode::GameMode()
 {
@@ -67,8 +68,8 @@ void vc::GameMode::SetupUserInterface()
 	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
 #if 0
-#define MINIMAP_WIDTH  128
-#define MINIMAP_HEIGHT 128
+#	define MINIMAP_WIDTH  128
+#	define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
 			baseGuiPanel_,
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
@@ -113,71 +114,62 @@ void vc::GameMode::Tick()
 		return;
 	}
 
-	if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) )
+	if ( camera.movementMode == Camera::MoveMode::FREE )
 	{
-		playerCamera.velocity.y -= CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.y > CAMERA_MAXSPEED )
+		if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) )
 		{
-			playerCamera.velocity.y = CAMERA_MAXSPEED;
+			camera.velocity.y -= CAMERA_ACCELERATION;
+			if ( camera.velocity.y > CAMERA_MAXSPEED )
+			{
+				camera.velocity.y = CAMERA_MAXSPEED;
+			}
 		}
-	}
-	else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) )
-	{
-		playerCamera.velocity.y += CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.y < -CAMERA_MAXSPEED )
+		else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) )
 		{
-			playerCamera.velocity.y = -CAMERA_MAXSPEED;
+			camera.velocity.y += CAMERA_ACCELERATION;
+			if ( camera.velocity.y < -CAMERA_MAXSPEED )
+			{
+				camera.velocity.y = -CAMERA_MAXSPEED;
+			}
 		}
-	}
 
-	if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) )
-	{
-		playerCamera.velocity.x -= CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.x > CAMERA_MAXSPEED )
+		if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) )
 		{
-			playerCamera.velocity.x = CAMERA_MAXSPEED;
+			camera.velocity.x -= CAMERA_ACCELERATION;
+			if ( camera.velocity.x > CAMERA_MAXSPEED )
+			{
+				camera.velocity.x = CAMERA_MAXSPEED;
+			}
 		}
-	}
-	else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) )
-	{
-		playerCamera.velocity.x += CAMERA_ACCELERATION;
-		if ( playerCamera.velocity.x < -CAMERA_MAXSPEED )
+		else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) )
 		{
-			playerCamera.velocity.x = -CAMERA_MAXSPEED;
+			camera.velocity.x += CAMERA_ACCELERATION;
+			if ( camera.velocity.x < -CAMERA_MAXSPEED )
+			{
+				camera.velocity.x = -CAMERA_MAXSPEED;
+			}
 		}
-	}
 
-	playerCamera.oldPosition = playerCamera.position;
-	playerCamera.position += playerCamera.velocity;
+		camera.oldPosition = camera.position;
+		camera.position += camera.velocity;
 
-	// Restrict the camera to the world bounds
-	if ( playerCamera.position.x + DISPLAY_WIDTH < 0.0f )
-	{
-		playerCamera.position.x = Background::PIXEL_WIDTH;
-	}
-	else if ( playerCamera.position.x > Background::PIXEL_WIDTH )
-	{
-		playerCamera.position.x = -DISPLAY_WIDTH;
-	}
+		// Restrict the camera to the world bounds
+		if ( camera.position.x + DISPLAY_WIDTH < 0.0f )
+			camera.position.x = Background::PIXEL_WIDTH;
+		else if ( camera.position.x > Background::PIXEL_WIDTH )
+			camera.position.x = -DISPLAY_WIDTH;
 
-	if ( playerCamera.position.y < 0.0f )
-	{
-		playerCamera.position.y = 0.0f;
-	}
-	else if ( playerCamera.position.y + DISPLAY_HEIGHT > Background::PIXEL_HEIGHT )
-	{
-		playerCamera.position.y = Background::PIXEL_HEIGHT - DISPLAY_HEIGHT;
-	}
+		if ( camera.position.y < 0.0f )
+			camera.position.y = 0.0f;
+		else if ( camera.position.y + DISPLAY_HEIGHT > Background::PIXEL_HEIGHT )
+			camera.position.y = Background::PIXEL_HEIGHT - DISPLAY_HEIGHT;
 
-	if ( playerCamera.velocity.x != 0 || playerCamera.velocity.y != 0 )
-	{
-		playerCamera.velocity -= ( playerCamera.velocity / CAMERA_FRICTION );
+		if ( camera.velocity.x != 0 || camera.velocity.y != 0 )
+			camera.velocity -= ( camera.velocity / CAMERA_FRICTION );
 	}
 
 	if ( world_ != nullptr )
-	{
 		world_->Tick();
-	}
 
 	GetEntityManager()->Tick();
 
@@ -188,21 +180,21 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-	//	backgroundManager_->Draw( playerCamera );
-	//	entityManager_->Draw( playerCamera );
+	if ( world_ != nullptr )
+		world_->Draw( camera );
+
+	entityManager_->Draw( camera );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
-	{
 		baseGuiPanel_->Draw();
-	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();
 
 	if ( world_ != nullptr )
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "DAY %lu\nH%02u:M%02u:S%02u\n",
+		snprintf( buf, sizeof( buf ), "DAY %u\nH%02u:M%02u:S%02u\n",
 		          world_->GetTotalDays(),
 		          world_->GetCurrentHour(),
 		          world_->GetCurrentMinute(),
@@ -211,8 +203,6 @@ void vc::GameMode::Draw()
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
-
-	GetEntityManager()->Draw( playerCamera );
 
 	vc::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
@@ -294,6 +284,8 @@ void vc::GameMode::NewGame( const char *path )
 	SaveGame( path );
 #endif
 
+	world_ = new World( "test", rand() % 255 );
+
 	Entity *testEntity = entityManager_->CreateEntity( "HumanCreature" );
 	testEntity->origin = hei::Vector2( 256, 256 );
 
@@ -302,6 +294,10 @@ void vc::GameMode::NewGame( const char *path )
 
 void vc::GameMode::SaveGame( const char *path )
 {
+	// No point saving if there's no world!
+	if ( world_ == nullptr )
+		return;
+
 	Serializer serializer( path, Serializer::Mode::WRITE );
 
 	//terrainManager_->Serialize( &serializer );
@@ -310,15 +306,16 @@ void vc::GameMode::SaveGame( const char *path )
 	// World state
 	world_->Serialize( &serializer );
 
-	// Write camera data
-	serializer.WriteCoordinate( playerCamera.position );
-	serializer.WriteInteger( static_cast< int >( playerCamera.movementMode ) );
+	camera.Serialize( &serializer );
 
 	Print( "Game saved to \"%s\"\n", path );
 }
 
 void vc::GameMode::RestoreGame( const char *path )
 {
+	if ( world_ != nullptr )
+		delete world_;
+
 	entityManager_->DestroyEntities();
 
 	Serializer serializer( path, Serializer::Mode::READ );
@@ -332,15 +329,17 @@ void vc::GameMode::RestoreGame( const char *path )
 	world_->Deserialize( &serializer );
 
 	// Now restore the camera data
-	playerCamera.position = serializer.ReadCoordinate();
-	playerCamera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
+	camera.position = serializer.ReadCoordinate();
+	camera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
+
+	entityManager_->SpawnEntities();
 
 	Print( "Game restored from \"%s\"\n", path );
 }
 
 hei::Vector2 vc::GameMode::MousePosToWorld( int x, int y ) const
 {
-	return hei::Vector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
+	return hei::Vector2( ( camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( camera.position.y - DISPLAY_HEIGHT / 2 ) + y );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -428,6 +427,19 @@ vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()-
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
 vc::Terrain *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
 vc::Background *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
+
+////////////////////////////////////////////////
+// Actions
+
+void vc::GameMode::RegisterActions()
+{
+	input::inputManager->PushAction( "Move Up", nullptr );
+	input::inputManager->PushAction( "Move Down", nullptr );
+	input::inputManager->PushAction( "Move Left", nullptr );
+	input::inputManager->PushAction( "Move Right", nullptr );
+	input::inputManager->PushAction( "Use", nullptr );
+	input::inputManager->PushAction( "Attack", nullptr );
+}
 
 #if 0
 void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )

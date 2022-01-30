@@ -16,7 +16,7 @@ namespace vc
 		~World();
 
 		void Tick();
-		void Draw();
+		void Draw( const Camera &camera );
 
 		void Deserialize( Serializer *read ) override;
 		void Serialize( Serializer *write ) override;

@@ -5,55 +5,123 @@
 
 #include <vector>
 #include <algorithm>
+#include <map>
 
-#include <plcore/pl_math_vector.h>
+#include <allegro5/keycodes.h>
 
 #include "Input.h"
 #include "Action.h"
 
-namespace vc::input
+namespace ct::input
 {
 	class InputManager
 	{
-	public:
-		InputManager() = default;
-		~InputManager() = default;
+		PUBLIC InputManager() = default;
+		PUBLIC ~InputManager() = default;
 
-		Action *PushAction( const char *description, ActionCallbackFunction callbackFunction );
+		PUBLIC inline State GetKeyState( int key ) const { return keys_[ key ]; }
+		PUBLIC inline State GetMouseButtonState( int button ) const { return mouseButtons_[ button ]; }
 
-		bool IsActionPressed( ActionSlot actionSlot ) const;
-
-	private:
-		std::vector< Action > actions_;
-		std::map< Button, ActionSlot > buttonToActionSlot_;
-
-		struct Controller
+		PUBLIC inline bool IsKeyDown( int key ) const
 		{
-			Controller( unsigned int slot );
+			return ( keys_[ key ] == State::PRESSED || keys_[ key ] == State::DOWN );
+		}
 
-			static constexpr unsigned int MAX_CONTROLLER_BUTTONS = 16;
-			bool buttonStates[ MAX_CONTROLLER_BUTTONS ];
+		PUBLIC inline bool IsMouseButtonDown( int button ) const
+		{
+			return ( mouseButtons_[ button ] == State::PRESSED || mouseButtons_[ button ] == State::DOWN );
+		}
 
-			static constexpr unsigned int MAX_CONTROLLER_AXIS = 6;
-			hei::Vector2 axisStates[ MAX_CONTROLLER_AXIS ];
+		PUBLIC bool HandleControllerEvent( unsigned int slot, int button, bool buttonUp );
+		PUBLIC bool HandleKeyboardEvent( int key, bool keyUp );
+		PUBLIC bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 
-			void *handle;
-		};
+		// Called at the end of a frame; update the state from PRESSED to DOWN
+		PUBLIC inline void RolloverStates()
+		{
+			for ( auto i : keys_ )
+			{
+				if ( i != State::PRESSED )
+				{
+					continue;
+				}
 
-		std::vector< Controller > controllers_;
+				i = State::DOWN;
+			}
 
-		inline Controller *GetControllerForSlot( unsigned int slot )
+			for ( auto i : mouseButtons_ )
+			{
+				if ( i != State::PRESSED )
+				{
+					continue;
+				}
+
+				i = State::DOWN;
+			}
+
+			for ( auto i : controllers_ )
+			{
+				for ( unsigned int j = 0; j < Controller::MAX_CONTROLLER_BUTTONS; ++j )
+				{
+					if ( i.buttonStates[ j ] != State::PRESSED )
+					{
+						continue;
+					}
+
+					i.buttonStates[ j ] = State::DOWN;
+				}
+			}
+		}
+
+		PUBLIC inline void GetMousePosition( int *x, int *y ) const
+		{
+			*x = mx_;
+			*y = my_;
+		}
+
+		PUBLIC inline void GetMouseDelta( int *x, int *y ) const
+		{
+			*x = dx_;
+			*y = dy_;
+		}
+
+		PUBLIC inline int GetMouseWheel() const
+		{
+			return mz_;
+		}
+
+		// Mouse coordinates, xy - z is wheel
+		PRIVATE int mx_{ 0 }, my_{ 0 }, mz_{ 0 };
+		PRIVATE int ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
+		PRIVATE int dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
+		PRIVATE std::array< State, MAX_MOUSE_BUTTONS > mouseButtons_;
+
+		PRIVATE std::array< State, ALLEGRO_KEY_MAX > keys_;
+
+		// Actions
+		PUBLIC Action *PushAction( const char *description );
+		PRIVATE std::vector< Action > actions_;
+
+		PUBLIC static constexpr unsigned int MAX_CONTROLLERS = 4;
+
+		PRIVATE std::array< Controller, MAX_CONTROLLERS > controllers_;
+
+		PRIVATE inline Controller *GetControllerForSlot( unsigned int slot )
 		{
 			if ( controllers_.empty() )
+			{
 				return nullptr;
+			}
 
 			// If the controller doesn't exist, fallback to the first
 			if ( slot >= controllers_.size() )
+			{
 				slot = 0;
+			}
 
 			return &controllers_[ slot ];
 		}
 	};
 
 	extern InputManager *inputManager;
-}// namespace vc::input
+}// namespace ct::input

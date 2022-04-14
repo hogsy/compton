@@ -8,7 +8,7 @@
 #include "Sprite.h"
 #include "SpriteSheet.h"
 
-namespace vc
+namespace ct
 {
 	class SpriteAnimator
 	{

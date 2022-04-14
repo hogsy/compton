@@ -12,7 +12,7 @@ public:                                              \
 	~CLASSNAME();                                    \
 	virtual const char *GetClassIdentifier() const override { return #CLASSNAME; }
 
-namespace vc
+namespace ct
 {
 	class Serializer;
 	class Entity
@@ -37,6 +37,8 @@ namespace vc
 		hei::Vector2 velocity{ 0.0f, 0.0f };
 		hei::Vector2 bounds{ 0.0f, 0.0f };
 		hei::Vector2 origin{ 0.0f, 0.0f };
+
+		float z_{ 0.0f };
 
 	protected:
 		int myHealth{ 100 };

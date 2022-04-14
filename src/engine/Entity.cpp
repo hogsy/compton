@@ -5,29 +5,28 @@
 #include "Entity.h"
 #include "Serializer.h"
 
-vc::Entity::Entity() = default;
-vc::Entity::~Entity() = default;
+ct::Entity::Entity() = default;
+ct::Entity::~Entity() = default;
 
 /**
  * Called if the entity is spawning anew.
  */
-void vc::Entity::Spawn()
-{
-	origin = velocity = bounds = pl_vecOrigin2;
-}
-
-void vc::Entity::Tick()
+void ct::Entity::Spawn()
 {
 }
 
-void vc::Entity::Draw( const Camera &camera )
+void ct::Entity::Tick()
+{
+}
+
+void ct::Entity::Draw( const Camera &camera )
 {
 }
 
 /**
  * Loading from pre-existing dataset.
  */
-void vc::Entity::Deserialize( Serializer *read )
+void ct::Entity::Deserialize( Serializer *read )
 {
 	origin   = read->ReadCoordinate();
 	velocity = read->ReadCoordinate();
@@ -37,7 +36,7 @@ void vc::Entity::Deserialize( Serializer *read )
 /**
  * Saving.
  */
-void vc::Entity::Serialize( Serializer *write )
+void ct::Entity::Serialize( Serializer *write )
 {
 	write->WriteCoordinate( origin );
 	write->WriteCoordinate( velocity );
@@ -47,7 +46,7 @@ void vc::Entity::Serialize( Serializer *write )
 /**
  * Determine if we should display this particular entity or not.
  */
-bool vc::Entity::ShouldDraw( const vc::Camera &camera ) const
+bool ct::Entity::ShouldDraw( const ct::Camera &camera ) const
 {
 	if ( origin.x - bounds.x > camera.position.x + DISPLAY_WIDTH )
 	{

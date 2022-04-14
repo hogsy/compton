@@ -5,7 +5,7 @@
 #include "SpriteManager.h"
 #include "Entities/BaseCreature.h"
 
-namespace vc::game::ds
+namespace ct::game::ds
 {
 	class HumanCreature : public BaseCreature
 	{
@@ -19,8 +19,8 @@ namespace vc::game::ds
 	};
 }// namespace vc::game::ds
 
-using namespace vc;
-using namespace vc::game;
+using namespace ct;
+using namespace ct::game;
 
 REGISTER_ENTITY( HumanCreature, ds::HumanCreature )
 
@@ -31,7 +31,7 @@ void ds::HumanCreature::Precache()
 {
 	SuperClass::Precache();
 
-	vc::spriteManager->GetSpriteSheet( "sprites/creatures/human/human_sprites.sdf" );
+	ct::spriteManager->GetSpriteSheet( "sprites/creatures/human/human_sprites.sdf" );
 
 	CacheAnimation( "sprites/creatures/human/human.ani" );
 }
@@ -54,7 +54,6 @@ static const char *animations[] = {
 		"human_idle_sw",
 		"human_idle_w",
 		"human_idle_nw",
-
 		"human_run_n",
 		"human_run_ne",
 		"human_run_e",

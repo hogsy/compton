@@ -4,28 +4,28 @@
 #include "Compton.h"
 #include "BaseAnimated.h"
 
-REGISTER_ENTITY( BaseAnimated, vc::BaseAnimated )
+REGISTER_ENTITY( BaseAnimated, ct::BaseAnimated )
 
-void vc::BaseAnimated::Tick()
+void ct::BaseAnimated::Tick()
 {
 	SuperClass::Tick();
 
 	animator_.Tick();
 }
 
-void vc::BaseAnimated::Draw( const vc::Camera &camera )
+void ct::BaseAnimated::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
 	animator_.Draw( origin - camera.position );
 }
 
-void vc::BaseAnimated::CacheAnimation( const char *path )
+void ct::BaseAnimated::CacheAnimation( const char *path )
 {
 	animator_.LoadFile( path );
 }
 
-void vc::BaseAnimated::SetAnimation( const char *name )
+void ct::BaseAnimated::SetAnimation( const char *name )
 {
 	animator_.SetAnimation( name );
 }

@@ -5,7 +5,9 @@
 
 #include "Sprite.h"
 
-namespace vc
+#include <map>
+
+namespace ct
 {
 	class SpriteSheet
 	{

@@ -5,7 +5,7 @@
 
 #include "../shared.h"
 
-namespace vc
+namespace ct
 {
 	class BitmapFont
 	{

@@ -8,7 +8,7 @@
 
 #include "Random.h"
 
-int vc::random::GenerateRandomInteger( int min, int max )
+int ct::random::GenerateRandomInteger( int min, int max )
 {
 	static std::random_device       randomDevice;
 	static std::mt19937             generator( randomDevice() );
@@ -16,7 +16,7 @@ int vc::random::GenerateRandomInteger( int min, int max )
 	return distribution( generator );
 }
 
-const char *vc::random::GenerateRandomName( char *buffer, size_t size )
+const char *ct::random::GenerateRandomName( char *buffer, size_t size )
 {
 	static const char *segments[] = {
 			"aa",
@@ -60,7 +60,7 @@ const char *vc::random::GenerateRandomName( char *buffer, size_t size )
 	return buffer;
 }
 
-int vc::random::PerlinNoise::permutation[] = {
+int ct::random::PerlinNoise::permutation[] = {
 		151, 160, 137, 91, 90, 15,
 		131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
 		190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33,
@@ -75,7 +75,7 @@ int vc::random::PerlinNoise::permutation[] = {
 		49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
 		138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180 };
 
-vc::random::PerlinNoise::PerlinNoise()
+ct::random::PerlinNoise::PerlinNoise()
 {
 	for ( unsigned int i = 0; i < 256; ++i )
 	{
@@ -83,7 +83,7 @@ vc::random::PerlinNoise::PerlinNoise()
 	}
 }
 
-vc::random::PerlinNoise::PerlinNoise( int seed )
+ct::random::PerlinNoise::PerlinNoise( int seed )
 {
 	srand( seed );
 	for ( unsigned int i = 0; i < 256; ++i )
@@ -96,7 +96,7 @@ vc::random::PerlinNoise::PerlinNoise( int seed )
  * Perlin noise generation, based on 'Improved Noise'.
  * https://mrl.nyu.edu/~perlin/noise/
  */
-double vc::random::PerlinNoise::Noise( double x, double y, double z )
+double ct::random::PerlinNoise::Noise( double x, double y, double z )
 {
 	// Find unit cube that contains point
 	int X = ( int ) floor( x ) & 255;
@@ -124,17 +124,17 @@ double vc::random::PerlinNoise::Noise( double x, double y, double z )
 	                         Grad( p[ BB + 1 ], x - 1, y - 1, z - 1 ) ) ) );
 }
 
-double vc::random::PerlinNoise::Fade( double t )
+double ct::random::PerlinNoise::Fade( double t )
 {
 	return t * t * t * ( t * ( t * 6 - 15 ) + 10 );
 }
 
-double vc::random::PerlinNoise::Lerp( double t, double a, double b )
+double ct::random::PerlinNoise::Lerp( double t, double a, double b )
 {
 	return a + t * ( b - a );
 }
 
-double vc::random::PerlinNoise::Grad( int hash, double x, double y, double z )
+double ct::random::PerlinNoise::Grad( int hash, double x, double y, double z )
 {
 	// Convert lo 4 bits of hash code into 12 gradient directions
 	int    h = hash & 15;

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "../shared.h"
+
 #include <plcore/pl_console.h>
 
 #include <algorithm>
@@ -15,11 +17,24 @@ extern int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 extern int VC_LOG_WAR;// warning
 extern int VC_LOG_ERR;// error (kills application)
 
+#ifdef PUBLIC
+#	undef PUBLIC
+#endif
+#define PUBLIC public:
+#ifdef PROTECTED
+#	undef PROTECTED
+#endif
+#define PROTECTED protected:
+#ifdef PRIVATE
+#	undef PRIVATE
+#endif
+#define PRIVATE private:
+
 #define VC_LOG      "debug"
 #define VC_TITLE    "Compton"
 #define VC_CODENAME "SAUSAGE"
 
-#ifdef DEBUG_BUILD
+#if !defined( NDEBUG )
 #	define WINDOW_TITLE VC_TITLE " [DEBUG]"
 #else
 #	define WINDOW_TITLE VC_TITLE
@@ -40,11 +55,5 @@ extern int VC_LOG_ERR;// error (kills application)
 	}
 #define DebugMsg( ... ) \
 	PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
-
-#if defined( COMPTON_ENABLE_ASSERTS )
-#	define SgAssert( A, ... ) assert( ( __VA_ARGS__, A ) )
-#else
-#	define SgAssert( A, ... )
-#endif
 
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;

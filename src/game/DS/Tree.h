@@ -5,7 +5,7 @@
 
 #include "Entity.h"
 
-namespace vc
+namespace ct::game::ds
 {
 	class Tree : public Entity
 	{
@@ -13,7 +13,11 @@ namespace vc
 
 	public:
 		void Spawn() override;
+		void Precache() override;
 
 		void Draw( const Camera &camera ) override;
+
+	private:
+		const Sprite *sprite_{ nullptr };
 	};
 }// namespace vc

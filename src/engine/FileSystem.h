@@ -5,7 +5,7 @@
 
 #include <plcore/pl_filesystem.h>
 
-namespace vc::fs
+namespace ct::fs
 {
 	char *LoadFileIntoBuffer( const char *path, unsigned int *length );
 }// namespace vc::fs

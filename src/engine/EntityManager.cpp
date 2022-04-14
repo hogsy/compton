@@ -7,15 +7,15 @@
 #include "Entity.h"
 #include "Serializer.h"
 
-std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
+std::map< std::string, ct::EntityManager::EntityConstructorFunction > ct::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
 
-vc::EntityManager::EntityVector vc::EntityManager::entities;
-vc::EntityManager::EntityVector vc::EntityManager::destructionQueue;
+ct::EntityManager::EntityVector ct::EntityManager::entities;
+ct::EntityManager::EntityVector ct::EntityManager::destructionQueue;
 
-vc::EntityManager::EntityManager() = default;
-vc::EntityManager::~EntityManager() = default;
+ct::EntityManager::EntityManager() = default;
+ct::EntityManager::~EntityManager() = default;
 
-vc::Entity *vc::EntityManager::CreateEntity( const std::string &className )
+ct::Entity *ct::EntityManager::CreateEntity( const std::string &className )
 {
 	auto i = entityClasses.find( className );
 	if ( i == entityClasses.end() )
@@ -30,7 +30,7 @@ vc::Entity *vc::EntityManager::CreateEntity( const std::string &className )
 	return entity;
 }
 
-void vc::EntityManager::DestroyEntity( Entity *entity )
+void ct::EntityManager::DestroyEntity( Entity *entity )
 {
 	// Ensure it's not already queued for destruction
 	if ( std::find( destructionQueue.begin(), destructionQueue.end(), entity ) != destructionQueue.end() )
@@ -43,7 +43,7 @@ void vc::EntityManager::DestroyEntity( Entity *entity )
 	destructionQueue.push_back( entity );
 }
 
-void vc::EntityManager::DestroyEntities()
+void ct::EntityManager::DestroyEntities()
 {
 	for ( auto &entity : entities )
 		delete entity;
@@ -52,7 +52,7 @@ void vc::EntityManager::DestroyEntities()
 	entities.clear();
 }
 
-void vc::EntityManager::Tick()
+void ct::EntityManager::Tick()
 {
 	START_MEASURE();
 
@@ -71,17 +71,20 @@ void vc::EntityManager::Tick()
 	END_MEASURE();
 }
 
-void vc::EntityManager::Draw( const Camera &camera )
+void ct::EntityManager::Draw( const Camera &camera )
 {
 	START_MEASURE();
 
+	std::map< float, Entity * > entityDrawOrder;
 	for ( const auto &entity : entities )
-		entity->Draw( camera );
+		entityDrawOrder.emplace( entity->z_ ? entity->z_ : entity->origin.y, entity );
+	for ( const auto &entity : entityDrawOrder )
+		entity.second->Draw( camera );
 
 	END_MEASURE();
 }
 
-void vc::EntityManager::SerializeEntities( Serializer *write )
+void ct::EntityManager::SerializeEntities( Serializer *write )
 {
 	write->WriteInteger( entities.size() );
 
@@ -93,7 +96,7 @@ void vc::EntityManager::SerializeEntities( Serializer *write )
 	}
 }
 
-void vc::EntityManager::DeserializeEntities( Serializer *read )
+void ct::EntityManager::DeserializeEntities( Serializer *read )
 {
 	unsigned int numEntities = read->ReadInteger();
 	for ( unsigned int i = 0; i < numEntities; ++i )
@@ -111,7 +114,7 @@ void vc::EntityManager::DeserializeEntities( Serializer *read )
 	}
 }
 
-void vc::EntityManager::SpawnEntities()
+void ct::EntityManager::SpawnEntities()
 {
 	for ( auto &entity : entities )
 		entity->Spawn();
@@ -121,7 +124,7 @@ void vc::EntityManager::SpawnEntities()
  * Interate over each entity, create it and
  * then precache it before then deleting it.
  */
-void vc::EntityManager::PrecacheEntities()
+void ct::EntityManager::PrecacheEntities()
 {
 	Print( "Precaching for %lu entities...\n", entityClasses.size() );
 	for ( auto i : entityClasses )
@@ -132,7 +135,7 @@ void vc::EntityManager::PrecacheEntities()
 	}
 }
 
-vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const char *className, const vc::EntityManager::EntitySlot *curSlot ) const
+ct::EntityManager::EntitySlot ct::EntityManager::FindEntityByClassName( const char *className, const ct::EntityManager::EntitySlot *curSlot ) const
 {
 	// Allow us to iterate from a previous position if desired
 	unsigned int i = 0;
@@ -152,13 +155,13 @@ vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const ch
 	return EntitySlot( nullptr, 0 );
 }
 
-vc::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
+ct::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
 	: myIdentifier( identifier )
 {
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;
 }
 
-vc::EntityManager::EntityClassRegistration::~EntityClassRegistration()
+ct::EntityManager::EntityClassRegistration::~EntityClassRegistration()
 {
 	EntityManager::entityClasses.erase( myIdentifier );
 }

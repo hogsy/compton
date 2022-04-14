@@ -1,27 +1,13 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "Game.h"
 #include "BaseCharacter.h"
 #include "Terrain.h"
+#include "Input/InputManager.h"
 
-namespace vc
+namespace ct
 {
 	/*
 	enum class CharacterDirective {
@@ -38,13 +24,15 @@ namespace vc
 	 */
 }// namespace vc
 
-REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
+REGISTER_ENTITY( BaseCharacter, ct::BaseCharacter )
 
-void vc::BaseCharacter::Spawn()
+void ct::BaseCharacter::Spawn()
 {
 	SuperClass::Spawn();
 
 	// Cache the sprites we need
+	CacheAnimation( "sprites/creatures/human/human.ani" );
+	SetAnimation( "human_idle_s" );
 
 	char firstName[ 8 ], lastName[ 8 ];
 	random::GenerateRandomName( firstName, sizeof( firstName ) );
@@ -52,21 +40,21 @@ void vc::BaseCharacter::Spawn()
 	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation_ ) );
 }
 
-void vc::BaseCharacter::Deserialize( vc::Serializer *read )
+void ct::BaseCharacter::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
 	read->ReadString( name, sizeof( name ) );
 }
 
-void vc::BaseCharacter::Serialize( vc::Serializer *write )
+void ct::BaseCharacter::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
 
 	write->WriteString( name );
 }
 
-void vc::BaseCharacter::Draw( const Camera &camera )
+void ct::BaseCharacter::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
 
@@ -84,10 +72,11 @@ void vc::BaseCharacter::Draw( const Camera &camera )
 	//al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, name );
 }
 
-void vc::BaseCharacter::Tick()
+void ct::BaseCharacter::Tick()
 {
 	SuperClass::Tick();
 
+#if 0
 	Terrain *terrainManager = App::GetGameMode()->GetTerrainManager();
 	if ( terrainManager == nullptr )
 	{
@@ -127,4 +116,5 @@ void vc::BaseCharacter::Tick()
 	velocity = PlClampVector2( &velocity, -1.0f, 1.0f );
 
 	origin += velocity;
+#endif
 }

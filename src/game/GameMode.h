@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -14,7 +14,7 @@
 
 #include "Input/Action.h"
 
-namespace vc
+namespace ct
 {
 	class PlayerManager;
 	class Terrain;
@@ -53,11 +53,10 @@ namespace vc
 			ACTIVE,
 			PAUSED,
 		};
-		GameState GetState() const { return gameState; }
+		GameState GetState() const { return gameState_; }
 
 		static PlayerManager *GetPlayerManager();
 		static EntityManager *GetEntityManager();
-		static Terrain       *GetTerrainManager();
 		static Background    *GetBackgroundManager();
 
 		unsigned int GetGameSpeed() const { return gameSpeed_; }
@@ -65,7 +64,7 @@ namespace vc
 	private:
 		Camera camera;
 
-		GameState gameState{ GameState::ACTIVE };
+		GameState gameState_{ GameState::ACTIVE };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
 		GUIPanel      *baseGuiPanel_{ nullptr };
@@ -75,7 +74,6 @@ namespace vc
 		EntityManager *entityManager_;
 
 		SpriteSheet *terrainSheet;
-		Terrain     *terrainManager_;
 		Background  *backgroundManager_;
 		World       *world_{ nullptr };
 
@@ -95,9 +93,14 @@ namespace vc
 
 			ACTION_USE,
 			ACTION_ATTACK,
+
+			MAX_ACTIONS
 		};
 
 	public:
 		void RegisterActions();
+
+	private:
+		std::array< input::Action *, MAX_ACTIONS > actions_;
 	};
 }// namespace vc

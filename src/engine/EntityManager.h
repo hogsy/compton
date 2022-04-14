@@ -5,7 +5,7 @@
 
 #include "Camera.h"
 
-namespace vc
+namespace ct
 {
 	class Serializer;
 	class Entity;
@@ -19,7 +19,7 @@ namespace vc
 		EntityManager();
 		~EntityManager();
 
-		vc::Entity *CreateEntity( const std::string &className );
+		ct::Entity *CreateEntity( const std::string &className );
 		void        DestroyEntity( Entity *entity );
 		void        DestroyEntities();
 
@@ -34,8 +34,8 @@ namespace vc
 
 		struct EntitySlot
 		{
-			EntitySlot( vc::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
-			vc::Entity  *entity;
+			EntitySlot( ct::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
+			ct::Entity  *entity;
 			unsigned int num;
 		};
 		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
@@ -57,6 +57,6 @@ namespace vc
 }// namespace vc
 
 #define REGISTER_ENTITY( NAME, CLASS )                                                           \
-	static vc::Entity *NAME##_make() { return new CLASS(); }                                     \
-	static vc::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
+	static ct::Entity *NAME##_make() { return new CLASS(); }                                     \
+	static ct::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
 	_reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)

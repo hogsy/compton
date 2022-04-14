@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 /*--------------------------------------------------------------------------------------
  * BaseCreature.cpp
  *  Foundation of everything with intelligence.
@@ -25,7 +10,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Random.h"
 #include "Serializer.h"
 
-vc::BaseCreature::BaseCreature()
+ct::BaseCreature::BaseCreature()
 {
 	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
 	{
@@ -35,9 +20,9 @@ vc::BaseCreature::BaseCreature()
 	}
 }
 
-vc::BaseCreature::~BaseCreature() {}
+ct::BaseCreature::~BaseCreature() {}
 
-void vc::BaseCreature::Spawn()
+void ct::BaseCreature::Spawn()
 {
 	SuperClass::Spawn();
 
@@ -61,7 +46,7 @@ void vc::BaseCreature::Spawn()
 /**
  * Determines whether or not this character can breed with the other.
  */
-bool vc::BaseCreature::CanBreed( BaseCreature *other )
+bool ct::BaseCreature::CanBreed( BaseCreature *other )
 {
 	// Can't get pregnant if we're already pregnant!
 	if ( isPregnant_ || other->isPregnant_ )
@@ -91,7 +76,7 @@ bool vc::BaseCreature::CanBreed( BaseCreature *other )
 	return false;
 }
 
-void vc::BaseCreature::Deserialize( vc::Serializer *read )
+void ct::BaseCreature::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
@@ -107,7 +92,7 @@ void vc::BaseCreature::Deserialize( vc::Serializer *read )
 	sex_ = static_cast< Sex >( read->ReadInteger() );
 }
 
-void vc::BaseCreature::Serialize( vc::Serializer *write )
+void ct::BaseCreature::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
 
@@ -123,7 +108,7 @@ void vc::BaseCreature::Serialize( vc::Serializer *write )
 	write->WriteInteger( static_cast< int >( sex_ ) );
 }
 
-void vc::BaseCreature::Draw( const vc::Camera &camera )
+void ct::BaseCreature::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
@@ -136,7 +121,7 @@ void vc::BaseCreature::Draw( const vc::Camera &camera )
 	//al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );
 }
 
-void vc::BaseCreature::Tick()
+void ct::BaseCreature::Tick()
 {
 	SuperClass::Tick();
 

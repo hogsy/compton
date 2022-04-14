@@ -3,7 +3,7 @@
 
 #include "BitmapFont.h"
 
-vc::BitmapFont::~BitmapFont()
+ct::BitmapFont::~BitmapFont()
 {
 #if 1// Need to jog my memory to see if this is even necessary...
 	for ( auto &i : glyphs_ )
@@ -17,7 +17,7 @@ vc::BitmapFont::~BitmapFont()
 #endif
 }
 
-bool vc::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, const char *path )
+bool ct::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, const char *path )
 {
 	PLImage *image = PlLoadImage( path );
 	if ( image == nullptr )
@@ -133,7 +133,7 @@ bool vc::BitmapFont::LoadFromPSF( const char *path )
 }
 #endif
 
-void vc::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour )
+void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour )
 {
 	if ( c >= glyphs_.size() )
 	{
@@ -161,7 +161,7 @@ void vc::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Co
 	}
 }
 
-void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow )
+void ct::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow )
 {
 	if ( shadow )
 	{

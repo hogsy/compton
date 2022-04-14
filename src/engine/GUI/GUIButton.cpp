@@ -4,17 +4,17 @@
 #include "Compton.h"
 #include "GUIButton.h"
 
-vc::GUIButton::GUIButton( vc::GUIPanel *parent, const char *label, int x, int y, int w, int h )
+ct::GUIButton::GUIButton( ct::GUIPanel *parent, const char *label, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
 {
 	strncpy( myLabel, label, sizeof( myLabel ) );
 }
 
-vc::GUIButton::~GUIButton()
+ct::GUIButton::~GUIButton()
 {
 }
 
-void vc::GUIButton::Tick()
+void ct::GUIButton::Tick()
 {
 	SuperClass::Tick();
 

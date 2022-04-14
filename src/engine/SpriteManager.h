@@ -8,7 +8,7 @@
 #include "Sprite.h"
 #include "SpriteSheet.h"
 
-namespace vc
+namespace ct
 {
 	class SpriteManager
 	{
@@ -21,20 +21,13 @@ namespace vc
 		enum
 		{
 			SPRITE_GROUP_GUI,
-			SPRITE_GROUP_CHARACTERS,
-			SPRITE_GROUP_BACKGROUND,
+			SPRITE_GROUP_ENTITY,
 
 			MAX_SPRITE_GROUPS
 		};
 
-		enum
-		{
-			COLOUR_GROUP_DAWN,
-			COLOUR_GROUP_DAY,
-		};
-
 		const Sprite *GetSprite( const char *path, unsigned int group );
-		void          DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest = false );
+		void DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest = false );
 
 		const SpriteSheet *GetSpriteSheet( const char *path );
 
@@ -47,4 +40,4 @@ namespace vc
 
 		std::map< std::string, SpriteSheet * > spriteSheets_;
 	};
-}// namespace vc
+}// namespace ct

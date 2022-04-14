@@ -1,11 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
+#include "Compton.h"
 #include "Action.h"
+#include "InputManager.h"
 
-using namespace vc;
+using namespace ct;
 
-input::Action::Action( const std::string &description, ActionCallbackFunction callbackFunction )
-	: description_( description ), callbackFunction_( callbackFunction )
+bool input::Action::IsPressed()
 {
+	for ( auto i : keyboardBindings_ )
+	{
+		if ( inputManager->GetKeyState( i ) != State::PRESSED )
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
 }

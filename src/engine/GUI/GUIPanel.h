@@ -7,7 +7,7 @@
 
 struct ALLEGRO_BITMAP;
 
-namespace vc
+namespace ct
 {
 	class SpriteSheet;
 	class GUIStyleSheet;

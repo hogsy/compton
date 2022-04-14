@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -7,7 +7,7 @@
 
 #include "Terrain.h"
 
-namespace vc
+namespace ct
 {
 	class World : public ISerializable
 	{
@@ -20,6 +20,8 @@ namespace vc
 
 		void Deserialize( Serializer *read ) override;
 		void Serialize( Serializer *write ) override;
+
+		void Generate( unsigned int seed = 0 );
 
 		inline unsigned int GetTotalSeconds() const { return numSeconds_; }
 		inline unsigned int GetTotalMinutes() const { return numSeconds_ / 60; }
@@ -77,8 +79,6 @@ namespace vc
 	private:
 		struct Territory
 		{
-			Territory( const hei::Vector2 &origin );
-
 			std::string  name{ "unnamed" };
 			hei::Vector2 origin{ 0.0f, 0.0f };
 			PLGPolygon  *border{ nullptr };
@@ -89,5 +89,10 @@ namespace vc
 		unsigned int seed_{ 0 };      // Randomisation seed
 
 		std::string name_;
+
+		Terrain terrain_;
+
+	public:
+		inline const Terrain *GetTerrain() const { return &terrain_; }
 	};
 }// namespace vc

@@ -9,16 +9,16 @@
 #include "EntityManager.h"
 #include "BitmapFont.h"
 
-vc::SpriteManager *vc::spriteManager = nullptr;
-vc::input::InputManager *vc::input::inputManager = nullptr;
+ct::SpriteManager *ct::spriteManager = nullptr;
+ct::input::InputManager *ct::input::inputManager = nullptr;
 
 static double oldTime;
 
 ////////////////////////////////
 // App Class
 
-static vc::App *appInstance;
-vc::App *vc::GetApp()
+static ct::App *appInstance;
+ct::App *ct::GetApp()
 {
 	return appInstance;
 }
@@ -54,7 +54,7 @@ int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 int VC_LOG_WAR;// warning
 int VC_LOG_ERR;// error (kills application)
 
-vc::App::App( int argc, char **argv )
+ct::App::App( int argc, char **argv )
 {
 	// Initialize the platform library
 
@@ -167,13 +167,11 @@ vc::App::App( int argc, char **argv )
 
 	input::inputManager = new input::InputManager();
 	spriteManager = new SpriteManager( argc, argv );
-
-	running = true;
 }
 
-vc::App::~App() = default;
+ct::App::~App() = default;
 
-[[noreturn]] void vc::App::Loop()
+[[noreturn]] void ct::App::Loop()
 {
 	while ( true )
 	{
@@ -185,7 +183,7 @@ vc::App::~App() = default;
 	}
 }
 
-ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
+ALLEGRO_SAMPLE *ct::App::CacheSample( const char *path )
 {
 	auto i = samples.find( path );
 	if ( i != samples.end() )
@@ -202,7 +200,7 @@ ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 	return sample;
 }
 
-void vc::App::ShowMessageBox( const char *title, const char *message, bool error )
+void ct::App::ShowMessageBox( const char *title, const char *message, bool error )
 {
 	al_show_native_message_box(
 			nullptr,
@@ -213,7 +211,7 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 			error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
 }
 
-void vc::App::Shutdown()
+void ct::App::Shutdown()
 {
 	delete gameMode;
 	delete spriteManager;
@@ -248,7 +246,7 @@ void vc::App::Shutdown()
 
 // Display
 
-void vc::App::InitializeDisplay()
+void ct::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
@@ -291,7 +289,7 @@ void vc::App::InitializeDisplay()
 	redraw = true;
 }
 
-void vc::App::Draw()
+void ct::App::Draw()
 {
 	if ( !redraw )
 		return;
@@ -311,7 +309,9 @@ void vc::App::Draw()
 	render::ClearDisplay();
 
 	if ( gameMode != nullptr )
+	{
 		gameMode->Draw();
+	}
 
 	// Draw our debug data
 	{
@@ -357,7 +357,7 @@ void vc::App::Draw()
 
 // Events
 
-void vc::App::InitializeEvents()
+void ct::App::InitializeEvents()
 {
 	Print( "Initialize events...\n" );
 
@@ -384,18 +384,17 @@ void vc::App::InitializeEvents()
 	al_register_event_source( alEventQueue, al_get_mouse_event_source() );
 
 	al_start_timer( alTimer );
-
-	// Clear out key states
-	memset( keyStatus, 0, sizeof( bool ) * ALLEGRO_KEY_MAX );
 }
 
-void vc::App::InitializeGame()
+void ct::App::InitializeGame()
 {
 	gameMode = new GameMode();
 	gameMode->RegisterActions();
+
+	gameMode->NewGame( "test" );
 }
 
-void vc::App::Tick()
+void ct::App::Tick()
 {
 	START_MEASURE();
 
@@ -404,10 +403,6 @@ void vc::App::Tick()
 
 	al_get_mouse_state( &mouseState );
 	al_get_keyboard_state( &keyboardState );
-
-	mouseStatus[ MOUSE_BUTTON_LEFT ] = ( mouseState.buttons & 1 ) != 0;
-	mouseStatus[ MOUSE_BUTTON_RIGHT ] = ( mouseState.buttons & 2 ) != 0;
-	mouseStatus[ MOUSE_BUTTON_MIDDLE ] = ( mouseState.buttons & 3 ) != 0;
 
 	switch ( event.type )
 	{
@@ -435,57 +430,48 @@ void vc::App::Tick()
 			{
 				gameMode->Tick();
 			}
+			input::inputManager->RolloverStates();
 			redraw = true;
 			break;
 
 		case ALLEGRO_EVENT_DISPLAY_CLOSE:
-			running = false;
+			Shutdown();
 			break;
+
+		case ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
+		case ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
+		{
+
+			break;
+		}
 
 		case ALLEGRO_EVENT_MOUSE_AXES:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 		{
-			if ( gameMode == nullptr )
-			{
-				break;
-			}
-
-			InputMouseButton button = MOUSE_BUTTON_LEFT;
+			input::InputMouseButton button = input::MOUSE_BUTTON_LEFT;
 			if ( event.mouse.button & 1 )
 			{
-				button = MOUSE_BUTTON_LEFT;
+				button = input::MOUSE_BUTTON_LEFT;
 			}
 			else if ( event.mouse.button & 2 )
 			{
-				button = MOUSE_BUTTON_RIGHT;
+				button = input::MOUSE_BUTTON_RIGHT;
 			}
 			else if ( event.mouse.button & 3 )
 			{
-				button = MOUSE_BUTTON_MIDDLE;
+				button = input::MOUSE_BUTTON_MIDDLE;
 			}
 
 			int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
 			int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
-			gameMode->HandleMouseEvent( aX, aY, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
+			input::inputManager->HandleMouseEvent( aX, aY, event.mouse.z, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
 		}
 
 		case ALLEGRO_EVENT_KEY_DOWN:
-			if ( gameMode == nullptr )
-			{
-				break;
-			}
-			keyStatus[ event.keyboard.keycode ] = true;
-			gameMode->HandleKeyboardEvent( event.keyboard.keycode, false );
-			break;
 		case ALLEGRO_EVENT_KEY_UP:
-			if ( gameMode == nullptr )
-			{
-				break;
-			}
-			keyStatus[ event.keyboard.keycode ] = false;
-			gameMode->HandleKeyboardEvent( event.keyboard.keycode, true );
+			input::inputManager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
 			break;
 	}
 
@@ -497,35 +483,7 @@ void vc::App::Tick()
 	END_MEASURE();
 }
 
-/**
- * Returns cursor position, accounting for scaled size.
- */
-void vc::App::GetCursorPosition( int *dX, int *dY ) const
-{
-	ALLEGRO_MOUSE_STATE state;
-	al_get_mouse_state( &state );
-
-	*dX = state.x * DISPLAY_WIDTH / windowWidth;
-	*dY = state.y * DISPLAY_HEIGHT / windowHeight;
-}
-
-bool vc::App::GetKeyState( int key ) const
-{
-	assert( key > 0 && key < ALLEGRO_KEY_MAX );
-	return keyStatus[ key ];
-}
-
-bool vc::App::GetMouseState( int *dX, int *dY, InputMouseButton button )
-{
-	if ( dX != nullptr && dY != nullptr )
-	{
-		GetCursorPosition( dX, dY );
-	}
-
-	return mouseStatus[ button ];
-}
-
-void vc::App::GrabCursor( bool status )
+void ct::App::GrabCursor( bool status )
 {
 	// If the debug mouse mode is set, we don't grab the cursor!
 	if ( debugMouse_ )
@@ -545,12 +503,12 @@ void vc::App::GrabCursor( bool status )
 //////////////////////////////////////////////////////
 // PROFILING
 
-void vc::App::StartPerformanceTimer( const char *identifier )
+void ct::App::StartPerformanceTimer( const char *identifier )
 {
 	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
 }
 
-void vc::App::EndPerformanceTimer( const char *identifier )
+void ct::App::EndPerformanceTimer( const char *identifier )
 {
 	auto i = performanceTimers.find( identifier );
 	if ( i == performanceTimers.end() )
@@ -565,9 +523,9 @@ void vc::App::EndPerformanceTimer( const char *identifier )
 //////////////////////////////////////////////////////
 // Main
 
-vc::GameMode *vc::App::GetGameMode() { return GetApp()->gameMode; }
+ct::GameMode *ct::App::GetGameMode() { return GetApp()->gameMode; }
 
-void vc::App::PrecacheResources()
+void ct::App::PrecacheResources()
 {
 	defaultBitmapFont_ = new BitmapFont();
 	if ( !defaultBitmapFont_->LoadFromImage( 7, 7, 0, "fonts/bitmaps/mbf/mbf_small_00.png" ) )
@@ -584,7 +542,7 @@ int main( int argc, char **argv )
 	// Stop buffering stdout!
 	setvbuf( stdout, nullptr, _IONBF, 0 );
 
-	appInstance = new vc::App( argc, argv );
+	appInstance = new ct::App( argc, argv );
 
 	appInstance->InitializeDisplay();
 	appInstance->InitializeEvents();

@@ -2,16 +2,15 @@
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
+#include "Input/InputManager.h"
 
 #include "GUIPanel.h"
 #include "GUIStyleSheet.h"
 
-#include "../../shared.h"
+const hei::Colour ct::GUIPanel::INSET_COLOUR = { 122, 122, 122, 255 };
+const hei::Colour ct::GUIPanel::OUTSET_COLOUR = { 192, 192, 192, 255 };
 
-const hei::Colour vc::GUIPanel::INSET_COLOUR = { 122, 122, 122, 255 };
-const hei::Colour vc::GUIPanel::OUTSET_COLOUR = { 192, 192, 192, 255 };
-
-vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
+ct::GUIPanel::GUIPanel( ct::GUIPanel *parent, int x, int y, int w, int h, ct::GUIPanel::Background background, ct::GUIPanel::Border border )
 	: background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
@@ -29,9 +28,9 @@ vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GU
 	this->y += parent->y;
 }
 
-vc::GUIPanel::~GUIPanel() = default;
+ct::GUIPanel::~GUIPanel() = default;
 
-void vc::GUIPanel::Draw()
+void ct::GUIPanel::Draw()
 {
 	if ( !isDrawing )
 	{
@@ -48,7 +47,7 @@ void vc::GUIPanel::Draw()
 	}
 }
 
-void vc::GUIPanel::DrawBackground()
+void ct::GUIPanel::DrawBackground()
 {
 	hei::Colour colour;
 	switch ( background_ )
@@ -78,7 +77,7 @@ void vc::GUIPanel::DrawBackground()
 	render::DrawFilledRectangle( dx, dy, dw, dh, colour );
 }
 
-void vc::GUIPanel::DrawBorder()
+void ct::GUIPanel::DrawBorder()
 {
 	if ( styleSheet_ == nullptr )
 	{
@@ -124,13 +123,13 @@ void vc::GUIPanel::DrawBorder()
 	DrawBorderCorner( x + w - styleSheet_->frameSprites[ lr ]->width, y + h - styleSheet_->frameSprites[ lr ]->height, lr );
 }
 
-void vc::GUIPanel::DrawBorderCorner( int dx, int dy, unsigned int index )
+void ct::GUIPanel::DrawBorderCorner( int dx, int dy, unsigned int index )
 {
 	const Sprite *sprite = styleSheet_->frameSprites[ index ];
 	sprite->Draw( dx, dy, false );
 }
 
-void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index )
+void ct::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index )
 {
 	const Sprite *sprite = styleSheet_->frameSprites[ index ];
 
@@ -160,7 +159,7 @@ void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int 
 	}
 }
 
-void vc::GUIPanel::Tick()
+void ct::GUIPanel::Tick()
 {
 	isDrawing = ShouldDraw();
 
@@ -171,12 +170,12 @@ void vc::GUIPanel::Tick()
 	}
 }
 
-void vc::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet )
+void ct::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet )
 {
 	styleSheet_ = styleSheet;
 }
 
-void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const
+void ct::GUIPanel::GetContentPosition( int *xd, int *yd ) const
 {
 	if ( border_ == Border::NONE )
 	{
@@ -189,7 +188,7 @@ void vc::GUIPanel::GetContentPosition( int *xd, int *yd ) const
 	*yd = y + 2;
 }
 
-void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const
+void ct::GUIPanel::GetContentSize( int *wd, int *hd ) const
 {
 	if ( border_ == Border::NONE )
 	{
@@ -202,19 +201,19 @@ void vc::GUIPanel::GetContentSize( int *wd, int *hd ) const
 	*hd = h - 2;
 }
 
-bool vc::GUIPanel::IsMouseOver( int mx, int my ) const
+bool ct::GUIPanel::IsMouseOver( int mx, int my ) const
 {
 	return !( mx < x || mx > x + w || my < y || my > y + h );
 }
 
-bool vc::GUIPanel::IsMouseOver() const
+bool ct::GUIPanel::IsMouseOver() const
 {
 	int mx, my;
-	GetApp()->GetCursorPosition( &mx, &my );
+	input::inputManager->GetMousePosition( &mx, &my );
 	return IsMouseOver( mx, my );
 }
 
-bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp )
+bool ct::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp )
 {
 	if ( !IsMouseOver( mx, my ) )
 	{
@@ -238,7 +237,7 @@ bool vc::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool
 	return false;
 }
 
-bool vc::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp )
+bool ct::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp )
 {
 	for ( auto i : children_ )
 	{

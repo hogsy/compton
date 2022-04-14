@@ -3,7 +3,6 @@
 
 #include "Compton.h"
 #include "GameMode.h"
-#include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
 #include "Serializer.h"
@@ -14,28 +13,23 @@
 #include "GUI/GUICursor.h"
 #include "GUI/GUIStyleSheet.h"
 
-#include "Entities/BaseCharacter.h"
 #include "Input/InputManager.h"
 
-vc::GameMode::GameMode()
+ct::GameMode::GameMode()
 {
 	SetupUserInterface();
 
-	terrainManager_ = new Terrain();
 	entityManager_ = new EntityManager();
-
-	NewGame( "default.save" );
 }
 
-vc::GameMode::~GameMode()
+ct::GameMode::~GameMode()
 {
 	delete entityManager_;
-	delete terrainManager_;
 	delete backgroundManager_;
 	delete baseGuiPanel_;
 }
 
-void vc::GameMode::SetupUserInterface()
+void ct::GameMode::SetupUserInterface()
 {
 	// Now create the base GUI panels
 
@@ -93,12 +87,12 @@ void vc::GameMode::SetupUserInterface()
 	uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
 }
 
-void vc::GameMode::PrecacheResources()
+void ct::GameMode::PrecacheResources()
 {
 	entityManager_->PrecacheEntities();
 }
 
-void vc::GameMode::Tick()
+void ct::GameMode::Tick()
 {
 	START_MEASURE();
 
@@ -108,7 +102,7 @@ void vc::GameMode::Tick()
 		baseGuiPanel_->Tick();
 	}
 
-	if ( gameState == GameState::PAUSED )
+	if ( gameState_ == GameState::PAUSED )
 	{
 		END_MEASURE();
 		return;
@@ -116,7 +110,7 @@ void vc::GameMode::Tick()
 
 	if ( camera.movementMode == Camera::MoveMode::FREE )
 	{
-		if ( GetApp()->GetKeyState( ALLEGRO_KEY_UP ) )
+		if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_UP ) )
 		{
 			camera.velocity.y -= CAMERA_ACCELERATION;
 			if ( camera.velocity.y > CAMERA_MAXSPEED )
@@ -124,7 +118,7 @@ void vc::GameMode::Tick()
 				camera.velocity.y = CAMERA_MAXSPEED;
 			}
 		}
-		else if ( GetApp()->GetKeyState( ALLEGRO_KEY_DOWN ) )
+		else if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_DOWN ) )
 		{
 			camera.velocity.y += CAMERA_ACCELERATION;
 			if ( camera.velocity.y < -CAMERA_MAXSPEED )
@@ -133,7 +127,7 @@ void vc::GameMode::Tick()
 			}
 		}
 
-		if ( GetApp()->GetKeyState( ALLEGRO_KEY_LEFT ) )
+		if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_LEFT ) )
 		{
 			camera.velocity.x -= CAMERA_ACCELERATION;
 			if ( camera.velocity.x > CAMERA_MAXSPEED )
@@ -141,7 +135,7 @@ void vc::GameMode::Tick()
 				camera.velocity.x = CAMERA_MAXSPEED;
 			}
 		}
-		else if ( GetApp()->GetKeyState( ALLEGRO_KEY_RIGHT ) )
+		else if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_RIGHT ) )
 		{
 			camera.velocity.x += CAMERA_ACCELERATION;
 			if ( camera.velocity.x < -CAMERA_MAXSPEED )
@@ -158,7 +152,6 @@ void vc::GameMode::Tick()
 			camera.position.x = Background::PIXEL_WIDTH;
 		else if ( camera.position.x > Background::PIXEL_WIDTH )
 			camera.position.x = -DISPLAY_WIDTH;
-
 		if ( camera.position.y < 0.0f )
 			camera.position.y = 0.0f;
 		else if ( camera.position.y + DISPLAY_HEIGHT > Background::PIXEL_HEIGHT )
@@ -176,7 +169,7 @@ void vc::GameMode::Tick()
 	END_MEASURE();
 }
 
-void vc::GameMode::Draw()
+void ct::GameMode::Draw()
 {
 	START_MEASURE();
 
@@ -204,95 +197,23 @@ void vc::GameMode::Draw()
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
 
-	vc::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
+	ct::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
 	END_MEASURE();
 }
 
-void vc::GameMode::NewGame( const char *path )
+void ct::GameMode::NewGame( const char *path )
 {
-#if 0
-	Print( "Generating terrain...\n" );
-	terrainManager_->Generate();
-
-	Print( "Generating territories...\n" );
-	unsigned int n = random::GenerateRandomInteger( 4, 8 );
-	for ( unsigned int i = 0; i < n; ++i )
-	{
-		// Pick a random point in the world
-		float x, y;
-		for ( unsigned int j = 0; j < 16; ++j )
-		{
-			// Try at least 16 times before we give up
-			x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
-			y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
-			if ( !terrainManager_->IsWater( x, y ) )
-			{
-				break;
-			}
-
-			x = y = -1.0f;
-		}
-
-		// Never found a point without water, give up...
-		if ( x == -1.0f && y == -1.0f )
-		{
-			continue;
-		}
-
-		// Now attempt to spawn in the territory
-		Territory territory( hei::Vector2( x, y ) );
-
-		// Spawn one Storehouse at the center
-		Entity *hub = entityManager_->CreateEntity( "StoreHouse" );
-		hub->origin = hei::Vector2( x, y );
-
-#	define TERRITORY_BOUNDS 256
-
-		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
-		for ( unsigned int j = 0; j < numAbodes; ++j )
-		{
-			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
-			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
-			if ( terrainManager_->IsWater( x, y ) )
-			{
-				continue;
-			}
-
-			// Assign some citizens to the abode.
-			int numCitizens = random::GenerateRandomInteger( 0, 4 );
-			for ( unsigned int k = 0; k < numCitizens; ++k )
-			{
-				BaseCharacter *citizen = dynamic_cast< BaseCharacter * >( entityManager_->CreateEntity( "BaseCharacter" ) );
-				if ( citizen == nullptr )
-				{
-					continue;
-				}
-
-				citizen->origin = hei::Vector2( x, y );
-				citizen->Spawn();
-			}
-		}
-	}
-
-	playerCamera.position.x = 450;
-	playerCamera.position.y = Background::CENTER_Y - ( DISPLAY_HEIGHT / 2 );
-
-	entityManager_->CreateEntity( "BoidManager" );
+	world_ = new World( "test" );
+	world_->Generate( rand() % 255 );
 
 	// Then automatically save it
 	SaveGame( path );
-#endif
-
-	world_ = new World( "test", rand() % 255 );
-
-	Entity *testEntity = entityManager_->CreateEntity( "HumanCreature" );
-	testEntity->origin = hei::Vector2( 256, 256 );
 
 	entityManager_->SpawnEntities();
 }
 
-void vc::GameMode::SaveGame( const char *path )
+void ct::GameMode::SaveGame( const char *path )
 {
 	// No point saving if there's no world!
 	if ( world_ == nullptr )
@@ -311,7 +232,7 @@ void vc::GameMode::SaveGame( const char *path )
 	Print( "Game saved to \"%s\"\n", path );
 }
 
-void vc::GameMode::RestoreGame( const char *path )
+void ct::GameMode::RestoreGame( const char *path )
 {
 	if ( world_ != nullptr )
 		delete world_;
@@ -337,12 +258,12 @@ void vc::GameMode::RestoreGame( const char *path )
 	Print( "Game restored from \"%s\"\n", path );
 }
 
-hei::Vector2 vc::GameMode::MousePosToWorld( int x, int y ) const
+hei::Vector2 ct::GameMode::MousePosToWorld( int x, int y ) const
 {
 	return hei::Vector2( ( camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( camera.position.y - DISPLAY_HEIGHT / 2 ) + y );
 }
 
-void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
+void ct::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
 {
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( baseGuiPanel_ != nullptr && baseGuiPanel_->HandleMouseEvent( x, y, wheel, button, buttonUp ) )
@@ -369,7 +290,7 @@ void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 #endif
 }
 
-void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
+void ct::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 {
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( baseGuiPanel_ != nullptr && baseGuiPanel_->HandleKeyboardEvent( button, buttonUp ) )
@@ -411,34 +332,44 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 		case ALLEGRO_KEY_PAUSE:
 		{
 			// TODO: pause/unpause sounds
-			if ( gameState == GameState::PAUSED )
+			if ( gameState_ == GameState::PAUSED )
 			{
-				gameState = GameState::ACTIVE;
+				gameState_ = GameState::ACTIVE;
 				break;
 			}
 
-			gameState = GameState::PAUSED;
+			gameState_ = GameState::PAUSED;
 			break;
 		}
 	}
 }
 
-vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
-vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
-vc::Terrain *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
-vc::Background *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
+ct::PlayerManager *ct::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
+ct::EntityManager *ct::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
+ct::Background *ct::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
 
 ////////////////////////////////////////////////
 // Actions
 
-void vc::GameMode::RegisterActions()
+void ct::GameMode::RegisterActions()
 {
-	input::inputManager->PushAction( "Move Up", nullptr );
-	input::inputManager->PushAction( "Move Down", nullptr );
-	input::inputManager->PushAction( "Move Left", nullptr );
-	input::inputManager->PushAction( "Move Right", nullptr );
-	input::inputManager->PushAction( "Use", nullptr );
-	input::inputManager->PushAction( "Attack", nullptr );
+	actions_[ ACTION_MOVE_UP ] = input::inputManager->PushAction( "Move Up" );
+	actions_[ ACTION_MOVE_UP ]->BindKey( ALLEGRO_KEY_UP );
+
+	actions_[ ACTION_MOVE_DOWN ] = input::inputManager->PushAction( "Move Down" );
+	actions_[ ACTION_MOVE_DOWN ]->BindKey( ALLEGRO_KEY_DOWN );
+
+	actions_[ ACTION_MOVE_LEFT ] = input::inputManager->PushAction( "Move Left" );
+	actions_[ ACTION_MOVE_LEFT ]->BindKey( ALLEGRO_KEY_LEFT );
+
+	actions_[ ACTION_MOVE_RIGHT ] = input::inputManager->PushAction( "Move Right" );
+	actions_[ ACTION_MOVE_RIGHT ]->BindKey( ALLEGRO_KEY_RIGHT );
+
+	actions_[ ACTION_USE ] = input::inputManager->PushAction( "Use" );
+	actions_[ ACTION_USE ]->BindKey( ALLEGRO_KEY_V );
+
+	actions_[ ACTION_ATTACK ] = input::inputManager->PushAction( "Attack" );
+	actions_[ ACTION_ATTACK ]->BindKey( ALLEGRO_KEY_SPACE );
 }
 
 #if 0

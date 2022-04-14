@@ -8,7 +8,7 @@
 #include "Entities/ai/Brain.h"
 #include "Entities/ai/Sensor.h"
 
-namespace vc
+namespace ct
 {
 	class BaseCreature : public BaseAnimated
 	{

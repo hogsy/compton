@@ -1,38 +1,29 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "BaseBuilding.h"
 
-vc::BaseBuilding::BaseBuilding() {}
-vc::BaseBuilding::~BaseBuilding() {}
+ct::BaseBuilding::BaseBuilding() {}
+ct::BaseBuilding::~BaseBuilding() {}
 
-void vc::BaseBuilding::Deserialize( Serializer *read )
+void ct::BaseBuilding::Deserialize( Serializer *read )
 {
 	SuperClass::Deserialize( read );
+
+	maxConstructionAmount_ = read->ReadInteger();
+	constructionAmount_ = read->ReadInteger();
 }
 
-void vc::BaseBuilding::Serialize( vc::Serializer *write )
+void ct::BaseBuilding::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
+
+	write->WriteInteger( maxConstructionAmount_ );
+	write->WriteInteger( constructionAmount_ );
 }
 
-void vc::BaseBuilding::Draw( const vc::Camera &camera )
+void ct::BaseBuilding::Draw( const ct::Camera &camera )
 {
 	Entity::Draw( camera );
 
@@ -40,7 +31,4 @@ void vc::BaseBuilding::Draw( const vc::Camera &camera )
 	{
 		return;
 	}
-
-	//al_draw_filled_rectangle( origin.x + 32, origin.y + 32, origin.x - 32, origin.y - 32, al_map_rgb( 64, 64, 64 ) );
-	//al_draw_text( GetApp()->GetDefaultFont(), al_map_rgb( 255, 255, 255 ), origin.x, origin.y, 0, "Building" );
 }

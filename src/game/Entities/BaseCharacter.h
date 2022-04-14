@@ -6,7 +6,7 @@
 #include "Entity.h"
 #include "BaseCreature.h"
 
-namespace vc
+namespace ct
 {
 	class BaseCharacter : public BaseCreature
 	{
@@ -33,6 +33,8 @@ namespace vc
 		unsigned int debugNumRoutes{ 0 };
 		unsigned int debugCurRoute{ 0 };
 		unsigned int debugGoalDelay{ 2000 };
+
+		bool isPlayerControlled_{ true };
 
 		float myInfluence{ 0.0f };
 	};

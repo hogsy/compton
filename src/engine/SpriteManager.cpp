@@ -6,19 +6,19 @@
 #include "SpriteManager.h"
 #include "GameMode.h"
 
-vc::SpriteManager::SpriteManager( int argc, char **argv )
+ct::SpriteManager::SpriteManager( int argc, char **argv )
 {
 }
 
-vc::SpriteManager::~SpriteManager()
+ct::SpriteManager::~SpriteManager()
 {
 }
 
-void vc::SpriteManager::PrecacheResources()
+void ct::SpriteManager::PrecacheResources()
 {
 }
 
-const vc::Sprite *vc::SpriteManager::GetSprite( const char *path, unsigned int group )
+const ct::Sprite *ct::SpriteManager::GetSprite( const char *path, unsigned int group )
 {
 	// First check if it's cached already
 
@@ -64,7 +64,7 @@ const vc::Sprite *vc::SpriteManager::GetSprite( const char *path, unsigned int g
 	return &spriteGroups_[ group ].sprites.emplace( path, sprite ).first->second;
 }
 
-void vc::SpriteManager::DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest )
+void ct::SpriteManager::DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest )
 {
 	const Sprite *sprite = GetSprite( path, group );
 	assert( sprite != nullptr );
@@ -76,7 +76,7 @@ void vc::SpriteManager::DrawSprite( const char *path, unsigned int group, int x,
 	sprite->Draw( x, y, alphaTest );
 }
 
-const vc::SpriteSheet *vc::SpriteManager::GetSpriteSheet( const char *path )
+const ct::SpriteSheet *ct::SpriteManager::GetSpriteSheet( const char *path )
 {
 	auto i = spriteSheets_.find( path );
 	if ( i != spriteSheets_.end() )

@@ -51,7 +51,6 @@ execute_process(
         OUTPUT_VARIABLE GIT_BRANCH
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
         COMMAND git log -1 --format=%h
@@ -59,7 +58,6 @@ execute_process(
         OUTPUT_VARIABLE GIT_COMMIT_HASH
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 # Get the number of commits on the working branch
 execute_process(
         COMMAND git rev-list HEAD --count
@@ -67,7 +65,6 @@ execute_process(
         OUTPUT_VARIABLE GIT_COMMIT_COUNT
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 add_definitions(-DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 add_definitions(-DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}")
 add_definitions(-DGIT_BRANCH="${GIT_BRANCH}")
@@ -78,6 +75,7 @@ file(GLOB SOURCE_FILES
 
 set(DS_SOURCE_FILES
         src/game/DS/HumanCreature.cpp
+        src/game/DS/Tree.cpp
         )
 
 add_executable(Compton ${SOURCE_FILES}
@@ -93,7 +91,6 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
         src/engine/LoaderPkg.cpp
-        src/engine/PlayerManager.cpp
         src/engine/Random.cpp
         src/engine/Serializer.cpp
         src/engine/Sprite.cpp
@@ -113,6 +110,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp
         src/game/GameMode.cpp
+        src/game/PlayerManager.cpp
         src/game/Terrain.cpp
         src/game/Utility.cpp
         src/game/World.cpp

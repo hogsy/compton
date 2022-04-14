@@ -5,7 +5,7 @@
 
 #include "GUIPanel.h"
 
-namespace vc
+namespace ct
 {
 	class GUIButton : public GUIPanel
 	{

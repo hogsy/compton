@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Compton.h"
 #include "Sensor.h"
 
-void vc::ai::Sensor::Tick()
+void ct::ai::Sensor::Tick()
 {
 	switch ( myType )
 	{

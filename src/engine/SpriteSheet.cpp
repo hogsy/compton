@@ -10,12 +10,12 @@
 #include "FileSystem.h"
 #include "SpriteSheet.h"
 
-vc::SpriteSheet::~SpriteSheet() = default;
+ct::SpriteSheet::~SpriteSheet() = default;
 
 /// Loads in and parses the given file, caching any sprites within.
 /// \param path Path to an SDF/TXT file.
 /// \return True on success, false on fail.
-bool vc::SpriteSheet::LoadFile( const char *path )
+bool ct::SpriteSheet::LoadFile( const char *path )
 {
 	unsigned int length;
 	char *buffer = fs::LoadFileIntoBuffer( path, &length );
@@ -43,7 +43,7 @@ bool vc::SpriteSheet::LoadFile( const char *path )
 /// \param y
 /// \param w
 /// \param h
-void vc::SpriteSheet::ExtractSprite( const PLImage *image, const std::string &name, int x, int y, int w, int h )
+void ct::SpriteSheet::ExtractSprite( const PLImage *image, const std::string &name, int x, int y, int w, int h )
 {
 	// Validate it
 	if ( x + w > PlGetImageWidth( image ) || y + h > PlGetImageHeight( image ) )
@@ -78,7 +78,7 @@ void vc::SpriteSheet::ExtractSprite( const PLImage *image, const std::string &na
 /// \param p Pointer to buffer.
 /// \param image Image handle, assumed to already be valid.
 /// \return True on success, false on fail.
-bool vc::SpriteSheet::ParseSprite( const char **p, const PLImage *image )
+bool ct::SpriteSheet::ParseSprite( const char **p, const PLImage *image )
 {
 	char name[ 64 ];
 	if ( PlParseEnclosedString( p, name, sizeof( name ) ) == nullptr )
@@ -110,7 +110,7 @@ bool vc::SpriteSheet::ParseSprite( const char **p, const PLImage *image )
 /// \param p Pointer to buffer.
 /// \param image Image handle, assumed to already be valid.
 /// \return True on success, false on fail.
-bool vc::SpriteSheet::ParseGroup( const char **p, const PLImage *image )
+bool ct::SpriteSheet::ParseGroup( const char **p, const PLImage *image )
 {
 	char name[ 64 ];
 	if ( PlParseEnclosedString( p, name, sizeof( name ) ) == nullptr )
@@ -160,7 +160,7 @@ bool vc::SpriteSheet::ParseGroup( const char **p, const PLImage *image )
 	return true;
 }
 
-bool vc::SpriteSheet::ParseFile( const char *buffer )
+bool ct::SpriteSheet::ParseFile( const char *buffer )
 {
 	bool status = false;
 	PLImage *image = nullptr;
@@ -233,7 +233,7 @@ bool vc::SpriteSheet::ParseFile( const char *buffer )
 /// Looks up the given sprite. If it's not been cached, returns null.
 /// \param spriteName Name of the sprite to find.
 /// \return Pointer to the cached sprite, otherwise null.
-const vc::Sprite *vc::SpriteSheet::LookupElement( const char *spriteName ) const
+const ct::Sprite *ct::SpriteSheet::LookupElement( const char *spriteName ) const
 {
 	const auto &key = elements_.find( spriteName );
 	if ( key == elements_.end() )

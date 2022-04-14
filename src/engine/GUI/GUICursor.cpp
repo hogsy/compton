@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "../shared.h"
+#include "Compton.h"
+#include "Input/InputManager.h"
 
 #include "GUICursor.h"
 #include "GUIStyleSheet.h"
 
-vc::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
+ct::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}
 
-vc::GUICursor::~GUICursor()
+ct::GUICursor::~GUICursor()
 {
 }
 
-void vc::GUICursor::DrawBackground()
+void ct::GUICursor::DrawBackground()
 {
 	if ( !isDrawing || styleSheet_ == nullptr )
 	{
@@ -23,9 +24,9 @@ void vc::GUICursor::DrawBackground()
 	styleSheet_->mouseSprites[ currentCursorMode ]->Draw( x, y );
 }
 
-void vc::GUICursor::Tick()
+void ct::GUICursor::Tick()
 {
-	GetApp()->GetCursorPosition( &x, &y );
+	input::inputManager->GetMousePosition( &x, &y );
 
 	int       pX, pY, pW, pH;
 	GUIPanel *panel = GetParent();

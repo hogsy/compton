@@ -6,7 +6,7 @@
 #include "Entity.h"
 #include "SpriteAnimator.h"
 
-namespace vc
+namespace ct
 {
 	class BaseAnimated : public Entity
 	{

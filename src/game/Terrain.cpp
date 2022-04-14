@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
-
-#include <allegro5/allegro_primitives.h>
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "Terrain.h"
@@ -9,7 +7,7 @@
 #include "Camera.h"
 #include "Random.h"
 
-void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
+void ct::Terrain::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 {
 #if 0 // todo: rewrite this, we we decide to retain it
 	static const PLColour tileColour[ MAX_TERRAIN_TYPES ] = {
@@ -78,10 +76,10 @@ void vc::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
 #endif
 }
 
-vc::Terrain::Terrain() {}
-vc::Terrain::~Terrain() {}
+ct::Terrain::Terrain() {}
+ct::Terrain::~Terrain() {}
 
-void vc::Terrain::Deserialize( vc::Serializer *read )
+void ct::Terrain::Deserialize( ct::Serializer *read )
 {
 	unsigned int numTiles = read->ReadInteger();
 	if ( numTiles != NUM_TILES )
@@ -100,7 +98,7 @@ void vc::Terrain::Deserialize( vc::Serializer *read )
 	}
 }
 
-void vc::Terrain::Serialize( vc::Serializer *write )
+void ct::Terrain::Serialize( ct::Serializer *write )
 {
 	write->WriteInteger( NUM_TILES );
 	for ( unsigned int i = 0; i < NUM_TILES; ++i )
@@ -114,7 +112,7 @@ void vc::Terrain::Serialize( vc::Serializer *write )
 	}
 }
 
-void vc::Terrain::Draw( const Camera &camera )
+void ct::Terrain::Draw( const Camera &camera )
 {
 	START_MEASURE();
 
@@ -143,9 +141,9 @@ void vc::Terrain::Draw( const Camera &camera )
 	END_MEASURE();
 }
 
-void vc::Terrain::Generate()
+void ct::Terrain::Generate()
 {
-	vc::random::PerlinNoise perlinNoise( ( int ) time( nullptr ) );
+	ct::random::PerlinNoise perlinNoise( ( int ) time( nullptr ) );
 
 	float fx = PIXEL_WIDTH / 3.0f;
 	float fy = PIXEL_HEIGHT / 3.0f;
@@ -179,7 +177,7 @@ void vc::Terrain::Generate()
 	}
 }
 
-bool vc::Terrain::IsWater( float x, float y )
+bool ct::Terrain::IsWater( float x, float y )
 {
 	if ( x <= 0.0f || y <= 0.0f )
 	{

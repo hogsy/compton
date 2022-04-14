@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "GameMode.h"
 #include "Entity.h"
 
-namespace vc::entity
+namespace ct::entity
 {
 	class DebugWaypoint : public Entity
 	{
@@ -30,9 +30,9 @@ namespace vc::entity
 	};
 }// namespace vc::entity
 
-REGISTER_ENTITY( DebugWaypoint, vc::entity::DebugWaypoint )
+REGISTER_ENTITY( DebugWaypoint, ct::entity::DebugWaypoint )
 
-using namespace vc::entity;
+using namespace ct::entity;
 
 DebugWaypoint::DebugWaypoint() {}
 DebugWaypoint::~DebugWaypoint() {}

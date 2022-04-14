@@ -5,7 +5,7 @@
 
 #include "GUIPanel.h"
 
-namespace vc
+namespace ct
 {
 	class GUIPieMenu : public GUIPanel
 	{

@@ -27,7 +27,7 @@
 
 #include <plgraphics/plg.h>
 
-#define DEBUG_BUILD
+#define CT_PROFILER
 
 // Core services
 #include "engine/Compton.h"
@@ -37,18 +37,9 @@
 #include "engine/FileSystem.h"
 
 #define DISPLAY_WIDTH  320
-#define DISPLAY_HEIGHT 200
+#define DISPLAY_HEIGHT 240
 
-enum InputMouseButton
-{
-	MOUSE_BUTTON_LEFT,
-	MOUSE_BUTTON_RIGHT,
-	MOUSE_BUTTON_MIDDLE,
-
-	MAX_MOUSE_BUTTONS
-};
-
-namespace vc
+namespace ct
 {
 	class GameMode;
 	class SpriteManager;
@@ -67,7 +58,7 @@ namespace vc
 
 		void ClearDisplay( void );
 		void DrawPixel( int x, int y, const hei::Colour &colour );
-		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection = vc::render::FlipDirection::FLIP_NONE );
+		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection = ct::render::FlipDirection::FLIP_NONE );
 		void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 		void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 	}// namespace render
@@ -122,10 +113,6 @@ namespace vc
 			*dH = scaleH;
 		}
 
-		void GetCursorPosition( int *dX, int *dY ) const;
-		bool GetKeyState( int key ) const;
-		bool GetMouseState( int *dX, int *dY, InputMouseButton button );
-
 	private:
 		void GrabCursor( bool state = true );
 		bool debugMouse_{ false };
@@ -163,11 +150,7 @@ namespace vc
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;// todo: make obsolete
 		BitmapFont *defaultBitmapFont_{ nullptr };                  // todo: this should replace the above...
 
-		bool keyStatus[ ALLEGRO_KEY_MAX ];
-		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
-
 		bool redraw;
-		bool running;
 
 		int windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;
@@ -201,14 +184,12 @@ namespace vc
 	App *GetApp();
 
 	extern SpriteManager *spriteManager;
-}// namespace vc
+}// namespace ct
 
-#if defined( DEBUG_BUILD )
-#	define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
-#	define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
+#if defined( CT_PROFILER )
+#	define START_MEASURE() ct::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
+#	define END_MEASURE()   ct::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
 #else
 #	define START_MEASURE()
 #	define END_MEASURE()
 #endif
-
-/*	Game	*/

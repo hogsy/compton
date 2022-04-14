@@ -6,7 +6,7 @@
 static void *FS_fopen( const char *path, const char *mode )
 {
 	DebugMsg( "%s %s %s\n", __FUNCTION__, path, mode );
-	SgAssert( *mode != 'w', "Unsupported operation in FS_fopen!\n" );
+	assert( *mode != 'w' );
 	PLFile *file = PlOpenFile( path, false );
 	if ( file == nullptr )
 	{
@@ -107,7 +107,7 @@ ALLEGRO_FILE_INTERFACE g_fsIOInterface = {
 /// \param path Path to the file to load.
 /// \param length Returns the length of the allocated buffer that's returned.
 /// \return
-char *vc::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
+char *ct::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
 {
 	PLFile *file = PlOpenFile( path, true );
 	if ( file == nullptr )

@@ -5,7 +5,7 @@
 
 static const uint32_t storageVersion = 20200629;
 
-vc::Serializer::Serializer( const char *path, vc::Serializer::Mode mode )
+ct::Serializer::Serializer( const char *path, ct::Serializer::Mode mode )
 {
 	filePtr = fopen( path, mode == Mode::READ ? "rb" : "wb" );
 	if ( filePtr == nullptr )
@@ -40,7 +40,7 @@ vc::Serializer::Serializer( const char *path, vc::Serializer::Mode mode )
 	}
 }
 
-vc::Serializer::~Serializer()
+ct::Serializer::~Serializer()
 {
 	if ( filePtr != nullptr )
 	{
@@ -48,7 +48,7 @@ vc::Serializer::~Serializer()
 	}
 }
 
-bool vc::Serializer::ValidateDataFormat( uint8_t target )
+bool ct::Serializer::ValidateDataFormat( uint8_t target )
 {
 	uint8_t format = fgetc( filePtr );
 	if ( format != target )
@@ -60,21 +60,21 @@ bool vc::Serializer::ValidateDataFormat( uint8_t target )
 	return true;
 }
 
-void vc::Serializer::WriteInteger( int var )
+void ct::Serializer::WriteInteger( int var )
 {
 	fputc( DATA_FORMAT_INTEGER, filePtr );
 
 	fwrite( &var, sizeof( int32_t ), 1, filePtr );
 }
 
-void vc::Serializer::WriteFloat( float var )
+void ct::Serializer::WriteFloat( float var )
 {
 	fputc( DATA_FORMAT_FLOAT, filePtr );
 
 	fwrite( &var, sizeof( float ), 1, filePtr );
 }
 
-void vc::Serializer::WriteString( const char *var )
+void ct::Serializer::WriteString( const char *var )
 {
 	fputc( DATA_FORMAT_STRING, filePtr );
 
@@ -86,14 +86,14 @@ void vc::Serializer::WriteString( const char *var )
 	fwrite( var, sizeof( char ), length, filePtr );
 }
 
-void vc::Serializer::WriteCoordinate( const PLVector2 &var )
+void ct::Serializer::WriteCoordinate( const PLVector2 &var )
 {
 	fputc( DATA_FORMAT_COORDINATE, filePtr );
 
 	fwrite( &var, sizeof( PLVector2 ), 1, filePtr );
 }
 
-int vc::Serializer::ReadInteger()
+int ct::Serializer::ReadInteger()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_INTEGER ) )
 	{
@@ -105,7 +105,7 @@ int vc::Serializer::ReadInteger()
 	return var;
 }
 
-float vc::Serializer::ReadFloat()
+float ct::Serializer::ReadFloat()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_FLOAT ) )
 	{
@@ -117,7 +117,7 @@ float vc::Serializer::ReadFloat()
 	return var;
 }
 
-void vc::Serializer::ReadString( char *buffer, size_t bufLength )
+void ct::Serializer::ReadString( char *buffer, size_t bufLength )
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_STRING ) )
 	{
@@ -137,7 +137,7 @@ void vc::Serializer::ReadString( char *buffer, size_t bufLength )
 	fread( buffer, sizeof( char ), length, filePtr );
 }
 
-PLVector2 vc::Serializer::ReadCoordinate()
+PLVector2 ct::Serializer::ReadCoordinate()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_COORDINATE ) )
 	{

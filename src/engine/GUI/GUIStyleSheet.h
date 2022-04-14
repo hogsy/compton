@@ -6,7 +6,7 @@
 #include "SpriteSheet.h"
 #include "GUICursor.h"
 
-namespace vc
+namespace ct
 {
 	class GUIStyleSheet : public SpriteSheet
 	{

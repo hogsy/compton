@@ -4,17 +4,17 @@
 #include "Compton.h"
 #include "GUIPieMenu.h"
 
-vc::GUIPieMenu::GUIPieMenu( vc::GUIPanel *parent ) : GUIPanel( parent )
+ct::GUIPieMenu::GUIPieMenu( ct::GUIPanel *parent ) : GUIPanel( parent )
 {
 }
 
-vc::GUIPieMenu::~GUIPieMenu()
+ct::GUIPieMenu::~GUIPieMenu()
 {
 }
 
 /**
  * Push a new item onto the radio button list.
  */
-void vc::GUIPieMenu::PushOption( const char *label, vc::GUIPieMenu::OptionCallback callback )
+void ct::GUIPieMenu::PushOption( const char *label, ct::GUIPieMenu::OptionCallback callback )
 {
 }

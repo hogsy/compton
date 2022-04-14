@@ -8,10 +8,10 @@
 #include "Background.h"
 #include "Camera.h"
 
-vc::Background::Background() = default;
-vc::Background::~Background() = default;
+ct::Background::Background() = default;
+ct::Background::~Background() = default;
 
-void vc::Background::Draw( const Camera &camera )
+void ct::Background::Draw( const Camera &camera )
 {
 	for ( unsigned int i = 0, block = 0; i < NUM_BLOCK_ROWS; ++i )
 	{
@@ -22,7 +22,7 @@ void vc::Background::Draw( const Camera &camera )
 	}
 }
 
-void vc::Background::DrawBlock( const Camera &camera, unsigned int block, int x, int y )
+void ct::Background::DrawBlock( const Camera &camera, unsigned int block, int x, int y )
 {
 #if 0
 	if ( x > camera.position.x + DISPLAY_WIDTH || x + BLOCK_WIDTH < camera.position.x - DISPLAY_WIDTH ||

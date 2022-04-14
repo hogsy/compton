@@ -9,43 +9,45 @@
 
 #include "Input.h"
 
-namespace vc::input
+namespace ct::input
 {
-	typedef void ( *ActionCallbackFunction )();
-	typedef unsigned int ActionSlot;
-
 	class Action
 	{
 	public:
-		Action( const std::string &description, ActionCallbackFunction callbackFunction );
+		inline Action( const std::string &description ) : description_( description ) {}
+
+		bool IsPressed();
 
 		inline const char *GetDescription() const { return description_.c_str(); }
 
 	private:
 		std::string description_;
-		ActionCallbackFunction callbackFunction_;
 
-		std::vector< Key > keyboardBindings_;
-		std::vector< Button > buttonBindings_;
+		std::vector< int > keyboardBindings_;
+		std::vector< int > buttonBindings_;
 
 	public:
-		inline void BindKey( Key key )
+		inline void BindKey( int key )
 		{
 			// Check it's not been bound already
 			auto i = std::find( keyboardBindings_.begin(), keyboardBindings_.end(), key );
 			if ( i != keyboardBindings_.end() )
+			{
 				return;
+			}
 
 			keyboardBindings_.push_back( key );
 		}
-		inline void BindButton( Button button )
+		inline void BindButton( int button )
 		{
 			// Check it's not been bound already
 			auto i = std::find( buttonBindings_.begin(), buttonBindings_.end(), button );
 			if ( i != buttonBindings_.end() )
+			{
 				return;
+			}
 
 			buttonBindings_.push_back( button );
 		}
 	};
-}// namespace vc::input
+}// namespace ct::input

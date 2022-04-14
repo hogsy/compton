@@ -19,14 +19,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Compton.h"
 #include "Brain.h"
 
-vc::ai::Brain::Brain()
+ct::ai::Brain::Brain()
 {
 }
 
-vc::ai::Brain::~Brain()
+ct::ai::Brain::~Brain()
 {
 }
 
-void vc::ai::Brain::Tick()
+void ct::ai::Brain::Tick()
 {
 }

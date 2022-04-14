@@ -8,7 +8,7 @@
 #include "Utility.h"
 #include "GameMode.h"
 
-namespace vc::game
+namespace ct::game
 {
 	enum Direction
 	{

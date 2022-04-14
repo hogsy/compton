@@ -5,7 +5,7 @@
 
 #include "Sprite.h"
 
-void vc::Sprite::Draw( int x, int y, bool alpha, bool mirror ) const
+void ct::Sprite::Draw( int x, int y, bool alpha, bool mirror ) const
 {
 	render::DrawBitmap( pixels.data(), hasAlpha ? 4 : 3, x, y, width, height, alpha,
 	                    mirror ? render::FlipDirection::FLIP_HORIZONTAL : render::FlipDirection::FLIP_NONE );

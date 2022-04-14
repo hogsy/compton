@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Brain.h"
 
-namespace vc::ai
+namespace ct::ai
 {
 	class Sensor
 	{

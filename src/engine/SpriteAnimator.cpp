@@ -6,10 +6,10 @@
 #include "SpriteAnimator.h"
 #include "SpriteSheet.h"
 
-std::map< std::string, std::map< std::string, vc::SpriteAnimator::SpriteAnimation > >
-		vc::SpriteAnimator::cachedAnimations_;
+std::map< std::string, std::map< std::string, ct::SpriteAnimator::SpriteAnimation > >
+		ct::SpriteAnimator::cachedAnimations_;
 
-bool vc::SpriteAnimator::LoadFile( const char *path )
+bool ct::SpriteAnimator::LoadFile( const char *path )
 {
 	// It's already been cached...
 	auto i = cachedAnimations_.find( path );
@@ -33,7 +33,7 @@ bool vc::SpriteAnimator::LoadFile( const char *path )
 	return status;
 }
 
-bool vc::SpriteAnimator::ParseFile( const char *buffer )
+bool ct::SpriteAnimator::ParseFile( const char *buffer )
 {
 	// todo: rewrite this (and the sprite equivalent) to parse per-line instead
 
@@ -66,7 +66,7 @@ bool vc::SpriteAnimator::ParseFile( const char *buffer )
 				break;
 			}
 
-			spriteSheet = vc::spriteManager->GetSpriteSheet( path );
+			spriteSheet = ct::spriteManager->GetSpriteSheet( path );
 			if ( spriteSheet == nullptr )
 			{
 				Warning( "Failed to fetch specified sprite sheet: %s\n", path );
@@ -135,7 +135,7 @@ bool vc::SpriteAnimator::ParseFile( const char *buffer )
 	return false;
 }
 
-void vc::SpriteAnimator::SetAnimation( const char *name )
+void ct::SpriteAnimator::SetAnimation( const char *name )
 {
 	auto i = animations_.find( name );
 	if ( i == animations_.end() )
@@ -147,15 +147,15 @@ void vc::SpriteAnimator::SetAnimation( const char *name )
 	currentAnimation_ = &i->second;
 }
 
-void vc::SpriteAnimator::Tick()
+void ct::SpriteAnimator::Tick()
 {
 	if ( currentAnimation_ == nullptr || currentAnimation_->frames.empty() )
 		return;
 
-	if ( currentAnimation_->nextFrameTime > vc::GetApp()->GetNumOfTicks() )
+	if ( currentAnimation_->nextFrameTime > ct::GetApp()->GetNumOfTicks() )
 		return;
 
-	currentAnimation_->nextFrameTime = vc::GetApp()->GetNumOfTicks() + currentAnimation_->playbackSpeed;
+	currentAnimation_->nextFrameTime = ct::GetApp()->GetNumOfTicks() + currentAnimation_->playbackSpeed;
 	currentAnimation_->currentFrame++;
 	if ( currentAnimation_->currentFrame >= currentAnimation_->frames.size() )
 	{
@@ -170,7 +170,7 @@ void vc::SpriteAnimator::Tick()
 	}
 }
 
-void vc::SpriteAnimator::Draw( const hei::Vector2 &position )
+void ct::SpriteAnimator::Draw( const hei::Vector2 &position )
 {
 	if ( currentAnimation_ == nullptr )
 		return;

@@ -9,25 +9,41 @@
 #include "Tree.h"
 #include "Random.h"
 
-REGISTER_ENTITY( Tree, vc::Tree )
+using namespace ct;
+using namespace ct::game;
 
-vc::Tree::Tree() {}
-vc::Tree::~Tree() {}
+REGISTER_ENTITY( Tree, ds::Tree )
 
-void vc::Tree::Spawn()
+ds::Tree::Tree() {}
+ds::Tree::~Tree() {}
+
+void ds::Tree::Spawn()
 {
 	SuperClass::Spawn();
 
 	myHealth    = random::GenerateRandomInteger( 1, 100 );
 	myMaxHealth = random::GenerateRandomInteger( myHealth, 200 );
+
+	sprite_ = ct::spriteManager->GetSprite( "sprites/environment/tree00.gif", SpriteManager::SPRITE_GROUP_ENTITY );
 }
 
-void vc::Tree::Draw( const vc::Camera &camera )
+void ds::Tree::Precache()
+{
+	SuperClass::Precache();
+
+	ct::spriteManager->GetSprite( "sprites/environment/tree00.gif", SpriteManager::SPRITE_GROUP_ENTITY );
+	ct::spriteManager->GetSpriteSheet( "sprites/environment/tree_sprites.sdf" );
+}
+
+void ds::Tree::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
-	if ( !ShouldDraw( camera ) )
+	if ( sprite_ == nullptr || !ShouldDraw( camera ) )
 	{
 		return;
 	}
+
+	hei::Vector2 pos = origin - camera.position;
+	sprite_->Draw( pos.x, pos.y );
 }

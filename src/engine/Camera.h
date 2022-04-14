@@ -9,7 +9,7 @@
 #define CAMERA_ACCELERATION 2.0f
 #define CAMERA_FRICTION     10.0f
 
-namespace vc
+namespace ct
 {
 	struct Camera : public ISerializable
 	{

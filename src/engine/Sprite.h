@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace vc
+namespace ct
 {
 	struct Sprite
 	{

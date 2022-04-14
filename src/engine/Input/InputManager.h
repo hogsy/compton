@@ -24,11 +24,21 @@ namespace ct::input
 
 		PUBLIC inline bool IsKeyDown( int key ) const
 		{
+			if ( locked_ )
+			{
+				return false;
+			}
+
 			return ( keys_[ key ] == State::PRESSED || keys_[ key ] == State::DOWN );
 		}
 
 		PUBLIC inline bool IsMouseButtonDown( int button ) const
 		{
+			if ( locked_ )
+			{
+				return false;
+			}
+
 			return ( mouseButtons_[ button ] == State::PRESSED || mouseButtons_[ button ] == State::DOWN );
 		}
 
@@ -37,7 +47,7 @@ namespace ct::input
 		PUBLIC bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 
 		// Called at the end of a frame; update the state from PRESSED to DOWN
-		PUBLIC inline void RolloverStates()
+		PUBLIC inline void EndFrame()
 		{
 			for ( auto i : keys_ )
 			{
@@ -71,6 +81,8 @@ namespace ct::input
 					i.buttonStates[ j ] = State::DOWN;
 				}
 			}
+
+			locked_ = false;
 		}
 
 		PUBLIC inline void GetMousePosition( int *x, int *y ) const
@@ -121,6 +133,8 @@ namespace ct::input
 
 			return &controllers_[ slot ];
 		}
+
+		PRIVATE bool locked_{ false };
 	};
 
 	extern InputManager *inputManager;

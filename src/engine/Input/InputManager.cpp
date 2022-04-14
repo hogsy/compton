@@ -3,6 +3,7 @@
 
 #include "Compton.h"
 #include "InputManager.h"
+#include "GameMode.h"
 
 using namespace ct;
 
@@ -26,7 +27,16 @@ input::Action *input::InputManager::PushAction( const char *description )
 bool input::InputManager::HandleKeyboardEvent( int key, bool keyUp )
 {
 	keys_[ key ] = keyUp ? State::RELEASED : State::PRESSED;
-	return true;
+
+	GameMode *gameMode = App::GetGameMode();
+	if ( gameMode != nullptr && gameMode->GetBasePanel() != nullptr )
+	{
+		GUIPanel *basePanel = gameMode->GetBasePanel();
+		locked_ = true;
+		return basePanel->HandleKeyboardEvent( key, keyUp );
+	}
+
+	return false;
 }
 
 bool input::InputManager::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -44,6 +54,14 @@ bool input::InputManager::HandleMouseEvent( int x, int y, int wheel, int button,
 	dz_ = mz_ - oz_;
 
 	mouseButtons_[ button ] = buttonUp ? State::RELEASED : State::PRESSED;
+
+	GameMode *gameMode = App::GetGameMode();
+	if ( gameMode != nullptr && gameMode->GetBasePanel() != nullptr )
+	{
+		GUIPanel *basePanel = gameMode->GetBasePanel();
+		locked_ = true;
+		return basePanel->HandleMouseEvent( x, y, wheel, button, buttonUp );
+	}
 
 	return false;
 }

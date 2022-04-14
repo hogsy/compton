@@ -430,7 +430,7 @@ void ct::App::Tick()
 			{
 				gameMode->Tick();
 			}
-			input::inputManager->RolloverStates();
+			input::inputManager->EndFrame();
 			redraw = true;
 			break;
 

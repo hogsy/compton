@@ -6,14 +6,14 @@
 #include "SpriteAnimator.h"
 #include "SpriteSheet.h"
 
-std::map< std::string, std::map< std::string, ct::SpriteAnimator::SpriteAnimation > >
-		ct::SpriteAnimator::cachedAnimations_;
+std::map< std::string, std::map< std::string, ct::SpriteAnimation > >
+		ct::SpriteAnimator::animationSets_;
 
-bool ct::SpriteAnimator::LoadFile( const char *path )
+bool ct::SpriteAnimator::CacheAnimationSet( const char *path )
 {
 	// It's already been cached...
-	auto i = cachedAnimations_.find( path );
-	if ( i != cachedAnimations_.end() )
+	auto i = animationSets_.find( path );
+	if ( i != animationSets_.end() )
 		return true;
 
 	unsigned int length;
@@ -21,10 +21,11 @@ bool ct::SpriteAnimator::LoadFile( const char *path )
 	if ( buffer == nullptr )
 		return false;
 
-	bool status = ParseFile( buffer );
+	auto animations = ParseFile( buffer );
+	bool status = !animations.empty();
 	if ( status )
 	{
-		cachedAnimations_.emplace( path, animations_ );
+		animationSets_.emplace( path, animations );
 		Print( "Cached animation, \"%s\"\n", path );
 	}
 
@@ -33,9 +34,11 @@ bool ct::SpriteAnimator::LoadFile( const char *path )
 	return status;
 }
 
-bool ct::SpriteAnimator::ParseFile( const char *buffer )
+std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( const char *buffer )
 {
 	// todo: rewrite this (and the sprite equivalent) to parse per-line instead
+
+	std::map< std::string, SpriteAnimation > animations;
 
 	const SpriteSheet *spriteSheet = nullptr;
 	SpriteAnimation animation;
@@ -43,9 +46,7 @@ bool ct::SpriteAnimator::ParseFile( const char *buffer )
 	while ( true )
 	{
 		if ( *p == '\0' )
-		{
-			return true;
-		}
+			return animations;
 
 		static constexpr unsigned int MAX_TOKEN = 256;
 		char token[ MAX_TOKEN ];
@@ -120,7 +121,7 @@ bool ct::SpriteAnimator::ParseFile( const char *buffer )
 				break;
 			}
 
-			animations_.emplace( name, animation );
+			animations.emplace( name, animation );
 			PL_ZERO_( animation );
 
 			Print( "Pushed anim: %s\n", name );
@@ -132,50 +133,44 @@ bool ct::SpriteAnimator::ParseFile( const char *buffer )
 		PlSkipLine( &p );
 	}
 
-	return false;
+	return animations;
 }
 
-void ct::SpriteAnimator::SetAnimation( const char *name )
+void ct::SpriteAnimator::SetAnimation( const SpriteAnimation *animation )
 {
-	auto i = animations_.find( name );
-	if ( i == animations_.end() )
-	{
-		Warning( "Failed to find animation: %s\n", name );
-		return;
-	}
-
-	currentAnimation_ = &i->second;
+	frame_ = 0;
+	animation_ = animation;
 }
 
 void ct::SpriteAnimator::Tick()
 {
-	if ( currentAnimation_ == nullptr || currentAnimation_->frames.empty() )
+	if ( animation_ == nullptr || animation_->frames.empty() )
 		return;
 
-	if ( currentAnimation_->nextFrameTime > ct::GetApp()->GetNumOfTicks() )
+	if ( nextFrameTime_ > ct::GetApp()->GetNumOfTicks() )
 		return;
 
-	currentAnimation_->nextFrameTime = ct::GetApp()->GetNumOfTicks() + currentAnimation_->playbackSpeed;
-	currentAnimation_->currentFrame++;
-	if ( currentAnimation_->currentFrame >= currentAnimation_->frames.size() )
+	nextFrameTime_ = ct::GetApp()->GetNumOfTicks() + animation_->playbackSpeed;
+	frame_++;
+	if ( frame_ >= animation_->frames.size() )
 	{
-		if ( !currentAnimation_->loop )
+		if ( !animation_->loop )
 		{
-			currentAnimation_->currentFrame = currentAnimation_->frames.size() - 1;
+			frame_ = animation_->frames.size() - 1;
 			return;
 		}
 
-		currentAnimation_->currentFrame = 0;
+		frame_ = 0;
 		return;
 	}
 }
 
 void ct::SpriteAnimator::Draw( const hei::Vector2 &position )
 {
-	if ( currentAnimation_ == nullptr )
+	if ( animation_ == nullptr )
 		return;
 
-	const SpriteAnimation::Frame *frame = &currentAnimation_->frames[ currentAnimation_->currentFrame ];
+	const SpriteAnimation::Frame *frame = GetCurrentFrame();
 	if ( frame->sprite == nullptr )
 		return;
 

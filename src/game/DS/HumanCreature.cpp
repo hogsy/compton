@@ -14,15 +14,20 @@ namespace ct::game::ds
 	public:
 		void Precache() override;
 		void Spawn() override;
-
 		void Tick() override;
+
+	private:
+		unsigned int currentAnimation_{ 0 };
 	};
-}// namespace vc::game::ds
+}// namespace ct::game::ds
 
 using namespace ct;
 using namespace ct::game;
 
 REGISTER_ENTITY( HumanCreature, ds::HumanCreature )
+
+static const SpriteAnimation *idleAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ] = { nullptr };
+static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ] = { nullptr };
 
 ds::HumanCreature::HumanCreature() = default;
 ds::HumanCreature::~HumanCreature() = default;
@@ -33,38 +38,35 @@ void ds::HumanCreature::Precache()
 
 	ct::spriteManager->GetSpriteSheet( "sprites/creatures/human/human_sprites.sdf" );
 
-	CacheAnimation( "sprites/creatures/human/human.ani" );
+	if ( CacheAnimationSet( "sprites/creatures/human/human.ani" ) )
+	{
+		if ( idleAnimations[ 0 ] == nullptr )
+		{
+			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
+			{
+				std::string name = "human_idle_" + std::string( DIRECTIONS[ i ] );
+				idleAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name.c_str() );
+			}
+		}
+		if ( runAnimations[ 0 ] == nullptr )
+		{
+			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
+			{
+				std::string name = "human_run_" + std::string( DIRECTIONS[ i ] );
+				runAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name.c_str() );
+			}
+		}
+	}
 }
 
 void ds::HumanCreature::Spawn()
 {
 	SuperClass::Spawn();
 
-	CacheAnimation( "sprites/creatures/human/human.ani" );
-	SetAnimation( "human_idle_s" );
+	SetAnimation( nullptr );
 }
 
 static unsigned int maxTicksTest = 50;
-static const char *animations[] = {
-		"human_idle_n",
-		"human_idle_ne",
-		"human_idle_e",
-		"human_idle_se",
-		"human_idle_s",
-		"human_idle_sw",
-		"human_idle_w",
-		"human_idle_nw",
-		"human_run_n",
-		"human_run_ne",
-		"human_run_e",
-		"human_run_se",
-		"human_run_s",
-		"human_run_sw",
-		"human_run_w",
-		"human_run_nw",
-};
-static unsigned int currentAnimation = 0;
-static constexpr unsigned int MAX_ANIMATIONS = PL_ARRAY_ELEMENTS( animations );
 
 void ds::HumanCreature::Tick()
 {
@@ -72,9 +74,9 @@ void ds::HumanCreature::Tick()
 
 	if ( maxTicksTest <= GetApp()->GetNumOfTicks() )
 	{
-		SetAnimation( animations[ currentAnimation++ ] );
-		if ( currentAnimation >= MAX_ANIMATIONS )
-			currentAnimation = 0;
+		SetAnimation( idleAnimations[ currentAnimation_++ ] );
+		if ( currentAnimation_ >= MAX_SPRITE_DIRECTIONS )
+			currentAnimation_ = 0;
 
 		maxTicksTest = GetApp()->GetNumOfTicks() + 50;
 	}

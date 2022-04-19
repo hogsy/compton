@@ -4,16 +4,18 @@
 #include "Compton.h"
 #include "BaseAnimated.h"
 
-REGISTER_ENTITY( BaseAnimated, ct::BaseAnimated )
+using namespace ct;
 
-void ct::BaseAnimated::Tick()
+REGISTER_ENTITY( BaseAnimated, BaseAnimated )
+
+void BaseAnimated::Tick()
 {
 	SuperClass::Tick();
 
 	animator_.Tick();
 }
 
-void ct::BaseAnimated::Draw( const ct::Camera &camera )
+void BaseAnimated::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
@@ -21,12 +23,18 @@ void ct::BaseAnimated::Draw( const ct::Camera &camera )
 	animator_.Draw( p - camera.position );
 }
 
-void ct::BaseAnimated::CacheAnimation( const char *path )
+bool BaseAnimated::CacheAnimationSet( const char *path )
 {
-	animator_.LoadFile( path );
+	if ( !SpriteAnimator::CacheAnimationSet( path ) )
+	{
+		Warning( "Entity (%s) failed to cache animation set: %s\n", GetClassIdentifier(), path );
+		return false;
+	}
+
+	return true;
 }
 
-void ct::BaseAnimated::SetAnimation( const char *name )
+void BaseAnimated::SetAnimation( const SpriteAnimation *animation )
 {
-	animator_.SetAnimation( name );
+	animator_.SetAnimation( animation );
 }

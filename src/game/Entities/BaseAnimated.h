@@ -13,13 +13,25 @@ namespace ct
 	public:
 		IMPLEMENT_SUPER( Entity );
 
+		static constexpr unsigned int MAX_SPRITE_DIRECTIONS = 8;// n, ne, e, se, s, sw, w, nw
+		static constexpr const char *DIRECTIONS[ MAX_SPRITE_DIRECTIONS ] = {
+				"n",
+				"ne",
+				"e",
+				"se",
+				"s",
+				"sw",
+				"w",
+				"nw",
+		};
+
 		virtual void Tick() override;
 		virtual void Draw( const Camera &camera ) override;
 
-		void CacheAnimation( const char *path );
-		virtual void SetAnimation( const char *name );
+		bool CacheAnimationSet( const char *path );
+		virtual void SetAnimation( const SpriteAnimation *animation );
 
 	protected:
 		SpriteAnimator animator_;
 	};
-}// namespace vc
+}// namespace ct

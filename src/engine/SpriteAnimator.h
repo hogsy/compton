@@ -10,53 +10,72 @@
 
 namespace ct
 {
+	struct SpriteAnimation
+	{
+		struct Frame
+		{
+			const Sprite *sprite{ nullptr };
+			bool mirror{ false };
+			hei::Vector2 origin;
+		};
+
+		std::vector< Frame > frames;
+		unsigned int playbackSpeed{ 0 };
+		bool loop{ false };
+	};
+
 	class SpriteAnimator
 	{
 	public:
 		SpriteAnimator() = default;
 
-		bool LoadFile( const char *path );
+		static bool CacheAnimationSet( const char *path );
+		static inline const SpriteAnimation *GetAnimation( const char *path, const char *animationName )
+		{
+			auto i = animationSets_.find( path );
+			if ( i == animationSets_.end() )
+			{
+				Warning( "Failed to find animation set: %s\n", path );
+				return nullptr;
+			}
+
+			auto j = i->second.find( animationName );
+			if ( j == i->second.end() )
+			{
+				Warning( "Failed to find animation: %s\n", path );
+				return nullptr;
+			}
+
+			return &j->second;
+		}
 
 	private:
-		bool ParseFile( const char *buffer );
+		static std::map< std::string, SpriteAnimation > ParseFile( const char *buffer );
 
 	public:
-		void SetAnimation( const char *name );
+		void SetAnimation( const SpriteAnimation *animation );
 
 		void Tick();
 		void Draw( const hei::Vector2 &position );
 
 	public:
-		struct SpriteAnimation
-		{
-			struct Frame
-			{
-				const Sprite *sprite{ nullptr };
-				bool mirror{ false };
-				hei::Vector2 origin;
-			};
-
-			std::vector< Frame > frames;
-			unsigned int currentFrame{ 0 };
-			unsigned int playbackSpeed{ 0 }, nextFrameTime{ 0 };
-			bool loop{ false };
-		};
-
 		const SpriteAnimation::Frame *GetCurrentFrame() const
 		{
-			if ( currentAnimation_ == nullptr )
-			{
+			if ( animation_ == nullptr )
 				return nullptr;
-			}
 
-			return &currentAnimation_->frames[ currentAnimation_->currentFrame ];
+			if ( frame_ >= animation_->frames.size() )
+				return nullptr;
+
+			return &animation_->frames[ frame_ ];
 		}
 
 	private:
 		// < filename, < animation name, animation > >
-		static std::map< std::string, std::map< std::string, SpriteAnimation > > cachedAnimations_;
+		static std::map< std::string, std::map< std::string, SpriteAnimation > > animationSets_;
 
-		std::map< std::string, SpriteAnimation > animations_;
-		SpriteAnimation *currentAnimation_{ nullptr };
+		const SpriteAnimation *animation_{ nullptr };
+		unsigned int nextFrameTime_{ 0 };
+		unsigned int frame_{ 0 };
 	};
-}// namespace vc
+}// namespace ct

@@ -31,8 +31,8 @@ void ct::BaseCharacter::Spawn()
 	SuperClass::Spawn();
 
 	// Cache the sprites we need
-	CacheAnimation( "sprites/creatures/human/human.ani" );
-	SetAnimation( "human_idle_s" );
+	CacheAnimationSet( "sprites/creatures/human/human.ani" );
+	SetAnimation( nullptr );
 
 	char firstName[ 8 ], lastName[ 8 ];
 	random::GenerateRandomName( firstName, sizeof( firstName ) );

@@ -5,7 +5,6 @@
 #include "World.h"
 #include "Random.h"
 #include "Entity.h"
-#include "Entities/BaseCharacter.h"
 
 ct::World::World( const char *name, unsigned int seed ) : name_( name ),
 														  seed_( seed )
@@ -23,7 +22,11 @@ void ct::World::Tick()
 
 void ct::World::Draw( const ct::Camera &camera )
 {
+	START_MEASURE();
+
 	terrain_.Draw( camera );
+
+	END_MEASURE();
 }
 
 void ct::World::Deserialize( ct::Serializer *read )
@@ -81,7 +84,7 @@ void ct::World::Generate( unsigned int seed )
 
 		// Spawn one Storehouse at the center
 		Entity *hub = GameMode::GetEntityManager()->CreateEntity( "Tree" );
-		hub->origin = hei::Vector2( x, y );
+		hub->origin_ = hei::Vector2( x, y );
 
 #define TERRITORY_BOUNDS 256
 
@@ -105,13 +108,16 @@ void ct::World::Generate( unsigned int seed )
 					continue;
 				}
 
-				citizen->origin = hei::Vector2( x, y );
+				citizen->origin_ = hei::Vector2( x, y );
 			}
 		}
 
 		territories_.push_back( territory );
 	}
 
-	Entity *testEntity = GameMode::GetEntityManager()->CreateEntity( "HumanCreature" );
-	testEntity->origin = hei::Vector2( 256, 256 );
+	for ( unsigned int i = 0; i < 1000; ++i )
+	{
+		Entity *testEntity = GameMode::GetEntityManager()->CreateEntity( "HumanCreature" );
+		testEntity->origin_ = hei::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );
+	}
 }

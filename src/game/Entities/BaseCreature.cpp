@@ -32,8 +32,8 @@ void ct::BaseCreature::Spawn()
 	generation_ = random::GenerateRandomInteger( 1, 10 );
 
 	// Health
-	myHealth    = random::GenerateRandomInteger( 50, 100 );
-	myMaxHealth = random::GenerateRandomInteger( myHealth, myHealth + 100 );
+	health_ = random::GenerateRandomInteger( 50, 100 );
+	maxHealth_ = random::GenerateRandomInteger( health_, health_ + 100 );
 
 	// Stamina
 	stamina_ = random::GenerateRandomInteger( 30, 100 );
@@ -80,8 +80,8 @@ void ct::BaseCreature::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	myHealth    = read->ReadInteger();
-	myMaxHealth = read->ReadInteger();
+	health_ = read->ReadInteger();
+	maxHealth_ = read->ReadInteger();
 
 	stamina_ = read->ReadInteger();
 	maxStamina_ = read->ReadInteger();
@@ -96,8 +96,8 @@ void ct::BaseCreature::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
 
-	write->WriteInteger( myHealth );
-	write->WriteInteger( myMaxHealth );
+	write->WriteInteger( health_ );
+	write->WriteInteger( maxHealth_ );
 
 	write->WriteInteger( stamina_ );
 	write->WriteInteger( maxStamina_ );

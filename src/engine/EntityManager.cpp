@@ -2,9 +2,9 @@
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
-#include "../shared.h"
 #include "EntityManager.h"
 #include "Entity.h"
+#include "BitmapFont.h"
 #include "Serializer.h"
 
 std::map< std::string, ct::EntityManager::EntityConstructorFunction > ct::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
@@ -77,9 +77,20 @@ void ct::EntityManager::Draw( const Camera &camera )
 
 	std::map< float, Entity * > entityDrawOrder;
 	for ( const auto &entity : entities )
-		entityDrawOrder.emplace( entity->z_ ? entity->z_ : entity->origin.y, entity );
+		entityDrawOrder.emplace( entity->z_ ? entity->z_ : entity->origin_.y, entity );
+
+	unsigned int i = 0;
 	for ( const auto &entity : entityDrawOrder )
+	{
 		entity.second->Draw( camera );
+
+		BitmapFont *font = GetApp()->GetDefaultFont();
+		std::string s = "z: " + std::to_string( i );
+		int x = (entity.second->origin_.x - camera.position.x) - ( ( font->GetCharacterWidth() * s.length() ) / 2 );
+		int y = entity.second->origin_.y - camera.position.y;
+		font->DrawString( &x, &y, s.c_str() );
+		++i;
+	}
 
 	END_MEASURE();
 }

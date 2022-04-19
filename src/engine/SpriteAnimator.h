@@ -26,7 +26,7 @@ namespace ct
 		void Tick();
 		void Draw( const hei::Vector2 &position );
 
-	private:
+	public:
 		struct SpriteAnimation
 		{
 			struct Frame
@@ -42,6 +42,17 @@ namespace ct
 			bool loop{ false };
 		};
 
+		const SpriteAnimation::Frame *GetCurrentFrame() const
+		{
+			if ( currentAnimation_ == nullptr )
+			{
+				return nullptr;
+			}
+
+			return &currentAnimation_->frames[ currentAnimation_->currentFrame ];
+		}
+
+	private:
 		// < filename, < animation name, animation > >
 		static std::map< std::string, std::map< std::string, SpriteAnimation > > cachedAnimations_;
 

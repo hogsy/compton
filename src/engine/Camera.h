@@ -11,6 +11,7 @@
 
 namespace ct
 {
+	class Entity;
 	struct Camera : public ISerializable
 	{
 		hei::Vector2 oldPosition{ 0.0f, 0.0f }, position{ 0.0f, 0.0f };
@@ -23,6 +24,8 @@ namespace ct
 			OTHER,
 		};
 		MoveMode movementMode{ MoveMode::FREE };
+
+		Entity *followTarget{ nullptr };
 
 		inline void Deserialize( Serializer *read )
 		{
@@ -41,4 +44,4 @@ namespace ct
 			write->WriteInteger( ( int ) movementMode );
 		}
 	};
-}// namespace vc
+}// namespace ct

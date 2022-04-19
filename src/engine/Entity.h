@@ -34,16 +34,17 @@ namespace ct
 
 		virtual bool ShouldDraw( const Camera &camera ) const;
 
-		hei::Vector2 velocity{ 0.0f, 0.0f };
-		hei::Vector2 bounds{ 0.0f, 0.0f };
-		hei::Vector2 origin{ 0.0f, 0.0f };
+		hei::Vector2 velocity_;
+		hei::Vector2 origin_;
+		hei::Vector2 offset_;
+		hei::Vector2 bounds_{ 20.0f, 20.0f };
 
 		float z_{ 0.0f };
 
 	protected:
-		int myHealth{ 100 };
-		int myMaxHealth{ 100 };
+		int health_{ 100 };
+		int maxHealth_{ 100 };
 
 		bool isVisible{ false };
 	};
-}// namespace vc
+}// namespace ct

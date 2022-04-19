@@ -21,10 +21,11 @@ void ds::Tree::Spawn()
 {
 	SuperClass::Spawn();
 
-	myHealth    = random::GenerateRandomInteger( 1, 100 );
-	myMaxHealth = random::GenerateRandomInteger( myHealth, 200 );
+	health_ = random::GenerateRandomInteger( 1, 100 );
+	maxHealth_ = random::GenerateRandomInteger( health_, 200 );
 
 	sprite_ = ct::spriteManager->GetSprite( "sprites/environment/tree00.gif", SpriteManager::SPRITE_GROUP_ENTITY );
+	offset_ = hei::Vector2( -2.0f, 2.0f );
 }
 
 void ds::Tree::Precache()
@@ -44,6 +45,6 @@ void ds::Tree::Draw( const ct::Camera &camera )
 		return;
 	}
 
-	hei::Vector2 pos = origin - camera.position;
+	hei::Vector2 pos = hei::Vector2( origin_ + offset_ ) - camera.position;
 	sprite_->Draw( pos.x, pos.y );
 }

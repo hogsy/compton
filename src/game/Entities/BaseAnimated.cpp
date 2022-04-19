@@ -17,7 +17,8 @@ void ct::BaseAnimated::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
-	animator_.Draw( origin - camera.position );
+	hei::Vector2 p = origin_ + offset_;
+	animator_.Draw( p - camera.position );
 }
 
 void ct::BaseAnimated::CacheAnimation( const char *path )

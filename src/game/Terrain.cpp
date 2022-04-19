@@ -6,24 +6,34 @@
 #include "Serializer.h"
 #include "Camera.h"
 #include "Random.h"
+#include "World.h"
+#include "GameMode.h"
 
-void ct::Terrain::TerrainTile::Draw( const Camera &camera, float offsetX, float offsetY )
+void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offsetY )
 {
-#if 0 // todo: rewrite this, we we decide to retain it
-	static const PLColour tileColour[ MAX_TERRAIN_TYPES ] = {
+	static const hei::Colour tileColour[ MAX_TERRAIN_TYPES ] = {
 			{ 0, 255, 0 },
 			{ 205, 203, 74 },
 			{ 216, 216, 216 },
 			{ 73, 77, 90 },
-			{ 0, 0, 255 } };
+			{ 0, 0, 255 },
+	};
 
-	if ( offsetX + TERRAIN_TILE_WIDTH > camera.position.x + DISPLAY_WIDTH ||
-	     offsetX < camera.position.x - DISPLAY_WIDTH ||
-	     offsetY + TERRAIN_TILE_HEIGHT > camera.position.y + DISPLAY_HEIGHT ||
-	     offsetY < camera.position.y - DISPLAY_HEIGHT )
+	int x = offsetX - camera.position.x;
+	int y = offsetY - camera.position.y;
+
+	if ( x > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
 	{
 		return;
 	}
+
+	render::DrawFilledRectangle( x, y, TILE_WIDTH, TILE_HEIGHT,
+	                             hei::Colour(
+										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ 0 ] + 0.1f ) ),
+										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].g ) * ( height[ 0 ] + 0.1f ) ),
+										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ 0 ] + 0.1f ) ) ) );
+
+#if 0// todo: rewrite this, we we decide to retain it
 
 	ALLEGRO_VERTEX vertices[ 6 ];
 	memset( vertices, 0, sizeof( ALLEGRO_VERTEX ) * 6 );
@@ -68,11 +78,11 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, float offsetX, float 
 
 	al_draw_prim( vertices, nullptr, nullptr, 0, 6, ALLEGRO_PRIM_TRIANGLE_LIST );
 
-#if 0
+#	if 0
 	float rectThick = camera.zoom / 4.0f;
 	unsigned char rectAlpha = PlFloatToByte( camera.zoom ) * 50;
 	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, rectAlpha ), rectThick );
-#endif
+#	endif
 #endif
 }
 
@@ -116,10 +126,6 @@ void ct::Terrain::Draw( const Camera &camera )
 {
 	START_MEASURE();
 
-	//al_draw_rectangle( 0.0f, 0.0f, TERRAIN_PIXEL_WIDTH, TERRAIN_PIXEL_HEIGHT, al_map_rgb( 0, 0, 255 ), 16.0f );
-
-	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
-
 	for ( unsigned int y = 0; y < NUM_TILES_COLUMN; ++y )
 	{
 		for ( unsigned int x = 0; x < NUM_TILES_ROW; ++x )
@@ -135,8 +141,6 @@ void ct::Terrain::Draw( const Camera &camera )
 			tiles[ tileNum ].Draw( camera, offsetX, offsetY );
 		}
 	}
-
-	al_set_blender( ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA );
 
 	END_MEASURE();
 }
@@ -184,8 +188,8 @@ bool ct::Terrain::IsWater( float x, float y )
 		return true;
 	}
 
-	unsigned int xr      = PlRoundUp( x * TILE_WIDTH / PIXEL_WIDTH, 1 );
-	unsigned int yr      = PlRoundUp( y * TILE_HEIGHT / PIXEL_HEIGHT, 1 );
+	unsigned int xr = PlRoundUp( x * TILE_WIDTH / PIXEL_WIDTH, 1 );
+	unsigned int yr = PlRoundUp( y * TILE_HEIGHT / PIXEL_HEIGHT, 1 );
 	unsigned int tileNum = xr + yr * NUM_TILES_ROW;
 	if ( tileNum >= NUM_TILES )
 	{

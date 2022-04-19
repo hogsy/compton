@@ -36,8 +36,9 @@
 #include "engine/Serializer.h"
 #include "engine/FileSystem.h"
 
-#define DISPLAY_WIDTH  320
-#define DISPLAY_HEIGHT 240
+#define DISPLAY_WIDTH  640
+#define DISPLAY_HEIGHT 480
+//#define ENABLE_SCALING
 
 namespace ct
 {
@@ -140,9 +141,6 @@ namespace ct
 		ALLEGRO_TIMER *alTimer;
 		ALLEGRO_TEXTLOG *alLog;
 
-		ALLEGRO_MOUSE_STATE mouseState;
-		ALLEGRO_KEYBOARD_STATE keyboardState;
-
 		// Game state
 		GameMode *gameMode{ nullptr };
 
@@ -151,6 +149,9 @@ namespace ct
 		BitmapFont *defaultBitmapFont_{ nullptr };                  // todo: this should replace the above...
 
 		bool redraw;
+
+		bool debugFPS_{ false };
+		bool debugProfiler_{ false };
 
 		int windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;

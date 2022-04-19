@@ -1,92 +1,92 @@
 $sheet sprites/creatures/human/human_sprites.sdf
 
 $loop
-$frame idle_n 0 8 0
+$frame idle_n 0 8 23
 $push human_idle_n
 $loop
-$frame idle_s 0 8 0
+$frame idle_s 0 8 23
 $push human_idle_s
 
 $loop
-$frame idle_ne 0 8 0
+$frame idle_ne 0 8 23
 $push human_idle_ne
 $loop
-$frame idle_e 0 8 0
+$frame idle_e 0 8 23
 $push human_idle_e
 $loop
-$frame idle_se 0 8 0
+$frame idle_se 0 8 23
 $push human_idle_se
 
 $loop
-$frame idle_ne 1 8 0
+$frame idle_ne 1 8 23
 $push human_idle_nw
 $loop
-$frame idle_e 1 8 0
+$frame idle_e 1 8 23
 $push human_idle_w
 $loop
-$frame idle_se 1 8 0
+$frame idle_se 1 8 23
 $push human_idle_sw
 
 $speed 8
 $loop
-$frame run_n0 0 8 0
-$frame run_n1 0 8 0
-$frame run_n2 0 8 0
-$frame run_n3 0 8 0
+$frame run_n0 0 8 23
+$frame run_n1 0 8 23
+$frame run_n2 0 8 23
+$frame run_n3 0 8 23
 $push human_run_n
 
 $speed 8
 $loop
-$frame run_ne0 0 8 0
-$frame run_ne1 0 8 0
-$frame run_ne2 0 8 0
-$frame run_ne3 0 8 0
+$frame run_ne0 0 8 23
+$frame run_ne1 0 8 23
+$frame run_ne2 0 8 23
+$frame run_ne3 0 8 23
 $push human_run_ne
 
 $speed 8
 $loop
-$frame run_e0 0 8 0
-$frame run_e1 0 8 0
-$frame run_e2 0 8 0
-$frame run_e3 0 8 0
+$frame run_e0 0 8 23
+$frame run_e1 0 8 23
+$frame run_e2 0 8 23
+$frame run_e3 0 8 23
 $push human_run_e
 
 $speed 8
 $loop
-$frame run_se0 0 8 0
-$frame run_se1 0 8 0
-$frame run_se2 0 8 0
-$frame run_se3 0 8 0
+$frame run_se0 0 8 23
+$frame run_se1 0 8 23
+$frame run_se2 0 8 23
+$frame run_se3 0 8 23
 $push human_run_se
 
 $speed 8
 $loop
-$frame run_s0 0 8 0
-$frame run_s1 0 8 0
-$frame run_s2 0 8 0
-$frame run_s3 0 8 0
+$frame run_s0 0 8 23
+$frame run_s1 0 8 23
+$frame run_s2 0 8 23
+$frame run_s3 0 8 23
 $push human_run_s
 
 $speed 8
 $loop
-$frame run_se0 1 8 0
-$frame run_se1 1 8 0
-$frame run_se2 1 8 0
-$frame run_se3 1 8 0
+$frame run_se0 1 8 23
+$frame run_se1 1 8 23
+$frame run_se2 1 8 23
+$frame run_se3 1 8 23
 $push human_run_sw
 
 $speed 8
 $loop
-$frame run_e0 1 8 0
-$frame run_e1 1 8 0
-$frame run_e2 1 8 0
-$frame run_e3 1 8 0
+$frame run_e0 1 8 23
+$frame run_e1 1 8 23
+$frame run_e2 1 8 23
+$frame run_e3 1 8 23
 $push human_run_w
 
 $speed 8
 $loop
-$frame run_ne0 1 8 0
-$frame run_ne1 1 8 0
-$frame run_ne2 1 8 0
-$frame run_ne3 1 8 0
+$frame run_ne0 1 8 23
+$frame run_ne1 1 8 23
+$frame run_ne2 1 8 23
+$frame run_ne3 1 8 23
 $push human_run_nw

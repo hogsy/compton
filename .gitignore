@@ -5,3 +5,4 @@
 /bin/quick.save
 
 /bin/runtime/win32-x86_64/*.exe
+/bin/runtime/unix-x86_64/

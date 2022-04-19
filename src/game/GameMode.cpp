@@ -56,12 +56,12 @@ void ct::GameMode::SetupUserInterface()
 	//new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
 
-	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
-	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
-	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
-	//new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 22, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 44, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 76, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 108, 32, 32 );
 
-#if 0
+#if 1
 #	define MINIMAP_WIDTH  128
 #	define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
@@ -149,16 +149,26 @@ void ct::GameMode::Tick()
 
 		// Restrict the camera to the world bounds
 		if ( camera.position.x + DISPLAY_WIDTH < 0.0f )
+		{
 			camera.position.x = Background::PIXEL_WIDTH;
-		else if ( camera.position.x > Background::PIXEL_WIDTH )
+		}
+		else if ( camera.position.x > Terrain::PIXEL_WIDTH )
+		{
 			camera.position.x = -DISPLAY_WIDTH;
+		}
 		if ( camera.position.y < 0.0f )
+		{
 			camera.position.y = 0.0f;
-		else if ( camera.position.y + DISPLAY_HEIGHT > Background::PIXEL_HEIGHT )
-			camera.position.y = Background::PIXEL_HEIGHT - DISPLAY_HEIGHT;
+		}
+		else if ( camera.position.y + DISPLAY_HEIGHT > Terrain::PIXEL_HEIGHT )
+		{
+			camera.position.y = Terrain::PIXEL_HEIGHT - DISPLAY_HEIGHT;
+		}
 
 		if ( camera.velocity.x != 0 || camera.velocity.y != 0 )
+		{
 			camera.velocity -= ( camera.velocity / CAMERA_FRICTION );
+		}
 	}
 
 	if ( world_ != nullptr )
@@ -174,13 +184,19 @@ void ct::GameMode::Draw()
 	START_MEASURE();
 
 	if ( world_ != nullptr )
+	{
 		world_->Draw( camera );
+	}
 
 	entityManager_->Draw( camera );
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )
+	{
+		ct::GetApp()->StartPerformanceTimer( "GUI Draw" );
 		baseGuiPanel_->Draw();
+		ct::GetApp()->EndPerformanceTimer( "GUI Draw" );
+	}
 
 	BitmapFont *font = GetApp()->GetDefaultFont();
 
@@ -196,8 +212,6 @@ void ct::GameMode::Draw()
 		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
-
-	ct::spriteManager->DrawSprite( "sprites/ui/icon_talk.png", SpriteManager::SPRITE_GROUP_GUI, 256, 256 );
 
 	END_MEASURE();
 }
@@ -308,9 +322,6 @@ void ct::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 		default:
 			break;
 
-		case ALLEGRO_KEY_H:
-			enableHelpPrompt_ = !enableHelpPrompt_;
-			break;
 		case ALLEGRO_KEY_Q:
 			GetApp()->Shutdown();
 			break;

@@ -49,40 +49,44 @@ namespace ct::input
 		// Called at the end of a frame; update the state from PRESSED to DOWN
 		PUBLIC inline void EndFrame()
 		{
-			for ( auto i : keys_ )
+			START_MEASURE();
+
+			for ( unsigned int i = 0; i < keys_.size(); ++i )
 			{
-				if ( i != State::PRESSED )
+				if ( keys_[ i ] != State::PRESSED )
 				{
 					continue;
 				}
 
-				i = State::DOWN;
+				keys_[ i ] = State::DOWN;
 			}
 
-			for ( auto i : mouseButtons_ )
+			for ( unsigned int i = 0; i < mouseButtons_.size(); ++i )
 			{
-				if ( i != State::PRESSED )
+				if ( mouseButtons_[ i ] != State::PRESSED )
 				{
 					continue;
 				}
 
-				i = State::DOWN;
+				mouseButtons_[ i ] = State::DOWN;
 			}
 
-			for ( auto i : controllers_ )
+			for ( unsigned int i = 0; i < controllers_.size(); ++i )
 			{
 				for ( unsigned int j = 0; j < Controller::MAX_CONTROLLER_BUTTONS; ++j )
 				{
-					if ( i.buttonStates[ j ] != State::PRESSED )
+					if ( controllers_[ i ].buttonStates[ j ] != State::PRESSED )
 					{
 						continue;
 					}
 
-					i.buttonStates[ j ] = State::DOWN;
+					controllers_[ i ].buttonStates[ j ] = State::DOWN;
 				}
 			}
 
 			locked_ = false;
+
+			END_MEASURE();
 		}
 
 		PUBLIC inline void GetMousePosition( int *x, int *y ) const

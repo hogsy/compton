@@ -7,8 +7,8 @@
 
 void ct::render::ClearDisplay( void ) {
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
-	//PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
-	memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	//memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
 void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )

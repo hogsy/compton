@@ -250,11 +250,20 @@ void ct::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
+#ifdef ENABLE_SCALING
 	windowWidth = DISPLAY_WIDTH * 2;
 	windowHeight = DISPLAY_HEIGHT * 2;
+#else
+	windowWidth = DISPLAY_WIDTH;
+	windowHeight = DISPLAY_HEIGHT;
+#endif
 
+	int displayFlags = ALLEGRO_OPENGL_3_0;
 	if ( !PlHasCommandLineArgument( "--window" ) )
-		al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
+	{
+		displayFlags |= ALLEGRO_FULLSCREEN_WINDOW;
+	}
+	al_set_new_display_flags( displayFlags );
 
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
@@ -271,7 +280,9 @@ void ct::App::InitializeDisplay()
 	al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
 	screenBitmap_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( screenBitmap_ == nullptr )
+	{
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
+	}
 
 	int sx = windowWidth / DISPLAY_WIDTH;
 	int sy = windowHeight / DISPLAY_HEIGHT;
@@ -292,7 +303,11 @@ void ct::App::InitializeDisplay()
 void ct::App::Draw()
 {
 	if ( !redraw )
+	{
 		return;
+	}
+
+	START_MEASURE();
 
 	double newTime = PlGetCurrentSeconds();
 	static unsigned int ci = 0;
@@ -313,35 +328,43 @@ void ct::App::Draw()
 		gameMode->Draw();
 	}
 
+	END_MEASURE();
+
 	// Draw our debug data
 	{
 		char buf[ 256 ];
 		int x = 8, y = 8;
 
-		unsigned int fps = GetAverageFPS();
-
-		snprintf( buf, sizeof( buf ), "FPS = %u\n", fps );
-		hei::Colour colour;
-		if ( fps <= 30 )
-			colour = hei::Colour( 255, 0, 0 );
-		else if ( fps <= 45 )
-			colour = hei::Colour( 255, 255, 0 );
-		else
-			colour = hei::Colour( 0, 255, 0 );
-
-		defaultBitmapFont_->DrawString( &x, &y, buf, colour );
-
-		for ( auto const &i : performanceTimers )
+		if ( debugFPS_ )
 		{
-			snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
-			defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+			unsigned int fps = GetAverageFPS();
+
+			snprintf( buf, sizeof( buf ), "FPS = %u\n", fps );
+			hei::Colour colour;
+			if ( fps <= 30 )
+				colour = hei::Colour( 255, 0, 0 );
+			else if ( fps <= 45 )
+				colour = hei::Colour( 255, 255, 0 );
+			else
+				colour = hei::Colour( 0, 255, 0 );
+
+			defaultBitmapFont_->DrawString( &x, &y, buf, colour );
+		}
+
+		if ( debugProfiler_ )
+		{
+			for ( auto const &i : performanceTimers )
+			{
+				snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
+				defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+			}
 		}
 	}
 
-	al_unlock_bitmap( screenBitmap_ );
-
 	// And finally, handle the scaling
+	al_unlock_bitmap( screenBitmap_ );
 	al_set_target_backbuffer( alDisplay );
+#ifdef ENABLE_SCALING
 	al_draw_scaled_bitmap(
 			screenBitmap_,
 			0, 0,
@@ -349,6 +372,9 @@ void ct::App::Draw()
 			scaleX, scaleY,
 			scaleW, scaleH,
 			0 );
+#else
+	al_draw_bitmap( screenBitmap_, 0, 0, 0 );
+#endif
 
 	al_flip_display();
 
@@ -401,8 +427,8 @@ void ct::App::Tick()
 	ALLEGRO_EVENT event{};
 	al_wait_for_event( alEventQueue, &event );
 
-	al_get_mouse_state( &mouseState );
-	al_get_keyboard_state( &keyboardState );
+	//al_get_mouse_state( &mouseState );
+	//al_get_keyboard_state( &keyboardState );
 
 	switch ( event.type )
 	{
@@ -425,7 +451,18 @@ void ct::App::Tick()
 			break;
 
 		case ALLEGRO_EVENT_TIMER:
+		{
 			numTicks++;
+
+			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_P ) == input::State::PRESSED )
+			{
+				debugProfiler_ = !debugProfiler_;
+			}
+			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_O ) == input::State::PRESSED )
+			{
+				debugFPS_ = !debugFPS_;
+			}
+
 			if ( gameMode != nullptr )
 			{
 				gameMode->Tick();
@@ -433,6 +470,7 @@ void ct::App::Tick()
 			input::inputManager->EndFrame();
 			redraw = true;
 			break;
+		}
 
 		case ALLEGRO_EVENT_DISPLAY_CLOSE:
 			Shutdown();

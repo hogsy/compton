@@ -58,7 +58,7 @@ namespace ct
 			TerrainTileCorner corners[ 2 ];
 			float height[ 4 ];
 
-			void Draw( const Camera &camera, float offsetX, float offsetY );
+			void Draw( const Camera &camera, int offsetX, int offsetY );
 		};
 
 	private:

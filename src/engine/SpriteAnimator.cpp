@@ -179,8 +179,8 @@ void ct::SpriteAnimator::Draw( const hei::Vector2 &position )
 	if ( frame->sprite == nullptr )
 		return;
 
-	int x = position.x + frame->origin.x;
-	int y = position.y + frame->origin.y;
+	int x = position.x - frame->origin.x;
+	int y = position.y - frame->origin.y;
 
 	frame->sprite->Draw( x, y, true, frame->mirror );
 }

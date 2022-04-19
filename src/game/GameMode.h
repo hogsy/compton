@@ -57,7 +57,7 @@ namespace ct
 
 		static PlayerManager *GetPlayerManager();
 		static EntityManager *GetEntityManager();
-		static Background    *GetBackgroundManager();
+		static Background *GetBackgroundManager();
 
 		unsigned int GetGameSpeed() const { return gameSpeed_; }
 
@@ -67,18 +67,24 @@ namespace ct
 		GameState gameState_{ GameState::ACTIVE };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
-		GUIPanel      *baseGuiPanel_{ nullptr };
-		GUIPieMenu    *uiPieMenu{ nullptr };
+		GUIPanel *baseGuiPanel_{ nullptr };
+		GUIPieMenu *uiPieMenu{ nullptr };
 
 		PlayerManager *playerManager;
 		EntityManager *entityManager_;
 
 		SpriteSheet *terrainSheet;
-		Background  *backgroundManager_;
-		World       *world_{ nullptr };
+		Background *backgroundManager_;
 
-		bool enableHelpPrompt_{ true };
+		World *world_{ nullptr };
 
+	public:
+		World *GetWorld() const
+		{
+			return world_;
+		}
+
+	private:
 		unsigned int gameSpeed_{ 5 };
 
 		////////////////////////////////////////////////
@@ -103,4 +109,4 @@ namespace ct
 	private:
 		std::array< input::Action *, MAX_ACTIONS > actions_;
 	};
-}// namespace vc
+}// namespace ct

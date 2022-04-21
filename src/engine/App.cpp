@@ -416,8 +416,6 @@ void ct::App::InitializeGame()
 {
 	gameMode = new GameMode();
 	gameMode->RegisterActions();
-
-	gameMode->NewGame( "test" );
 }
 
 void ct::App::Tick()
@@ -587,6 +585,8 @@ int main( int argc, char **argv )
 	appInstance->InitializeGame();
 
 	appInstance->PrecacheResources();
+
+	ct::App::GetGameMode()->NewGame( "test" );
 
 	oldTime = PlGetCurrentSeconds();
 	appInstance->Loop();

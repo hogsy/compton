@@ -22,13 +22,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Compton.h"
 #include "Sensor.h"
+#include "GameMode.h"
+#include "EntityManager.h"
 
 void ct::ai::Sensor::Tick()
 {
-	switch ( myType )
+	switch ( type_ )
 	{
 		case Type::SIGHT:
 		{
+			//GameMode::GetEntityManager()->GetEntitiesInRange( )
 			break;
 		}
 		case Type::SOUND: break;

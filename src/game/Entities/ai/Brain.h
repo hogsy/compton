@@ -31,6 +31,16 @@ namespace ct
 			VERB_APPROACH,
 		};
 
+		/**
+		 * Static descriptor provided by objects
+		 * to provide a quick introduction to the
+		 * object.
+		 */
+		struct Descriptor
+		{
+
+		};
+
 		struct DecisionTree
 		{
 		};
@@ -77,6 +87,9 @@ namespace ct
 			Brain();
 			~Brain();
 
+			// Mood indicator, provided as a generic reflectance
+			// of internal state - not necessarily accurately either
+
 			enum class Mood
 			{
 				SAD,
@@ -86,7 +99,7 @@ namespace ct
 				MAX_MOODS
 			};
 
-			inline Mood GetCurrentMood() const { return myMood; }
+			inline Mood GetCurrentMood() const { return mood_; }
 
 			void Tick();
 
@@ -99,13 +112,13 @@ namespace ct
 
 			inline void WipeMemory()
 			{
-				myMemoryManager.Wipe();
+				memoryManager_.Wipe();
 			}
 
 		private:
-			Mood myMood{ Mood::NEUTRAL };
+			Mood mood_{ Mood::NEUTRAL };
 
-			FeedbackState myState;
+			FeedbackState feedbackState_;
 
 			class MemoryManager
 			{
@@ -116,17 +129,17 @@ namespace ct
 
 				inline void Wipe()
 				{
-					myMemories.clear();
+					memories_.clear();
 				}
 
 			private:
-				std::map< std::string, Memory > myMemories;
+				std::map< std::string, Memory > memories_;
 				// the above is used for carrying identifications for
 				// each agent in the world. each agent carries a unique
 				// descriptor for it's "classification", e.g. honey, water, ice, gremlin
 				// which we use to fetch our disposition
 			};
-			MemoryManager myMemoryManager;
+			MemoryManager memoryManager_;
 
 			struct Directive
 			{
@@ -135,7 +148,7 @@ namespace ct
 				hei::Vector2 targetPosition;
 				std::string  description;
 			};
-			std::vector< Directive > myDirectives;
+			std::vector< Directive > directives_;
 		};
 	}// namespace ai
 }// namespace vc

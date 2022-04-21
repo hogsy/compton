@@ -12,12 +12,6 @@
 
 ct::BaseCreature::BaseCreature()
 {
-	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
-	{
-		sensors_[ i ] = ai::Sensor(
-				( ai::Sensor::Type )( ( uint8_t ) ai::Sensor::Type::SIGHT + i ),
-				&brain_ );
-	}
 }
 
 ct::BaseCreature::~BaseCreature() {}
@@ -25,6 +19,9 @@ ct::BaseCreature::~BaseCreature() {}
 void ct::BaseCreature::Spawn()
 {
 	SuperClass::Spawn();
+
+	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
+		sensors_[ i ] = ai::Sensor( ( ai::Sensor::Type )( ( uint8_t ) ai::Sensor::Type::SIGHT + i ), &brain_ );
 
 	// Age
 	age_ = random::GenerateRandomInteger( 1, 50 );
@@ -86,7 +83,7 @@ void ct::BaseCreature::Deserialize( ct::Serializer *read )
 	stamina_ = read->ReadInteger();
 	maxStamina_ = read->ReadInteger();
 
-	experience    = read->ReadInteger();
+	experience = read->ReadInteger();
 	maxExperience = read->ReadInteger();
 
 	sex_ = static_cast< Sex >( read->ReadInteger() );
@@ -116,9 +113,6 @@ void ct::BaseCreature::Draw( const ct::Camera &camera )
 	{
 		return;
 	}
-
-	//al_draw_filled_circle( origin.x, origin.y, 10.0f, al_map_rgb( 255, 0, 255 ) );
-	//al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );
 }
 
 void ct::BaseCreature::Tick()

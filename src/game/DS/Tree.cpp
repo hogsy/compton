@@ -33,7 +33,6 @@ void ds::Tree::Precache()
 	SuperClass::Precache();
 
 	ct::spriteManager->GetSprite( "sprites/environment/tree00.gif", SpriteManager::SPRITE_GROUP_ENTITY );
-	ct::spriteManager->GetSpriteSheet( "sprites/environment/tree_sprites.sdf" );
 }
 
 void ds::Tree::Draw( const ct::Camera &camera )

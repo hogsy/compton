@@ -42,13 +42,13 @@ namespace ct::ai
 		typedef void ( *SensorStateCallback )( Sensor *self );
 
 		inline Sensor() {}
-		inline Sensor( Type type, Brain *brain ) : myType( type ), myBrain( brain ) {}
+		inline Sensor( Type type, Brain *brain ) : type_( type ), brain_( brain ) {}
 
 		void Tick();
 
 	private:
-		Brain *myBrain{ nullptr };
+		Brain *brain_{ nullptr };
 
-		Type myType{ Type::SIGHT };
+		Type type_{ Type::SIGHT };
 	};
 }// namespace vc::ai

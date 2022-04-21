@@ -18,6 +18,7 @@ namespace ct::game::ds
 
 	private:
 		unsigned int currentAnimation_{ 0 };
+		unsigned int maxTicksTest{ 50 };
 	};
 }// namespace ct::game::ds
 
@@ -63,10 +64,8 @@ void ds::HumanCreature::Spawn()
 {
 	SuperClass::Spawn();
 
-	SetAnimation( nullptr );
+	SetAnimation( idleAnimations[ 0 ] );
 }
-
-static unsigned int maxTicksTest = 50;
 
 void ds::HumanCreature::Tick()
 {

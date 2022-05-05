@@ -25,10 +25,10 @@ namespace ct::input
 	struct Controller
 	{
 		static constexpr unsigned int MAX_CONTROLLER_BUTTONS = 16;
-		std::array< State, MAX_CONTROLLER_BUTTONS > buttonStates;
+		State buttonStates[ MAX_CONTROLLER_BUTTONS ];
 
 		static constexpr unsigned int MAX_CONTROLLER_AXIS = 6;
-		std::array< hei::Vector2, MAX_CONTROLLER_AXIS > axisStates;
+		hei::Vector2 axisStates[ MAX_CONTROLLER_AXIS ];
 
 		void *handle{ nullptr };
 	};

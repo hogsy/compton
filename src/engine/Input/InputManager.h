@@ -51,36 +51,30 @@ namespace ct::input
 		{
 			START_MEASURE();
 
-			for ( unsigned int i = 0; i < keys_.size(); ++i )
+			for (auto & key : keys_)
 			{
-				if ( keys_[ i ] != State::PRESSED )
-				{
+				if ( key != State::PRESSED )
 					continue;
-				}
 
-				keys_[ i ] = State::DOWN;
+				key = State::DOWN;
 			}
 
-			for ( unsigned int i = 0; i < mouseButtons_.size(); ++i )
+			for (auto & mouseButton : mouseButtons_)
 			{
-				if ( mouseButtons_[ i ] != State::PRESSED )
-				{
+				if ( mouseButton != State::PRESSED )
 					continue;
-				}
 
-				mouseButtons_[ i ] = State::DOWN;
+				mouseButton = State::DOWN;
 			}
 
-			for ( unsigned int i = 0; i < controllers_.size(); ++i )
+			for (auto & controller : controllers_)
 			{
-				for ( unsigned int j = 0; j < Controller::MAX_CONTROLLER_BUTTONS; ++j )
+				for (auto & buttonState : controller.buttonStates)
 				{
-					if ( controllers_[ i ].buttonStates[ j ] != State::PRESSED )
-					{
+					if ( buttonState != State::PRESSED )
 						continue;
-					}
 
-					controllers_[ i ].buttonStates[ j ] = State::DOWN;
+					buttonState = State::DOWN;
 				}
 			}
 
@@ -110,31 +104,20 @@ namespace ct::input
 		PRIVATE int mx_{ 0 }, my_{ 0 }, mz_{ 0 };
 		PRIVATE int ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
 		PRIVATE int dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
-		PRIVATE std::array< State, MAX_MOUSE_BUTTONS > mouseButtons_;
+		PRIVATE State mouseButtons_[ MAX_MOUSE_BUTTONS ];
 
-		PRIVATE std::array< State, ALLEGRO_KEY_MAX > keys_;
+		PRIVATE State keys_[ ALLEGRO_KEY_MAX ];
 
 		// Actions
 		PUBLIC Action *PushAction( const char *description );
 		PRIVATE std::vector< Action > actions_;
 
 		PUBLIC static constexpr unsigned int MAX_CONTROLLERS = 4;
-
-		PRIVATE std::array< Controller, MAX_CONTROLLERS > controllers_;
+		PRIVATE Controller controllers_[ MAX_CONTROLLERS ];
 
 		PRIVATE inline Controller *GetControllerForSlot( unsigned int slot )
 		{
-			if ( controllers_.empty() )
-			{
-				return nullptr;
-			}
-
-			// If the controller doesn't exist, fallback to the first
-			if ( slot >= controllers_.size() )
-			{
-				slot = 0;
-			}
-
+			assert( slot < MAX_CONTROLLERS );
 			return &controllers_[ slot ];
 		}
 

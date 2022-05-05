@@ -107,6 +107,6 @@ namespace ct
 		void RegisterActions();
 
 	private:
-		std::array< input::Action *, MAX_ACTIONS > actions_;
+		input::Action *actions_[ MAX_ACTIONS ];
 	};
 }// namespace ct

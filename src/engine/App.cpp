@@ -31,8 +31,8 @@ extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PlMAllocA( size ); }
 void *operator new[]( size_t size ) { return PlMAllocA( size ); }
-void operator delete( void *p ) throw() { PlFree( p ); }
-void operator delete[]( void *p ) throw() { PlFree( p ); }
+void operator delete( void *p ) noexcept { PlFree( p ); }
+void operator delete[]( void *p ) noexcept { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
 static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
 static void AlFree( void *p, int, const char *, const char * ) { PlFree( p ); }
@@ -96,17 +96,13 @@ ct::App::App( int argc, char **argv )
 		// Executable is probably under a runtime directory
 		PlMountLocalLocation( "../../" );
 		if ( localDataPath == nullptr )
-		{
 			localDataPath = "../../data/";
-		}
 	}
 
 	if ( mountLocalData )
 	{
 		if ( localDataPath == nullptr )
-		{
 			localDataPath = "./data/";
-		}
 
 		PlMountLocalLocation( localDataPath );
 	}
@@ -116,9 +112,7 @@ ct::App::App( int argc, char **argv )
 		char packageName[ 64 ];
 		snprintf( packageName, sizeof( packageName ), "data%d.pkg", i );
 		if ( PlMountLocation( packageName ) == nullptr )
-		{
 			break;
-		}
 	}
 
 	// And now initialize Allegro

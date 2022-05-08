@@ -31,19 +31,19 @@ void ct::World::Draw( const ct::Camera &camera )
 
 void ct::World::Deserialize( ct::Serializer *read )
 {
-	seed_ = read->ReadInteger();
-	numSeconds_ = read->ReadInteger();
+	seed_ = read->ReadI32();
+	numSeconds_ = read->ReadI32();
 
 	terrain_.Deserialize( read );
 }
 
 void ct::World::Serialize( Serializer *write )
 {
-	write->WriteInteger( name_.size() );
+	write->WriteI32( name_.size() );
 	write->WriteString( name_.c_str() );
 
-	write->WriteInteger( seed_ );
-	write->WriteInteger( numSeconds_ );
+	write->WriteI32( seed_ );
+	write->WriteI32( numSeconds_ );
 
 	terrain_.Serialize( write );
 }

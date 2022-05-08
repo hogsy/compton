@@ -11,16 +11,16 @@ void ct::BaseBuilding::Deserialize( Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	maxConstructionAmount_ = read->ReadInteger();
-	constructionAmount_ = read->ReadInteger();
+	maxConstructionAmount_ = read->ReadI32();
+	constructionAmount_ = read->ReadI32();
 }
 
 void ct::BaseBuilding::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
 
-	write->WriteInteger( maxConstructionAmount_ );
-	write->WriteInteger( constructionAmount_ );
+	write->WriteI32( maxConstructionAmount_ );
+	write->WriteI32( constructionAmount_ );
 }
 
 void ct::BaseBuilding::Draw( const ct::Camera &camera )

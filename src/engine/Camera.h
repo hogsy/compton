@@ -33,7 +33,7 @@ namespace ct
 			position = read->ReadCoordinate();
 			oldVelocity = read->ReadCoordinate();
 			velocity = read->ReadCoordinate();
-			movementMode = ( MoveMode ) read->ReadInteger();
+			movementMode = ( MoveMode ) read->ReadI32();
 		}
 		inline void Serialize( Serializer *write )
 		{
@@ -41,7 +41,7 @@ namespace ct
 			write->WriteCoordinate( position );
 			write->WriteCoordinate( oldVelocity );
 			write->WriteCoordinate( velocity );
-			write->WriteInteger( ( int ) movementMode );
+			write->WriteI32( ( int ) movementMode );
 		}
 	};
 }// namespace ct

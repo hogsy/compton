@@ -60,17 +60,27 @@ bool ct::Serializer::ValidateDataFormat( uint8_t target )
 	return true;
 }
 
-void ct::Serializer::WriteInteger( int var )
+void ct::Serializer::WriteI8( int8_t var )
 {
-	fputc( DATA_FORMAT_INTEGER, filePtr );
+	fputc( DATA_FORMAT_I8, filePtr );
+	fputc( var, filePtr );
+}
 
+void ct::Serializer::WriteI16( int16_t var )
+{
+	fputc( DATA_FORMAT_I16, filePtr );
+	fwrite( &var, sizeof( int16_t ), 1, filePtr );
+}
+
+void ct::Serializer::WriteI32( int32_t var )
+{
+	fputc( DATA_FORMAT_I32, filePtr );
 	fwrite( &var, sizeof( int32_t ), 1, filePtr );
 }
 
-void ct::Serializer::WriteFloat( float var )
+void ct::Serializer::WriteF32( float var )
 {
 	fputc( DATA_FORMAT_FLOAT, filePtr );
-
 	fwrite( &var, sizeof( float ), 1, filePtr );
 }
 
@@ -89,28 +99,41 @@ void ct::Serializer::WriteString( const char *var )
 void ct::Serializer::WriteCoordinate( const PLVector2 &var )
 {
 	fputc( DATA_FORMAT_COORDINATE, filePtr );
-
 	fwrite( &var, sizeof( PLVector2 ), 1, filePtr );
 }
 
-int ct::Serializer::ReadInteger()
+int8_t ct::Serializer::ReadI8()
 {
-	if ( !ValidateDataFormat( DATA_FORMAT_INTEGER ) )
-	{
+	if ( !ValidateDataFormat( DATA_FORMAT_I8 ) )
 		return 0;
-	}
+
+	return ( int8_t ) fgetc( filePtr );
+}
+
+int16_t ct::Serializer::ReadI16()
+{
+	if ( !ValidateDataFormat( DATA_FORMAT_I16 ) )
+		return 0;
+
+	int16_t var;
+	fread( &var, sizeof( int16_t ), 1, filePtr );
+	return var;
+}
+
+int32_t ct::Serializer::ReadI32()
+{
+	if ( !ValidateDataFormat( DATA_FORMAT_I32 ) )
+		return 0;
 
 	int32_t var;
 	fread( &var, sizeof( int32_t ), 1, filePtr );
 	return var;
 }
 
-float ct::Serializer::ReadFloat()
+float ct::Serializer::ReadF32()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_FLOAT ) )
-	{
 		return 0.0f;
-	}
 
 	float var;
 	fread( &var, sizeof( float ), 1, filePtr );
@@ -120,17 +143,13 @@ float ct::Serializer::ReadFloat()
 void ct::Serializer::ReadString( char *buffer, size_t bufLength )
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_STRING ) )
-	{
 		return;
-	}
 
 	uint32_t length;
 	fread( &length, sizeof( uint32_t ), 1, filePtr );
 
 	if ( length > bufLength )
-	{
 		length = bufLength;
-	}
 
 	// And now read in the string!
 	memset( buffer, 0, bufLength );
@@ -140,9 +159,7 @@ void ct::Serializer::ReadString( char *buffer, size_t bufLength )
 PLVector2 ct::Serializer::ReadCoordinate()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_COORDINATE ) )
-	{
-		return PLVector2();
-	}
+		return pl_vecOrigin2;
 
 	PLVector2 vector;
 	fread( &vector, sizeof( PLVector2 ), 1, filePtr );

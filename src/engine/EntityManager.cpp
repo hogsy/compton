@@ -97,7 +97,7 @@ void ct::EntityManager::Draw( const Camera &camera )
 
 void ct::EntityManager::SerializeEntities( Serializer *write )
 {
-	write->WriteInteger( entities.size() );
+	write->WriteI32( entities.size() );
 
 	for ( auto &entity : entities )
 	{
@@ -109,7 +109,7 @@ void ct::EntityManager::SerializeEntities( Serializer *write )
 
 void ct::EntityManager::DeserializeEntities( Serializer *read )
 {
-	unsigned int numEntities = read->ReadInteger();
+	unsigned int numEntities = read->ReadI32();
 	for ( unsigned int i = 0; i < numEntities; ++i )
 	{
 		char className[ 64 ];

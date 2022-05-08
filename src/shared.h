@@ -29,6 +29,8 @@
 
 #define CT_PROFILER
 
+#include "lisp.h"
+
 // Core services
 #include "engine/Compton.h"
 #include "engine/Timer.h"

@@ -21,14 +21,18 @@ namespace ct
 
 		bool ValidateDataFormat( uint8_t target );
 
-		void WriteInteger( int var );
-		void WriteFloat( float var );
+		void WriteI8( int8_t var );
+		void WriteI16( int16_t var );
+		void WriteI32( int32_t var );
+		void WriteF32( float var );
 		void WriteString( const char *var );
 		void WriteCoordinate( const PLVector2 &var );
 
-		int       ReadInteger();
-		float     ReadFloat();
-		void      ReadString( char *buffer, size_t bufLength );
+		int8_t ReadI8();
+		int16_t ReadI16();
+		int32_t ReadI32();
+		float ReadF32();
+		void ReadString( char *buffer, size_t bufLength );
 		PLVector2 ReadCoordinate();
 
 		inline unsigned int GetVersion() const { return version; }
@@ -38,7 +42,9 @@ namespace ct
 		{
 			DATA_FORMAT_STRING,
 			DATA_FORMAT_COORDINATE,
-			DATA_FORMAT_INTEGER,
+			DATA_FORMAT_I8,
+			DATA_FORMAT_I16,
+			DATA_FORMAT_I32,
 			DATA_FORMAT_FLOAT,
 		};
 
@@ -53,4 +59,4 @@ namespace ct
 		virtual void Deserialize( Serializer *read ) = 0;
 		virtual void Serialize( Serializer *write ) = 0;
 	};
-}// namespace vc
+}// namespace ct

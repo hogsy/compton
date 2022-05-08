@@ -207,6 +207,8 @@ void ct::App::ShowMessageBox( const char *title, const char *message, bool error
 
 void ct::App::Shutdown()
 {
+	Lisp::Uninit();
+
 	delete gameMode;
 	delete spriteManager;
 	delete input::inputManager;
@@ -408,6 +410,8 @@ void ct::App::InitializeEvents()
 
 void ct::App::InitializeGame()
 {
+	Lisp::Init();
+
 	gameMode = new GameMode();
 	gameMode->RegisterActions();
 }

@@ -265,7 +265,7 @@ void ct::GameMode::RestoreGame( const char *path )
 
 	// Now restore the camera data
 	camera.position = serializer.ReadCoordinate();
-	camera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadInteger() );
+	camera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadI32() );
 
 	entityManager_->SpawnEntities();
 

@@ -91,7 +91,7 @@ ct::Terrain::~Terrain() {}
 
 void ct::Terrain::Deserialize( ct::Serializer *read )
 {
-	unsigned int numTiles = read->ReadInteger();
+	unsigned int numTiles = read->ReadI32();
 	if ( numTiles != NUM_TILES )
 	{
 		Error( "Invalid number of tiles stored in save data!\n" );
@@ -99,25 +99,25 @@ void ct::Terrain::Deserialize( ct::Serializer *read )
 
 	for ( unsigned int i = 0; i < NUM_TILES; ++i )
 	{
-		tiles[ i ].corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadInteger() );
-		tiles[ i ].corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadInteger() );
+		tiles[ i ].corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
+		tiles[ i ].corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
 		for ( unsigned int j = 0; j < 4; ++j )
 		{
-			tiles[ i ].height[ j ] = read->ReadFloat();
+			tiles[ i ].height[ j ] = read->ReadF32();
 		}
 	}
 }
 
 void ct::Terrain::Serialize( ct::Serializer *write )
 {
-	write->WriteInteger( NUM_TILES );
+	write->WriteI32( NUM_TILES );
 	for ( unsigned int i = 0; i < NUM_TILES; ++i )
 	{
-		write->WriteInteger( tiles[ i ].corners[ 0 ].terrainType );
-		write->WriteInteger( tiles[ i ].corners[ 1 ].terrainType );
+		write->WriteI32( tiles[ i ].corners[ 0 ].terrainType );
+		write->WriteI32( tiles[ i ].corners[ 1 ].terrainType );
 		for ( unsigned int j = 0; j < 4; ++j )
 		{
-			write->WriteFloat( tiles[ i ].height[ j ] );
+			write->WriteF32( tiles[ i ].height[ j ] );
 		}
 	}
 }

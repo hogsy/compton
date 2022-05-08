@@ -77,32 +77,32 @@ void ct::BaseCreature::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	health_ = read->ReadInteger();
-	maxHealth_ = read->ReadInteger();
+	health_ = read->ReadI32();
+	maxHealth_ = read->ReadI32();
 
-	stamina_ = read->ReadInteger();
-	maxStamina_ = read->ReadInteger();
+	stamina_ = read->ReadI32();
+	maxStamina_ = read->ReadI32();
 
-	experience = read->ReadInteger();
-	maxExperience = read->ReadInteger();
+	experience = read->ReadI32();
+	maxExperience = read->ReadI32();
 
-	sex_ = static_cast< Sex >( read->ReadInteger() );
+	sex_ = static_cast< Sex >( read->ReadI32() );
 }
 
 void ct::BaseCreature::Serialize( ct::Serializer *write )
 {
 	SuperClass::Serialize( write );
 
-	write->WriteInteger( health_ );
-	write->WriteInteger( maxHealth_ );
+	write->WriteI32( health_ );
+	write->WriteI32( maxHealth_ );
 
-	write->WriteInteger( stamina_ );
-	write->WriteInteger( maxStamina_ );
+	write->WriteI32( stamina_ );
+	write->WriteI32( maxStamina_ );
 
-	write->WriteInteger( experience );
-	write->WriteInteger( maxExperience );
+	write->WriteI32( experience );
+	write->WriteI32( maxExperience );
 
-	write->WriteInteger( static_cast< int >( sex_ ) );
+	write->WriteI32( static_cast< int >( sex_ ) );
 }
 
 void ct::BaseCreature::Draw( const ct::Camera &camera )

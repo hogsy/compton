@@ -37,6 +37,8 @@ endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 add_subdirectory(src/hei/plcore/)
 add_subdirectory(src/hei/plgraphics/)
 
+add_subdirectory(src/lisp/)
+
 add_subdirectory(src/tools/pkgman/)
 
 #add_subdirectory(src/game/)
@@ -81,7 +83,6 @@ set(DS_SOURCE_FILES
 add_executable(Compton ${SOURCE_FILES}
         # engine
         src/engine/Renderer/DrawRoutines.cpp
-
         src/engine/Input/Action.cpp
         src/engine/Input/InputManager.cpp
 
@@ -90,6 +91,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
+        src/engine/LispInterface.cpp
         src/engine/LoaderPkg.cpp
         src/engine/Random.cpp
         src/engine/Serializer.cpp
@@ -145,6 +147,8 @@ endif (APPLE)
 target_link_libraries(Compton
         plcore
         plgraphics
+
+        lisp
 
         allegro
         allegro_main

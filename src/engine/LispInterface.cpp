@@ -3,6 +3,27 @@
 
 #include "../shared.h"
 
+bool LI_CompileScript( const char *path )
+{
+	char ev[ PL_SYSTEM_MAX_PATH + 16 ];
+	snprintf( ev, sizeof( ev ), "(load \"%s\")\n", path );
+
+	char const *cs = ev;
+	if ( !LObject::Compile( cs )->Eval() )
+	{
+		Warning( "Failed to compile \"%s\"\n", path );
+		return false;
+	}
+
+	LSpace::Tmp.Clear();
+
+	return true;
+}
+
+///////////////////////////////////////////////////
+// LISP Callbacks
+///////////////////////////////////////////////////
+
 void clisp_init()
 {
 }

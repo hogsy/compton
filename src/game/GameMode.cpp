@@ -14,6 +14,7 @@
 #include "GUI/GUIStyleSheet.h"
 
 #include "Input/InputManager.h"
+#include "LispInterface.h"
 
 ct::GameMode::GameMode()
 {
@@ -225,6 +226,8 @@ void ct::GameMode::NewGame( const char *path )
 	SaveGame( path );
 
 	entityManager_->SpawnEntities();
+
+	LI_CompileScript( "test.lsp" );
 }
 
 void ct::GameMode::SaveGame( const char *path )
@@ -248,8 +251,7 @@ void ct::GameMode::SaveGame( const char *path )
 
 void ct::GameMode::RestoreGame( const char *path )
 {
-	if ( world_ != nullptr )
-		delete world_;
+	delete world_;
 
 	entityManager_->DestroyEntities();
 

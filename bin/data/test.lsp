@@ -4,4 +4,7 @@
 
 (print "Hello world!")
 
+(setf x 5)
+(print x)
+
 (tmp-space)

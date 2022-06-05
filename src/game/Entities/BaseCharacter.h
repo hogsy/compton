@@ -5,6 +5,7 @@
 
 #include "Entity.h"
 #include "BaseCreature.h"
+#include "PlayerManager.h"
 
 namespace ct
 {
@@ -21,6 +22,9 @@ namespace ct
 		void Draw( const Camera &camera ) override;
 		void Tick() override;
 
+		virtual bool TakeControl( int playerNum );
+		virtual void ReleaseControl();
+
 	protected:
 	private:
 		static constexpr unsigned int MAX_CHARACTER_NAME = 64;
@@ -28,14 +32,15 @@ namespace ct
 
 		static constexpr unsigned int NUM_SPRITES = 5;
 
+		int controllingPlayer_{ -1 };
+		bool isPossessed_{ false };
+
 		hei::Vector2 debugGoal;
 		hei::Vector2 debugRoutes[ 16 ];
 		unsigned int debugNumRoutes{ 0 };
 		unsigned int debugCurRoute{ 0 };
 		unsigned int debugGoalDelay{ 2000 };
 
-		bool isPlayerControlled_{ true };
-
-		float myInfluence{ 0.0f };
+		float influence_{ 0.0f };
 	};
 }// namespace vc

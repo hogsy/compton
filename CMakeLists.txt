@@ -107,11 +107,13 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/BaseBuilding.cpp
         src/game/Entities/BaseCharacter.cpp
         src/game/Entities/BaseCreature.cpp
+        src/game/Entities/BaseItem.cpp
         #src/game/Entities/Boid.cpp
         #src/game/Entities/BoidManager.cpp
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp
         src/game/GameMode.cpp
+        src/game/Inventory.cpp
         src/game/PlayerManager.cpp
         src/game/Terrain.cpp
         src/game/Utility.cpp

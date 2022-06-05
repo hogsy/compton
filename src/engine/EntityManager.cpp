@@ -138,7 +138,7 @@ void ct::EntityManager::SpawnEntities()
 void ct::EntityManager::PrecacheEntities()
 {
 	Print( "Precaching for %lu entities...\n", entityClasses.size() );
-	for ( auto i : entityClasses )
+	for ( const auto& i : entityClasses )
 	{
 		Entity *entity = CreateEntity( i.first );
 		entity->Precache();
@@ -150,20 +150,18 @@ ct::EntityManager::EntitySlot ct::EntityManager::FindEntityByClassName( const ch
 {
 	// Allow us to iterate from a previous position if desired
 	unsigned int i = 0;
-	if ( curSlot != nullptr )
-	{
+	if ( curSlot != nullptr && curSlot->entity != nullptr )
 		i = curSlot->num;
-	}
 
 	for ( ; i < entities.size(); ++i )
 	{
 		if ( strcmp( entities[ i ]->GetClassIdentifier(), className ) != 0 )
 			continue;
 
-		return EntitySlot( entities[ i ], i );
+		return { entities[ i ], i };
 	}
 
-	return EntitySlot( nullptr, 0 );
+	return { nullptr, 0 };
 }
 
 ct::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )

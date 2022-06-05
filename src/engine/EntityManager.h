@@ -34,6 +34,7 @@ namespace ct
 
 		struct EntitySlot
 		{
+			EntitySlot() : entity( nullptr ), num( 0 ) {}
 			EntitySlot( ct::Entity *entity, unsigned int index ) : entity( entity ), num( index ) {}
 			ct::Entity  *entity;
 			unsigned int num;

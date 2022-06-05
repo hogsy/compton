@@ -3,43 +3,15 @@
 
 #include "Compton.h"
 #include "Entity.h"
-
-namespace ct
-{
-	class PlayerManager
-	{
-	public:
-		struct Player
-		{
-			Player( const std::string &sName ) : name( sName ) {}
-
-			bool isLocal{ true };
-			std::string name;
-			Entity *controlTarget{ nullptr };
-		};
-
-		unsigned int AddPlayer( const char *name );
-		void RemovePlayer( unsigned int id );
-
-		void HandleInput();
-
-		inline const std::vector< Player > *GetPlayers() const { return &players; }
-		inline unsigned int GetNumPlayers() const { return players.size(); }
-
-		Player *GetPlayer( unsigned int id );
-
-	private:
-		std::vector< Player > players;
-	};
-}// namespace ct
+#include "PlayerManager.h"
 
 /**
  * Adds a brand new player to the game.
  */
-unsigned int ct::PlayerManager::AddPlayer( const char *name )
+int ct::PlayerManager::AddPlayer( const char *name )
 {
-	players.push_back( Player( name ) );
-	return players.size();
+	players_.emplace_back( name );
+	return GetNumPlayers();
 }
 
 void ct::PlayerManager::HandleInput()
@@ -49,12 +21,10 @@ void ct::PlayerManager::HandleInput()
 /**
  * Return a pointer to the specified player.
  */
-ct::PlayerManager::Player *ct::PlayerManager::GetPlayer( unsigned int id )
+ct::PlayerManager::Player *ct::PlayerManager::GetPlayer( int id )
 {
-	if ( id >= players.size() )
-	{
+	if ( id < 0 || id >= players_.size() )
 		return nullptr;
-	}
 
-	return &players[ id ];
+	return &players_[ id ];
 }

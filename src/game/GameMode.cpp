@@ -8,6 +8,7 @@
 #include "Serializer.h"
 #include "BitmapFont.h"
 #include "Background.h"
+#include "PlayerManager.h"
 
 #include "GUI/GUIButton.h"
 #include "GUI/GUICursor.h"
@@ -15,6 +16,8 @@
 
 #include "Input/InputManager.h"
 #include "LispInterface.h"
+
+#include "Entities/BaseCharacter.h"
 
 ct::GameMode::GameMode()
 {
@@ -227,6 +230,24 @@ void ct::GameMode::NewGame( const char *path )
 
 	entityManager_->SpawnEntities();
 
+	// Find an entity for the player to take control of
+	EntityManager::EntitySlot slot;
+	for ( int i = 0; i < playerManager->GetNumPlayers(); ++i )
+	{
+		slot = entityManager_->FindEntityByClassName( "BaseCharacter", &slot );
+		if ( slot.entity == nullptr )
+		{
+			Warning( "No character entity for the player to possess!\n" );
+			break;
+		}
+
+		BaseCharacter *baseCharacter = dynamic_cast< BaseCharacter * >( slot.entity );
+		baseCharacter->TakeControl( i );
+
+		PlayerManager::Player *player = playerManager->GetPlayer( i );
+		player->controlTarget = baseCharacter;
+	}
+
 	LI_CompileScript( "test.lsp" );
 }
 
@@ -276,7 +297,7 @@ void ct::GameMode::RestoreGame( const char *path )
 
 hei::Vector2 ct::GameMode::MousePosToWorld( int x, int y ) const
 {
-	return hei::Vector2( ( camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( camera.position.y - DISPLAY_HEIGHT / 2 ) + y );
+	return { ( camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( camera.position.y - DISPLAY_HEIGHT / 2 ) + y };
 }
 
 void ct::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )

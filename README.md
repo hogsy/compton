@@ -22,6 +22,7 @@ ownership over.**
 - There's an entity system! ♟️
 - Serialization! 😊
 - Profiling! 📊
+- Scripting via Lisp
 - Allegro 5... 🤢
 
 *And now, a few caveats...*

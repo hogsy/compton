@@ -114,9 +114,16 @@ void ct::BaseCharacter::Tick()
  */
 bool ct::BaseCharacter::TakeControl( int playerNum )
 {
-	if ( playerNum > GameMode::GetPlayerManager()->GetNumPlayers() )
+	PlayerManager::Player *player = GameMode::GetPlayerManager()->GetPlayer( playerNum );
+	if ( player == nullptr )
 	{
-		Warning( "Invalid player number attributed to entity, possible player is no longer playing!\n" );
+		Warning( "Invalid player for entity, possible player is no longer playing!\n" );
+		return false;
+	}
+
+	if ( player->controlTarget != nullptr )
+	{
+		Warning( "Player is already controlling a target!\n" );
 		return false;
 	}
 
@@ -124,6 +131,8 @@ bool ct::BaseCharacter::TakeControl( int playerNum )
 		Warning( "Player is already controlling this entity!\n" );
 
 	isPossessed_ = true;
+
+	player->controlTarget = this;
 	return isPossessed_;
 }
 

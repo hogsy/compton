@@ -21,6 +21,6 @@ namespace ct
 	private:
 		void ( *ButtonCallback )( void *userDataPtr );
 
-		char myLabel[ 64 ];
+		char label_[ 64 ];
 	};
 }// namespace vc

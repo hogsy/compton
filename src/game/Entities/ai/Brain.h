@@ -1,34 +1,23 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
+
+#include "Entity.h"
 
 namespace ct
 {
 	namespace ai
 	{
-		enum class Verb
+		enum class MotorAction
 		{
-			VERB_USE,
-			VERB_DRINK,
-			VERB_EAT,
-			VERB_TALK,
-			VERB_APPROACH,
+			USE,
+			DRINK,
+			EAT,
+			TALK,
+			ATTACK,
+			APPROACH,
+			RETREAT,
 		};
 
 		/**
@@ -38,7 +27,6 @@ namespace ct
 		 */
 		struct Descriptor
 		{
-
 		};
 
 		struct DecisionTree
@@ -54,7 +42,7 @@ namespace ct
 			struct Need
 			{
 				const char *description;
-				double      value;
+				double value;
 			};
 			Need food{ "food", 0.0 };
 			Need water{ "water", 0.0 };
@@ -76,7 +64,7 @@ namespace ct
 			};
 			Disposition genericDisposition{ Disposition::NEUTRAL };
 
-			unsigned int  curResponses{ 0 };
+			unsigned int curResponses{ 0 };
 			FeedbackState mappedResponses[ 8 ];
 			FeedbackState averageResponse;
 		};
@@ -141,14 +129,27 @@ namespace ct
 			};
 			MemoryManager memoryManager_;
 
+		public:
+			Entity *owner_{ nullptr };
+
 			struct Directive
 			{
-				double       weight{ 0 };
-				bool         isCompleted{ false };
+				MotorAction type;
+				double weight{ 0 };
+				bool isCompleted{ false };
 				hei::Vector2 targetPosition;
-				std::string  description;
+				std::string description;
+				std::vector< Directive > subDirectives;
 			};
+
+		private:
 			std::vector< Directive > directives_;
+
+		public:
+			const Directive *GetTopDirective()
+			{
+				return &directives_[ 0 ];
+			}
 		};
 	}// namespace ai
-}// namespace vc
+}// namespace ct

@@ -34,6 +34,16 @@ namespace ct
 		virtual void Draw();
 		virtual void DrawBackground();
 
+		// Below can be overridden to introduce animations etc.
+		virtual void Show()
+		{
+			SetVisible( true );
+		}
+		virtual void Hide()
+		{
+			SetVisible( false );
+		}
+
 		virtual void Tick();
 
 		void SetStyleSheet( GUIStyleSheet *styleSheet );
@@ -106,5 +116,13 @@ namespace ct
 		hei::Colour backgroundColour_{ INSET_COLOUR };
 
 		GUIPanel *parentPtr{ nullptr };
+
+		char tooltipDescription_[ 32 ];
+		GUIPanel *tooltip_{ nullptr };
+		unsigned int tooltipHoverTime_{ 0 };
+		static constexpr unsigned int TOOLTIP_MAX_HOVER = 100;
+
+	public:
+		void SetTooltip( const char *description );
 	};
 }// namespace vc

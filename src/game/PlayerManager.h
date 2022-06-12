@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Camera.h"
+
 namespace ct
 {
 	class PlayerManager
@@ -10,14 +12,14 @@ namespace ct
 	public:
 		struct Player
 		{
-			Player( const std::string &sName ) : name( sName ) {}
-
+			Player( const std::string &sName, bool local ) : name( sName ), isLocal( local ) {}
+			Camera camera;
 			bool isLocal{ true };
 			std::string name;
 			Entity *controlTarget{ nullptr };
 		};
 
-		int AddPlayer( const char *name );
+		int AddPlayer( const char *name, bool local );
 		void RemovePlayer( int id );
 
 		void HandleInput();

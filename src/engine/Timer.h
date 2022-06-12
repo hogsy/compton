@@ -10,12 +10,17 @@ class Timer
 public:
 	Timer()
 	{
+		Start();
+	}
+
+	void Start()
+	{
 		timeStarted = PlGetCurrentSeconds() * 1000.0f;
 	}
 
 	void End()
 	{
-		timeTaken = ( PlGetCurrentSeconds() * 1000.0f ) - timeStarted;
+		timeTaken += ( PlGetCurrentSeconds() * 1000.0f ) - timeStarted;
 	}
 
 	inline double GetTimeTaken() const
@@ -24,6 +29,6 @@ public:
 	}
 
 private:
-	double timeStarted;
-	double timeTaken;
+	double timeStarted{ 0 };
+	double timeTaken{ 0 };
 };

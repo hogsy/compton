@@ -14,9 +14,7 @@ ct::GUIPanel::GUIPanel( ct::GUIPanel *parent, int x, int y, int w, int h, ct::GU
 	: background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
-	{
 		return;
-	}
 
 	// Push it onto the list of children
 	parent->children_.push_back( this );
@@ -33,9 +31,7 @@ ct::GUIPanel::~GUIPanel() = default;
 void ct::GUIPanel::Draw()
 {
 	if ( !isDrawing )
-	{
 		return;
-	}
 
 	DrawBackground();
 	DrawBorder();
@@ -43,8 +39,15 @@ void ct::GUIPanel::Draw()
 	// Draw all of the children
 	for ( auto i : children_ )
 	{
+		// Draw the tooltip last
+		if ( i == tooltip_ )
+			continue;
+
 		i->Draw();
 	}
+
+	if ( tooltip_ != nullptr )
+		tooltip_->Draw();
 }
 
 void ct::GUIPanel::DrawBackground()
@@ -80,9 +83,7 @@ void ct::GUIPanel::DrawBackground()
 void ct::GUIPanel::DrawBorder()
 {
 	if ( styleSheet_ == nullptr )
-	{
 		return;
-	}
 
 	unsigned int ul, ur, ll, lr;
 	unsigned int u, r, d, l;
@@ -144,17 +145,13 @@ void ct::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int 
 		{
 			dx += sprite->width;
 			if ( ( dx - ox ) >= dw )
-			{
 				break;
-			}
 		}
 		else
 		{
 			dy += sprite->height;
 			if ( ( dy - oy ) >= dh )
-			{
 				break;
-			}
 		}
 	}
 }
@@ -165,8 +162,28 @@ void ct::GUIPanel::Tick()
 
 	// Tick all of the children
 	for ( auto i : children_ )
-	{
 		i->Tick();
+
+	if ( tooltip_ != nullptr )
+	{
+		if ( IsMouseOver() )
+		{
+			tooltipHoverTime_++;
+			if ( tooltipHoverTime_ >= TOOLTIP_MAX_HOVER )
+			{
+				tooltip_->Show();
+
+				int mx, my;
+				input::inputManager->GetMousePosition( &mx, &my );
+				tooltip_->x = mx - tooltip_->w;
+				tooltip_->y = my - tooltip_->h;
+			}
+		}
+		else
+		{
+			tooltip_->Hide();
+			tooltipHoverTime_ = 0;
+		}
 	}
 }
 
@@ -216,17 +233,13 @@ bool ct::GUIPanel::IsMouseOver() const
 bool ct::GUIPanel::HandleMouseEvent( int mx, int my, int wheel, int button, bool buttonUp )
 {
 	if ( !IsMouseOver( mx, my ) )
-	{
 		return false;
-	}
 
 	for ( auto i : children_ )
 	{
 		// If the child handles the event, return true
 		if ( i->HandleMouseEvent( mx, my, wheel, button, buttonUp ) )
-		{
 			return true;
-		}
 	}
 
 	// If the user is clicking, their mouse is over, but we're not handling it, return true(?)
@@ -243,10 +256,14 @@ bool ct::GUIPanel::HandleKeyboardEvent( int button, bool buttonUp )
 	{
 		// If the child handles the event, return true
 		if ( i->HandleKeyboardEvent( button, buttonUp ) )
-		{
 			return true;
-		}
 	}
 
 	return false;
+}
+
+void ct::GUIPanel::SetTooltip( const char *description )
+{
+	assert( tooltip_ == nullptr );
+	tooltip_ = new GUIPanel( this, 0, 0, 100, 16, Background::SOLID, Border::OUTSET );
 }

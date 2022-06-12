@@ -8,14 +8,21 @@
 /**
  * Adds a brand new player to the game.
  */
-int ct::PlayerManager::AddPlayer( const char *name )
+int ct::PlayerManager::AddPlayer( const char *name, bool local )
 {
-	players_.emplace_back( name );
+	players_.emplace_back( name, local );
 	return GetNumPlayers();
 }
 
 void ct::PlayerManager::HandleInput()
 {
+	for ( auto i : players_ )
+	{
+		if ( !i.isLocal )
+			continue;
+
+		// TODO: get input device etc etc etc
+	}
 }
 
 /**

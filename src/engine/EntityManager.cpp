@@ -4,7 +4,7 @@
 #include "Compton.h"
 #include "EntityManager.h"
 #include "Entity.h"
-#include "BitmapFont.h"
+#include "Renderer/BitmapFont.h"
 #include "Serializer.h"
 
 std::map< std::string, ct::EntityManager::EntityConstructorFunction > ct::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
@@ -117,9 +117,7 @@ void ct::EntityManager::DeserializeEntities( Serializer *read )
 
 		Entity *entity = CreateEntity( className );
 		if ( entity == nullptr )
-		{
 			Error( "Failed to deserialize entity %d, unknown class %s!\n", i, className );
-		}
 
 		entity->Deserialize( read );
 	}
@@ -162,6 +160,22 @@ ct::EntityManager::EntitySlot ct::EntityManager::FindEntityByClassName( const ch
 	}
 
 	return { nullptr, 0 };
+}
+
+std::vector< ct::Entity * > ct::EntityManager::GetEntitiesInRange( const hei::Vector2 &origin, float range )
+{
+	std::vector< Entity * > out;
+	for ( auto i : entities )
+	{
+		hei::Vector2 sv = i->origin_ - origin;
+		float dv = sv.Length();
+		if ( dv > range )
+			continue;
+
+		out.push_back( i );
+	}
+
+	return out;
 }
 
 ct::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )

@@ -23,9 +23,7 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	int y = offsetY - camera.position.y;
 
 	if ( x > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
-	{
 		return;
-	}
 
 	render::DrawFilledRectangle( x, y, TILE_WIDTH, TILE_HEIGHT,
 	                             hei::Colour(
@@ -93,18 +91,14 @@ void ct::Terrain::Deserialize( ct::Serializer *read )
 {
 	unsigned int numTiles = read->ReadI32();
 	if ( numTiles != NUM_TILES )
-	{
 		Error( "Invalid number of tiles stored in save data!\n" );
-	}
 
 	for ( unsigned int i = 0; i < NUM_TILES; ++i )
 	{
 		tiles[ i ].corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
 		tiles[ i ].corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
 		for ( unsigned int j = 0; j < 4; ++j )
-		{
 			tiles[ i ].height[ j ] = read->ReadF32();
-		}
 	}
 }
 
@@ -116,9 +110,7 @@ void ct::Terrain::Serialize( ct::Serializer *write )
 		write->WriteI32( tiles[ i ].corners[ 0 ].terrainType );
 		write->WriteI32( tiles[ i ].corners[ 1 ].terrainType );
 		for ( unsigned int j = 0; j < 4; ++j )
-		{
 			write->WriteF32( tiles[ i ].height[ j ] );
-		}
 	}
 }
 
@@ -132,9 +124,7 @@ void ct::Terrain::Draw( const Camera &camera )
 		{
 			unsigned int tileNum = x + y * NUM_TILES_ROW;
 			if ( tileNum >= NUM_TILES )
-			{
 				break;
-			}
 
 			float offsetX = x * TILE_WIDTH;
 			float offsetY = y * TILE_HEIGHT;
@@ -169,13 +159,9 @@ void ct::Terrain::Generate()
 #if 1
 			// Determine if it's underwater or not
 			if ( tiles[ tileNum ].height[ 0 ] <= 0.0f || tiles[ tileNum ].height[ 1 ] <= 0.0f || tiles[ tileNum ].height[ 3 ] <= 0.0f )
-			{
 				tiles[ tileNum ].corners[ 0 ].terrainType = TERRAIN_WATER;
-			}
 			if ( tiles[ tileNum ].height[ 0 ] <= 0.0f || tiles[ tileNum ].height[ 2 ] <= 0.0f || tiles[ tileNum ].height[ 3 ] <= 0.0f )
-			{
 				tiles[ tileNum ].corners[ 1 ].terrainType = TERRAIN_WATER;
-			}
 #endif
 		}
 	}
@@ -184,17 +170,13 @@ void ct::Terrain::Generate()
 bool ct::Terrain::IsWater( float x, float y )
 {
 	if ( x <= 0.0f || y <= 0.0f )
-	{
 		return true;
-	}
 
 	unsigned int xr = PlRoundUp( x * TILE_WIDTH / PIXEL_WIDTH, 1 );
 	unsigned int yr = PlRoundUp( y * TILE_HEIGHT / PIXEL_HEIGHT, 1 );
 	unsigned int tileNum = xr + yr * NUM_TILES_ROW;
 	if ( tileNum >= NUM_TILES )
-	{
 		return false;
-	}
 
 	return ( ( tiles[ tileNum ].corners[ 0 ].terrainType == TERRAIN_WATER ) && ( tiles[ tileNum ].corners[ 1 ].terrainType == TERRAIN_WATER ) );
 }

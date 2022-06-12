@@ -5,6 +5,8 @@
 
 #include "Entity.h"
 #include "BaseAnimated.h"
+#include "Inventory.h"
+
 #include "Entities/ai/Brain.h"
 #include "Entities/ai/Sensor.h"
 
@@ -34,11 +36,22 @@ namespace ct
 		virtual void Draw( const Camera &camera ) override;
 		virtual void Tick() override;
 
+	private:
+		void Think();
+
+	public:
+		virtual void StepTowards( const hei::Vector2 &target, float speed = 1.0f );
+		virtual void StepAway( const hei::Vector2 &target, int speed = 1.0f );
+
 	protected:
 		Sex sex_{ Sex::INTERSEX };
 
 		ai::Brain brain_;
 		ai::Sensor sensors_[ ai::Sensor::MAX_SENSOR_TYPES ];
+
+		hei::Vector2 goal_;
+
+		Inventory inventory;
 
 		unsigned int age_{ 0 };
 		unsigned int maxAge_{ 100 };

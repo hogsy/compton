@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GUIPanel.h"
+#include "GUIButton.h"
 
 namespace ct
 {
@@ -13,19 +14,22 @@ namespace ct
 		GUIPieMenu( GUIPanel *parent = nullptr );
 		~GUIPieMenu();
 
-		typedef void ( *OptionCallback )( void *userData );
+		void Show() override {};
+		void Hide() override {};
 
+		typedef void ( *OptionCallback )( void *userData );
 		void PushOption( const char *label, OptionCallback callback );
 
 	protected:
 	private:
-		struct Option
+		enum class AnimationStatus
 		{
-			Option( const char *label_, OptionCallback callback_ ) : label( label_ ), callback( callback_ ) {}
-
-			std::string    label;
-			OptionCallback callback;
+			NONE,
+			IS_SHOWING,
+			IS_HIDING,
 		};
-		std::vector< Option > myOptions;
+		AnimationStatus animationStatus_{ AnimationStatus::NONE };
+
+		std::vector< GUIButton * > buttons_;
 	};
 }// namespace vc

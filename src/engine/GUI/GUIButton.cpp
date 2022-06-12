@@ -7,7 +7,7 @@
 ct::GUIButton::GUIButton( ct::GUIPanel *parent, const char *label, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
 {
-	strncpy( myLabel, label, sizeof( myLabel ) );
+	strncpy( label_, label, sizeof( label_ ) );
 }
 
 ct::GUIButton::~GUIButton()

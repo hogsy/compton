@@ -65,18 +65,14 @@ void ct::World::Generate( unsigned int seed )
 			x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
 			y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
 			if ( !terrain_.IsWater( x, y ) )
-			{
 				break;
-			}
 
 			x = y = -1.0f;
 		}
 
 		// Never found a point without water, give up...
 		if ( x == -1.0f && y == -1.0f )
-		{
 			continue;
-		}
 
 		// Now attempt to spawn in the territory
 		Territory territory;
@@ -94,9 +90,7 @@ void ct::World::Generate( unsigned int seed )
 			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
 			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
 			if ( terrain_.IsWater( x, y ) )
-			{
 				continue;
-			}
 
 			// Assign some citizens to the abode.
 			int numCitizens = random::GenerateRandomInteger( 0, 4 );
@@ -104,9 +98,7 @@ void ct::World::Generate( unsigned int seed )
 			{
 				Entity *citizen = GameMode::GetEntityManager()->CreateEntity( "Tree" );
 				if ( citizen == nullptr )
-				{
 					continue;
-				}
 
 				citizen->origin_ = hei::Vector2( x, y );
 			}
@@ -115,7 +107,7 @@ void ct::World::Generate( unsigned int seed )
 		territories_.push_back( territory );
 	}
 
-	for ( unsigned int i = 0; i < 1000; ++i )
+	for ( unsigned int i = 0; i < 20; ++i )
 	{
 		Entity *testEntity = GameMode::GetEntityManager()->CreateEntity( "HumanCreature" );
 		testEntity->origin_ = hei::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );

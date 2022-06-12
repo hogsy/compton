@@ -41,6 +41,8 @@ namespace ct
 		};
 		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
 
+		std::vector< Entity * > GetEntitiesInRange( const hei::Vector2 &origin, float range );
+
 		class EntityClassRegistration
 		{
 		public:

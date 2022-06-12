@@ -21,8 +21,6 @@
 #include "lisp_gc.h"
 #include "symbols.h"
 
-#include "cache.h"
-
 /* To bypass the whole garbage collection issue of lisp I am going to have
  * separate spaces where lisp objects can reside.  Compiled code and gloabal
  * variables will reside in permanant space.  Eveything else will reside in

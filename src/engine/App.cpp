@@ -7,7 +7,7 @@
 #include "GameMode.h"
 #include "Input/InputManager.h"
 #include "EntityManager.h"
-#include "BitmapFont.h"
+#include "Renderer/BitmapFont.h"
 
 ct::SpriteManager *ct::spriteManager = nullptr;
 ct::input::InputManager *ct::input::inputManager = nullptr;
@@ -539,7 +539,14 @@ void ct::App::GrabCursor( bool status )
 
 void ct::App::StartPerformanceTimer( const char *identifier )
 {
-	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
+	auto i = performanceTimers.find( identifier );
+	if ( i == performanceTimers.end() )
+	{
+		performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
+		return;
+	}
+
+	i->second.Start();
 }
 
 void ct::App::EndPerformanceTimer( const char *identifier )

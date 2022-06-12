@@ -53,25 +53,15 @@ namespace ct
 		{
 			unsigned int curHour = GetCurrentHour();
 			if ( curHour > 17 )
-			{
 				return TimeOfDay::NIGHT;
-			}
 			else if ( curHour > 15 )
-			{
 				return TimeOfDay::EVENING;
-			}
 			else if ( curHour > 12 )
-			{
 				return TimeOfDay::AFTERNOON;
-			}
 			else if ( curHour > 9 )
-			{
 				return TimeOfDay::MORNING;
-			}
 			else if ( curHour > 5 )
-			{
 				return TimeOfDay::DAWN;
-			}
 
 			return TimeOfDay::NIGHT;
 		}
@@ -79,9 +69,9 @@ namespace ct
 	private:
 		struct Territory
 		{
-			std::string  name{ "unnamed" };
+			std::string name{ "unnamed" };
 			hei::Vector2 origin{ 0.0f, 0.0f };
-			PLGPolygon  *border{ nullptr };
+			PLGPolygon *border{ nullptr };
 		};
 		std::vector< Territory > territories_;
 
@@ -95,4 +85,4 @@ namespace ct
 	public:
 		inline const Terrain *GetTerrain() const { return &terrain_; }
 	};
-}// namespace vc
+}// namespace ct

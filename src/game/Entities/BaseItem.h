@@ -7,13 +7,28 @@
 
 namespace ct
 {
+	enum
+	{
+		ITEM_TYPE_INVALID,
+		ITEM_TYPE_RESOURCE,
+		ITEM_TYPE_WEAPON,
+		ITEM_TYPE_TOOL,
+		ITEM_TYPE_CUSTOM,
+
+		MAX_ITEM_TYPES
+	};
+
 	class BaseItem : public Entity
 	{
 		DECLARE_ENTITY_CLASS( BaseItem, Entity )
 
 	public:
+		virtual const Sprite *GetIcon() { return nullptr; }
 
+		virtual void Use( Entity *user ) {}
+		virtual void Drop() {}
 
 	private:
+		unsigned int itemType_{ ITEM_TYPE_INVALID };
 	};
 }

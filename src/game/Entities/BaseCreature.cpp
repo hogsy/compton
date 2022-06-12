@@ -12,6 +12,7 @@
 
 ct::BaseCreature::BaseCreature()
 {
+	brain_.owner_ = this;
 }
 
 ct::BaseCreature::~BaseCreature() {}
@@ -47,9 +48,7 @@ bool ct::BaseCreature::CanBreed( BaseCreature *other )
 {
 	// Can't get pregnant if we're already pregnant!
 	if ( isPregnant_ || other->isPregnant_ )
-	{
 		return false;
-	}
 
 	switch ( sex_ )
 	{
@@ -58,15 +57,13 @@ bool ct::BaseCreature::CanBreed( BaseCreature *other )
 			return true;
 		case Sex::MALE:
 			if ( other->sex_ == Sex::FEMALE )
-			{
 				return true;
-			}
+
 			break;
 		case Sex::FEMALE:
 			if ( other->sex_ == Sex::MALE )
-			{
 				return true;
-			}
+
 			break;
 	}
 
@@ -110,23 +107,55 @@ void ct::BaseCreature::Draw( const ct::Camera &camera )
 	SuperClass::Draw( camera );
 
 	if ( !ShouldDraw( camera ) )
-	{
 		return;
-	}
 }
 
 void ct::BaseCreature::Tick()
 {
 	SuperClass::Tick();
 
+	Think();
+}
+
+void ct::BaseCreature::Think()
+{
 	// Check sensors - these will pass data to brain
 	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
-	{
 		sensors_[ i ].Tick();
-	}
 
 	// Brain will now process input from sensors
 	brain_.Tick();
 
-	ai::Brain::Mood mood = brain_.GetCurrentMood();
+	// Now handle the actions necessary for the current directive
+
+	const ai::Brain::Directive *dir = brain_.GetTopDirective();
+	if ( dir == nullptr || dir->isCompleted )
+		return;
+
+	switch( dir->type )
+	{
+		case ai::MotorAction::USE: break;
+		case ai::MotorAction::DRINK: break;
+		case ai::MotorAction::EAT: break;
+		case ai::MotorAction::TALK: break;
+		case ai::MotorAction::ATTACK: break;
+		case ai::MotorAction::APPROACH:
+			StepTowards( dir->targetPosition );
+			break;
+		case ai::MotorAction::RETREAT:
+			StepAway( dir->targetPosition );
+			break;
+	}
+}
+
+void ct::BaseCreature::StepTowards( const hei::Vector2 &target, float speed )
+{
+	hei::Vector2 d = hei::Vector2( target - origin_ );
+	origin_ += d * ( speed / ( d.Length() + 1.0f ) );
+}
+
+void ct::BaseCreature::StepAway( const hei::Vector2 &target, int speed )
+{
+	hei::Vector2 d = hei::Vector2( target - origin_ );
+	origin_ -= d * ( speed / ( d.Length() + 1.0f ) );
 }

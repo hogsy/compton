@@ -11,6 +11,7 @@
 #include "SpriteSheet.h"
 #include "Camera.h"
 #include "World.h"
+#include "PlayerManager.h"
 
 #include "Input/Action.h"
 
@@ -39,7 +40,7 @@ namespace ct
 		virtual void SaveGame( const char *path );
 		virtual void RestoreGame( const char *path );
 
-		hei::Vector2 MousePosToWorld( int x, int y ) const;
+		hei::Vector2 MousePosToWorld( int x, int y );
 
 		virtual void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 		virtual void HandleKeyboardEvent( int button, bool buttonUp );
@@ -62,15 +63,13 @@ namespace ct
 		unsigned int GetGameSpeed() const { return gameSpeed_; }
 
 	private:
-		Camera camera;
-
 		GameState gameState_{ GameState::ACTIVE };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
 		GUIPanel *baseGuiPanel_{ nullptr };
 		GUIPieMenu *uiPieMenu{ nullptr };
 
-		PlayerManager *playerManager;
+		PlayerManager playerManager_;
 		EntityManager *entityManager_;
 
 		SpriteSheet *terrainSheet;

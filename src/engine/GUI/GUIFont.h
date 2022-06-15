@@ -18,7 +18,6 @@ namespace ct
 		void DrawCharacter( int c, int x, int y );
 		void DrawString( const char *string, int x, int y );
 
-	public:
 		struct Glyph
 		{
 			int w, h;
@@ -26,7 +25,7 @@ namespace ct
 			std::vector< unsigned char > buffer;
 		};
 
-		bool GetGlyphSize( int c, int *w, int *h, int *bw, int *bh ) const;
+		bool GetCharacterSize( int c, int *w, int *h, int *bw, int *bh ) const;
 
 	private:
 		std::vector< Glyph > glyphs_;

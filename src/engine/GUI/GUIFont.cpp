@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
+#include <plcore/pl_filesystem.h>
+
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_STATIC
-#include "stb_truetype.h"
 
-#include <plcore/pl_filesystem.h>
+#define STBTT_malloc( x, u ) PlMAllocA( x )
+#define STBTT_free( x, u )   PlFree( x )
+
+#include "stb_truetype.h"
 
 #include "GUIFont.h"
 
@@ -25,23 +29,16 @@ bool ct::GUIFont::LoadFile( const char *path, float scale )
 		{
 			int w, h;
 			int xo, yo;
-			unsigned char *bitmap = stbtt_GetGlyphBitmap(
-					&fontInfo,
-					scale, scale,
-					c,
-					&w, &h,
-					&xo, &yo
-					);
-			assert( bitmap != nullptr );
-
-			stbtt_GetGlyphBox()
+			stbtt_GetCodepointBitmapBox( &fontInfo, c, scale, scale, &w, &h, &xo, &yo );
 
 			Glyph glyph;
 			glyph.w = w;
 			glyph.h = h;
+			glyph.buffer.resize( w * h );
 
+			stbtt_MakeCodepointBitmap( &fontInfo, glyph.buffer.data(), w, h, sizeof( unsigned char ), scale, scale, c );
 		}
-		stbtt_GetGlyphBitmap()
+		status = true;
 	}
 
 	PlCloseFile( file );

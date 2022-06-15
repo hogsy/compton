@@ -82,12 +82,14 @@ set(DS_SOURCE_FILES
 
 add_executable(Compton ${SOURCE_FILES}
         # engine
+
+        src/engine/Renderer/BitmapFont.cpp
         src/engine/Renderer/DrawRoutines.cpp
+
         src/engine/Input/Action.cpp
         src/engine/Input/InputManager.cpp
 
         src/engine/App.cpp
-        src/engine/BitmapFont.cpp
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp

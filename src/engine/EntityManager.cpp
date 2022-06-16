@@ -77,20 +77,23 @@ void ct::EntityManager::Draw( const Camera &camera )
 
 	std::map< float, Entity * > entityDrawOrder;
 	for ( const auto &entity : entities )
-		entityDrawOrder.emplace( entity->z_ ? entity->z_ : entity->origin_.y, entity );
-
-	unsigned int i = 0;
-	for ( const auto &entity : entityDrawOrder )
 	{
-		entity.second->Draw( camera );
+		if ( !entity->ShouldDraw( camera ) )
+			continue;
 
-		BitmapFont *font = GetApp()->GetDefaultFont();
-		std::string s = "z: " + std::to_string( i );
-		int x = (entity.second->origin_.x - camera.position.x) - ( ( font->GetCharacterWidth() * s.length() ) / 2 );
-		int y = entity.second->origin_.y - camera.position.y;
-		font->DrawString( &x, &y, s.c_str() );
-		++i;
+		// Allow the entity to override the z order if z member is set
+		float z;
+		if ( entity->z_ != 0.0f )
+			z = entity->z_;
+		else
+			z = entity->origin_.y;
+
+		entityDrawOrder.emplace( z, entity );
 	}
+
+	// And now this has the benefit of drawing everything in order *and* only if it's visible!
+	for ( const auto &entity : entityDrawOrder )
+		entity.second->Draw( camera );
 
 	END_MEASURE();
 }
@@ -112,12 +115,11 @@ void ct::EntityManager::DeserializeEntities( Serializer *read )
 	unsigned int numEntities = read->ReadI32();
 	for ( unsigned int i = 0; i < numEntities; ++i )
 	{
-		char className[ 64 ];
-		read->ReadString( className, sizeof( className ) );
+		std::string className = read->ReadString();
 
 		Entity *entity = CreateEntity( className );
 		if ( entity == nullptr )
-			Error( "Failed to deserialize entity %d, unknown class %s!\n", i, className );
+			Error( "Failed to deserialize entity %d, unknown class %s!\n", i, className.c_str() );
 
 		entity->Deserialize( read );
 	}

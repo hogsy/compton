@@ -5,10 +5,11 @@
 
 // Draw Routines
 
-void ct::render::ClearDisplay( void ) {
+void ct::render::ClearDisplay( void )
+{
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
 	//PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
-	//memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
 void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
@@ -20,6 +21,59 @@ void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
 		al_put_blended_pixel( x, y, al_map_rgba( colour.r, colour.g, colour.b, colour.a ) );
 	else
 		al_put_pixel( x, y, al_map_rgb( colour.r, colour.g, colour.b ) );
+}
+
+void ct::render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour )
+{
+#define sign( x ) ( ( x ) > 0 ? 1 : ( ( x ) == 0 ? 0 : ( -1 ) ) )
+
+	int dx = ex - sx;
+	int dy = ey - sy;
+
+	int sdx = sign( dx );
+	int sdy = sign( dy );
+
+	int dxa = std::abs( dx );
+	int dya = std::abs( dy );
+
+	int x = 0;
+	int y = 0;
+
+	int px = sx;
+	int py = sy;
+
+	if ( dxa >= dya )
+	{
+		for ( int i = 0; i < dxa; ++i )
+		{
+			y += dya;
+			if ( y >= dxa )
+			{
+				y -= dxa;
+				py += sdy;
+			}
+
+			DrawPixel( px, py, colour );
+
+			px += sdx;
+		}
+	}
+	else
+	{
+		for ( int i = 0; i < dya; ++i )
+		{
+			x += dxa;
+			if ( x >= dya )
+			{
+				x -= dya;
+				px += sdx;
+			}
+
+			DrawPixel( px, py, colour );
+
+			py += sdy;
+		}
+	}
 }
 
 void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection )
@@ -82,6 +136,9 @@ void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, in
 void ct::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
 {
 	if ( colour.a == 0 )
+		return;
+
+	if ( x > DISPLAY_WIDTH || ( x + w ) < 0 || y > DISPLAY_HEIGHT || ( y + h ) < 0 )
 		return;
 
 	for ( int row = 0; row < w; ++row )

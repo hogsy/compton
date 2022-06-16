@@ -140,20 +140,21 @@ float ct::Serializer::ReadF32()
 	return var;
 }
 
-void ct::Serializer::ReadString( char *buffer, size_t bufLength )
+std::string ct::Serializer::ReadString()
 {
 	if ( !ValidateDataFormat( DATA_FORMAT_STRING ) )
-		return;
+		return "";
 
 	uint32_t length;
 	fread( &length, sizeof( uint32_t ), 1, filePtr );
 
-	if ( length > bufLength )
-		length = bufLength;
+	std::string out;
+	out.resize( length );
 
 	// And now read in the string!
-	memset( buffer, 0, bufLength );
-	fread( buffer, sizeof( char ), length, filePtr );
+	fread( out.data(), sizeof( char ), length, filePtr );
+
+	return out;
 }
 
 PLVector2 ct::Serializer::ReadCoordinate()

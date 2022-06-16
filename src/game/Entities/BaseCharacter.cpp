@@ -44,7 +44,7 @@ void ct::BaseCharacter::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	read->ReadString( name, sizeof( name ) );
+	//name = read->ReadString();
 }
 
 void ct::BaseCharacter::Serialize( ct::Serializer *write )
@@ -57,9 +57,6 @@ void ct::BaseCharacter::Serialize( ct::Serializer *write )
 void ct::BaseCharacter::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
-
-	if ( !ShouldDraw( camera ) )
-		return;
 }
 
 void ct::BaseCharacter::Tick()

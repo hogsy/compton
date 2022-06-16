@@ -32,7 +32,7 @@ namespace ct
 		int16_t ReadI16();
 		int32_t ReadI32();
 		float ReadF32();
-		void ReadString( char *buffer, size_t bufLength );
+		std::string ReadString();
 		PLVector2 ReadCoordinate();
 
 		inline unsigned int GetVersion() const { return version; }

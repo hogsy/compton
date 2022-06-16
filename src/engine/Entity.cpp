@@ -4,6 +4,7 @@
 #include "Compton.h"
 #include "Entity.h"
 #include "Serializer.h"
+#include "GameMode.h"
 
 ct::Entity::Entity() = default;
 ct::Entity::~Entity() = default;
@@ -17,6 +18,17 @@ void ct::Entity::Spawn()
 
 void ct::Entity::Tick()
 {
+	// Check if we've moved since last tick
+	if ( origin_ != oldOrigin_ )
+	{
+		GameMode *gameMode = GetApp()->GetGameMode();
+		if ( gameMode->GetWorld()->GetQuadrant( origin_.x, origin_.y ) == nullptr )
+		{
+
+		}
+
+		oldOrigin_ = origin_;
+	}
 }
 
 void ct::Entity::Draw( const Camera &camera )
@@ -64,21 +76,13 @@ void ct::Entity::Serialize( Serializer *write )
 bool ct::Entity::ShouldDraw( const ct::Camera &camera ) const
 {
 	if ( origin_.x - bounds_.x > camera.position.x + DISPLAY_WIDTH )
-	{
 		return false;
-	}
 	else if ( origin_.y - bounds_.y > camera.position.y + DISPLAY_HEIGHT )
-	{
 		return false;
-	}
 	else if ( origin_.x + bounds_.x < camera.position.x - DISPLAY_WIDTH )
-	{
 		return false;
-	}
 	else if ( origin_.y + bounds_.y < camera.position.y - DISPLAY_HEIGHT )
-	{
 		return false;
-	}
 
 	return true;
 }

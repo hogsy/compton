@@ -22,9 +22,6 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	int x = offsetX - camera.position.x;
 	int y = offsetY - camera.position.y;
 
-	if ( x > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
-		return;
-
 	render::DrawFilledRectangle( x, y, TILE_WIDTH, TILE_HEIGHT,
 	                             hei::Colour(
 										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ 0 ] + 0.1f ) ),

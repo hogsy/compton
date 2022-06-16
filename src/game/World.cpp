@@ -17,20 +17,46 @@ ct::World::~World()
 
 void ct::World::Tick()
 {
-	numSeconds_ += GetApp()->GetGameMode()->GetGameSpeed();
+	GameMode *gameMode = GetApp()->GetGameMode();
+	if ( gameMode->GetState() == GameMode::GameState::PAUSED )
+		return;
+
+	numSeconds_ += gameMode->GetGameSpeed();
+
+	for ( unsigned int i = 0; i < NUM_QUADRANTS; ++i )
+		quadrants_[ i ].occupiers.clear();
+
+	GameMode::GetEntityManager()->Tick();
 }
 
 void ct::World::Draw( const ct::Camera &camera )
 {
 	START_MEASURE();
 
+#if 0
 	terrain_.Draw( camera );
+#else
+	srand( 5 );
+	for ( unsigned int col = 0; col < NUM_QUADRANTS_COL; ++col )
+	{
+		for ( unsigned int row = 0; row < NUM_QUADRANTS_ROW; ++row )
+		{
+			int x = ( row * QUADRANT_WIDTH ) - camera.position.x;
+			int y = ( col * QUADRANT_HEIGHT ) - camera.position.y;
+
+			hei::Colour colour = hei::Colour( rand() % 255, rand() % 255, rand() % 255, 255 );
+
+			render::DrawFilledRectangle( x, y, QUADRANT_WIDTH, QUADRANT_HEIGHT, colour );
+		}
+	}
+#endif
 
 	END_MEASURE();
 }
 
 void ct::World::Deserialize( ct::Serializer *read )
 {
+	name_ = read->ReadString();
 	seed_ = read->ReadI32();
 	numSeconds_ = read->ReadI32();
 
@@ -39,9 +65,7 @@ void ct::World::Deserialize( ct::Serializer *read )
 
 void ct::World::Serialize( Serializer *write )
 {
-	write->WriteI32( name_.size() );
 	write->WriteString( name_.c_str() );
-
 	write->WriteI32( seed_ );
 	write->WriteI32( numSeconds_ );
 

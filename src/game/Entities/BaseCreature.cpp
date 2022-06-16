@@ -105,9 +105,6 @@ void ct::BaseCreature::Serialize( ct::Serializer *write )
 void ct::BaseCreature::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
-
-	if ( !ShouldDraw( camera ) )
-		return;
 }
 
 void ct::BaseCreature::Tick()
@@ -120,8 +117,8 @@ void ct::BaseCreature::Tick()
 void ct::BaseCreature::Think()
 {
 	// Check sensors - these will pass data to brain
-	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
-		sensors_[ i ].Tick();
+	for (auto & sensor : sensors_)
+		sensor.Tick();
 
 	// Brain will now process input from sensors
 	brain_.Tick();

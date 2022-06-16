@@ -186,8 +186,6 @@ void ct::GameMode::Tick()
 	if ( world_ != nullptr )
 		world_->Tick();
 
-	GetEntityManager()->Tick();
-
 	END_MEASURE();
 }
 
@@ -304,9 +302,8 @@ void ct::GameMode::RestoreGame( const char *path )
 	//terrainManager_->Deserialize( &serializer );
 	entityManager_->DeserializeEntities( &serializer );
 
-	char tmp[ 128 ];
-	serializer.ReadString( tmp, sizeof( tmp ) );
-	world_ = new World( tmp );
+	std::string name = serializer.ReadString();
+	world_ = new World( name.c_str() );
 	world_->Deserialize( &serializer );
 
 	// Now restore the camera data

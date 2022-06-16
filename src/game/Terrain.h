@@ -58,6 +58,9 @@ namespace ct
 			TerrainTileCorner corners[ 2 ];
 			float height[ 4 ];
 
+			std::vector< unsigned char > heightBuffer;
+			std::vector< unsigned char > colourBuffer;
+
 			void Draw( const Camera &camera, int offsetX, int offsetY );
 		};
 

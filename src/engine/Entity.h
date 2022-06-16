@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <cfloat>
 #include "EntityManager.h"
+#include "World.h"
 
 #define DECLARE_ENTITY_CLASS( CLASSNAME, BASECLASS ) \
 	IMPLEMENT_SUPER( BASECLASS )                     \
@@ -21,7 +23,7 @@ namespace ct
 		Entity();
 		~Entity();
 
-		virtual const char *GetClassIdentifier() const { return "Entity"; }
+		[[nodiscard]] virtual const char *GetClassIdentifier() const { return "Entity"; }
 
 		virtual void Spawn();
 		virtual void Precache() {}
@@ -32,12 +34,14 @@ namespace ct
 		virtual void Deserialize( Serializer *read );
 		virtual void Serialize( Serializer *write );
 
-		virtual bool ShouldDraw( const Camera &camera ) const;
+		[[nodiscard]] virtual bool ShouldDraw( const Camera &camera ) const;
 
 		hei::Vector2 velocity_;
-		hei::Vector2 origin_;
+		hei::Vector2 origin_, oldOrigin_{ FLT_MIN, FLT_MIN };
 		hei::Vector2 offset_;
 		hei::Vector2 bounds_{ 20.0f, 20.0f };
+
+		std::vector< World::Quadrant * > quadrants_;
 
 		float z_{ 0.0f };
 

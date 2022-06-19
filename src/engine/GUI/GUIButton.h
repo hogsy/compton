@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GUIPanel.h"
+#include "GUILabel.h"
 
 namespace ct
 {
@@ -21,6 +22,6 @@ namespace ct
 	private:
 		void ( *ButtonCallback )( void *userDataPtr );
 
-		char label_[ 64 ];
+		GUILabel *label_;
 	};
 }// namespace vc

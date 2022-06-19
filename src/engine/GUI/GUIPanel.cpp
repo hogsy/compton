@@ -6,6 +6,7 @@
 
 #include "GUIPanel.h"
 #include "GUIStyleSheet.h"
+#include "GUILabel.h"
 
 const hei::Colour ct::GUIPanel::INSET_COLOUR = { 122, 122, 122, 255 };
 const hei::Colour ct::GUIPanel::OUTSET_COLOUR = { 192, 192, 192, 255 };
@@ -266,4 +267,5 @@ void ct::GUIPanel::SetTooltip( const char *description )
 {
 	assert( tooltip_ == nullptr );
 	tooltip_ = new GUIPanel( this, 0, 0, 100, 16, Background::SOLID, Border::OUTSET );
+	new GUILabel( tooltip_, description );
 }

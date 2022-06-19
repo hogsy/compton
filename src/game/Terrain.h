@@ -21,7 +21,7 @@ namespace ct
 
 		void Draw( const Camera &camera );
 
-		void Generate();
+		void Generate( int seed );
 
 		bool IsWater( float x, float y );
 
@@ -29,8 +29,8 @@ namespace ct
 		static constexpr unsigned int NUM_TILES_COLUMN = 32;
 		static constexpr unsigned int NUM_TILES = NUM_TILES_ROW * NUM_TILES_COLUMN;
 
-		static constexpr unsigned int TILE_WIDTH = 64;
-		static constexpr unsigned int TILE_HEIGHT = 64;
+		static constexpr int TILE_WIDTH = 64;
+		static constexpr int TILE_HEIGHT = 64;
 		static constexpr unsigned int TILE_PIXEL_SIZE = TILE_WIDTH * TILE_HEIGHT;
 
 		static constexpr unsigned int PIXEL_WIDTH = TILE_WIDTH * NUM_TILES_COLUMN;

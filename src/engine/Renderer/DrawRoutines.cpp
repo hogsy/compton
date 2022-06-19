@@ -25,6 +25,11 @@ void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
 
 void ct::render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour )
 {
+	if ( sx < 0 && ex < 0 || sx > DISPLAY_WIDTH && ex > DISPLAY_WIDTH )
+		return;
+	if ( sy < 0 && ey < 0 || sy > DISPLAY_HEIGHT && ey > DISPLAY_HEIGHT )
+		return;
+
 #define sign( x ) ( ( x ) > 0 ? 1 : ( ( x ) == 0 ? 0 : ( -1 ) ) )
 
 	int dx = ex - sx;

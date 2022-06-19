@@ -19,66 +19,43 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 			{ 0, 0, 255 },
 	};
 
-	int x = offsetX - camera.position.x;
-	int y = offsetY - camera.position.y;
+	int isoX, isoY;
+	render::TransformToIso( offsetX, offsetY, &isoX, &isoY );
 
-	render::DrawFilledRectangle( x, y, TILE_WIDTH, TILE_HEIGHT,
-	                             hei::Colour(
-										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ 0 ] + 0.1f ) ),
-										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].g ) * ( height[ 0 ] + 0.1f ) ),
-										 ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ 0 ] + 0.1f ) ) ) );
+	int x = isoX - camera.position.x;
+	int y = isoY - camera.position.y;
 
-#if 0// todo: rewrite this, we we decide to retain it
+	if ( x - TILE_WIDTH > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
+		return;
 
-	ALLEGRO_VERTEX vertices[ 6 ];
-	memset( vertices, 0, sizeof( ALLEGRO_VERTEX ) * 6 );
+	hei::Colour cornerColours[ 4 ];
+	for ( unsigned int i = 0; i < 4; ++i )
+	{
+		cornerColours[ i ] = hei::Colour(
+				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ i ] + 0.1f ) ),
+				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].g ) * ( height[ i ] + 0.1f ) ),
+				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ i ] + 0.1f ) ) );
+	}
 
-	vertices[ 0 ].x     = offsetX;
-	vertices[ 0 ].y     = offsetY;
-	vertices[ 0 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
-	vertices[ 1 ].x     = offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 1 ].y     = offsetY;
-	vertices[ 1 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
-			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
-			( PlFloatToByte( height[ 1 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
-	vertices[ 2 ].x     = offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 2 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
-	vertices[ 2 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].r ),
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].g ),
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 0 ].terrainType ].b ) );
+	static constexpr int HALF_H = TILE_HEIGHT / 2;
 
-	vertices[ 3 ].x     = offsetX + TERRAIN_TILE_WIDTH;
-	vertices[ 3 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
-	vertices[ 3 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
-			( PlFloatToByte( height[ 3 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
-	vertices[ 4 ].x     = offsetX;
-	vertices[ 4 ].y     = offsetY + TERRAIN_TILE_HEIGHT;
-	vertices[ 4 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
-			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
-			( PlFloatToByte( height[ 2 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
-	vertices[ 5 ].x     = offsetX;
-	vertices[ 5 ].y     = offsetY;
-	vertices[ 5 ].color = al_map_rgb(
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].r ),
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].g ),
-			( PlFloatToByte( height[ 0 ] ) * tileColour[ corners[ 1 ].terrainType ].b ) );
+	int c = 1;
+	for ( unsigned int row = 0; row < HALF_H; ++row, c += 2 )
+	{
+		for ( unsigned int col = 0; col < ( c * 2 ); ++col )
+		{
+			render::DrawPixel( x - c + col, y + row, cornerColours[ 0 ] );
+		}
+	}
 
-	al_draw_prim( vertices, nullptr, nullptr, 0, 6, ALLEGRO_PRIM_TRIANGLE_LIST );
-
-#	if 0
-	float rectThick = camera.zoom / 4.0f;
-	unsigned char rectAlpha = PlFloatToByte( camera.zoom ) * 50;
-	al_draw_rectangle( offsetX, offsetY, offsetX + TERRAIN_TILE_WIDTH, offsetY + TERRAIN_TILE_HEIGHT, al_map_rgba( 255, 255, 255, rectAlpha ), rectThick );
-#	endif
-#endif
+	c = TILE_WIDTH;
+	for ( unsigned int row = 0; row < HALF_H; ++row, c -= 2 )
+	{
+		for ( unsigned int col = 0; col < ( c * 2 ); ++col )
+		{
+			render::DrawPixel( x - c + col, y + HALF_H + row, cornerColours[ 0 ] );
+		}
+	}
 }
 
 ct::Terrain::Terrain() {}
@@ -125,6 +102,7 @@ void ct::Terrain::Draw( const Camera &camera )
 
 			float offsetX = x * TILE_WIDTH;
 			float offsetY = y * TILE_HEIGHT;
+
 			tiles[ tileNum ].Draw( camera, offsetX, offsetY );
 		}
 	}
@@ -132,9 +110,9 @@ void ct::Terrain::Draw( const Camera &camera )
 	END_MEASURE();
 }
 
-void ct::Terrain::Generate()
+void ct::Terrain::Generate( int seed )
 {
-	ct::random::PerlinNoise perlinNoise( ( int ) time( nullptr ) );
+	ct::random::PerlinNoise perlinNoise( seed );
 
 	float fx = PIXEL_WIDTH / 3.0f;
 	float fy = PIXEL_HEIGHT / 3.0f;

@@ -71,8 +71,8 @@ void ct::GameMode::SetupUserInterface()
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 108, 32, 32 );
 
 #if 1
-#	define MINIMAP_WIDTH  128
-#	define MINIMAP_HEIGHT 128
+#	define MINIMAP_WIDTH  64
+#	define MINIMAP_HEIGHT 64
 	GUIPanel *minimapPanel = new GUIPanel(
 			baseGuiPanel_,
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
@@ -80,7 +80,7 @@ void ct::GameMode::SetupUserInterface()
 			MINIMAP_WIDTH, MINIMAP_HEIGHT,
 			GUIPanel::Background::DEFAULT,
 			GUIPanel::Border::OUTSET );
-	minimapPanel->SetTooltip( "Hello World!" );
+	minimapPanel->SetTooltip( "Minimap" );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
 	new GUIPanel(
@@ -193,20 +193,18 @@ void ct::GameMode::Draw()
 {
 	START_MEASURE();
 
-	// TODO: should iterate for each camera and split view, if local...
-	PlayerManager::Player *player = playerManager_.GetPlayer( 0 );
-
 	std::vector< PlayerManager::Player * > localPlayers;
 	for ( int i = 0; i < playerManager_.GetNumPlayers(); ++i )
 	{
-		PlayerManager::Player *player = playerManager_.GetPlayer( i );
-		if ( !player->isLocal )
+		PlayerManager::Player *p = playerManager_.GetPlayer( i );
+		if ( !p->isLocal )
 			continue;
 
-		localPlayers.push_back( player );
+		localPlayers.push_back( p );
 	}
 
-
+	// TODO: should iterate for each camera and split view, if local...
+	PlayerManager::Player *player = playerManager_.GetPlayer( 0 );
 
 	if ( world_ != nullptr )
 		world_->Draw( player->camera );
@@ -236,13 +234,76 @@ void ct::GameMode::Draw()
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
 
+#if 0
+	//////////////////////////////////////////////////////////////////////
+	// ... EXPERIMENTAL 3D SHIT POSSIBLY FOR INTRO OR OTHER EFFECTS ... //
+
+	PlMatrixMode( PL_MODELVIEW_MATRIX );
+	PlPushMatrix();
+	PlLoadIdentityMatrix();
+
+	static hei::Vector3 rotation;
+
+	// Vertices
+	static hei::Vector3 p3[ 4 ] = {
+			{ 50.0f, 50.0f, 0.0f },
+			{ 80.0f, 50.0f, 0.0f },
+			{ 50.0f, 80.0f, 0.0f },
+			{ 80.0f, 80.0f, 0.0f },
+	};
+
+	struct VIndex
+	{
+		unsigned int x, y;
+	};
+
+	// Indices
+	static VIndex i3[] = {
+			{ 0, 1 },
+			{ 1, 4 },
+			{ 4, 3 },
+			{ 3, 0 },
+	};
+
+	PLMatrix4 matrix;
+	PlLoadMatrix( &matrix );
+
+	//PlRotateMatrix( rotation.x, 1.0f, 0.0f, 0.0f );
+	//PlRotateMatrix( rotation.y, 0.0f, 1.0f, 0.0f );
+	//PlRotateMatrix( rotation.z, 0.0f, 0.0f, 1.0f );
+
+	for ( unsigned int i = 0; i < PL_ARRAY_ELEMENTS( i3 ); ++i )
+	{
+		PLVector4 sv = PlVector4( p3[ i3[ i ].x ].x, p3[ i3[ i ].x ].y, p3[ i3[ i ].x ].z, 1.0f );
+		sv = PlTransformVector4( &sv, &matrix );
+		PLVector3 sx = PlVector3( sv.x / sv.w, sv.y / sv.w, sv.z / sv.w );
+
+		PLVector4 ev = PlVector4( p3[ i3[ i ].y ].x, p3[ i3[ i ].y ].y, p3[ i3[ i ].y ].z, 1.0f );
+		ev = PlTransformVector4( &ev, &matrix );
+		PLVector3 ex = PlVector3( ev.x / ev.w, ev.y / ev.w, ev.z / ev.w );
+
+		PLVector2 sxy = PlConvertWorldToScreen( &sx, &matrix );
+		PLVector2 exy = PlConvertWorldToScreen( &ex, &matrix );
+
+		Print( "%f %f / %f %f\n", sxy.x, sxy.y, exy.x, exy.y );
+
+		//render::DrawLine( sxy.x, sxy.y, exy.x, exy.y, hei::Colour( 255, 0, 0 ) );
+	}
+
+	rotation.x += 0.5f;
+	rotation.y -= 0.5f;
+	rotation.z += 0.5f;
+
+	PlPopMatrix();
+#endif
+
 	END_MEASURE();
 }
 
 void ct::GameMode::NewGame( const char *path )
 {
 	world_ = new World( "test" );
-	world_->Generate( rand() % 255 );
+	world_->Generate( ( int ) time( nullptr ) );
 
 	// Then automatically save it
 	SaveGame( path );

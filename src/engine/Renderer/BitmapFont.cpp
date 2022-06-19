@@ -136,15 +136,11 @@ bool vc::BitmapFont::LoadFromPSF( const char *path )
 void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour )
 {
 	if ( c >= glyphs_.size() )
-	{
 		return;
-	}
 
 	// Don't bother drawing it if it's outside visible bounds
 	if ( x + cw_ < 0 || x > DISPLAY_WIDTH || y + ch_ < 0 || y > DISPLAY_HEIGHT )
-	{
 		return;
-	}
 
 	for ( unsigned int row = 0; row < cw_; ++row )
 	{
@@ -152,11 +148,9 @@ void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Co
 		{
 			uint8_t pixel = glyphs_[ c ].pixels[ row + column * cw_ ];
 			if ( pixel == 0 )
-			{
 				continue;
-			}
 
-			render::DrawPixel( x + row, y + column, hei::Colour( pixel * colour.r, pixel * colour.g, pixel * colour.b ) );
+			render::DrawPixel( x + row, y + column, hei::Colour( colour.r, colour.g, colour.b ) );
 		}
 	}
 }

@@ -33,7 +33,7 @@ void ct::World::Draw( const ct::Camera &camera )
 {
 	START_MEASURE();
 
-#if 0
+#if 1
 	terrain_.Draw( camera );
 #else
 	srand( 5 );
@@ -75,7 +75,7 @@ void ct::World::Serialize( Serializer *write )
 void ct::World::Generate( unsigned int seed )
 {
 	Print( "Generating terrain...\n" );
-	terrain_.Generate();
+	terrain_.Generate( seed );
 
 	Print( "Populating world...\n" );
 	unsigned int n = random::GenerateRandomInteger( 4, 8 );

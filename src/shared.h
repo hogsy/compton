@@ -40,7 +40,7 @@
 
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 480
-//#define ENABLE_SCALING
+#define ENABLE_SCALING
 
 namespace ct
 {
@@ -65,6 +65,18 @@ namespace ct
 		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection = ct::render::FlipDirection::FLIP_NONE );
 		void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 		void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
+
+		inline void TransformToIso( int ox, int oy, int *dx, int *dy )
+		{
+			*dx = ( ox - oy );
+			*dy = ( ox + oy ) / 2;
+		}
+
+		inline void TransformToCart( int ox, int oy, int *dx, int *dy )
+		{
+			*dx = ( 2 * oy + ox ) / 2;
+			*dy = ( 2 * oy - ox ) / 2;
+		}
 	}// namespace render
 
 	// Common misc types

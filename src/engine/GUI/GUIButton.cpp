@@ -7,11 +7,12 @@
 ct::GUIButton::GUIButton( ct::GUIPanel *parent, const char *label, int x, int y, int w, int h )
 	: GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
 {
-	strncpy( label_, label, sizeof( label_ ) );
+	label_ = new GUILabel( this, label, x, y, w, h );
 }
 
 ct::GUIButton::~GUIButton()
 {
+	delete label_;
 }
 
 void ct::GUIButton::Tick()

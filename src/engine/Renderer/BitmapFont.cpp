@@ -133,7 +133,7 @@ bool vc::BitmapFont::LoadFromPSF( const char *path )
 }
 #endif
 
-void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour )
+void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour ) const
 {
 	if ( c >= glyphs_.size() )
 		return;
@@ -155,7 +155,7 @@ void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Co
 	}
 }
 
-void ct::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow )
+void ct::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow ) const
 {
 	if ( shadow )
 	{

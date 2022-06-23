@@ -14,6 +14,7 @@ namespace ct
 		GUIStyleSheet() = default;
 
 		static constexpr unsigned int GUI_MAX_BACKGROUNDS = 8;
+		static constexpr unsigned int GUI_BORDER_SIZE = 2;
 
 		enum
 		{

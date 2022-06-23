@@ -122,9 +122,7 @@ ct::App::App( int argc, char **argv )
 	uint32_t minor = ( version >> 16 ) & 255;
 	Print( "Initializing Allegro %d.%d\n", major, minor );
 	if ( !al_init() )
-	{
 		Error( "Failed to initialize Allegro library!\n" );
-	}
 
 	static ALLEGRO_MEMORY_INTERFACE memoryInterface = {
 			AlMAlloc,
@@ -134,19 +132,11 @@ ct::App::App( int argc, char **argv )
 	al_set_memory_interface( &memoryInterface );
 
 	if ( !al_install_mouse() )
-	{
 		Error( "Failed to install mouse through Allegro!\n" );
-	}
-
 	if ( !al_install_audio() )
-	{
 		Error( "Failed to install audio through Allegro!\n" );
-	}
-
 	if ( !al_init_acodec_addon() )
-	{
 		Error( "Failed to install audio codecs through Allegro!\n" );
-	}
 
 	al_init_native_dialog_addon();
 
@@ -254,12 +244,15 @@ void ct::App::InitializeDisplay()
 	windowHeight = DISPLAY_HEIGHT;
 #endif
 
+#ifdef ENABLE_SCALING
 	int displayFlags = ALLEGRO_OPENGL_3_0;
 	if ( !PlHasCommandLineArgument( "--window" ) )
-	{
 		displayFlags |= ALLEGRO_FULLSCREEN_WINDOW;
-	}
+
 	al_set_new_display_flags( displayFlags );
+#else
+	al_set_new_display_flags( ALLEGRO_OPENGL_3_0 );
+#endif
 
 	alDisplay = al_create_display( windowWidth, windowHeight );
 	if ( alDisplay == nullptr )
@@ -276,9 +269,7 @@ void ct::App::InitializeDisplay()
 	al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
 	screenBitmap_ = al_create_bitmap( DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	if ( screenBitmap_ == nullptr )
-	{
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
-	}
 
 	int sx = windowWidth / DISPLAY_WIDTH;
 	int sy = windowHeight / DISPLAY_HEIGHT;
@@ -299,9 +290,7 @@ void ct::App::InitializeDisplay()
 void ct::App::Draw()
 {
 	if ( !redraw )
-	{
 		return;
-	}
 
 	START_MEASURE();
 
@@ -317,12 +306,11 @@ void ct::App::Draw()
 	// Now draw everything we want
 	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
 
+	render::SetScissor( 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	render::ClearDisplay();
 
 	if ( gameMode != nullptr )
-	{
 		gameMode->Draw();
-	}
 
 	END_MEASURE();
 
@@ -357,6 +345,8 @@ void ct::App::Draw()
 		}
 	}
 
+	console_.Draw();
+
 	// And finally, handle the scaling
 	al_unlock_bitmap( screenBitmap_ );
 	al_set_target_backbuffer( alDisplay );
@@ -384,14 +374,9 @@ void ct::App::InitializeEvents()
 	Print( "Initialize events...\n" );
 
 	if ( ( alTimer = al_create_timer( 1.0 / MAX_FPS ) ) == nullptr )
-	{
 		Error( "Failed to initialize timer!\n" );
-	}
-
 	if ( ( alEventQueue = al_create_event_queue() ) == nullptr )
-	{
 		Error( "Failed to initialize events!\n" );
-	}
 
 	al_install_mouse();
 	al_install_keyboard();
@@ -451,18 +436,13 @@ void ct::App::Tick()
 			numTicks++;
 
 			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_P ) == input::State::PRESSED )
-			{
 				debugProfiler_ = !debugProfiler_;
-			}
 			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_O ) == input::State::PRESSED )
-			{
 				debugFPS_ = !debugFPS_;
-			}
 
 			if ( gameMode != nullptr )
-			{
 				gameMode->Tick();
-			}
+
 			input::inputManager->EndFrame();
 			redraw = true;
 			break;
@@ -483,19 +463,16 @@ void ct::App::Tick()
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 		{
+			if ( console_.IsOpen() && ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN ) )
+				break;
+
 			input::InputMouseButton button = input::MOUSE_BUTTON_LEFT;
 			if ( event.mouse.button & 1 )
-			{
 				button = input::MOUSE_BUTTON_LEFT;
-			}
 			else if ( event.mouse.button & 2 )
-			{
 				button = input::MOUSE_BUTTON_RIGHT;
-			}
 			else if ( event.mouse.button & 3 )
-			{
 				button = input::MOUSE_BUTTON_MIDDLE;
-			}
 
 			int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
 			int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
@@ -503,16 +480,43 @@ void ct::App::Tick()
 			break;
 		}
 
+		case ALLEGRO_EVENT_KEY_CHAR:
+		{
+			if ( !console_.IsOpen() )
+				break;
+
+			console_.PushCharacter( event.keyboard.unichar );
+			break;
+		}
+
 		case ALLEGRO_EVENT_KEY_DOWN:
 		case ALLEGRO_EVENT_KEY_UP:
+		{
+			if ( console_.IsOpen() )
+			{
+				if ( event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+				{
+					console_.Close();
+					break;
+				}
+
+				break;
+			}
+
+			if ( event.type == ALLEGRO_EVENT_KEY_DOWN && ( event.keyboard.keycode == ALLEGRO_KEY_TILDE ||
+			                                               event.keyboard.keycode == ALLEGRO_KEY_ENTER ) )
+			{
+				console_.Open();
+				break;
+			}
+
 			input::inputManager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
 			break;
+		}
 	}
 
 	if ( !al_is_event_queue_empty( alEventQueue ) )
-	{
 		redraw = false;
-	}
 
 	END_MEASURE();
 }
@@ -570,9 +574,7 @@ void ct::App::PrecacheResources()
 {
 	defaultBitmapFont_ = new BitmapFont();
 	if ( !defaultBitmapFont_->LoadFromImage( 7, 7, 0, "fonts/bitmaps/mbf/mbf_small_00.png" ) )
-	{
 		Error( "Failed to load default charset!\n" );
-	}
 
 	spriteManager->PrecacheResources();
 	gameMode->PrecacheResources();

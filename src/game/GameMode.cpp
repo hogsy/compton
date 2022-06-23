@@ -20,7 +20,7 @@
 
 ct::GameMode::GameMode()
 {
-	SetupUserInterface();
+	SetupDesktop();
 
 	entityManager_ = new EntityManager();
 
@@ -31,6 +31,9 @@ ct::GameMode::GameMode()
 		snprintf( username, sizeof( username ), "unnamed" );
 
 	playerManager_.AddPlayer( username, true );
+	//playerManager_.AddPlayer( "butt", true );
+	//playerManager_.AddPlayer( "butt", true );
+	//playerManager_.AddPlayer( "butt", true );
 }
 
 ct::GameMode::~GameMode()
@@ -40,7 +43,7 @@ ct::GameMode::~GameMode()
 	delete baseGuiPanel_;
 }
 
-void ct::GameMode::SetupUserInterface()
+void ct::GameMode::SetupDesktop()
 {
 	// Now create the base GUI panels
 
@@ -51,11 +54,6 @@ void ct::GameMode::SetupUserInterface()
 		Error( "Failed to load default style sheet!\n" );
 
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
-
-	//for ( unsigned int i = 0; i < 256; ++i )
-	//{
-	//	GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, i * 16, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
-	//}
 
 	GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
 	statusBar_->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
@@ -203,13 +201,21 @@ void ct::GameMode::Draw()
 		localPlayers.push_back( p );
 	}
 
-	// TODO: should iterate for each camera and split view, if local...
-	PlayerManager::Player *player = playerManager_.GetPlayer( 0 );
-
 	if ( world_ != nullptr )
-		world_->Draw( player->camera );
+	{
+		// For each local player, draw into a subsection of the screen
+		int sw = DISPLAY_WIDTH / localPlayers.size();
+		for ( unsigned int i = 0, x = 0; i < localPlayers.size(); ++i, x += sw )
+		{
+			render::SetScissor( x, 0, sw, DISPLAY_HEIGHT );
 
-	entityManager_->Draw( player->camera );
+			PlayerManager::Player *player = localPlayers[ i ];
+
+			world_->Draw( player->camera );
+		}
+
+		render::SetScissor( 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	}
 
 	// UI always comes last
 	if ( baseGuiPanel_ != nullptr )

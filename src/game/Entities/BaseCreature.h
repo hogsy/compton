@@ -6,6 +6,7 @@
 #include "Entity.h"
 #include "BaseAnimated.h"
 #include "Inventory.h"
+#include "Random.h"
 
 #include "Entities/ai/Brain.h"
 #include "Entities/ai/Sensor.h"
@@ -30,6 +31,23 @@ namespace ct
 
 		bool CanBreed( BaseCreature *other );
 
+		/**
+		 * Let's us know whether this particular
+		 * creature can actually get pregnant in
+		 * it's current state.
+		 */
+		inline bool CanBecomePregnant()
+		{
+			if ( sex_ == Sex::MALE || isPregnant_ )
+				return false;
+
+			// Only adults can make babies
+			if ( phase_ != LifePhase::LIFE_PHASE_ADULTHOOD )
+				return false;
+
+			return ( random::GenerateRandomInteger( 0, age_ / MAX_LIFE_PHASES ) == 0 );
+		}
+
 		virtual void Deserialize( Serializer *read ) override;
 		virtual void Serialize( Serializer *write ) override;
 
@@ -40,6 +58,13 @@ namespace ct
 		void Think();
 
 	public:
+		// Actions
+		virtual ai::FeedbackState Use();
+		virtual ai::FeedbackState Drink();
+		virtual ai::FeedbackState Eat();
+		virtual ai::FeedbackState Talk();
+		virtual ai::FeedbackState Attack();
+
 		virtual void StepTowards( const hei::Vector2 &target, float speed = 1.0f );
 		virtual void StepAway( const hei::Vector2 &target, int speed = 1.0f );
 
@@ -53,6 +78,22 @@ namespace ct
 
 		Inventory inventory;
 
+		Entity *targetEntity_{ nullptr };
+
+	public:
+		enum LifePhase
+		{
+			LIFE_PHASE_BABYHOOD, // immobile and weak
+			LIFE_PHASE_CHILDHOOD,// mobile but weak
+			LIFE_PHASE_ADULTHOOD,// mobile
+			LIFE_PHASE_ELDERLY,  // slower and weaker
+			LIFE_PHASE_EXPIRED,  // dead
+
+			MAX_LIFE_PHASES
+		};
+
+	protected:
+		LifePhase phase_{ LifePhase::LIFE_PHASE_BABYHOOD };
 		unsigned int age_{ 0 };
 		unsigned int maxAge_{ 100 };
 		unsigned int generation_{ 0 };
@@ -70,4 +111,4 @@ namespace ct
 		unsigned int maxExperience{ 100 };
 		unsigned int currentLevel{ 0 };
 	};
-}// namespace vc
+}// namespace ct

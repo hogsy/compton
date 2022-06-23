@@ -15,8 +15,8 @@ namespace ct
 
 		bool LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, const char *path );
 
-		void DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) );
-		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false );
+		void DrawCharacter( int x, int y, unsigned char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) ) const;
+		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false ) const;
 
 	private:
 		uint8_t  cw_{ 0 };

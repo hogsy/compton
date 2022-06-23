@@ -59,8 +59,12 @@ namespace ct
 
 		inline void GetPosition( int *xd, int *yd ) const
 		{
-			*xd = x;
-			*yd = y;
+			int px = 0, py = 0;
+			if ( parentPtr != nullptr )
+				parentPtr->GetPosition( &px, &py );
+
+			*xd = px + x;
+			*yd = py + y;
 		}
 		void GetContentPosition( int *xd, int *yd ) const;
 		inline void GetSize( int *wd, int *hd ) const

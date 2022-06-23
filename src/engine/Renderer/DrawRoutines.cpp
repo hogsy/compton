@@ -5,16 +5,21 @@
 
 // Draw Routines
 
+static int scissorX = 0;
+static int scissorY = 0;
+static int scissorW = DISPLAY_WIDTH;
+static int scissorH = DISPLAY_HEIGHT;
+
 void ct::render::ClearDisplay( void )
 {
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
-	//PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
-	memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	//memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
 void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
 {
-	if ( x < 0 || x > DISPLAY_WIDTH || y < 0 || y > DISPLAY_HEIGHT )
+	if ( x < scissorX || x > scissorW || y < scissorY || y > scissorH )
 		return;
 
 	if ( colour.a != 255 )
@@ -25,9 +30,9 @@ void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
 
 void ct::render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour )
 {
-	if ( sx < 0 && ex < 0 || sx > DISPLAY_WIDTH && ex > DISPLAY_WIDTH )
+	if ( sx < scissorX && ex < scissorX || sx > DISPLAY_WIDTH && ex > DISPLAY_WIDTH )
 		return;
-	if ( sy < 0 && ey < 0 || sy > DISPLAY_HEIGHT && ey > DISPLAY_HEIGHT )
+	if ( sy < scissorY && ey < scissorY || sy > DISPLAY_HEIGHT && ey > DISPLAY_HEIGHT )
 		return;
 
 #define sign( x ) ( ( x ) > 0 ? 1 : ( ( x ) == 0 ? 0 : ( -1 ) ) )
@@ -83,7 +88,7 @@ void ct::render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &co
 
 void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection )
 {
-	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
+	if ( ( x + w < scissorX || x >= scissorW ) || ( y + h < 0 || y >= scissorH ) )
 		return;
 
 	struct RGBA8
@@ -92,24 +97,24 @@ void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, in
 	};
 
 	int dw = w;
-	if ( x + dw > DISPLAY_WIDTH )
-		dw = DISPLAY_WIDTH - x;
+	if ( x + dw > scissorW )
+		dw = scissorW - x;
 
 	int dh = h;
-	if ( y + dh > DISPLAY_HEIGHT )
-		dh = DISPLAY_HEIGHT - y;
+	if ( y + dh > scissorH )
+		dh = scissorH - y;
 
 	bool hasAlpha = ( pixelSize == 4 );
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
 	uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
 	for ( unsigned int row = 0; row < dh; ++row )
 	{
-		if ( y + row > DISPLAY_HEIGHT )
+		if ( y + row > scissorH )
 			break;
 
 		for ( unsigned int column = 0; column < dw; ++column )
 		{
-			if ( x + column > DISPLAY_WIDTH )
+			if ( x + column > scissorW )
 				continue;
 
 			RGBA8 pixel;
@@ -143,10 +148,28 @@ void ct::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Col
 	if ( colour.a == 0 )
 		return;
 
-	if ( x > DISPLAY_WIDTH || ( x + w ) < 0 || y > DISPLAY_HEIGHT || ( y + h ) < 0 )
+	if ( x > scissorW || ( x + w ) < scissorX || y > scissorH || ( y + h ) < scissorY )
 		return;
 
 	for ( int row = 0; row < w; ++row )
 		for ( int column = 0; column < h; ++column )
 			DrawPixel( x + row, y + column, colour );
+}
+
+void ct::render::SetScissor( int x, int y, int w, int h )
+{
+	scissorX = x;
+	scissorY = y;
+	scissorW = x + w;
+	scissorH = y + h;
+}
+
+/**
+ * Checks the given coordinates against the scissor volume.
+ * If it returns false, it means that the given coordinates
+ * are outside of the scissor volume.
+ */
+bool ct::render::IsVolumeVisible( int x, int y, int w, int h )
+{
+	return !( x > scissorW || x + w < 0 || y > scissorH || y + h < 0 );
 }

@@ -90,6 +90,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/Input/InputManager.cpp
 
         src/engine/App.cpp
+        src/engine/Console.cpp
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp

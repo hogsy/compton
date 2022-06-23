@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cfloat>
+
 #include "EntityManager.h"
 #include "World.h"
 

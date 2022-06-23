@@ -23,8 +23,8 @@ ct::GUIPanel::GUIPanel( ct::GUIPanel *parent, int x, int y, int w, int h, ct::GU
 	// Style should be the same as the parent
 	styleSheet_ = parent->styleSheet_;
 
-	this->x += parent->x;
-	this->y += parent->y;
+	//this->x += parent->x;
+	//this->y += parent->y;
 }
 
 ct::GUIPanel::~GUIPanel() = default;
@@ -113,16 +113,19 @@ void ct::GUIPanel::DrawBorder()
 		case Border::NONE:
 			return;
 	}
+	
+	int dx, dy;
+	GetPosition( &dx, &dy );
 
-	DrawBorderEdge( x, y, w, 0, u );                                             // top
-	DrawBorderEdge( x, y + h - styleSheet_->frameSprites[ d ]->height, w, 0, d );// bottom
-	DrawBorderEdge( x, y, 0, h, l );// left
-	DrawBorderEdge( x + w - styleSheet_->frameSprites[ r ]->width, y, 0, h, r );// right
+	DrawBorderEdge( dx, dy, w, 0, u );                                             // top
+	DrawBorderEdge( dx, dy + h - styleSheet_->frameSprites[ d ]->height, w, 0, d );// bottom
+	DrawBorderEdge( dx, dy, 0, h, l );// left
+	DrawBorderEdge( dx + w - styleSheet_->frameSprites[ r ]->width, dy, 0, h, r );// right
 
-	DrawBorderCorner( x, y, ul );
-	DrawBorderCorner( x + w - styleSheet_->frameSprites[ ur ]->width, y, ur );
-	DrawBorderCorner( x, y + h - styleSheet_->frameSprites[ ll ]->height, ll );
-	DrawBorderCorner( x + w - styleSheet_->frameSprites[ lr ]->width, y + h - styleSheet_->frameSprites[ lr ]->height, lr );
+	DrawBorderCorner( dx, dy, ul );
+	DrawBorderCorner( dx + w - styleSheet_->frameSprites[ ur ]->width, dy, ur );
+	DrawBorderCorner( dx, dy + h - styleSheet_->frameSprites[ ll ]->height, ll );
+	DrawBorderCorner( dx + w - styleSheet_->frameSprites[ lr ]->width, dy + h - styleSheet_->frameSprites[ lr ]->height, lr );
 }
 
 void ct::GUIPanel::DrawBorderCorner( int dx, int dy, unsigned int index )
@@ -195,15 +198,20 @@ void ct::GUIPanel::SetStyleSheet( GUIStyleSheet *styleSheet )
 
 void ct::GUIPanel::GetContentPosition( int *xd, int *yd ) const
 {
+	int px = 0, py = 0;
+	if ( parentPtr != nullptr )
+		parentPtr->GetContentPosition( &px, &py );
+
 	if ( border_ == Border::NONE )
 	{
 		GetPosition( xd, yd );
+		xd += px;
+		yd += py;
 		return;
 	}
 
-	// Assume border is 2 pixels (idiotic)
-	*xd = x + 2;
-	*yd = y + 2;
+	*xd = px + x + GUIStyleSheet::GUI_BORDER_SIZE;
+	*yd = py + y + GUIStyleSheet::GUI_BORDER_SIZE;
 }
 
 void ct::GUIPanel::GetContentSize( int *wd, int *hd ) const
@@ -214,9 +222,8 @@ void ct::GUIPanel::GetContentSize( int *wd, int *hd ) const
 		return;
 	}
 
-	// Assume border is 2 pixels (idiotic)
-	*wd = w - 2;
-	*hd = h - 2;
+	*wd = w - GUIStyleSheet::GUI_BORDER_SIZE;
+	*hd = h - GUIStyleSheet::GUI_BORDER_SIZE;
 }
 
 bool ct::GUIPanel::IsMouseOver( int mx, int my ) const

@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+
+#include "Compton.h"
+
+#include "Renderer/BitmapFont.h"
+
+// A very primitive console interface!
+
+ct::Console::Console() = default;
+ct::Console::~Console() = default;
+
+void ct::Console::Open()
+{
+	buffer_.clear();
+	isOpen_ = true;
+}
+
+void ct::Console::Close()
+{
+	isOpen_ = false;
+}
+
+void ct::Console::Draw()
+{
+	if ( !IsOpen() )
+		return;
+
+	static constexpr unsigned int CONSOLE_PANE_HEIGHT = 16;
+	static constexpr unsigned int CONSOLE_PANE_Y = DISPLAY_HEIGHT - CONSOLE_PANE_HEIGHT;
+
+	render::DrawFilledRectangle( 0, CONSOLE_PANE_Y, DISPLAY_WIDTH, CONSOLE_PANE_HEIGHT, hei::Colour( 0, 0, 0 ) );
+	render::DrawLine( 2, CONSOLE_PANE_Y + 2, 8, CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ), hei::Colour( 0, 255, 255 ) );
+	render::DrawLine( 2, DISPLAY_HEIGHT - 2, 8, CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ), hei::Colour( 0, 255, 255 ) );
+
+	static const BitmapFont *font = GetApp()->GetDefaultFont();
+	if ( font == nullptr )
+		return;
+
+	int x = 10;
+	int y = CONSOLE_PANE_Y + 2;
+	font->DrawString( &x, &y, buffer_.c_str(), hei::Colour( 255, 255, 0 ) );
+}
+
+void ct::Console::PushCharacter( int c )
+{
+	if ( c == '\r' )
+	{
+		PlParseConsoleString( buffer_.c_str() );
+		buffer_.clear();
+		return;
+	}
+
+	buffer_.push_back( c );
+}

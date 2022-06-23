@@ -51,6 +51,8 @@ void ct::World::Draw( const ct::Camera &camera )
 	}
 #endif
 
+	GameMode::GetEntityManager()->Draw( camera );
+
 	END_MEASURE();
 }
 

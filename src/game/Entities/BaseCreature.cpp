@@ -50,6 +50,10 @@ bool ct::BaseCreature::CanBreed( BaseCreature *other )
 	if ( isPregnant_ || other->isPregnant_ )
 		return false;
 
+	// Only adults can breed
+	if ( phase_ != LifePhase::LIFE_PHASE_ADULTHOOD && other->phase_ != LifePhase::LIFE_PHASE_ADULTHOOD )
+		return false;
+
 	switch ( sex_ )
 	{
 		default: break;
@@ -131,8 +135,12 @@ void ct::BaseCreature::Think()
 
 	switch( dir->type )
 	{
-		case ai::MotorAction::USE: break;
-		case ai::MotorAction::DRINK: break;
+		case ai::MotorAction::USE:
+			Use();
+			break;
+		case ai::MotorAction::DRINK:
+			Drink();
+			break;
 		case ai::MotorAction::EAT: break;
 		case ai::MotorAction::TALK: break;
 		case ai::MotorAction::ATTACK: break;
@@ -143,6 +151,34 @@ void ct::BaseCreature::Think()
 			StepAway( dir->targetPosition );
 			break;
 	}
+}
+
+ct::ai::FeedbackState ct::BaseCreature::Use()
+{
+	if ( targetEntity_ == nullptr )
+		return {};
+
+	return {};
+}
+
+ct::ai::FeedbackState ct::BaseCreature::Drink()
+{
+	return ct::ai::FeedbackState();
+}
+
+ct::ai::FeedbackState ct::BaseCreature::Eat()
+{
+	return ct::ai::FeedbackState();
+}
+
+ct::ai::FeedbackState ct::BaseCreature::Talk()
+{
+	return ct::ai::FeedbackState();
+}
+
+ct::ai::FeedbackState ct::BaseCreature::Attack()
+{
+	return ct::ai::FeedbackState();
 }
 
 void ct::BaseCreature::StepTowards( const hei::Vector2 &target, float speed )

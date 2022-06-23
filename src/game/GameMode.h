@@ -30,7 +30,7 @@ namespace ct
 		virtual void PrecacheResources();
 
 	private:
-		void SetupUserInterface();
+		void SetupDesktop();
 
 	public:
 		void Tick();

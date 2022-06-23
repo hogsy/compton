@@ -20,15 +20,6 @@ namespace ct
 			RETREAT,
 		};
 
-		/**
-		 * Static descriptor provided by objects
-		 * to provide a quick introduction to the
-		 * object.
-		 */
-		struct Descriptor
-		{
-		};
-
 		struct DecisionTree
 		{
 		};
@@ -94,15 +85,6 @@ namespace ct
 			//======================================================
 			// MEMORY
 
-			inline void AddMemory()
-			{
-			}
-
-			inline void WipeMemory()
-			{
-				memoryManager_.Wipe();
-			}
-
 		private:
 			Mood mood_{ Mood::NEUTRAL };
 
@@ -130,7 +112,15 @@ namespace ct
 			MemoryManager memoryManager_;
 
 		public:
+			MemoryManager *GetMemoryManager() { return &memoryManager_; }
+
+			//======================================================
+
+		public:
 			Entity *owner_{ nullptr };
+
+			//======================================================
+			// DIRECTIVES
 
 			struct Directive
 			{

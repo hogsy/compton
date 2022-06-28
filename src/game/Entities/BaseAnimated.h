@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "SpriteAnimator.h"
+#include "engine/Entity.h"
+#include "engine/SpriteAnimator.h"
 
 namespace ct
 {

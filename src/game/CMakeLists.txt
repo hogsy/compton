@@ -1,7 +1,7 @@
 project(game)
 
 add_library(game STATIC
-        GameMode.cpp
+        DSGameMode.cpp
         Terrain.cpp
         Utility.cpp
 
@@ -17,4 +17,3 @@ add_library(game STATIC
         Entities/Tree.cpp)
 
 target_include_directories(game PRIVATE ../engine/)
-target_link_libraries(game plcore)

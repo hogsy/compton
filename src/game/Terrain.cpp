@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
+#include "Game.h"
 #include "Terrain.h"
-#include "Serializer.h"
-#include "Camera.h"
-#include "Random.h"
-#include "GameMode.h"
 
 void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offsetY )
 {
@@ -28,8 +24,6 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	if ( x - TILE_WIDTH > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
 		return;
 #else
-	static constexpr int HALF_H = TILE_HEIGHT / 2;
-
 	if ( !render::IsVolumeVisible( x, y, TILE_WIDTH, TILE_HEIGHT ) )
 		return;
 #endif
@@ -43,11 +37,15 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ i ] + 0.1f ) ) );
 	}
 
+	static constexpr int HALF_H = TILE_HEIGHT / 2;
+
 	int c = 1;
 	for ( unsigned int row = 0; row < HALF_H; ++row, c += 2 )
 	{
 		for ( unsigned int col = 0; col < ( c * 2 ); ++col )
 		{
+
+
 			render::DrawPixel( x - c + col, y + row, cornerColours[ 0 ] );
 		}
 	}
@@ -118,12 +116,12 @@ void ct::Terrain::Generate( int seed )
 {
 	ct::random::PerlinNoise perlinNoise( seed );
 
+#if 0
 	float fx = PIXEL_WIDTH / 3.0f;
 	float fy = PIXEL_HEIGHT / 3.0f;
 
 	double pz = PlClamp( 0.0f, PlGenerateRandomFloat( 100.0f ), 100.0f );
 
-#if 0
 	for ( unsigned int y = 0, yOfs = 0; y < NUM_TILES_COLUMN; ++y, yOfs += TILE_HEIGHT )
 	{
 		for ( unsigned int x = 0, xOfs = 0; x < NUM_TILES_ROW; ++x, xOfs += TILE_WIDTH )
@@ -146,6 +144,10 @@ void ct::Terrain::Generate( int seed )
 		}
 	}
 #else
+	 double dx = PIXEL_WIDTH;
+	 double dy = PIXEL_HEIGHT;
+	 double dz = PlClamp( 0.0f, PlGenerateRandomFloat( 100.0f ), 100.0f );
+
 	for ( unsigned int y = 0; y < PIXEL_HEIGHT; ++y )
 	{
 		for ( unsigned int x = 0; x < PIXEL_WIDTH; ++x )
@@ -155,7 +157,7 @@ void ct::Terrain::Generate( int seed )
 
 			unsigned int i = xr + yr * NUM_TILES_ROW;
 
-			//Print( "%d\n", i );
+			Print( "%d\n", i );
 
 			//tiles[ i ].heightBuffer.reserve( TILE_PIXEL_SIZE );
 			//tiles[ i ].heightBuffer[ ]

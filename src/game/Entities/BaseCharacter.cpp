@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
-#include "Game.h"
+#include "../Game.h"
+
+#include "engine/Input/InputManager.h"
+
 #include "BaseCharacter.h"
-#include "Terrain.h"
-#include "Input/InputManager.h"
+#include "../Terrain.h"
 
 namespace ct
 {
@@ -111,7 +112,10 @@ void ct::BaseCharacter::Tick()
  */
 bool ct::BaseCharacter::TakeControl( int playerNum )
 {
-	PlayerManager::Player *player = GameMode::GetPlayerManager()->GetPlayer( playerNum );
+	IGameMode *gameMode = GetApp()->GetGameMode();
+	assert( gameMode != nullptr );
+
+	PlayerManager::Player *player = gameMode->GetPlayerManager()->GetPlayer( playerNum );
 	if ( player == nullptr )
 	{
 		Warning( "Invalid player for entity, possible player is no longer playing!\n" );

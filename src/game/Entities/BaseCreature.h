@@ -3,13 +3,15 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "BaseAnimated.h"
-#include "Inventory.h"
-#include "Random.h"
+#include "engine/Entity.h"
+#include "engine/Random.h"
 
-#include "Entities/ai/Brain.h"
-#include "Entities/ai/Sensor.h"
+#include "BaseAnimated.h"
+
+#include "../Inventory.h"
+
+#include "../Entities/ai/Brain.h"
+#include "../Entities/ai/Sensor.h"
 
 namespace ct
 {

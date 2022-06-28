@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include "../shared.h"
+#include <cstdint>
+#include <string>
+
+#include <plcore/pl_math.h>
 
 namespace ct
 {

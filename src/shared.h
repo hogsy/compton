@@ -38,6 +38,7 @@
 #include "engine/Serializer.h"
 #include "engine/FileSystem.h"
 #include "engine/Console.h"
+#include "engine/GameMode.h"
 
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 480
@@ -45,7 +46,7 @@
 
 namespace ct
 {
-	class GameMode;
+	class DSGameMode;
 	class SpriteManager;
 	class EntityManager;
 	class BitmapFont;
@@ -99,9 +100,9 @@ namespace ct
 
 		static constexpr unsigned int MAX_FPS = 60;
 
-		static GameMode *GetGameMode();
+		static IGameMode *GetGameMode();
 
-		void PrecacheResources();
+		void Precache();
 
 		void InitializeDisplay();
 		void InitializeEvents();
@@ -162,7 +163,7 @@ namespace ct
 		ALLEGRO_TEXTLOG *alLog;
 
 		// Game state
-		GameMode *gameMode{ nullptr };
+		IGameMode *gameMode{ nullptr };
 
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;// todo: make obsolete

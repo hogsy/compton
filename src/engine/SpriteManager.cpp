@@ -4,7 +4,6 @@
 #include "../shared.h"
 
 #include "SpriteManager.h"
-#include "GameMode.h"
 
 ct::SpriteManager::SpriteManager( int argc, char **argv )
 {
@@ -14,7 +13,7 @@ ct::SpriteManager::~SpriteManager()
 {
 }
 
-void ct::SpriteManager::PrecacheResources()
+void ct::SpriteManager::Precache()
 {
 }
 
@@ -23,29 +22,21 @@ const ct::Sprite *ct::SpriteManager::GetSprite( const char *path, unsigned int g
 	// First check if it's cached already
 
 	if ( group >= MAX_SPRITE_GROUPS )
-	{
 		Error( "Invalid sprite group, %u!\n", group );
-	}
 
 	auto i = spriteGroups_[ group ].sprites.find( path );
 	if ( i != spriteGroups_[ group ].sprites.end() )
-	{
 		return &i->second;
-	}
 
 	// Nope? Okay, let's load it in
 
 	PLImage *image = PlLoadImage( path );
 	if ( image == nullptr )
-	{
 		Error( "Failed to cache image: %s\n", PlGetError() );
-	}
 
 	PLImageFormat format = PlGetImageFormat( image );
 	if ( format != PL_IMAGEFORMAT_RGBA8 && format != PL_IMAGEFORMAT_RGB8 )
-	{
 		Error( "Unsupported pixel format!\n" );
-	}
 
 	// Set up the sprite handle
 	Sprite sprite;
@@ -69,9 +60,7 @@ void ct::SpriteManager::DrawSprite( const char *path, unsigned int group, int x,
 	const Sprite *sprite = GetSprite( path, group );
 	assert( sprite != nullptr );
 	if ( sprite == nullptr )
-	{
 		return;
-	}
 
 	sprite->Draw( x, y, alphaTest );
 }
@@ -80,9 +69,7 @@ const ct::SpriteSheet *ct::SpriteManager::GetSpriteSheet( const char *path )
 {
 	auto i = spriteSheets_.find( path );
 	if ( i != spriteSheets_.end() )
-	{
 		return i->second;
-	}
 
 	auto sheet = new SpriteSheet();
 	if ( !sheet->LoadFile( path ) )

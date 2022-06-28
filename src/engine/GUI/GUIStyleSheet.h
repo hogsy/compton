@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "SpriteSheet.h"
+#include "../SpriteSheet.h"
+
 #include "GUICursor.h"
 
 namespace ct

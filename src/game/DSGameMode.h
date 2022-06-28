@@ -5,15 +5,17 @@
 
 #include "../shared.h"
 
-#include "GUI/GUIPanel.h"
-#include "GUI/GUIPieMenu.h"
+#include "engine/GameMode.h"
 
-#include "SpriteSheet.h"
-#include "Camera.h"
+#include "engine/GUI/GUIPanel.h"
+#include "engine/GUI/GUIPieMenu.h"
+
+#include "engine/SpriteSheet.h"
+#include "engine/Camera.h"
+#include "engine/PlayerManager.h"
+#include "engine/Input/Action.h"
+
 #include "World.h"
-#include "PlayerManager.h"
-
-#include "Input/Action.h"
 
 namespace ct
 {
@@ -21,29 +23,29 @@ namespace ct
 	class Terrain;
 	class Background;
 
-	class GameMode
+	class DSGameMode : public IGameMode
 	{
 	public:
-		GameMode();
-		~GameMode();
+		DSGameMode();
+		~DSGameMode();
 
-		virtual void PrecacheResources();
+		void Precache() override;
 
 	private:
-		void SetupDesktop();
+		virtual void SetupDesktop();
 
 	public:
-		void Tick();
-		void Draw();
+		void Tick() override;
+		void Draw() override;
 
-		virtual void NewGame( const char *path );
-		virtual void SaveGame( const char *path );
-		virtual void RestoreGame( const char *path );
+		void NewGame( const char *path ) override;
+		void SaveGame( const char *path ) override;
+		void RestoreGame( const char *path ) override;
 
 		hei::Vector2 MousePosToWorld( int x, int y );
 
-		virtual void HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
-		virtual void HandleKeyboardEvent( int button, bool buttonUp );
+		bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) override;
+		bool HandleKeyboardEvent( int button, bool buttonUp ) override;
 
 		inline GUIPanel *GetBasePanel() const { return baseGuiPanel_; }
 
@@ -56,24 +58,12 @@ namespace ct
 		};
 		GameState GetState() const { return gameState_; }
 
-		static PlayerManager *GetPlayerManager();
-		static EntityManager *GetEntityManager();
-		static Background *GetBackgroundManager();
-
-		unsigned int GetGameSpeed() const { return gameSpeed_; }
-
 	private:
 		GameState gameState_{ GameState::ACTIVE };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
 		GUIPanel *baseGuiPanel_{ nullptr };
 		GUIPieMenu *uiPieMenu{ nullptr };
-
-		PlayerManager playerManager_;
-		EntityManager *entityManager_;
-
-		SpriteSheet *terrainSheet;
-		Background *backgroundManager_;
 
 		World *world_{ nullptr };
 
@@ -84,7 +74,6 @@ namespace ct
 		}
 
 	private:
-		unsigned int gameSpeed_{ 5 };
 
 		////////////////////////////////////////////////
 		// Actions

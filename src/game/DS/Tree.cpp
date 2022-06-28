@@ -5,9 +5,9 @@
  *  Grows around the world, can be planted by characters.
  *------------------------------------------------------------------------------------*/
 
-#include "Compton.h"
+#include "../Game.h"
+
 #include "Tree.h"
-#include "Random.h"
 
 using namespace ct;
 using namespace ct::game;
@@ -40,9 +40,7 @@ void ds::Tree::Draw( const ct::Camera &camera )
 	SuperClass::Draw( camera );
 
 	if ( sprite_ == nullptr || !ShouldDraw( camera ) )
-	{
 		return;
-	}
 
 	hei::Vector2 pos = hei::Vector2( origin_ + offset_ ) - camera.position;
 	sprite_->Draw( pos.x, pos.y );

@@ -6,8 +6,9 @@
 #include "LoaderPkg.h"
 #include "GameMode.h"
 #include "Input/InputManager.h"
-#include "EntityManager.h"
 #include "Renderer/BitmapFont.h"
+
+#include "game/DSGameMode.h"
 
 ct::SpriteManager *ct::spriteManager = nullptr;
 ct::input::InputManager *ct::input::inputManager = nullptr;
@@ -397,7 +398,7 @@ void ct::App::InitializeGame()
 {
 	Lisp::Init();
 
-	gameMode = new GameMode();
+	gameMode = new DSGameMode();
 	gameMode->RegisterActions();
 }
 
@@ -568,16 +569,16 @@ void ct::App::EndPerformanceTimer( const char *identifier )
 //////////////////////////////////////////////////////
 // Main
 
-ct::GameMode *ct::App::GetGameMode() { return GetApp()->gameMode; }
+ct::IGameMode *ct::App::GetGameMode() { return GetApp()->gameMode; }
 
-void ct::App::PrecacheResources()
+void ct::App::Precache()
 {
 	defaultBitmapFont_ = new BitmapFont();
 	if ( !defaultBitmapFont_->LoadFromImage( 7, 7, 0, "fonts/bitmaps/mbf/mbf_small_00.png" ) )
 		Error( "Failed to load default charset!\n" );
 
-	spriteManager->PrecacheResources();
-	gameMode->PrecacheResources();
+	spriteManager->Precache();
+	gameMode->Precache();
 }
 
 int main( int argc, char **argv )
@@ -591,7 +592,7 @@ int main( int argc, char **argv )
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
-	appInstance->PrecacheResources();
+	appInstance->Precache();
 
 	ct::App::GetGameMode()->NewGame( "test" );
 

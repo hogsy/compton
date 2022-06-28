@@ -6,7 +6,6 @@
 #include <cfloat>
 
 #include "EntityManager.h"
-#include "World.h"
 
 #define DECLARE_ENTITY_CLASS( CLASSNAME, BASECLASS ) \
 	IMPLEMENT_SUPER( BASECLASS )                     \
@@ -41,8 +40,6 @@ namespace ct
 		hei::Vector2 origin_, oldOrigin_{ FLT_MIN, FLT_MIN };
 		hei::Vector2 offset_;
 		hei::Vector2 bounds_{ 20.0f, 20.0f };
-
-		std::vector< World::Quadrant * > quadrants_;
 
 		float z_{ 0.0f };
 

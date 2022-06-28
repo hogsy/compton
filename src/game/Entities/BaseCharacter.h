@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include "Entity.h"
+#include "engine/Entity.h"
+#include "engine/PlayerManager.h"
+
 #include "BaseCreature.h"
-#include "PlayerManager.h"
 
 namespace ct
 {

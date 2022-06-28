@@ -4,7 +4,8 @@
 #pragma once
 
 #include "GUIPanel.h"
-#include "Renderer/BitmapFont.h"
+
+#include "../Renderer/BitmapFont.h"
 
 namespace ct
 {

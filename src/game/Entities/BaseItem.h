@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Entity.h"
+#include "engine/Entity.h"
+#include "engine/Sprite.h"
 
 namespace ct
 {

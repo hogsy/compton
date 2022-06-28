@@ -5,19 +5,25 @@
  *  For simple detection of external elements. Passes any information back to brain.
  *------------------------------------------------------------------------------------*/
 
-#include "Compton.h"
+#include "engine/Compton.h"
+#include "engine/GameMode.h"
+
 #include "Sensor.h"
-#include "GameMode.h"
 
 void ct::ai::Sensor::Tick()
 {
+	IGameMode *gameMode = GetApp()->GetGameMode();
+	assert( gameMode != nullptr );
+	if ( gameMode == nullptr )
+		return;
+
 	START_MEASURE();
 
 	switch ( type_ )
 	{
 		case Type::SIGHT:
 		{
-			std::vector< Entity * > entities = GameMode::GetEntityManager()->GetEntitiesInRange( brain_->owner_->origin_, 32.0f );
+			std::vector< Entity * > entities = gameMode->GetEntityManager()->GetEntitiesInRange( brain_->owner_->origin_, 32.0f );
 			if ( entities.empty() )
 			{}
 			break;

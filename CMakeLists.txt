@@ -80,15 +80,15 @@ set(DS_SOURCE_FILES
         src/game/DS/Tree.cpp
         )
 
+include_directories(src/)
+
 add_executable(Compton ${SOURCE_FILES}
         # engine
-
+        src/engine/Editors/SpriteSheetEditor.cpp
         src/engine/Renderer/BitmapFont.cpp
         src/engine/Renderer/DrawRoutines.cpp
-
         src/engine/Input/Action.cpp
         src/engine/Input/InputManager.cpp
-
         src/engine/App.cpp
         src/engine/Console.cpp
         src/engine/Entity.cpp
@@ -96,6 +96,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/FileSystem.cpp
         src/engine/LispInterface.cpp
         src/engine/LoaderPkg.cpp
+        src/engine/PlayerManager.cpp
         src/engine/Random.cpp
         src/engine/Serializer.cpp
         src/engine/Sprite.cpp
@@ -114,10 +115,8 @@ add_executable(Compton ${SOURCE_FILES}
         #src/game/Entities/Boid.cpp
         #src/game/Entities/BoidManager.cpp
         src/game/Entities/DebugWaypoint.cpp
-        src/game/Background.cpp
-        src/game/GameMode.cpp
+        src/game/DSGameMode.cpp
         src/game/Inventory.cpp
-        src/game/PlayerManager.cpp
         src/game/Terrain.cpp
         src/game/Utility.cpp
         src/game/World.cpp
@@ -127,9 +126,6 @@ add_executable(Compton ${SOURCE_FILES}
         )
 
 target_include_directories(Compton PRIVATE
-        src/engine/
-        src/game/
-
         # 3rd party libraries
         src/3rdparty/
         src/3rdparty/miniz/

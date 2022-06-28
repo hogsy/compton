@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "Random.h"
-#include "Serializer.h"
+#include "engine/Compton.h"
+#include "engine/Random.h"
+#include "engine/Serializer.h"
+
 #include "Utility.h"
-#include "GameMode.h"
+#include "DSGameMode.h"
 
 namespace ct::game
 {

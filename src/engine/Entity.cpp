@@ -18,17 +18,19 @@ void ct::Entity::Spawn()
 
 void ct::Entity::Tick()
 {
+#if 0 // TODO move into DSBaseEntity class
 	// Check if we've moved since last tick
 	if ( origin_ != oldOrigin_ )
 	{
-		GameMode *gameMode = GetApp()->GetGameMode();
-		if ( gameMode->GetWorld()->GetQuadrant( origin_.x, origin_.y ) == nullptr )
+		DSGameMode *gameMode = ( DSGameMode * ) GetApp()->GetGameMode();
+		if ( gameMode != nullptr && gameMode->GetWorld()->GetQuadrant( origin_.x, origin_.y ) == nullptr )
 		{
 
 		}
 
 		oldOrigin_ = origin_;
 	}
+#endif
 }
 
 void ct::Entity::Draw( const Camera &camera )

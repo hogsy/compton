@@ -25,9 +25,7 @@ namespace ct::input
 		PUBLIC inline bool IsKeyDown( int key ) const
 		{
 			if ( locked_ )
-			{
 				return false;
-			}
 
 			return ( keys_[ key ] == State::PRESSED || keys_[ key ] == State::DOWN );
 		}
@@ -35,9 +33,7 @@ namespace ct::input
 		PUBLIC inline bool IsMouseButtonDown( int button ) const
 		{
 			if ( locked_ )
-			{
 				return false;
-			}
 
 			return ( mouseButtons_[ button ] == State::PRESSED || mouseButtons_[ button ] == State::DOWN );
 		}

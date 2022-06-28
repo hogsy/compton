@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Compton.h"
-#include "GameMode.h"
-#include "Entity.h"
+#include "engine/Compton.h"
+#include "engine/GameMode.h"
+#include "engine/Entity.h"
 
 namespace ct::entity
 {

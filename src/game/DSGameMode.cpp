@@ -1,28 +1,29 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
-#include "GameMode.h"
-#include "EntityManager.h"
-#include "Serializer.h"
-#include "Renderer/BitmapFont.h"
-#include "Background.h"
-#include "PlayerManager.h"
+#include "engine/Compton.h"
+#include "engine/EntityManager.h"
+#include "engine/Entity.h"
+#include "engine/Serializer.h"
 
-#include "GUI/GUIButton.h"
-#include "GUI/GUICursor.h"
-#include "GUI/GUIStyleSheet.h"
+#include "engine/Renderer/BitmapFont.h"
 
-#include "Input/InputManager.h"
-#include "LispInterface.h"
+#include "engine/GUI/GUIButton.h"
+#include "engine/GUI/GUICursor.h"
+#include "engine/GUI/GUIStyleSheet.h"
+#include "engine/GUI/GUIPieMenu.h"
 
+#include "engine/Input/InputManager.h"
+#include "engine/LispInterface.h"
+
+#include "engine/PlayerManager.h"
+
+#include "DSGameMode.h"
 #include "Entities/BaseCharacter.h"
 
-ct::GameMode::GameMode()
+ct::DSGameMode::DSGameMode()
 {
 	SetupDesktop();
-
-	entityManager_ = new EntityManager();
 
 	// Add the default player
 
@@ -36,14 +37,13 @@ ct::GameMode::GameMode()
 	//playerManager_.AddPlayer( "butt", true );
 }
 
-ct::GameMode::~GameMode()
+ct::DSGameMode::~DSGameMode()
 {
-	delete entityManager_;
-	delete backgroundManager_;
 	delete baseGuiPanel_;
+	entityManager_.DestroyEntities();
 }
 
-void ct::GameMode::SetupDesktop()
+void ct::DSGameMode::SetupDesktop()
 {
 	// Now create the base GUI panels
 
@@ -95,12 +95,12 @@ void ct::GameMode::SetupDesktop()
 	uiPieMenu = new GUIPieMenu( baseGuiPanel_ );
 }
 
-void ct::GameMode::PrecacheResources()
+void ct::DSGameMode::Precache()
 {
-	entityManager_->PrecacheEntities();
+	entityManager_.PrecacheEntities();
 }
 
-void ct::GameMode::Tick()
+void ct::DSGameMode::Tick()
 {
 	START_MEASURE();
 
@@ -168,7 +168,7 @@ void ct::GameMode::Tick()
 
 		// Restrict the camera to the world bounds
 		if ( player->camera.position.x + DISPLAY_WIDTH < 0.0f )
-			player->camera.position.x = Background::PIXEL_WIDTH;
+			player->camera.position.x = Terrain::PIXEL_WIDTH;
 		else if ( player->camera.position.x > Terrain::PIXEL_WIDTH )
 			player->camera.position.x = -DISPLAY_WIDTH;
 		if ( player->camera.position.y < 0.0f )
@@ -187,7 +187,7 @@ void ct::GameMode::Tick()
 	END_MEASURE();
 }
 
-void ct::GameMode::Draw()
+void ct::DSGameMode::Draw()
 {
 	START_MEASURE();
 
@@ -306,7 +306,7 @@ void ct::GameMode::Draw()
 	END_MEASURE();
 }
 
-void ct::GameMode::NewGame( const char *path )
+void ct::DSGameMode::NewGame( const char *path )
 {
 	world_ = new World( "test" );
 	world_->Generate( ( int ) time( nullptr ) );
@@ -314,13 +314,13 @@ void ct::GameMode::NewGame( const char *path )
 	// Then automatically save it
 	SaveGame( path );
 
-	entityManager_->SpawnEntities();
+	entityManager_.SpawnEntities();
 
 	// Find an entity for the player to take control of
 	EntityManager::EntitySlot slot;
 	for ( int i = 0; i < playerManager_.GetNumPlayers(); ++i )
 	{
-		slot = entityManager_->FindEntityByClassName( "BaseCharacter", &slot );
+		slot = entityManager_.FindEntityByClassName( "BaseCharacter", &slot );
 		if ( slot.entity == nullptr )
 		{
 			Warning( "No character entity for the player to possess!\n" );
@@ -334,7 +334,7 @@ void ct::GameMode::NewGame( const char *path )
 	LI_CompileScript( "test.lsp" );
 }
 
-void ct::GameMode::SaveGame( const char *path )
+void ct::DSGameMode::SaveGame( const char *path )
 {
 	// No point saving if there's no world!
 	if ( world_ == nullptr )
@@ -342,8 +342,7 @@ void ct::GameMode::SaveGame( const char *path )
 
 	Serializer serializer( path, Serializer::Mode::WRITE );
 
-	//terrainManager_->Serialize( &serializer );
-	entityManager_->SerializeEntities( &serializer );
+	entityManager_.SerializeEntities( &serializer );
 
 	// World state
 	world_->Serialize( &serializer );
@@ -358,16 +357,16 @@ void ct::GameMode::SaveGame( const char *path )
 	Print( "Game saved to \"%s\"\n", path );
 }
 
-void ct::GameMode::RestoreGame( const char *path )
+void ct::DSGameMode::RestoreGame( const char *path )
 {
 	delete world_;
 
-	entityManager_->DestroyEntities();
+	entityManager_.DestroyEntities();
 
 	Serializer serializer( path, Serializer::Mode::READ );
 
 	//terrainManager_->Deserialize( &serializer );
-	entityManager_->DeserializeEntities( &serializer );
+	entityManager_.DeserializeEntities( &serializer );
 
 	std::string name = serializer.ReadString();
 	world_ = new World( name.c_str() );
@@ -388,23 +387,23 @@ void ct::GameMode::RestoreGame( const char *path )
 		cameras.push_back( camera );
 	}
 
-	entityManager_->SpawnEntities();
+	entityManager_.SpawnEntities();
 
 	Print( "Game restored from \"%s\"\n", path );
 }
 
-hei::Vector2 ct::GameMode::MousePosToWorld( int x, int y )
+hei::Vector2 ct::DSGameMode::MousePosToWorld( int x, int y )
 {
 	// When it comes to mice/kb, we'll always just assume it's the first player
 	PlayerManager::Player *player = playerManager_.GetPlayer( 0 );
 	return { ( player->camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( player->camera.position.y - DISPLAY_HEIGHT / 2 ) + y };
 }
 
-void ct::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
+bool ct::DSGameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
 {
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( baseGuiPanel_ != nullptr && baseGuiPanel_->HandleMouseEvent( x, y, wheel, button, buttonUp ) )
-		return;
+		return true;
 
 #if 0
 	static Entity *waypoint = nullptr;
@@ -423,16 +422,18 @@ void ct::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool b
 		waypoint = nullptr;
 	}
 #endif
+
+	return false;
 }
 
-void ct::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
+bool ct::DSGameMode::HandleKeyboardEvent( int button, bool buttonUp )
 {
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( baseGuiPanel_ != nullptr && baseGuiPanel_->HandleKeyboardEvent( button, buttonUp ) )
-		return;
+		return true;
 
 	if ( buttonUp )
-		return;
+		return false;
 
 	switch ( button )
 	{
@@ -441,19 +442,19 @@ void ct::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 
 		case ALLEGRO_KEY_Q:
 			GetApp()->Shutdown();
-			break;
+			return true;
 
 		case ALLEGRO_KEY_F5:
 		{
 			// Quick save check
 			SaveGame( "quick.save" );
-			break;
+			return true;
 		}
 		case ALLEGRO_KEY_F6:
 		{
 			// Quick load check
 			RestoreGame( "quick.save" );
-			break;
+			return true;
 		}
 
 		case ALLEGRO_KEY_ESCAPE:
@@ -461,25 +462,20 @@ void ct::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 		{
 			// TODO: pause/unpause sounds
 			if ( gameState_ == GameState::PAUSED )
-			{
 				gameState_ = GameState::ACTIVE;
-				break;
-			}
-
-			gameState_ = GameState::PAUSED;
-			break;
+			else
+				gameState_ = GameState::PAUSED;
+			return true;
 		}
 	}
-}
 
-ct::PlayerManager *ct::GameMode::GetPlayerManager() { return &App::GetGameMode()->playerManager_; }
-ct::EntityManager *ct::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
-ct::Background *ct::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
+	return false;
+}
 
 ////////////////////////////////////////////////
 // Actions
 
-void ct::GameMode::RegisterActions()
+void ct::DSGameMode::RegisterActions()
 {
 	actions_[ ACTION_MOVE_UP ] = input::inputManager->PushAction( "Move Up" );
 	actions_[ ACTION_MOVE_UP ]->BindKey( ALLEGRO_KEY_UP );

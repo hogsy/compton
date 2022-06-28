@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
+#include "../Compton.h"
+#include "../GUI/GUIPanel.h"
+
 #include "InputManager.h"
-#include "GameMode.h"
 
 using namespace ct;
 
@@ -13,9 +14,7 @@ input::Action *input::InputManager::PushAction( const char *description )
 	for ( auto &i : actions_ )
 	{
 		if ( strcmp( i.GetDescription(), description ) != 0 )
-		{
 			continue;
-		}
 
 		return &i;
 	}
@@ -28,15 +27,12 @@ bool input::InputManager::HandleKeyboardEvent( int key, bool keyUp )
 {
 	keys_[ key ] = keyUp ? State::RELEASED : State::PRESSED;
 
-	GameMode *gameMode = App::GetGameMode();
-	if ( gameMode != nullptr && gameMode->GetBasePanel() != nullptr )
-	{
-		GUIPanel *basePanel = gameMode->GetBasePanel();
-		locked_ = true;
-		return basePanel->HandleKeyboardEvent( key, keyUp );
-	}
+	IGameMode *gameMode = App::GetGameMode();
+	if ( gameMode == nullptr )
+		return false;
 
-	return false;
+	locked_ = true;
+	return gameMode->HandleKeyboardEvent( key, keyUp );
 }
 
 bool input::InputManager::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -55,13 +51,10 @@ bool input::InputManager::HandleMouseEvent( int x, int y, int wheel, int button,
 
 	mouseButtons_[ button ] = buttonUp ? State::RELEASED : State::PRESSED;
 
-	GameMode *gameMode = App::GetGameMode();
-	if ( gameMode != nullptr && gameMode->GetBasePanel() != nullptr )
-	{
-		GUIPanel *basePanel = gameMode->GetBasePanel();
-		locked_ = true;
-		return basePanel->HandleMouseEvent( x, y, wheel, button, buttonUp );
-	}
+	IGameMode *gameMode = App::GetGameMode();
+	if ( gameMode == nullptr )
+		return false;
 
-	return false;
+	locked_ = true;
+	return gameMode->HandleMouseEvent( x, y, wheel, button, buttonUp );
 }

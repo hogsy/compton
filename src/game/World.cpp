@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "GameMode.h"
+#include "Game.h"
 #include "World.h"
-#include "Random.h"
-#include "Entity.h"
+
+#include "engine/Entity.h"
 
 ct::World::World( const char *name, unsigned int seed ) : name_( name ),
 														  seed_( seed )
@@ -17,20 +17,29 @@ ct::World::~World()
 
 void ct::World::Tick()
 {
-	GameMode *gameMode = GetApp()->GetGameMode();
-	if ( gameMode->GetState() == GameMode::GameState::PAUSED )
+	IGameMode *gameMode = GetApp()->GetGameMode();
+	assert( gameMode != nullptr );
+	if ( gameMode == nullptr )
 		return;
 
-	numSeconds_ += gameMode->GetGameSpeed();
+	if ( gameMode->IsPaused() )
+		return;
+
+	numSeconds_ += gameMode->GetSpeed();
 
 	for ( unsigned int i = 0; i < NUM_QUADRANTS; ++i )
 		quadrants_[ i ].occupiers.clear();
 
-	GameMode::GetEntityManager()->Tick();
+	gameMode->GetEntityManager()->Tick();
 }
 
 void ct::World::Draw( const ct::Camera &camera )
 {
+	IGameMode *gameMode = GetApp()->GetGameMode();
+	assert( gameMode != nullptr );
+	if ( gameMode == nullptr )
+		return;
+
 	START_MEASURE();
 
 #if 1
@@ -51,7 +60,7 @@ void ct::World::Draw( const ct::Camera &camera )
 	}
 #endif
 
-	GameMode::GetEntityManager()->Draw( camera );
+	gameMode->GetEntityManager()->Draw( camera );
 
 	END_MEASURE();
 }
@@ -76,6 +85,11 @@ void ct::World::Serialize( Serializer *write )
 
 void ct::World::Generate( unsigned int seed )
 {
+	IGameMode *gameMode = GetApp()->GetGameMode();
+	assert( gameMode != nullptr );
+	if ( gameMode == nullptr )
+		return;
+
 	Print( "Generating terrain...\n" );
 	terrain_.Generate( seed );
 
@@ -105,7 +119,7 @@ void ct::World::Generate( unsigned int seed )
 		territory.origin = hei::Vector2( x, y );
 
 		// Spawn one Storehouse at the center
-		Entity *hub = GameMode::GetEntityManager()->CreateEntity( "Tree" );
+		Entity *hub = gameMode->GetEntityManager()->CreateEntity( "Tree" );
 		hub->origin_ = hei::Vector2( x, y );
 
 #define TERRITORY_BOUNDS 256
@@ -122,7 +136,7 @@ void ct::World::Generate( unsigned int seed )
 			int numCitizens = random::GenerateRandomInteger( 0, 4 );
 			for ( unsigned int k = 0; k < numCitizens; ++k )
 			{
-				Entity *citizen = GameMode::GetEntityManager()->CreateEntity( "Tree" );
+				Entity *citizen = gameMode->GetEntityManager()->CreateEntity( "Tree" );
 				if ( citizen == nullptr )
 					continue;
 
@@ -135,7 +149,7 @@ void ct::World::Generate( unsigned int seed )
 
 	for ( unsigned int i = 0; i < 20; ++i )
 	{
-		Entity *testEntity = GameMode::GetEntityManager()->CreateEntity( "HumanCreature" );
+		Entity *testEntity = gameMode->GetEntityManager()->CreateEntity( "HumanCreature" );
 		testEntity->origin_ = hei::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );
 	}
 }

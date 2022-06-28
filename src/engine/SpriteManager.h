@@ -16,7 +16,7 @@ namespace ct
 		SpriteManager( int argc, char **argv );
 		~SpriteManager();
 
-		void PrecacheResources();
+		void Precache();
 
 		enum
 		{

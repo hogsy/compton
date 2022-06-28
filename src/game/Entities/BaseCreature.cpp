@@ -5,10 +5,11 @@
  *  Foundation of everything with intelligence.
  *------------------------------------------------------------------------------------*/
 
-#include "Compton.h"
+#include "engine/Compton.h"
+#include "engine/Random.h"
+#include "engine/Serializer.h"
+
 #include "BaseCreature.h"
-#include "Random.h"
-#include "Serializer.h"
 
 ct::BaseCreature::BaseCreature()
 {

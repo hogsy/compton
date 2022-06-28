@@ -495,11 +495,13 @@ void ct::App::Tick()
 		{
 			if ( console_.IsOpen() )
 			{
-				if ( event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
-				{
-					console_.Close();
+				if ( event.type != ALLEGRO_EVENT_KEY_DOWN )
 					break;
-				}
+
+				if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+					console_.Close();
+				else if ( event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_DOWN )
+					console_.ScrollHistory( event.keyboard.keycode == ALLEGRO_KEY_UP );
 
 				break;
 			}

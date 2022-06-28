@@ -47,9 +47,29 @@ void ct::Console::PushCharacter( int c )
 	if ( c == '\r' )
 	{
 		PlParseConsoleString( buffer_.c_str() );
+		history_.push_back( buffer_ );
 		buffer_.clear();
 		return;
 	}
 
 	buffer_.push_back( c );
+}
+
+void ct::Console::ScrollHistory( bool forward )
+{
+	if ( forward )
+	{
+		historyPosition_++;
+		if ( historyPosition_ >= history_.size() )
+			historyPosition_ = 0;
+	}
+	else
+	{
+		if ( historyPosition_ <= 0 )
+			historyPosition_ = history_.size();
+		else
+			historyPosition_--;
+	}
+
+	buffer_ = history_[ historyPosition_ ];
 }

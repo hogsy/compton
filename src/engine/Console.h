@@ -18,9 +18,13 @@ namespace ct
 
 		void PushCharacter( int c );
 
+		void ScrollHistory( bool forward );
+
 	private:
 		bool isOpen_{ false };
 
 		std::string buffer_;
+		std::vector< std::string > history_;
+		unsigned int historyPosition_{ 0 };
 	};
 }

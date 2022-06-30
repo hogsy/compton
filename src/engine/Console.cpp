@@ -4,6 +4,7 @@
 #include "Compton.h"
 
 #include "Renderer/BitmapFont.h"
+#include "Console.h"
 
 // A very primitive console interface!
 
@@ -38,7 +39,7 @@ void ct::Console::Draw()
 		return;
 
 	int x = 10;
-	int y = CONSOLE_PANE_Y + 2;
+	int y = CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ) - ( font->GetCharacterHeight() / 2 );
 	font->DrawString( &x, &y, buffer_.c_str(), hei::Colour( 255, 255, 0 ) );
 }
 
@@ -49,6 +50,12 @@ void ct::Console::PushCharacter( int c )
 		PlParseConsoleString( buffer_.c_str() );
 		history_.push_back( buffer_ );
 		buffer_.clear();
+		return;
+	}
+
+	if ( c == '\b' || c == 127 )
+	{
+		buffer_.pop_back();
 		return;
 	}
 
@@ -72,4 +79,19 @@ void ct::Console::ScrollHistory( bool forward )
 	}
 
 	buffer_ = history_[ historyPosition_ ];
+}
+
+//////////////////////////////////////////////////////////////////
+// Command/Variable Interface
+
+static void QuitCommand( unsigned int argc, char **argv )
+{
+}
+
+void ct::Console::InitializeCommands()
+{
+}
+
+void ct::Console::InitializeVariables()
+{
 }

@@ -35,9 +35,3 @@ void ct::GUILabel::SetText( const char *label )
 {
 	snprintf( label_, sizeof( label_ ), "%s", label );
 }
-
-int ct::GUILabel::GetLength()
-{
-	int cw = bitmapFont_->GetCharacterWidth();
-	int ch = bitmapFont_->GetCharacterHeight();
-}

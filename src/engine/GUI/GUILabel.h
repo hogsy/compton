@@ -21,8 +21,6 @@ namespace ct
 
 		void SetText( const char *label );
 
-		int GetLength();
-
 	private:
 		char label_[ 256 ];
 

@@ -396,6 +396,9 @@ void ct::App::InitializeEvents()
 
 void ct::App::InitializeGame()
 {
+	Console::InitializeCommands();
+	Console::InitializeVariables();
+
 	Lisp::Init();
 
 	gameMode = new DSGameMode();

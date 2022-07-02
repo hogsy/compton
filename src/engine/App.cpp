@@ -9,6 +9,7 @@
 #include "Renderer/BitmapFont.h"
 
 #include "game/DSGameMode.h"
+#include "engine/Editors/SpriteSheetEditor.h"
 
 ct::SpriteManager *ct::spriteManager = nullptr;
 ct::input::InputManager *ct::input::inputManager = nullptr;
@@ -152,6 +153,22 @@ ct::App::App( int argc, char **argv )
 
 	input::inputManager = new input::InputManager();
 	spriteManager = new SpriteManager( argc, argv );
+
+	PlRegisterConsoleVariable( "showfps", "Display the current average FPS.", "0", PL_VAR_BOOL, &debugFPS_, nullptr, false );
+	PlRegisterConsoleVariable( "showprof", "Display profiler results.", "0", PL_VAR_BOOL, &debugProfiler_, nullptr, false );
+
+	PlRegisterConsoleCommand( "newgame", "Start a new world/game.", 1,
+	                          []( unsigned int argc, char **argv )
+	                          {
+								  IGameMode *gameMode = GetApp()->GetGameMode();
+								  if ( gameMode == nullptr )
+								  {
+									  Warning( "No game mode is currently set!\n" );
+									  return;
+								  }
+
+								  gameMode->NewGame( argv[ 1 ] );
+							  } );
 }
 
 ct::App::~App() = default;
@@ -200,7 +217,7 @@ void ct::App::Shutdown()
 {
 	Lisp::Uninit();
 
-	delete gameMode;
+	delete gameMode_;
 	delete spriteManager;
 	delete input::inputManager;
 
@@ -228,7 +245,7 @@ void ct::App::Shutdown()
 		alTimer = nullptr;
 	}
 
-	exit( 0 );
+	exit( EXIT_SUCCESS );
 }
 
 // Display
@@ -310,8 +327,8 @@ void ct::App::Draw()
 	render::SetScissor( 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
 	render::ClearDisplay();
 
-	if ( gameMode != nullptr )
-		gameMode->Draw();
+	if ( gameMode_ != nullptr )
+		gameMode_->Draw();
 
 	END_MEASURE();
 
@@ -396,13 +413,10 @@ void ct::App::InitializeEvents()
 
 void ct::App::InitializeGame()
 {
-	Console::InitializeCommands();
-	Console::InitializeVariables();
-
 	Lisp::Init();
 
-	gameMode = new DSGameMode();
-	gameMode->RegisterActions();
+	gameMode_ = new DSGameMode();
+	gameMode_->RegisterActions();
 }
 
 void ct::App::Tick()
@@ -439,13 +453,8 @@ void ct::App::Tick()
 		{
 			numTicks++;
 
-			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_P ) == input::State::PRESSED )
-				debugProfiler_ = !debugProfiler_;
-			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_O ) == input::State::PRESSED )
-				debugFPS_ = !debugFPS_;
-
-			if ( gameMode != nullptr )
-				gameMode->Tick();
+			if ( gameMode_ != nullptr )
+				gameMode_->Tick();
 
 			input::inputManager->EndFrame();
 			redraw = true;
@@ -574,7 +583,12 @@ void ct::App::EndPerformanceTimer( const char *identifier )
 //////////////////////////////////////////////////////
 // Main
 
-ct::IGameMode *ct::App::GetGameMode() { return GetApp()->gameMode; }
+ct::IGameMode *ct::App::GetGameMode() { return GetApp()->gameMode_; }
+void ct::App::SetGameMode( ct::IGameMode *gameMode )
+{
+	delete gameMode_;
+	gameMode_ = gameMode;
+}
 
 void ct::App::Precache()
 {
@@ -583,7 +597,7 @@ void ct::App::Precache()
 		Error( "Failed to load default charset!\n" );
 
 	spriteManager->Precache();
-	gameMode->Precache();
+	gameMode_->Precache();
 }
 
 int main( int argc, char **argv )
@@ -593,13 +607,16 @@ int main( int argc, char **argv )
 
 	appInstance = new ct::App( argc, argv );
 
+	PlRegisterConsoleCommand( "quit", "Quit the game.", 0, []( unsigned int, char ** )
+	                          { ct::GetApp()->Shutdown(); } );
+	PlRegisterConsoleCommand( "editss", "Sprite sheet editor.", 0, []( unsigned int, char ** )
+	                          { ct::GetApp()->SetGameMode( new ct::SpriteSheetEditor() ); } );
+
 	appInstance->InitializeDisplay();
 	appInstance->InitializeEvents();
 	appInstance->InitializeGame();
 
 	appInstance->Precache();
-
-	ct::App::GetGameMode()->NewGame( "test" );
 
 	oldTime = PlGetCurrentSeconds();
 	appInstance->Loop();

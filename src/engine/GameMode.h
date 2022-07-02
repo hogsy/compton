@@ -11,6 +11,8 @@ namespace ct
 	class IGameMode
 	{
 	public:
+		virtual inline ~IGameMode() = default;
+
 		virtual void NewGame( const char *path ) = 0;
 		virtual void SaveGame( const char *path ) = 0;
 		virtual void RestoreGame( const char *path ) = 0;

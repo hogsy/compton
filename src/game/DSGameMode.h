@@ -92,7 +92,7 @@ namespace ct
 		};
 
 	public:
-		void RegisterActions();
+		void RegisterActions() override;
 
 	private:
 		input::Action *actions_[ MAX_ACTIONS ];

@@ -101,6 +101,7 @@ namespace ct
 		static constexpr unsigned int MAX_FPS = 60;
 
 		static IGameMode *GetGameMode();
+		void SetGameMode( IGameMode *gameMode );
 
 		void Precache();
 
@@ -163,7 +164,7 @@ namespace ct
 		ALLEGRO_TEXTLOG *alLog;
 
 		// Game state
-		IGameMode *gameMode{ nullptr };
+		IGameMode *gameMode_{ nullptr };
 
 		// Resources
 		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;// todo: make obsolete

@@ -28,9 +28,5 @@ namespace ct
 		std::string buffer_;
 		std::vector< std::string > history_;
 		unsigned int historyPosition_{ 0 };
-
-	public:
-		static void InitializeCommands();
-		static void InitializeVariables();
 	};
 }

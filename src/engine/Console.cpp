@@ -47,6 +47,9 @@ void ct::Console::PushCharacter( int c )
 {
 	if ( c == '\r' )
 	{
+		if ( buffer_.empty() )
+			return;
+
 		PlParseConsoleString( buffer_.c_str() );
 		history_.push_back( buffer_ );
 		buffer_.clear();
@@ -79,19 +82,4 @@ void ct::Console::ScrollHistory( bool forward )
 	}
 
 	buffer_ = history_[ historyPosition_ ];
-}
-
-//////////////////////////////////////////////////////////////////
-// Command/Variable Interface
-
-static void QuitCommand( unsigned int argc, char **argv )
-{
-}
-
-void ct::Console::InitializeCommands()
-{
-}
-
-void ct::Console::InitializeVariables()
-{
 }

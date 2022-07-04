@@ -10,8 +10,8 @@
 
 #include "../Inventory.h"
 
-#include "../Entities/ai/Brain.h"
-#include "../Entities/ai/Sensor.h"
+#include "../ALife/Brain.h"
+#include "../ALife/Sensor.h"
 
 namespace ct
 {

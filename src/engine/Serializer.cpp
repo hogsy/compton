@@ -44,9 +44,7 @@ ct::Serializer::Serializer( const char *path, ct::Serializer::Mode mode )
 ct::Serializer::~Serializer()
 {
 	if ( filePtr != nullptr )
-	{
 		fclose( filePtr );
-	}
 }
 
 bool ct::Serializer::ValidateDataFormat( uint8_t target )

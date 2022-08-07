@@ -17,21 +17,35 @@ ct::SpriteSheet::~SpriteSheet() = default;
 /// \return True on success, false on fail.
 bool ct::SpriteSheet::LoadFile( const char *path )
 {
-	unsigned int length;
-	char *buffer = fs::LoadFileIntoBuffer( path, &length );
-	if ( buffer == nullptr )
-		return false;
+	bool status;
+	// Release version will use binary-based files (will retain script version for now)
+	const char *ext = PlGetFileExtension( path );
+	if ( pl_strcasecmp( ext, ".bin" ) == 0 )
+	{
+		PLFile *file = PlOpenFile( path, false );
+		if ( file == NULL )
+			return false;
 
-	Print( "Parsing sprite sheet, \"%s\"\n", path );
+		status = ParseBinFile( file );
 
-	bool status = ParseFile( buffer );
+		PlCloseFile( file );
+	}
+	else
+	{
+		unsigned int length;
+		char *buffer = fs::LoadFileIntoBuffer( path, &length );
+		if ( buffer == nullptr )
+			return false;
 
-	delete[] buffer;
+		Print( "Parsing sprite sheet, \"%s\"\n", path );
+
+		status = ParseFile( buffer );
+
+		delete[] buffer;
+	}
 
 	if ( status )
-	{
 		SetupElementTable();
-	}
 
 	return status;
 }
@@ -176,9 +190,7 @@ bool ct::SpriteSheet::ParseFile( const char *buffer )
 
 		char token[ 256 ];
 		if ( PlParseToken( &p, token, sizeof( token ) ) == nullptr )
-		{
 			break;
-		}
 
 		if ( *token == ';' || PlIsEndOfLine( p ) )// Comment
 		{
@@ -230,6 +242,13 @@ bool ct::SpriteSheet::ParseFile( const char *buffer )
 	return status;
 }
 
+bool ct::SpriteSheet::ParseBinFile( PLFile *file )
+{
+	// Verify header ...
+
+	return false;
+}
+
 /// Looks up the given sprite. If it's not been cached, returns null.
 /// \param spriteName Name of the sprite to find.
 /// \return Pointer to the cached sprite, otherwise null.
@@ -244,3 +263,4 @@ const ct::Sprite *ct::SpriteSheet::LookupElement( const char *spriteName ) const
 
 	return &key->second;
 }
+

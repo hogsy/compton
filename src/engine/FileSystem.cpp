@@ -2,6 +2,8 @@
 // Copyright (C) 2016-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "../shared.h"
+#include "FileSystem.h"
+
 
 static void *FS_fopen( const char *path, const char *mode )
 {
@@ -102,11 +104,9 @@ ALLEGRO_FILE_INTERFACE g_fsIOInterface = {
 
 /////////////////////////////////////////////////////////////////
 
-/// Attempt to load the file provided by path into a null-terminated
-/// buffer.
-/// \param path Path to the file to load.
-/// \param length Returns the length of the allocated buffer that's returned.
-/// \return
+/**
+ * Attempt to load the file provided by path into a null-terminated buffer.
+ */
 char *ct::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
 {
 	PLFile *file = PlOpenFile( path, true );
@@ -126,16 +126,70 @@ char *ct::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
 		buffer = nullptr;
 	}
 	else
-	{
 		buffer[ fileSize ] = '\0';
-	}
 
 	PlCloseFile( file );
 
 	if ( length != nullptr )
-	{
 		*length = ( buffer != nullptr ) ? fileSize : 0;
-	}
 
 	return buffer;
+}
+
+/**
+ * Returns the local location where data is stored.
+ * Returned path is intentionally not appended with a forward slash!
+ */
+const char *ct::fs::GetDataLocation()
+{
+#if 1
+	if ( PlFileExists( "./Compton" PL_SYSTEM_EXE_EXTENSION ) )
+		return "../../data";
+
+	return ".";
+#else // probably overengineered solution...
+	static char *buf = nullptr;
+	if ( buf != nullptr )
+		return buf;
+
+	const char *wd = PlGetWorkingDirectory();
+	if ( wd == nullptr )
+	{
+		if ( PlFileExists( "./Compton" PL_SYSTEM_EXE_EXTENSION ) )
+			return "../../data";
+
+		return ".";
+	}
+
+	if ( ( strrchr( wd, '/' ) == nullptr ) && ( strrchr( wd, '\\' ) == nullptr ) )
+	{
+		Print( "No path for working directory, assuming current.\n" );
+		return ".";
+	}
+
+	size_t l = strlen( wd ) + 1;
+	buf = PL_NEW_( char, l );
+	memcpy( buf, wd, l - 1 );
+
+	// Clean it up
+	PlNormalizePath( buf, l );
+
+	// Now scan through until we find the runtime location, then append it with the data location
+	char *p = buf;
+	while ( ( p = strchr( p + 1, '/' ) ) != nullptr )
+	{
+		if ( pl_strncasecmp( p, "/runtime/", 9 ) != 0 )
+			continue;
+
+		break;
+	}
+
+	if ( p == nullptr )
+		return ".";
+
+	*( p + 1 ) = '\0';
+	strcat( p, "data" );
+
+	return buf;
+#endif
 }

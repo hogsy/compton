@@ -23,6 +23,8 @@ namespace ct
 		bool ParseGroup( const char **p, const PLImage *image );
 		bool ParseFile( const char *buffer );
 
+		bool ParseBinFile( PLFile *file );
+
 		virtual void SetupElementTable() {}
 
 	public:

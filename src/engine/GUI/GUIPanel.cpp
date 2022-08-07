@@ -34,6 +34,10 @@ void ct::GUIPanel::Draw()
 	if ( !isDrawing )
 		return;
 
+	int sx, sy;
+	GetPosition( &sx, &sy );
+	render::SetScissor( sx, sy, w, h );
+
 	DrawBackground();
 	DrawBorder();
 

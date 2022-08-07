@@ -87,6 +87,8 @@ ct::App::App( int argc, char **argv )
 	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage );
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
+	Print( "Data location = %s\n", fs::GetDataLocation() );
+
 	PlMountLocalLocation( "./" );
 	PlMountLocalLocation( appDataPath );
 

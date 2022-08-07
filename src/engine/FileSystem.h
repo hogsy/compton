@@ -8,4 +8,6 @@
 namespace ct::fs
 {
 	char *LoadFileIntoBuffer( const char *path, unsigned int *length );
+
+	const char *GetDataLocation();
 }// namespace vc::fs

@@ -88,9 +88,7 @@ namespace ct
 		[[nodiscard]] inline bool ShouldDraw() const
 		{
 			if ( !isVisible || ( x + w < 0 || x > 640 || y + h < 0 || y > 480 ) )
-			{
 				return false;
-			}
 
 			return true;
 		}

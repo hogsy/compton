@@ -4,7 +4,7 @@
 #include "../shared.h"
 #include "LoaderPkg.h"
 
-uint8_t *Pkg_OpenFile( PLFile *file, PLPackageIndex *index )
+void *Pkg_OpenFile( PLFile *file, PLPackageIndex *index )
 {
 	if ( !PlFileSeek( file, ( signed ) index->offset, PL_SEEK_SET ) )
 	{

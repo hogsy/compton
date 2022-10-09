@@ -17,16 +17,11 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	int isoX, isoY;
 	render::TransformToIso( offsetX, offsetY, &isoX, &isoY );
 
-	int x = isoX - camera.position.x;
-	int y = isoY - camera.position.y;
+	int x = isoX - ( int ) camera.position.x;
+	int y = isoY - ( int ) camera.position.y;
 
-#if 0
-	if ( x - TILE_WIDTH > DISPLAY_WIDTH || ( x + TILE_WIDTH ) < 0 || y > DISPLAY_HEIGHT || ( y + TILE_HEIGHT ) < 0 )
-		return;
-#else
 	if ( !render::IsVolumeVisible( x, y, TILE_WIDTH, TILE_HEIGHT ) )
 		return;
-#endif
 
 	hei::Colour cornerColours[ 4 ];
 	for ( unsigned int i = 0; i < 4; ++i )
@@ -60,8 +55,8 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	}
 }
 
-ct::Terrain::Terrain() {}
-ct::Terrain::~Terrain() {}
+ct::Terrain::Terrain() = default;
+ct::Terrain::~Terrain() = default;
 
 void ct::Terrain::Deserialize( ct::Serializer *read )
 {
@@ -69,24 +64,24 @@ void ct::Terrain::Deserialize( ct::Serializer *read )
 	if ( numTiles != NUM_TILES )
 		Error( "Invalid number of tiles stored in save data!\n" );
 
-	for ( unsigned int i = 0; i < NUM_TILES; ++i )
+	for ( auto &tile : tiles )
 	{
-		tiles[ i ].corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
-		tiles[ i ].corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
-		for ( unsigned int j = 0; j < 4; ++j )
-			tiles[ i ].height[ j ] = read->ReadF32();
+		tile.corners[ 0 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
+		tile.corners[ 1 ].terrainType = static_cast< TerrainType >( read->ReadI32() );
+		for ( float &j : tile.height )
+			j = read->ReadF32();
 	}
 }
 
 void ct::Terrain::Serialize( ct::Serializer *write )
 {
 	write->WriteI32( NUM_TILES );
-	for ( unsigned int i = 0; i < NUM_TILES; ++i )
+	for ( auto &tile : tiles )
 	{
-		write->WriteI32( tiles[ i ].corners[ 0 ].terrainType );
-		write->WriteI32( tiles[ i ].corners[ 1 ].terrainType );
-		for ( unsigned int j = 0; j < 4; ++j )
-			write->WriteF32( tiles[ i ].height[ j ] );
+		write->WriteI32( tile.corners[ 0 ].terrainType );
+		write->WriteI32( tile.corners[ 1 ].terrainType );
+		for ( float j : tile.height )
+			write->WriteF32( j );
 	}
 }
 
@@ -144,9 +139,9 @@ void ct::Terrain::Generate( int seed )
 		}
 	}
 #else
-	 double dx = PIXEL_WIDTH;
-	 double dy = PIXEL_HEIGHT;
-	 double dz = PlClamp( 0.0f, PlGenerateRandomFloat( 100.0f ), 100.0f );
+	double dx = PIXEL_WIDTH;
+	double dy = PIXEL_HEIGHT;
+	double dz = PlClamp( 0.0f, PlGenerateRandomFloat( 100.0f ), 100.0f );
 
 	for ( unsigned int y = 0; y < PIXEL_HEIGHT; ++y )
 	{
@@ -157,7 +152,7 @@ void ct::Terrain::Generate( int seed )
 
 			unsigned int i = xr + yr * NUM_TILES_ROW;
 
-			Print( "%d\n", i );
+			//Print( "%d\n", i );
 
 			//tiles[ i ].heightBuffer.reserve( TILE_PIXEL_SIZE );
 			//tiles[ i ].heightBuffer[ ]

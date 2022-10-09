@@ -24,12 +24,12 @@ namespace ct
 		void        DestroyEntities();
 
 		void Tick();
-		void Draw( const Camera &camera );
+		static void Draw( const Camera &camera );
 
-		void SerializeEntities( Serializer *write );
+		static void SerializeEntities( Serializer *write );
 		void DeserializeEntities( Serializer *read );
 
-		void SpawnEntities();
+		static void SpawnEntities();
 		void PrecacheEntities();
 
 		struct EntitySlot

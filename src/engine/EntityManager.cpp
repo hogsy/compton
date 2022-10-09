@@ -100,7 +100,7 @@ void ct::EntityManager::Draw( const Camera &camera )
 
 void ct::EntityManager::SerializeEntities( Serializer *write )
 {
-	write->WriteI32( entities.size() );
+	write->WriteI32( ( int32_t ) entities.size() );
 
 	for ( auto &entity : entities )
 	{

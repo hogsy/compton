@@ -23,7 +23,7 @@ bool ct::SpriteSheet::LoadFile( const char *path )
 	if ( pl_strcasecmp( ext, ".bin" ) == 0 )
 	{
 		PLFile *file = PlOpenFile( path, false );
-		if ( file == NULL )
+		if ( file == nullptr )
 			return false;
 
 		status = ParseBinFile( file );

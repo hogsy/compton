@@ -16,13 +16,14 @@ namespace ct::input
 {
 	class InputManager
 	{
-		PUBLIC InputManager() = default;
-		PUBLIC ~InputManager() = default;
+	public:
+		InputManager() = default;
+		~InputManager() = default;
 
-		PUBLIC inline State GetKeyState( int key ) const { return keys_[ key ]; }
-		PUBLIC inline State GetMouseButtonState( int button ) const { return mouseButtons_[ button ]; }
+		[[nodiscard]] inline State GetKeyState( int key ) const { return keys_[ key ]; }
+		[[nodiscard]] inline State GetMouseButtonState( int button ) const { return mouseButtons_[ button ]; }
 
-		PUBLIC inline bool IsKeyDown( int key ) const
+		[[nodiscard]] inline bool IsKeyDown( int key ) const
 		{
 			if ( locked_ )
 				return false;
@@ -30,7 +31,7 @@ namespace ct::input
 			return ( keys_[ key ] == State::PRESSED || keys_[ key ] == State::DOWN );
 		}
 
-		PUBLIC inline bool IsMouseButtonDown( int button ) const
+		[[nodiscard]] inline bool IsMouseButtonDown( int button ) const
 		{
 			if ( locked_ )
 				return false;
@@ -38,12 +39,12 @@ namespace ct::input
 			return ( mouseButtons_[ button ] == State::PRESSED || mouseButtons_[ button ] == State::DOWN );
 		}
 
-		PUBLIC bool HandleControllerEvent( unsigned int slot, int button, bool buttonUp );
-		PUBLIC bool HandleKeyboardEvent( int key, bool keyUp );
-		PUBLIC bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
+		bool HandleControllerEvent( unsigned int slot, int button, bool buttonUp );
+		bool HandleKeyboardEvent( int key, bool keyUp );
+		bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp );
 
 		// Called at the end of a frame; update the state from PRESSED to DOWN
-		PUBLIC inline void EndFrame()
+		inline void EndFrame()
 		{
 			START_MEASURE();
 
@@ -79,45 +80,50 @@ namespace ct::input
 			END_MEASURE();
 		}
 
-		PUBLIC inline void GetMousePosition( int *x, int *y ) const
+		inline void GetMousePosition( int *x, int *y ) const
 		{
 			*x = mx_;
 			*y = my_;
 		}
 
-		PUBLIC inline void GetMouseDelta( int *x, int *y ) const
+		inline void GetMouseDelta( int *x, int *y ) const
 		{
 			*x = dx_;
 			*y = dy_;
 		}
 
-		PUBLIC inline int GetMouseWheel() const
+		inline int GetMouseWheel() const
 		{
 			return mz_;
 		}
 
+	private:
 		// Mouse coordinates, xy - z is wheel
-		PRIVATE int mx_{ 0 }, my_{ 0 }, mz_{ 0 };
-		PRIVATE int ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
-		PRIVATE int dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
-		PRIVATE State mouseButtons_[ MAX_MOUSE_BUTTONS ];
+		int mx_{ 0 }, my_{ 0 }, mz_{ 0 };
+		int ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
+		int dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
+		State mouseButtons_[ MAX_MOUSE_BUTTONS ];
 
-		PRIVATE State keys_[ ALLEGRO_KEY_MAX ];
+		State keys_[ ALLEGRO_KEY_MAX ];
 
 		// Actions
-		PUBLIC Action *PushAction( const char *description );
-		PRIVATE std::vector< Action > actions_;
+	public:
+		Action *PushAction( const char *description );
+	private:
+		std::vector< Action > actions_;
 
-		PUBLIC static constexpr unsigned int MAX_CONTROLLERS = 4;
-		PRIVATE Controller controllers_[ MAX_CONTROLLERS ];
+	public:
+		static constexpr unsigned int MAX_CONTROLLERS = 4;
+	private:
+		Controller controllers_[ MAX_CONTROLLERS ];
 
-		PRIVATE inline Controller *GetControllerForSlot( unsigned int slot )
+		inline Controller *GetControllerForSlot( unsigned int slot )
 		{
 			assert( slot < MAX_CONTROLLERS );
 			return &controllers_[ slot ];
 		}
 
-		PRIVATE bool locked_{ false };
+		bool locked_{ false };
 	};
 
 	extern InputManager *inputManager;

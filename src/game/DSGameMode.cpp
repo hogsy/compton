@@ -55,7 +55,7 @@ void ct::DSGameMode::SetupDesktop()
 
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
-	GUIPanel *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
+	auto *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
 	statusBar_->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
 
 	//new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
@@ -71,7 +71,7 @@ void ct::DSGameMode::SetupDesktop()
 #if 1
 #	define MINIMAP_WIDTH  64
 #	define MINIMAP_HEIGHT 64
-	GUIPanel *minimapPanel = new GUIPanel(
+	auto *minimapPanel = new GUIPanel(
 			baseGuiPanel_,
 			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
 			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
@@ -314,7 +314,7 @@ void ct::DSGameMode::NewGame( const char *path )
 	// Then automatically save it
 	SaveGame( path );
 
-	entityManager_.SpawnEntities();
+	ct::EntityManager::SpawnEntities();
 
 	// Find an entity for the player to take control of
 	EntityManager::EntitySlot slot;
@@ -327,7 +327,7 @@ void ct::DSGameMode::NewGame( const char *path )
 			break;
 		}
 
-		BaseCharacter *baseCharacter = dynamic_cast< BaseCharacter * >( slot.entity );
+		auto *baseCharacter = dynamic_cast< BaseCharacter * >( slot.entity );
 		baseCharacter->TakeControl( i );
 	}
 
@@ -342,13 +342,13 @@ void ct::DSGameMode::SaveGame( const char *path )
 
 	Serializer serializer( path, Serializer::Mode::WRITE );
 
-	entityManager_.SerializeEntities( &serializer );
+	ct::EntityManager::SerializeEntities( &serializer );
 
 	// World state
 	world_->Serialize( &serializer );
 
-	serializer.WriteI8( playerManager_.GetNumPlayers() );
-	for ( unsigned int i = 0; i < playerManager_.GetNumPlayers(); ++i )
+	serializer.WriteI8( ( int8_t ) playerManager_.GetNumPlayers() );
+	for ( int i = 0; i < playerManager_.GetNumPlayers(); ++i )
 	{
 		PlayerManager::Player *player = playerManager_.GetPlayer( i );
 		player->camera.Serialize( &serializer );
@@ -387,7 +387,7 @@ void ct::DSGameMode::RestoreGame( const char *path )
 		cameras.push_back( camera );
 	}
 
-	entityManager_.SpawnEntities();
+	ct::EntityManager::SpawnEntities();
 
 	Print( "Game restored from \"%s\"\n", path );
 }

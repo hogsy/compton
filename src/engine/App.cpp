@@ -162,7 +162,7 @@ ct::App::App( int argc, char **argv )
 	PlRegisterConsoleCommand( "newgame", "Start a new world/game.", 1,
 	                          []( unsigned int argc, char **argv )
 	                          {
-								  IGameMode *gameMode = GetApp()->GetGameMode();
+								  IGameMode *gameMode = GetGameMode();
 								  if ( gameMode == nullptr )
 								  {
 									  Warning( "No game mode is currently set!\n" );
@@ -401,7 +401,11 @@ void ct::App::InitializeEvents()
 	al_install_mouse();
 	al_install_keyboard();
 
+#if !defined( NDEBUG )
+	debugMouse_ = true;
+#else
 	debugMouse_ = PlHasCommandLineArgument( "--debug-mouse" );
+#endif
 
 	GrabCursor();
 
@@ -425,115 +429,112 @@ void ct::App::Tick()
 {
 	START_MEASURE();
 
-	ALLEGRO_EVENT event{};
-	al_wait_for_event( alEventQueue, &event );
-
-	//al_get_mouse_state( &mouseState );
-	//al_get_keyboard_state( &keyboardState );
-
-	switch ( event.type )
+	do
 	{
-		default: break;
+		ALLEGRO_EVENT event{};
+		al_wait_for_event( alEventQueue, &event );
 
-		case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
-			al_hide_mouse_cursor( alDisplay );
-			break;
-		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
-			al_show_mouse_cursor( alDisplay );
-			break;
-
-		case ALLEGRO_EVENT_DISPLAY_DISCONNECTED:
-		case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
-			GrabCursor( false );
-			break;
-		case ALLEGRO_EVENT_DISPLAY_CONNECTED:
-		case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
-			GrabCursor( true );
-			break;
-
-		case ALLEGRO_EVENT_TIMER:
+		switch ( event.type )
 		{
-			numTicks++;
+			default: break;
 
-			if ( gameMode_ != nullptr )
-				gameMode_->Tick();
-
-			input::inputManager->EndFrame();
-			redraw = true;
-			break;
-		}
-
-		case ALLEGRO_EVENT_DISPLAY_CLOSE:
-			Shutdown();
-			break;
-
-		case ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
-		case ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
-		{
-
-			break;
-		}
-
-		case ALLEGRO_EVENT_MOUSE_AXES:
-		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-		{
-			if ( console_.IsOpen() && ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN ) )
+			case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
+				al_hide_mouse_cursor( alDisplay );
+				break;
+			case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
+				al_show_mouse_cursor( alDisplay );
 				break;
 
-			input::InputMouseButton button = input::MOUSE_BUTTON_LEFT;
-			if ( event.mouse.button & 1 )
-				button = input::MOUSE_BUTTON_LEFT;
-			else if ( event.mouse.button & 2 )
-				button = input::MOUSE_BUTTON_RIGHT;
-			else if ( event.mouse.button & 3 )
-				button = input::MOUSE_BUTTON_MIDDLE;
-
-			int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
-			int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
-			input::inputManager->HandleMouseEvent( aX, aY, event.mouse.z, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
-			break;
-		}
-
-		case ALLEGRO_EVENT_KEY_CHAR:
-		{
-			if ( !console_.IsOpen() )
+			case ALLEGRO_EVENT_DISPLAY_DISCONNECTED:
+			case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
+				GrabCursor( false );
+				break;
+			case ALLEGRO_EVENT_DISPLAY_CONNECTED:
+			case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
+				GrabCursor( true );
 				break;
 
-			console_.PushCharacter( event.keyboard.unichar );
-			break;
-		}
-
-		case ALLEGRO_EVENT_KEY_DOWN:
-		case ALLEGRO_EVENT_KEY_UP:
-		{
-			if ( console_.IsOpen() )
+			case ALLEGRO_EVENT_TIMER:
 			{
-				if ( event.type != ALLEGRO_EVENT_KEY_DOWN )
+				numTicks++;
+
+				if ( gameMode_ != nullptr )
+					gameMode_->Tick();
+
+				input::inputManager->EndFrame();
+				redraw = true;
+				break;
+			}
+
+			case ALLEGRO_EVENT_DISPLAY_CLOSE:
+				Shutdown();
+				break;
+
+			case ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
+			case ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
+			{
+
+				break;
+			}
+
+			case ALLEGRO_EVENT_MOUSE_AXES:
+			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+			case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+			{
+				if ( console_.IsOpen() && ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN ) )
 					break;
 
-				if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
-					console_.Close();
-				else if ( event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_DOWN )
-					console_.ScrollHistory( event.keyboard.keycode == ALLEGRO_KEY_UP );
+				input::InputMouseButton button = input::MOUSE_BUTTON_LEFT;
+				if ( event.mouse.button & 1 )
+					button = input::MOUSE_BUTTON_LEFT;
+				else if ( event.mouse.button & 2 )
+					button = input::MOUSE_BUTTON_RIGHT;
+				else if ( event.mouse.button & 3 )
+					button = input::MOUSE_BUTTON_MIDDLE;
 
+				int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
+				int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
+				input::inputManager->HandleMouseEvent( aX, aY, event.mouse.z, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 				break;
 			}
 
-			if ( event.type == ALLEGRO_EVENT_KEY_DOWN && ( event.keyboard.keycode == ALLEGRO_KEY_TILDE ||
-			                                               event.keyboard.keycode == ALLEGRO_KEY_ENTER ) )
+			case ALLEGRO_EVENT_KEY_CHAR:
 			{
-				console_.Open();
+				if ( !console_.IsOpen() )
+					break;
+
+				console_.PushCharacter( event.keyboard.unichar );
 				break;
 			}
 
-			input::inputManager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
-			break;
-		}
-	}
+			case ALLEGRO_EVENT_KEY_DOWN:
+			case ALLEGRO_EVENT_KEY_UP:
+			{
+				if ( console_.IsOpen() )
+				{
+					if ( event.type != ALLEGRO_EVENT_KEY_DOWN )
+						break;
 
-	if ( !al_is_event_queue_empty( alEventQueue ) )
-		redraw = false;
+					if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+						console_.Close();
+					else if ( event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_DOWN )
+						console_.ScrollHistory( event.keyboard.keycode == ALLEGRO_KEY_UP );
+
+					break;
+				}
+
+				if ( event.type == ALLEGRO_EVENT_KEY_DOWN && ( event.keyboard.keycode == ALLEGRO_KEY_TILDE ||
+				                                               event.keyboard.keycode == ALLEGRO_KEY_ENTER ) )
+				{
+					console_.Open();
+					break;
+				}
+
+				input::inputManager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
+				break;
+			}
+		}
+	} while ( !al_is_event_queue_empty( alEventQueue ) );
 
 	END_MEASURE();
 }

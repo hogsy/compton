@@ -118,7 +118,7 @@ namespace ct
 			return defaultBitmapFont_;
 		}
 
-		void ShowMessageBox( const char *title, const char *message, bool error );
+		static void ShowMessageBox( const char *title, const char *message, bool error );
 
 		void Shutdown();
 

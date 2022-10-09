@@ -20,8 +20,11 @@ void BaseAnimated::Draw( const ct::Camera &camera )
 {
 	SuperClass::Draw( camera );
 
-	hei::Vector2 p = origin_ + offset_;
-	animator_.Draw( p - camera.position );
+	int x, y;
+	render::TransformToIso( ( int ) origin_.x, ( int ) origin_.y, &x, &y );
+
+	animator_.Draw( ( x + ( int ) offset_.x ) - ( int ) camera.position.x,
+	                ( y + ( int ) offset_.y ) - ( int ) camera.position.y );
 }
 
 bool BaseAnimated::CacheAnimationSet( const char *path )

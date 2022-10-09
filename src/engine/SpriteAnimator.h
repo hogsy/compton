@@ -56,7 +56,7 @@ namespace ct
 		void SetAnimation( const SpriteAnimation *animation );
 
 		void Tick();
-		void Draw( const hei::Vector2 &position );
+		void Draw( int x, int y );
 
 	public:
 		const SpriteAnimation::Frame *GetCurrentFrame() const

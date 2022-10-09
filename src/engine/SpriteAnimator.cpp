@@ -85,7 +85,7 @@ std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( cons
 		}
 		else if ( pl_strcasecmp( token, "$speed" ) == 0 )
 		{
-			animation.playbackSpeed = PlParseFloat( &p, nullptr );
+			animation.playbackSpeed = PlParseInteger( &p, nullptr );
 			PlSkipLine( &p );
 			continue;
 		}
@@ -165,7 +165,7 @@ void ct::SpriteAnimator::Tick()
 	}
 }
 
-void ct::SpriteAnimator::Draw( const hei::Vector2 &position )
+void ct::SpriteAnimator::Draw( int x, int y )
 {
 	if ( animation_ == nullptr )
 		return;
@@ -174,8 +174,8 @@ void ct::SpriteAnimator::Draw( const hei::Vector2 &position )
 	if ( frame->sprite == nullptr )
 		return;
 
-	int x = position.x - frame->origin.x;
-	int y = position.y - frame->origin.y;
+	x -= frame->origin.x;
+	y -= frame->origin.y;
 
 	frame->sprite->Draw( x, y, true, frame->mirror );
 }

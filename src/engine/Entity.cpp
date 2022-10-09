@@ -18,7 +18,7 @@ void ct::Entity::Spawn()
 
 void ct::Entity::Tick()
 {
-#if 0 // TODO move into DSBaseEntity class
+#if 0// TODO move into DSBaseEntity class
 	// Check if we've moved since last tick
 	if ( origin_ != oldOrigin_ )
 	{
@@ -35,21 +35,19 @@ void ct::Entity::Tick()
 
 void ct::Entity::Draw( const Camera &camera )
 {
-	hei::Vector2 pos = origin_ - camera.position;
-	render::DrawPixel( pos.x, pos.y, hei::Colour( 255, 0, 0, 255 ) );
-	hei::Vector2 off = pos + offset_;
-	render::DrawPixel( off.x, off.y, hei::Colour( 0, 255, 0, 255 ) );
+	int x, y;
+	render::TransformToIso( ( int ) origin_.x, ( int ) origin_.y, &x, &y );
 
-	hei::Vector2 b = pos;
-	b.x = pos.x - bounds_.x;
-	render::DrawPixel( b.x, b.y, hei::Colour( 0, 0, 255, 255 ) );
-	b.x = pos.x + bounds_.x;
-	render::DrawPixel( b.x, b.y, hei::Colour( 0, 0, 255, 255 ) );
-	b.x = pos.x;
-	b.y = pos.y - bounds_.y;
-	render::DrawPixel( b.x, b.y, hei::Colour( 0, 0, 255, 255 ) );
-	b.y = pos.y + bounds_.y;
-	render::DrawPixel( b.x, b.y, hei::Colour( 0, 0, 255, 255 ) );
+	x -= ( int ) camera.position.x;
+	y -= ( int ) camera.position.y;
+
+	render::DrawPixel( x, y, hei::Colour( 255, 0, 0, 255 ) );
+	render::DrawPixel( x + ( int ) offset_.x, y + ( int ) offset_.y, hei::Colour( 0, 255, 0, 255 ) );
+
+	render::DrawPixel( x - bounds_.x, y, hei::Colour( 0, 0, 255, 255 ) );
+	render::DrawPixel( x + bounds_.x, y, hei::Colour( 0, 0, 255, 255 ) );
+	render::DrawPixel( x, y - bounds_.y, hei::Colour( 0, 0, 255, 255 ) );
+	render::DrawPixel( x, y + bounds_.y, hei::Colour( 0, 0, 255, 255 ) );
 }
 
 /**
@@ -77,13 +75,16 @@ void ct::Entity::Serialize( Serializer *write )
  */
 bool ct::Entity::ShouldDraw( const ct::Camera &camera ) const
 {
-	if ( origin_.x - bounds_.x > camera.position.x + DISPLAY_WIDTH )
+	int x, y;
+	render::TransformToIso( ( int ) origin_.x, ( int ) origin_.y, &x, &y );
+
+	if ( x - bounds_.x > camera.position.x + DISPLAY_WIDTH )
 		return false;
-	else if ( origin_.y - bounds_.y > camera.position.y + DISPLAY_HEIGHT )
+	else if ( y - bounds_.y > camera.position.y + DISPLAY_HEIGHT )
 		return false;
-	else if ( origin_.x + bounds_.x < camera.position.x - DISPLAY_WIDTH )
+	else if ( x + bounds_.x < camera.position.x - DISPLAY_WIDTH )
 		return false;
-	else if ( origin_.y + bounds_.y < camera.position.y - DISPLAY_HEIGHT )
+	else if ( y + bounds_.y < camera.position.y - DISPLAY_HEIGHT )
 		return false;
 
 	return true;

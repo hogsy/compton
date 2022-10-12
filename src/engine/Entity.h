@@ -7,12 +7,15 @@
 
 #include "EntityManager.h"
 
-#define DECLARE_ENTITY_CLASS( CLASSNAME, BASECLASS ) \
-	IMPLEMENT_SUPER( BASECLASS )                     \
-public:                                              \
-	CLASSNAME();                                     \
-	~CLASSNAME();                                    \
-	virtual const char *GetClassIdentifier() const override { return #CLASSNAME; }
+#define DECLARE_ENTITY_CLASS( CLASSNAME, BASECLASS )        \
+	IMPLEMENT_SUPER( BASECLASS )                            \
+public:                                                     \
+	CLASSNAME();                                            \
+	~CLASSNAME();                                           \
+	virtual const char *GetClassIdentifier() const override \
+	{                                                       \
+		return #CLASSNAME;                                  \
+	}
 
 namespace ct
 {
@@ -37,11 +40,12 @@ namespace ct
 		[[nodiscard]] virtual bool ShouldDraw( const Camera &camera ) const;
 
 		hei::Vector2 velocity_;
-		hei::Vector2 origin_, oldOrigin_{ FLT_MIN, FLT_MIN };
-		hei::Vector2 offset_;
-		hei::Vector2 bounds_{ 20.0f, 20.0f };
 
-		float z_{ 0.0f };
+		math::Vector2 origin_, oldOrigin_;
+		math::Vector2 offset_;
+		math::Vector2 bounds_{ 20, 20 };
+
+		int z_{ 0 };
 
 	protected:
 		int health_{ 100 };

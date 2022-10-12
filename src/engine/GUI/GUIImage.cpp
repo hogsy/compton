@@ -11,9 +11,7 @@ ct::GUIImage::GUIImage( ct::GUIPanel *parent, const ct::Sprite *sprite, int x, i
 	sprite_ = sprite;
 }
 
-ct::GUIImage::~GUIImage()
-{
-}
+ct::GUIImage::~GUIImage() = default;
 
 void ct::GUIImage::DrawBackground()
 {

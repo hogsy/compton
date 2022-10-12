@@ -122,7 +122,7 @@ void ct::BaseCreature::Tick()
 void ct::BaseCreature::Think()
 {
 	// Check sensors - these will pass data to brain
-	for (auto & sensor : sensors_)
+	for ( auto &sensor : sensors_ )
 		sensor.Tick();
 
 	// Brain will now process input from sensors
@@ -134,7 +134,7 @@ void ct::BaseCreature::Think()
 	if ( dir == nullptr || dir->isCompleted )
 		return;
 
-	switch( dir->type )
+	switch ( dir->type )
 	{
 		case ai::MotorAction::USE:
 			Use();
@@ -182,14 +182,18 @@ ct::ai::FeedbackState ct::BaseCreature::Attack()
 	return ct::ai::FeedbackState();
 }
 
-void ct::BaseCreature::StepTowards( const hei::Vector2 &target, float speed )
+void ct::BaseCreature::StepTowards( const math::Vector2 &target, float speed )
 {
-	hei::Vector2 d = hei::Vector2( target - origin_ );
-	origin_ += d * ( speed / ( d.Length() + 1.0f ) );
+	math::Vector2 vecDist = target - origin_;
+
+	//hei::Vector2 d = hei::Vector2( target - origin_ );
+	//origin_ += d * ( speed / ( d.Length() + 1.0f ) );
 }
 
-void ct::BaseCreature::StepAway( const hei::Vector2 &target, int speed )
+void ct::BaseCreature::StepAway( const math::Vector2 &target, int speed )
 {
-	hei::Vector2 d = hei::Vector2( target - origin_ );
-	origin_ -= d * ( speed / ( d.Length() + 1.0f ) );
+	math::Vector2 vecDist = target - origin_;
+
+	//hei::Vector2 d = hei::Vector2( target - origin_ );
+	//origin_ -= d * ( speed / ( d.Length() + 1.0f ) );
 }

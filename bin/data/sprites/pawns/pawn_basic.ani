@@ -1,0 +1,59 @@
+; sheet = path
+; loop
+
+$sheet sprites/pawns/pawn_basic.spr
+
+$loop
+$frame idle0 0 5 9
+$frame idle1 0 5 9
+$frame idle2 0 5 9
+$frame idle3 0 5 9
+$frame idle4 0 5 9
+$frame idle5 0 5 9
+$frame idle6 0 5 9
+$frame idle7 0 5 9
+$push pawn_idle
+
+$loop
+$frame run_w0 0 5 9
+$frame run_w1 0 5 9
+$frame run_w2 0 5 9
+$frame run_w3 0 5 9
+$frame run_w4 0 5 9
+$frame run_w5 0 5 9
+$frame run_w6 0 5 9
+$frame run_w7 0 5 9
+$push pawn_run_w
+
+$loop
+$frame run_w0 1 5 9
+$frame run_w1 1 5 9
+$frame run_w2 1 5 9
+$frame run_w3 1 5 9
+$frame run_w4 1 5 9
+$frame run_w5 1 5 9
+$frame run_w6 1 5 9
+$frame run_w7 1 5 9
+$push pawn_run_e
+
+$loop
+$frame run_n0 0 5 9
+$frame run_n1 0 5 9
+$frame run_n2 0 5 9
+$frame run_n3 0 5 9
+$frame run_n4 0 5 9
+$frame run_n5 0 5 9
+$frame run_n6 0 5 9
+$frame run_n7 0 5 9
+$push pawn_run_n
+
+$loop
+$frame run_s0 0 5 9
+$frame run_s1 0 5 9
+$frame run_s2 0 5 9
+$frame run_s3 0 5 9
+$frame run_s4 0 5 9
+$frame run_s5 0 5 9
+$frame run_s6 0 5 9
+$frame run_s7 0 5 9
+$push pawn_run_s

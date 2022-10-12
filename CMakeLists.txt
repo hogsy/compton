@@ -34,14 +34,12 @@ endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 ##############################################################
 
-add_subdirectory(src/hei/plcore/)
-add_subdirectory(src/hei/plgraphics/)
+add_subdirectory(src/3rdparty/hei/plcore/)
+add_subdirectory(src/3rdparty/hei/plgraphics/)
 
 add_subdirectory(src/lisp/)
 
 add_subdirectory(src/tools/pkgman/)
-
-#add_subdirectory(src/game/)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
@@ -77,6 +75,7 @@ file(GLOB SOURCE_FILES
 
 set(DS_SOURCE_FILES
         src/game/DS/HumanCreature.cpp
+        src/game/DS/Pawn.cpp
         src/game/DS/Tree.cpp
         )
 
@@ -112,6 +111,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/BaseCharacter.cpp
         src/game/Entities/BaseCreature.cpp
         src/game/Entities/BaseItem.cpp
+        src/game/Entities/BaseSprite.cpp
         #src/game/Entities/Boid.cpp
         #src/game/Entities/BoidManager.cpp
         src/game/Entities/DebugWaypoint.cpp

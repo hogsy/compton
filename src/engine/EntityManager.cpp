@@ -75,20 +75,14 @@ void ct::EntityManager::Draw( const Camera &camera )
 {
 	START_MEASURE();
 
-	std::map< float, Entity * > entityDrawOrder;
+	std::map< int, Entity * > entityDrawOrder;
 	for ( const auto &entity : entities )
 	{
 		if ( !entity->ShouldDraw( camera ) )
 			continue;
 
 		// Allow the entity to override the z order if z member is set
-		float z;
-		if ( entity->z_ != 0.0f )
-			z = entity->z_;
-		else
-			z = entity->origin_.y;
-
-		entityDrawOrder.emplace( z, entity );
+		entityDrawOrder.emplace( ( entity->z_ != 0 ) ? entity->z_ : entity->origin_.y, entity );
 	}
 
 	// And now this has the benefit of drawing everything in order *and* only if it's visible!
@@ -138,7 +132,7 @@ void ct::EntityManager::SpawnEntities()
 void ct::EntityManager::PrecacheEntities()
 {
 	Print( "Precaching for %lu entities...\n", entityClasses.size() );
-	for ( const auto& i : entityClasses )
+	for ( const auto &i : entityClasses )
 	{
 		Entity *entity = CreateEntity( i.first );
 		entity->Precache();
@@ -169,7 +163,7 @@ std::vector< ct::Entity * > ct::EntityManager::GetEntitiesInRange( const hei::Ve
 	std::vector< Entity * > out;
 	for ( auto i : entities )
 	{
-		hei::Vector2 sv = i->origin_ - origin;
+		hei::Vector2 sv = hei::Vector2( i->origin_.x, i->origin_.y ) - origin;
 		float dv = sv.Length();
 		if ( dv > range )
 			continue;

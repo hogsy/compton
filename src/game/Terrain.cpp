@@ -7,11 +7,11 @@
 void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offsetY )
 {
 	static const hei::Colour tileColour[ MAX_TERRAIN_TYPES ] = {
-			{ 0, 255, 0 },
-			{ 205, 203, 74 },
-			{ 216, 216, 216 },
-			{ 73, 77, 90 },
-			{ 0, 0, 255 },
+	        { 0, 255, 0 },    // grass
+	        { 205, 203, 74 }, // sand
+	        { 216, 216, 216 },// snow
+	        { 73, 77, 90 },   // stone
+	        { 0, 0, 255 },    // water
 	};
 
 	int isoX, isoY;
@@ -27,9 +27,9 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	for ( unsigned int i = 0; i < 4; ++i )
 	{
 		cornerColours[ i ] = hei::Colour(
-				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ i ] + 0.1f ) ),
-				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].g ) * ( height[ i ] + 0.1f ) ),
-				( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ i ] + 0.1f ) ) );
+		        ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].r ) * ( height[ i ] + 0.1f ) ),
+		        ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].g ) * ( height[ i ] + 0.1f ) ),
+		        ( PlByteToFloat( tileColour[ corners[ 0 ].terrainType ].b ) * ( height[ i ] + 0.1f ) ) );
 	}
 
 	static constexpr int HALF_H = TILE_HEIGHT / 2;
@@ -39,8 +39,6 @@ void ct::Terrain::TerrainTile::Draw( const Camera &camera, int offsetX, int offs
 	{
 		for ( unsigned int col = 0; col < ( c * 2 ); ++col )
 		{
-
-
 			render::DrawPixel( x - c + col, y + row, cornerColours[ 0 ] );
 		}
 	}
@@ -111,7 +109,7 @@ void ct::Terrain::Generate( int seed )
 {
 	ct::random::PerlinNoise perlinNoise( seed );
 
-#if 0
+#if 1
 	float fx = PIXEL_WIDTH / 3.0f;
 	float fy = PIXEL_HEIGHT / 3.0f;
 
@@ -161,9 +159,10 @@ void ct::Terrain::Generate( int seed )
 #endif
 }
 
-bool ct::Terrain::IsWater( float x, float y )
+bool ct::Terrain::IsWater( int x, int y )
 {
-	if ( x <= 0.0f || y <= 0.0f )
+	//assert( x > 0 && x < PIXEL_WIDTH && y > 0 && y < PIXEL_HEIGHT );
+	if ( !( x > 0 && x < PIXEL_WIDTH && y > 0 && y < PIXEL_HEIGHT ) )
 		return true;
 
 	unsigned int xr = PlRoundUp( x * TILE_WIDTH / PIXEL_WIDTH, 1 );

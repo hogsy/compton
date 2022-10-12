@@ -67,8 +67,8 @@ namespace ct
 		virtual ai::FeedbackState Talk();
 		virtual ai::FeedbackState Attack();
 
-		virtual void StepTowards( const hei::Vector2 &target, float speed = 1.0f );
-		virtual void StepAway( const hei::Vector2 &target, int speed = 1.0f );
+		virtual void StepTowards( const math::Vector2 &target, float speed = 1.0f );
+		virtual void StepAway( const math::Vector2 &target, int speed = 1.0f );
 
 	protected:
 		Sex sex_{ Sex::INTERSEX };

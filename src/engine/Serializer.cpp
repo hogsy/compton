@@ -6,6 +6,7 @@
 
 static const uint32_t storageVersion = 20200629;
 
+ct::Serializer::Serializer( const std::string &path, ct::Serializer::Mode mode ) : Serializer( path.c_str(), mode ) {}
 ct::Serializer::Serializer( const char *path, ct::Serializer::Mode mode )
 {
 	filePtr = fopen( path, mode == Mode::READ ? "rb" : "wb" );

@@ -32,9 +32,6 @@ void ct::BaseCharacter::Spawn()
 	SuperClass::Spawn();
 
 	// Cache the sprites we need
-	CacheAnimationSet( "sprites/creatures/human/human.ani" );
-	SetAnimation( nullptr );
-
 	char firstName[ 8 ], lastName[ 8 ];
 	random::GenerateRandomName( firstName, sizeof( firstName ) );
 	random::GenerateRandomName( lastName, sizeof( lastName ) );
@@ -112,7 +109,7 @@ void ct::BaseCharacter::Tick()
  */
 bool ct::BaseCharacter::TakeControl( int playerNum )
 {
-	IGameMode *gameMode = GetApp()->GetGameMode();
+	IGameMode *gameMode = App::GetGameMode();
 	assert( gameMode != nullptr );
 
 	PlayerManager::Player *player = gameMode->GetPlayerManager()->GetPlayer( playerNum );

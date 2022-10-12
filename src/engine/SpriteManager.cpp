@@ -45,7 +45,7 @@ const ct::Sprite *ct::SpriteManager::GetSprite( const char *path, unsigned int g
 	sprite.hasAlpha = PlImageHasAlpha( image );
 
 	// We're now going to copy the image pixels into our sprite
-	unsigned int size = PlGetImageDataSize( image );
+	unsigned int   size = PlGetImageDataSize( image );
 	const uint8_t *data = PlGetImageData( image, 0 );
 	sprite.pixels.insert( sprite.pixels.end(), data, data + size );
 
@@ -74,6 +74,7 @@ const ct::SpriteSheet *ct::SpriteManager::GetSpriteSheet( const char *path )
 	auto sheet = new SpriteSheet();
 	if ( !sheet->LoadFile( path ) )
 	{
+		Warning( "Failed to load sprite sheet: %s\n", path );
 		delete sheet;
 		return nullptr;
 	}

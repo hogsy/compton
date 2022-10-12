@@ -10,7 +10,7 @@ static int scissorY = 0;
 static int scissorW = DISPLAY_WIDTH;
 static int scissorH = DISPLAY_HEIGHT;
 
-void ct::render::ClearDisplay( void )
+void ct::render::ClearDisplay()
 {
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
 	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
@@ -88,12 +88,12 @@ void ct::render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &co
 
 void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection )
 {
-	if ( ( x + w < scissorX || x >= scissorW ) || ( y + h < 0 || y >= scissorH ) )
+	if ( !render::IsVolumeVisible( x, y, w, h ) )
 		return;
 
 	struct RGBA8
 	{
-		uint8_t r, g, b, a;
+		uint8_t r{ 255 }, g{ 255 }, b{ 255 }, a{ 255 };
 	};
 
 	int dw = w;

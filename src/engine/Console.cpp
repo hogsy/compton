@@ -58,6 +58,9 @@ void ct::Console::PushCharacter( int c )
 
 	if ( c == '\b' || c == 127 )
 	{
+		if ( buffer_.empty() )
+			return;
+
 		buffer_.pop_back();
 		return;
 	}
@@ -68,11 +71,7 @@ void ct::Console::PushCharacter( int c )
 void ct::Console::ScrollHistory( bool forward )
 {
 	if ( forward )
-	{
 		historyPosition_++;
-		if ( historyPosition_ >= history_.size() )
-			historyPosition_ = 0;
-	}
 	else
 	{
 		if ( historyPosition_ <= 0 )
@@ -80,6 +79,9 @@ void ct::Console::ScrollHistory( bool forward )
 		else
 			historyPosition_--;
 	}
+
+	if ( historyPosition_ >= history_.size() )
+		historyPosition_ = 0;
 
 	buffer_ = history_[ historyPosition_ ];
 }

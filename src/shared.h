@@ -40,9 +40,11 @@
 #include "engine/Console.h"
 #include "engine/GameMode.h"
 
-#define DISPLAY_WIDTH  640
-#define DISPLAY_HEIGHT 480
-//#define ENABLE_SCALING
+#define DISPLAY_WIDTH  320
+#define DISPLAY_HEIGHT 240
+#define ENABLE_SCALING
+
+#define ENABLE_MOUSE 1
 
 namespace ct
 {
@@ -51,6 +53,60 @@ namespace ct
 	class EntityManager;
 	class BitmapFont;
 	class Background;
+
+	namespace math
+	{
+		struct Vector2 : public ISerializable
+		{
+			Vector2( int x, int y ) : x( x ), y( y ) {}
+			Vector2() = default;
+
+			void Deserialize( Serializer *read ) override
+			{
+				x = read->ReadI32();
+				y = read->ReadI32();
+			}
+
+			void Serialize( Serializer *write ) override
+			{
+				write->WriteI32( x );
+				write->WriteI32( y );
+			}
+
+			[[nodiscard]] Vector2 ToIso() const
+			{
+				return { ( x - y ), ( x + y ) / 2 };
+			}
+			[[nodiscard]] Vector2 ToCart() const
+			{
+				return { ( 2 * y + x ) / 2, ( 2 * y - x ) / 2 };
+			}
+
+			inline Vector2 operator-( const Vector2 &v ) const
+			{
+				return { x - v.x, y - v.y };
+			}
+			inline Vector2 operator+( const Vector2 &v ) const
+			{
+				return { x + v.x, y + v.y };
+			}
+			inline Vector2 operator/( const Vector2 &v ) const
+			{
+				return { x / v.x, y / v.y };
+			}
+
+			inline void operator-=( const Vector2 &v )
+			{
+				*this = ( v - *this );
+			}
+			inline void operator+=( const Vector2 &v )
+			{
+				*this = ( v + *this );
+			}
+
+			int x{ 0 }, y{ 0 };
+		};
+	}// namespace math
 
 	namespace render
 	{
@@ -61,7 +117,7 @@ namespace ct
 			FLIP_VERTICAL,
 		};
 
-		void ClearDisplay( void );
+		void ClearDisplay();
 		void DrawPixel( int x, int y, const hei::Colour &colour );
 		void DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour );
 		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, ct::render::FlipDirection flipDirection = ct::render::FlipDirection::FLIP_NONE );
@@ -76,12 +132,6 @@ namespace ct
 		{
 			*dx = ( ox - oy );
 			*dy = ( ox + oy ) / 2;
-		}
-
-		inline void TransformToCart( int ox, int oy, int *dx, int *dy )
-		{
-			*dx = ( 2 * oy + ox ) / 2;
-			*dy = ( 2 * oy - ox ) / 2;
 		}
 	}// namespace render
 
@@ -122,7 +172,7 @@ namespace ct
 
 		void Shutdown();
 
-		unsigned int GetNumOfTicks() { return numTicks; }
+		unsigned int GetNumOfTicks() const { return numTicks; }
 
 		inline void GetWindowSize( int *dW, int *dH ) const
 		{
@@ -174,23 +224,21 @@ namespace ct
 
 		bool debugFPS_{ false };
 		bool debugProfiler_{ false };
+		bool debugDrawStats{ false };
 
 		int windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;
 
-		double numTicks;
+		unsigned int numTicks;
 
 		static constexpr unsigned int MAX_FPS_READINGS = 64;
 		double fps_[ MAX_FPS_READINGS ]{};
 
 	public:
-		unsigned int GetAverageFPS() const
+		inline unsigned int GetAverageFPS() const
 		{
 			double t = 0.0;
-			for ( unsigned int i = 0; i < MAX_FPS_READINGS; ++i )
-			{
-				t += fps_[ i ];
-			}
+			for ( double fp : fps_ ) t += fp;
 			return ( unsigned int ) ( t / MAX_FPS_READINGS );
 		}
 

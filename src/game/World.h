@@ -23,20 +23,20 @@ namespace ct
 
 		void Generate( unsigned int seed = 0 );
 
-		inline unsigned int GetTotalSeconds() const { return numSeconds_; }
-		inline unsigned int GetTotalMinutes() const { return numSeconds_ / 60; }
-		inline unsigned int GetTotalHours() const { return GetTotalMinutes() / 60; }
-		inline unsigned int GetTotalDays() const { return GetTotalHours() / 24; }
+		[[nodiscard]] inline unsigned int GetTotalSeconds() const { return numSeconds_; }
+		[[nodiscard]] inline unsigned int GetTotalMinutes() const { return numSeconds_ / 60; }
+		[[nodiscard]] inline unsigned int GetTotalHours() const { return GetTotalMinutes() / 60; }
+		[[nodiscard]] inline unsigned int GetTotalDays() const { return GetTotalHours() / 24; }
 
-		inline unsigned int GetCurrentSecond() const
+		[[nodiscard]] inline unsigned int GetCurrentSecond() const
 		{
 			return ( GetTotalSeconds() - ( GetTotalMinutes() / 60 ) ) % 60;
 		}
-		inline unsigned int GetCurrentMinute() const
+		[[nodiscard]] inline unsigned int GetCurrentMinute() const
 		{
 			return ( GetTotalMinutes() - ( GetTotalHours() / 60 ) ) % 60;
 		}
-		inline unsigned int GetCurrentHour() const
+		[[nodiscard]] inline unsigned int GetCurrentHour() const
 		{
 			return ( GetTotalHours() - ( GetTotalDays() / 24 ) ) % 24;
 		}
@@ -49,7 +49,7 @@ namespace ct
 			EVENING,
 			NIGHT
 		};
-		inline TimeOfDay GetTimeOfDay() const
+		[[nodiscard]] inline TimeOfDay GetTimeOfDay() const
 		{
 			unsigned int curHour = GetCurrentHour();
 			if ( curHour > 17 )
@@ -67,15 +67,14 @@ namespace ct
 		}
 
 	private:
-
 		////////////////////////////////////////////
 		// Territory
 
 		struct Territory
 		{
-			std::string name{ "unnamed" };
-			hei::Vector2 origin{ 0.0f, 0.0f };
-			PLGPolygon *border{ nullptr };
+			std::string   name{ "unnamed" };
+			math::Vector2 origin;
+			PLGPolygon   *border{ nullptr };
 		};
 		std::vector< Territory > territories_;
 
@@ -92,7 +91,7 @@ namespace ct
 		Terrain terrain_;
 
 	public:
-		inline const Terrain *GetTerrain() const { return &terrain_; }
+		[[nodiscard]] inline const Terrain *GetTerrain() const { return &terrain_; }
 
 		////////////////////////////////////////////
 		// Quadrant
@@ -119,7 +118,7 @@ namespace ct
 		 * X and Y values. If the X and Y are out of scope for
 		 * the grid then it returns NULL.
 		 */
-		const Quadrant *GetQuadrant( int x, int y ) const
+		[[nodiscard]] const Quadrant *GetQuadrant( int x, int y ) const
 		{
 			if ( x < 0 || y < 0 || x >= QUADRANT_WIDTH * NUM_QUADRANTS_COL || y >= QUADRANT_HEIGHT * NUM_QUADRANTS_ROW )
 				return nullptr;

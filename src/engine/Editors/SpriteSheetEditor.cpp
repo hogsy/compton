@@ -24,27 +24,37 @@ namespace ct::gui
 			newButton_ = new GUIButton( this, "NEW", 10, 10, 32, 16 );
 			saveButton_ = new GUIButton( this, "SAVE", 52, 10, 32, 16 );
 		}
-		~RectEditor() {}
+		~RectEditor() = default;
 
 		void Tick() override
 		{
-			int mx, my;
-			input::inputManager->GetMousePosition( &mx, &my );
+			//SuperClass::Tick();
 
-			if ( input::inputManager->IsMouseButtonDown( input::MOUSE_BUTTON_LEFT ) )
+			cursor.Tick();
+
+			if ( input::inputManager->GetKeyState( ALLEGRO_KEY_SPACE ) == input::State::PRESSED )
 			{
-				if ( !startedDrag_ )
+				if ( selection.dragging )
 				{
-					selection_.x = mx;
-					selection_.y = my;
-					startedDrag_ = true;
+					selection.x = cursor.position.x;
+					selection.y = cursor.position.y;
+					selection.w = 0;
+					selection.h = 0;
+					selection.dragging = false;
 				}
-
-				selection_.w = mx;
-				selection_.h = my;
+				else
+				{
+					selection.dragging = true;
+					selection.x = cursor.position.x;
+					selection.y = cursor.position.y;
+				}
 			}
-			else
-				startedDrag_ = false;
+
+			if ( selection.dragging )
+			{
+				selection.w = cursor.position.x;
+				selection.h = cursor.position.y;
+			}
 		}
 
 		void Draw() override
@@ -54,21 +64,53 @@ namespace ct::gui
 			int sx, sy;
 			GetPosition( &sx, &sy );
 
-			selection_.Draw();
+			selection.Draw();
+			cursor.Draw();
 		}
 
 	private:
 		GUIImage *background_;
-
 		GUIButton *newButton_;
 		GUIButton *saveButton_;
+
+	public:
+		struct Cursor
+		{
+			math::Vector2 position;
+
+			void Draw() const
+			{
+				render::DrawLine( position.x, position.y, position.x + 4, position.y + 4, hei::Colour( 255, 0, 0 ) );
+			}
+
+			void Tick()
+			{
+				if ( input::inputManager->GetKeyState( ALLEGRO_KEY_DOWN ) == input::State::DOWN )
+					position.y++;
+				else if ( input::inputManager->GetKeyState( ALLEGRO_KEY_UP ) == input::State::DOWN )
+					position.y--;
+
+				if ( input::inputManager->GetKeyState( ALLEGRO_KEY_LEFT ) == input::State::DOWN )
+					position.x--;
+				else if ( input::inputManager->GetKeyState( ALLEGRO_KEY_RIGHT ) == input::State::DOWN )
+					position.x++;
+
+				if ( position.x < 0 ) position.x = 0;
+				else if ( position.x > DISPLAY_WIDTH )
+					position.x = DISPLAY_WIDTH;
+				if ( position.y < 0 ) position.y = 0;
+				else if ( position.y > DISPLAY_HEIGHT )
+					position.y = DISPLAY_HEIGHT;
+			}
+		};
+		Cursor cursor;
 
 		struct SelectionBox
 		{
 			int x{ 0 }, y{ 0 };
 			int w{ 0 }, h{ 0 };
 
-			void Draw()
+			void Draw() const
 			{
 				render::DrawLine( x, y, x + w, y, hei::Colour( 255, 0, 0 ) );
 				render::DrawLine( x, y, x, y + h, hei::Colour( 255, 0, 0 ) );
@@ -85,13 +127,14 @@ namespace ct::gui
 
 				font->DrawString( &sx, &sy, tmp );
 			}
+
+			bool dragging{ false };
 		};
-		SelectionBox selection_;
-		bool startedDrag_{ false };
+		SelectionBox selection;
 
 		static constexpr unsigned int BG_H = DISPLAY_HEIGHT - 128;
 	};
-}
+}// namespace ct::gui
 
 ///////////////////////////////////////////////////////////////////
 
@@ -126,19 +169,18 @@ void ct::SpriteSheetEditor::SaveGame( const char *path )
 	snprintf( outPath, sizeof( outPath ), "%s/sprites/%s.dat", fs::GetDataLocation(), path );
 
 
-
 	Print( "Done!\n" );
 }
 
-void ct::SpriteSheetEditor::RestoreGame( const char *path )
+void ct::SpriteSheetEditor::RestoreGame( const std::string &path )
 {
 	Print( "Loading...\n" );
 
-	PLPath inPath;
-	snprintf( inPath, sizeof( path ), "%s/sprites/%s.dat", fs::GetDataLocation(), path );
-	if ( !PlFileExists( inPath ) )
+	std::string fullPath = fs::GetDataLocation();
+	fullPath.append( "/sprites/" + path );
+	if ( !PlFileExists( fullPath.c_str() ) )
 	{
-		Warning( "File doesn't exist: %s\n", inPath );
+		Warning( "File doesn't exist: %s\n", fullPath.c_str() );
 		return;
 	}
 }
@@ -188,7 +230,6 @@ bool ct::SpriteSheetEditor::HandleKeyboardEvent( int key, bool keyUp )
 
 		case ALLEGRO_KEY_O:
 		{
-
 		}
 	}
 

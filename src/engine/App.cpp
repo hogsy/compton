@@ -11,7 +11,7 @@
 #include "game/DSGameMode.h"
 #include "engine/Editors/SpriteSheetEditor.h"
 
-ct::SpriteManager *ct::spriteManager = nullptr;
+ct::SpriteManager       *ct::spriteManager = nullptr;
 ct::input::InputManager *ct::input::inputManager = nullptr;
 
 static double oldTime;
@@ -20,7 +20,7 @@ static double oldTime;
 // App Class
 
 static ct::App *appInstance;
-ct::App *ct::GetApp()
+ct::App        *ct::GetApp()
 {
 	return appInstance;
 }
@@ -33,11 +33,11 @@ extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PlMAllocA( size ); }
 void *operator new[]( size_t size ) { return PlMAllocA( size ); }
-void operator delete( void *p ) noexcept { PlFree( p ); }
-void operator delete[]( void *p ) noexcept { PlFree( p ); }
+void  operator delete( void *p ) noexcept { PlFree( p ); }
+void  operator delete[]( void *p ) noexcept { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
 static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
-static void AlFree( void *p, int, const char *, const char * ) { PlFree( p ); }
+static void  AlFree( void *p, int, const char *, const char  *) { PlFree( p ); }
 static void *AlReAlloc( void *p, size_t n, int, const char *, const char * ) { return PlReAllocA( p, n ); }
 static void *AlCAlloc( size_t c, size_t n, int, const char *, const char * ) { return PlCAllocA( c, n ); }
 
@@ -92,7 +92,7 @@ ct::App::App( int argc, char **argv )
 	PlMountLocalLocation( "./" );
 	PlMountLocalLocation( appDataPath );
 
-	bool mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
+	bool        mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
 	const char *localDataPath = PlGetCommandLineArgumentValue( "--local-data-path" );
 
 	if ( !PlLocalFileExists( "./data0.pkg" ) )
@@ -129,14 +129,16 @@ ct::App::App( int argc, char **argv )
 		Error( "Failed to initialize Allegro library!\n" );
 
 	static ALLEGRO_MEMORY_INTERFACE memoryInterface = {
-			AlMAlloc,
-			AlFree,
-			AlReAlloc,
-			AlCAlloc };
+	        AlMAlloc,
+	        AlFree,
+	        AlReAlloc,
+	        AlCAlloc };
 	al_set_memory_interface( &memoryInterface );
 
+#if ( ENABLE_MOUSE == 1 )
 	if ( !al_install_mouse() )
 		Error( "Failed to install mouse through Allegro!\n" );
+#endif
 	if ( !al_install_audio() )
 		Error( "Failed to install audio through Allegro!\n" );
 	if ( !al_init_acodec_addon() )
@@ -158,19 +160,20 @@ ct::App::App( int argc, char **argv )
 
 	PlRegisterConsoleVariable( "showfps", "Display the current average FPS.", "0", PL_VAR_BOOL, &debugFPS_, nullptr, false );
 	PlRegisterConsoleVariable( "showprof", "Display profiler results.", "0", PL_VAR_BOOL, &debugProfiler_, nullptr, false );
+	PlRegisterConsoleVariable( "showstat", "Display draw stats.", "0", PL_VAR_BOOL, &debugDrawStats, nullptr, false );
 
 	PlRegisterConsoleCommand( "newgame", "Start a new world/game.", 1,
 	                          []( unsigned int argc, char **argv )
 	                          {
-								  IGameMode *gameMode = GetGameMode();
-								  if ( gameMode == nullptr )
-								  {
-									  Warning( "No game mode is currently set!\n" );
-									  return;
-								  }
+		                          IGameMode *gameMode = GetGameMode();
+		                          if ( gameMode == nullptr )
+		                          {
+			                          Warning( "No game mode is currently set!\n" );
+			                          return;
+		                          }
 
-								  gameMode->NewGame( argv[ 1 ] );
-							  } );
+		                          gameMode->NewGame( argv[ 1 ] );
+	                          } );
 }
 
 ct::App::~App() = default;
@@ -207,12 +210,12 @@ ALLEGRO_SAMPLE *ct::App::CacheSample( const char *path )
 void ct::App::ShowMessageBox( const char *title, const char *message, bool error )
 {
 	al_show_native_message_box(
-			nullptr,
-			VC_TITLE,
-			title,
-			message,
-			nullptr,
-			error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
+	        nullptr,
+	        VC_TITLE,
+	        title,
+	        message,
+	        nullptr,
+	        error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
 }
 
 void ct::App::Shutdown()
@@ -314,7 +317,7 @@ void ct::App::Draw()
 
 	START_MEASURE();
 
-	double newTime = PlGetCurrentSeconds();
+	double              newTime = PlGetCurrentSeconds();
 	static unsigned int ci = 0;
 	fps_[ ci++ ] = 1.0 / ( newTime - oldTime );
 	if ( ci >= MAX_FPS_READINGS ) ci = 0;
@@ -337,7 +340,7 @@ void ct::App::Draw()
 	// Draw our debug data
 	{
 		char buf[ 256 ];
-		int x = 8, y = 8;
+		int  x = 8, y = 8;
 
 		if ( debugFPS_ )
 		{
@@ -372,12 +375,12 @@ void ct::App::Draw()
 	al_set_target_backbuffer( alDisplay );
 #ifdef ENABLE_SCALING
 	al_draw_scaled_bitmap(
-			screenBitmap_,
-			0, 0,
-			DISPLAY_WIDTH, DISPLAY_HEIGHT,
-			scaleX, scaleY,
-			scaleW, scaleH,
-			0 );
+	        screenBitmap_,
+	        0, 0,
+	        DISPLAY_WIDTH, DISPLAY_HEIGHT,
+	        scaleX, scaleY,
+	        scaleW, scaleH,
+	        0 );
 #else
 	al_draw_bitmap( screenBitmap_, 0, 0, 0 );
 #endif
@@ -477,6 +480,7 @@ void ct::App::Tick()
 				break;
 			}
 
+#if ( ENABLE_MOUSE == 1 )
 			case ALLEGRO_EVENT_MOUSE_AXES:
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 			case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
@@ -497,6 +501,7 @@ void ct::App::Tick()
 				input::inputManager->HandleMouseEvent( aX, aY, event.mouse.z, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 				break;
 			}
+#endif
 
 			case ALLEGRO_EVENT_KEY_CHAR:
 			{
@@ -587,7 +592,7 @@ void ct::App::EndPerformanceTimer( const char *identifier )
 // Main
 
 ct::IGameMode *ct::App::GetGameMode() { return GetApp()->gameMode_; }
-void ct::App::SetGameMode( ct::IGameMode *gameMode )
+void           ct::App::SetGameMode( ct::IGameMode *gameMode )
 {
 	delete gameMode_;
 	gameMode_ = gameMode;

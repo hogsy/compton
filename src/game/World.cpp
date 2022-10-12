@@ -7,17 +7,15 @@
 #include "engine/Entity.h"
 
 ct::World::World( const char *name, unsigned int seed ) : name_( name ),
-														  seed_( seed )
+                                                          seed_( seed )
 {
 }
 
-ct::World::~World()
-{
-}
+ct::World::~World() = default;
 
 void ct::World::Tick()
 {
-	IGameMode *gameMode = GetApp()->GetGameMode();
+	IGameMode *gameMode = App::GetGameMode();
 	assert( gameMode != nullptr );
 	if ( gameMode == nullptr )
 		return;
@@ -27,15 +25,15 @@ void ct::World::Tick()
 
 	numSeconds_ += gameMode->GetSpeed();
 
-	for ( unsigned int i = 0; i < NUM_QUADRANTS; ++i )
-		quadrants_[ i ].occupiers.clear();
+	for ( auto &quadrant : quadrants_ )
+		quadrant.occupiers.clear();
 
 	gameMode->GetEntityManager()->Tick();
 }
 
 void ct::World::Draw( const ct::Camera &camera )
 {
-	IGameMode *gameMode = GetApp()->GetGameMode();
+	IGameMode *gameMode = App::GetGameMode();
 	assert( gameMode != nullptr );
 	if ( gameMode == nullptr )
 		return;
@@ -68,8 +66,8 @@ void ct::World::Draw( const ct::Camera &camera )
 void ct::World::Deserialize( ct::Serializer *read )
 {
 	name_ = read->ReadString();
-	seed_ = read->ReadI32();
-	numSeconds_ = read->ReadI32();
+	seed_ = ( unsigned int ) read->ReadI32();
+	numSeconds_ = ( unsigned int ) read->ReadI32();
 
 	terrain_.Deserialize( read );
 }
@@ -77,15 +75,15 @@ void ct::World::Deserialize( ct::Serializer *read )
 void ct::World::Serialize( Serializer *write )
 {
 	write->WriteString( name_.c_str() );
-	write->WriteI32( seed_ );
-	write->WriteI32( numSeconds_ );
+	write->WriteI32( ( int ) seed_ );
+	write->WriteI32( ( int ) numSeconds_ );
 
 	terrain_.Serialize( write );
 }
 
 void ct::World::Generate( unsigned int seed )
 {
-	IGameMode *gameMode = GetApp()->GetGameMode();
+	IGameMode *gameMode = ct::App::GetGameMode();
 	assert( gameMode != nullptr );
 	if ( gameMode == nullptr )
 		return;
@@ -98,7 +96,7 @@ void ct::World::Generate( unsigned int seed )
 	for ( unsigned int i = 0; i < n; ++i )
 	{
 		// Pick a random point in the world
-		float x, y;
+		int x, y;
 		for ( unsigned int j = 0; j < 16; ++j )
 		{
 			// Try at least 16 times before we give up
@@ -111,16 +109,16 @@ void ct::World::Generate( unsigned int seed )
 		}
 
 		// Never found a point without water, give up...
-		if ( x == -1.0f && y == -1.0f )
+		if ( x == -1 && y == -1 )
 			continue;
 
 		// Now attempt to spawn in the territory
 		Territory territory;
-		territory.origin = hei::Vector2( x, y );
+		territory.origin = math::Vector2( x, y );
 
 		// Spawn one Storehouse at the center
 		Entity *hub = gameMode->GetEntityManager()->CreateEntity( "Tree" );
-		hub->origin_ = hei::Vector2( x, y );
+		hub->origin_ = math::Vector2( x, y );
 
 #define TERRITORY_BOUNDS 256
 
@@ -136,20 +134,20 @@ void ct::World::Generate( unsigned int seed )
 			int numCitizens = random::GenerateRandomInteger( 0, 4 );
 			for ( unsigned int k = 0; k < numCitizens; ++k )
 			{
-				Entity *citizen = gameMode->GetEntityManager()->CreateEntity( "Tree" );
+				Entity *citizen = gameMode->GetEntityManager()->CreateEntity( "Pawn" );
 				if ( citizen == nullptr )
 					continue;
 
-				citizen->origin_ = hei::Vector2( x, y );
+				citizen->origin_ = math::Vector2( x, y );
 			}
 		}
 
 		territories_.push_back( territory );
 	}
 
-	for ( unsigned int i = 0; i < 20; ++i )
+	for ( unsigned int i = 0; i < 1000; ++i )
 	{
-		Entity *testEntity = gameMode->GetEntityManager()->CreateEntity( "HumanCreature" );
-		testEntity->origin_ = hei::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );
+		Entity *testEntity = gameMode->GetEntityManager()->CreateEntity( "Pawn" );
+		testEntity->origin_ = math::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );
 	}
 }

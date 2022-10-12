@@ -12,7 +12,7 @@
 
 void ct::ai::Sensor::Tick()
 {
-	IGameMode *gameMode = GetApp()->GetGameMode();
+	IGameMode *gameMode = App::GetGameMode();
 	assert( gameMode != nullptr );
 	if ( gameMode == nullptr )
 		return;
@@ -23,9 +23,9 @@ void ct::ai::Sensor::Tick()
 	{
 		case Type::SIGHT:
 		{
-			std::vector< Entity * > entities = gameMode->GetEntityManager()->GetEntitiesInRange( brain_->owner_->origin_, 32.0f );
-			if ( entities.empty() )
-			{}
+			//std::vector< Entity * > entities = gameMode->GetEntityManager()->GetEntitiesInRange( brain_->owner_->origin_, 32.0f );
+			//if ( entities.empty() )
+			//{}
 			break;
 		}
 		case Type::SOUND:

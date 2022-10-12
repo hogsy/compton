@@ -30,7 +30,7 @@ namespace ct
 		SpriteAnimator() = default;
 
 		static bool CacheAnimationSet( const char *path );
-		static inline const SpriteAnimation *GetAnimation( const char *path, const char *animationName )
+		static inline const SpriteAnimation *GetAnimation( const char *path, const std::string &animationName )
 		{
 			auto i = animationSets_.find( path );
 			if ( i == animationSets_.end() )

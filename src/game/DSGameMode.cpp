@@ -124,8 +124,11 @@ void ct::DSGameMode::Tick()
 				if ( player->controlTarget == nullptr )
 					break;
 
-				hei::Vector2 sub = player->camera.position - player->controlTarget->origin_;
-				float distance = sub.Length();
+				//hei::Vector2 sub = player->camera.position - player->controlTarget->origin_;
+				//float distance = sub.Length();
+
+				player->camera.position.x = player->controlTarget->origin_.x;
+				player->camera.position.y = player->controlTarget->origin_.y;
 
 				break;
 			}
@@ -168,9 +171,10 @@ void ct::DSGameMode::Tick()
 
 		// Restrict the camera to the world bounds
 		if ( player->camera.position.x + DISPLAY_WIDTH < 0.0f )
-			player->camera.position.x = Terrain::PIXEL_WIDTH;
+			player->camera.position.x = Terrain::PIXEL_HEIGHT - DISPLAY_WIDTH;
 		else if ( player->camera.position.x > Terrain::PIXEL_WIDTH )
-			player->camera.position.x = -DISPLAY_WIDTH;
+			player->camera.position.x = Terrain::PIXEL_WIDTH;
+
 		if ( player->camera.position.y < 0.0f )
 			player->camera.position.y = 0.0f;
 		else if ( player->camera.position.y + DISPLAY_HEIGHT > Terrain::PIXEL_HEIGHT )
@@ -205,7 +209,7 @@ void ct::DSGameMode::Draw()
 	{
 		// For each local player, draw into a subsection of the screen
 		int sw = DISPLAY_WIDTH / localPlayers.size();
-		for ( unsigned int i = 0, x = 0; i < localPlayers.size(); ++i, x += sw )
+		for ( int i = 0, x = 0; i < localPlayers.size(); ++i, x += sw )
 		{
 			render::SetScissor( x, 0, sw, DISPLAY_HEIGHT );
 
@@ -320,7 +324,12 @@ void ct::DSGameMode::NewGame( const char *path )
 	EntityManager::EntitySlot slot;
 	for ( int i = 0; i < playerManager_.GetNumPlayers(); ++i )
 	{
-		slot = entityManager_.FindEntityByClassName( "BaseCharacter", &slot );
+		PlayerManager::Player *player = App::GetGameMode()->GetPlayerManager()->GetPlayer( i );
+		assert( player != nullptr );
+		if ( player == nullptr )
+			continue;
+
+		slot = entityManager_.FindEntityByClassName( "Pawn", &slot );
 		if ( slot.entity == nullptr )
 		{
 			Warning( "No character entity for the player to possess!\n" );
@@ -328,7 +337,13 @@ void ct::DSGameMode::NewGame( const char *path )
 		}
 
 		auto *baseCharacter = dynamic_cast< BaseCharacter * >( slot.entity );
-		baseCharacter->TakeControl( i );
+		if ( !baseCharacter->TakeControl( i ) )
+		{
+			Warning( "Failed to take control of character!\n" );
+			continue;
+		}
+
+		player->camera.movementMode = Camera::MoveMode::FOLLOWING;
 	}
 
 	LI_CompileScript( "test.lsp" );
@@ -357,7 +372,7 @@ void ct::DSGameMode::SaveGame( const char *path )
 	Print( "Game saved to \"%s\"\n", path );
 }
 
-void ct::DSGameMode::RestoreGame( const char *path )
+void ct::DSGameMode::RestoreGame( const std::string &path )
 {
 	delete world_;
 
@@ -389,7 +404,7 @@ void ct::DSGameMode::RestoreGame( const char *path )
 
 	ct::EntityManager::SpawnEntities();
 
-	Print( "Game restored from \"%s\"\n", path );
+	Print( "Game restored from \"%s\"\n", path.c_str() );
 }
 
 hei::Vector2 ct::DSGameMode::MousePosToWorld( int x, int y )

@@ -27,7 +27,7 @@ namespace ct
 
 		Entity *followTarget{ nullptr };
 
-		inline void Deserialize( Serializer *read )
+		inline void Deserialize( Serializer *read ) override
 		{
 			oldPosition = read->ReadCoordinate();
 			position = read->ReadCoordinate();
@@ -35,7 +35,7 @@ namespace ct
 			velocity = read->ReadCoordinate();
 			movementMode = ( MoveMode ) read->ReadI32();
 		}
-		inline void Serialize( Serializer *write )
+		inline void Serialize( Serializer *write ) override
 		{
 			write->WriteCoordinate( oldPosition );
 			write->WriteCoordinate( position );

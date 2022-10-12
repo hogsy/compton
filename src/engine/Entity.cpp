@@ -55,9 +55,10 @@ void ct::Entity::Draw( const Camera &camera )
  */
 void ct::Entity::Deserialize( Serializer *read )
 {
-	origin_ = read->ReadCoordinate();
+	origin_.Deserialize( read );
+	bounds_.Deserialize( read );
+
 	velocity_ = read->ReadCoordinate();
-	bounds_ = read->ReadCoordinate();
 }
 
 /**
@@ -65,9 +66,10 @@ void ct::Entity::Deserialize( Serializer *read )
  */
 void ct::Entity::Serialize( Serializer *write )
 {
-	write->WriteCoordinate( origin_ );
+	origin_.Serialize( write );
+	bounds_.Serialize( write );
+
 	write->WriteCoordinate( velocity_ );
-	write->WriteCoordinate( bounds_ );
 }
 
 /**
@@ -75,17 +77,9 @@ void ct::Entity::Serialize( Serializer *write )
  */
 bool ct::Entity::ShouldDraw( const ct::Camera &camera ) const
 {
-	int x, y;
-	render::TransformToIso( ( int ) origin_.x, ( int ) origin_.y, &x, &y );
+	math::Vector2 iso = origin_.ToIso();
+	iso.x -= camera.position.x;
+	iso.y -= camera.position.y;
 
-	if ( x - bounds_.x > camera.position.x + DISPLAY_WIDTH )
-		return false;
-	else if ( y - bounds_.y > camera.position.y + DISPLAY_HEIGHT )
-		return false;
-	else if ( x + bounds_.x < camera.position.x - DISPLAY_WIDTH )
-		return false;
-	else if ( y + bounds_.y < camera.position.y - DISPLAY_HEIGHT )
-		return false;
-
-	return true;
+	return render::IsVolumeVisible( iso.x - bounds_.x, iso.y - bounds_.y, bounds_.x * 2, bounds_.y * 2 );
 }

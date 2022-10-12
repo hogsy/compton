@@ -45,7 +45,7 @@ void ds::HumanCreature::Precache()
 			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
 			{
 				std::string name = "human_idle_" + std::string( DIRECTIONS[ i ] );
-				idleAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name.c_str() );
+				idleAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
 			}
 		}
 		if ( runAnimations[ 0 ] == nullptr )
@@ -53,7 +53,7 @@ void ds::HumanCreature::Precache()
 			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
 			{
 				std::string name = "human_run_" + std::string( DIRECTIONS[ i ] );
-				runAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name.c_str() );
+				runAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
 			}
 		}
 	}

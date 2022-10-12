@@ -19,6 +19,7 @@ namespace ct
 			WRITE,
 		};
 
+		Serializer( const std::string &path, Mode mode );
 		Serializer( const char *path, Mode mode );
 		~Serializer();
 

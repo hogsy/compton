@@ -23,14 +23,14 @@ namespace ct
 
 		void Generate( int seed );
 
-		bool IsWater( float x, float y );
+		bool IsWater( int x, int y );
 
-		static constexpr unsigned int NUM_TILES_ROW = 32;
-		static constexpr unsigned int NUM_TILES_COLUMN = 32;
+		static constexpr unsigned int NUM_TILES_ROW = 64;
+		static constexpr unsigned int NUM_TILES_COLUMN = 64;
 		static constexpr unsigned int NUM_TILES = NUM_TILES_ROW * NUM_TILES_COLUMN;
 
-		static constexpr int TILE_WIDTH = 64;
-		static constexpr int TILE_HEIGHT = 64;
+		static constexpr int TILE_WIDTH = 16;
+		static constexpr int TILE_HEIGHT = 16;
 		static constexpr unsigned int TILE_PIXEL_SIZE = TILE_WIDTH * TILE_HEIGHT;
 
 		static constexpr unsigned int PIXEL_WIDTH = TILE_WIDTH * NUM_TILES_COLUMN;

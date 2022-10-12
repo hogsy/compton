@@ -40,7 +40,7 @@ namespace ct
 
 		void NewGame( const char *path ) override;
 		void SaveGame( const char *path ) override;
-		void RestoreGame( const char *path ) override;
+		void RestoreGame( const std::string &path ) override;
 
 		hei::Vector2 MousePosToWorld( int x, int y );
 

@@ -15,7 +15,7 @@ namespace ct
 
 		virtual void NewGame( const char *path ) = 0;
 		virtual void SaveGame( const char *path ) = 0;
-		virtual void RestoreGame( const char *path ) = 0;
+		virtual void RestoreGame( const std::string &path ) = 0;
 
 		virtual void Tick() = 0;
 		virtual void Draw() = 0;

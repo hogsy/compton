@@ -3,21 +3,16 @@
 
 #pragma once
 
-#include "engine/Entity.h"
+#include "../Entities/BaseSprite.h"
 
 namespace ct::game::ds
 {
-	class Tree : public Entity
+	class Tree : public BaseSprite
 	{
-		DECLARE_ENTITY_CLASS( Tree, Entity )
+		DECLARE_ENTITY_CLASS( Tree, BaseSprite )
 
 	public:
 		void Spawn() override;
 		void Precache() override;
-
-		void Draw( const Camera &camera ) override;
-
-	private:
-		const Sprite *sprite_{ nullptr };
 	};
 }// namespace vc

@@ -27,7 +27,7 @@ namespace ct
 		};
 
 		const Sprite *GetSprite( const char *path, unsigned int group );
-		void DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest = false );
+		void          DrawSprite( const char *path, unsigned int group, int x, int y, bool alphaTest = false );
 
 		const SpriteSheet *GetSpriteSheet( const char *path );
 

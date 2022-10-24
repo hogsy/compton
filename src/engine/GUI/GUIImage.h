@@ -22,4 +22,4 @@ namespace ct
 	private:
 		const Sprite *sprite_;
 	};
-}
+}// namespace ct

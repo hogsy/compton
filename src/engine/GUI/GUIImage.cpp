@@ -6,7 +6,7 @@
 #include "GUIImage.h"
 
 ct::GUIImage::GUIImage( ct::GUIPanel *parent, const ct::Sprite *sprite, int x, int y, int w, int h )
-: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE )
+    : GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE )
 {
 	sprite_ = sprite;
 }

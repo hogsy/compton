@@ -65,8 +65,8 @@ void ct::World::Draw( const ct::Camera &camera )
 
 void ct::World::Deserialize( ct::Serializer *read )
 {
-	name_ = read->ReadString();
-	seed_ = ( unsigned int ) read->ReadI32();
+	name_       = read->ReadString();
+	seed_       = ( unsigned int ) read->ReadI32();
 	numSeconds_ = ( unsigned int ) read->ReadI32();
 
 	terrain_.Deserialize( read );
@@ -102,8 +102,10 @@ void ct::World::Generate( unsigned int seed )
 			// Try at least 16 times before we give up
 			x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
 			y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
-			if ( !terrain_.IsWater( x, y ) )
-				break;
+
+			const Terrain::Tile *tile = terrain_.GetTile( x, y );
+			if ( tile != nullptr && tile->type == Terrain::TERRAIN_WATER )
+				continue;
 
 			x = y = -1.0f;
 		}
@@ -113,21 +115,25 @@ void ct::World::Generate( unsigned int seed )
 			continue;
 
 		// Now attempt to spawn in the territory
-		Territory territory;
-		territory.origin = math::Vector2( x, y );
+		Settlement settlement;
+		settlement.origin = math::Vector2( x, y );
+
+		char tmp[ 32 ];
+		random::GenerateRandomName( tmp, sizeof( tmp ) );
+		settlement.name = tmp;
 
 		// Spawn one Storehouse at the center
-		Entity *hub = gameMode->GetEntityManager()->CreateEntity( "Tree" );
+		Entity *hub  = gameMode->GetEntityManager()->CreateEntity( "Tree" );
 		hub->origin_ = math::Vector2( x, y );
-
-#define TERRITORY_BOUNDS 256
 
 		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
 		for ( unsigned int j = 0; j < numAbodes; ++j )
 		{
-			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
-			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
-			if ( terrain_.IsWater( x, y ) )
+			x = random::GenerateRandomInteger( settlement.origin.x - Settlement::MAX_BOUNDARY, settlement.origin.x + Settlement::MAX_BOUNDARY );
+			y = random::GenerateRandomInteger( settlement.origin.y - Settlement::MAX_BOUNDARY, settlement.origin.y + Settlement::MAX_BOUNDARY );
+
+			const Terrain::Tile *tile = terrain_.GetTile( x, y );
+			if ( tile != nullptr && tile->type == Terrain::TERRAIN_WATER )
 				continue;
 
 			// Assign some citizens to the abode.
@@ -142,12 +148,17 @@ void ct::World::Generate( unsigned int seed )
 			}
 		}
 
-		territories_.push_back( territory );
+		settlements.push_back( settlement );
 	}
 
-	for ( unsigned int i = 0; i < 1000; ++i )
+	Entity *test    = gameMode->GetEntityManager()->CreateEntity( "Pawn" );
+	test->origin_.x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
+	test->origin_.y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
+
+	for ( unsigned int i = 0; i < 100; ++i )
 	{
-		Entity *testEntity = gameMode->GetEntityManager()->CreateEntity( "Pawn" );
-		testEntity->origin_ = math::Vector2( rand() % Terrain::PIXEL_WIDTH, rand() % Terrain::PIXEL_HEIGHT );
+		Entity *test    = gameMode->GetEntityManager()->CreateEntity( "HumanCreature" );
+		test->origin_.x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
+		test->origin_.y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
 	}
 }

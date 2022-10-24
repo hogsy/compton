@@ -13,4 +13,4 @@ namespace ct
 	protected:
 	private:
 	};
-}
+}// namespace ct

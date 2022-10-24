@@ -17,8 +17,6 @@ void ct::ai::Sensor::Tick()
 	if ( gameMode == nullptr )
 		return;
 
-	START_MEASURE();
-
 	switch ( type_ )
 	{
 		case Type::SIGHT:
@@ -54,6 +52,4 @@ void ct::ai::Sensor::Tick()
 		}
 		default: break;
 	}
-
-	END_MEASURE();
 }

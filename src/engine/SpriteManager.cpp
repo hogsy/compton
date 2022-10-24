@@ -40,8 +40,8 @@ const ct::Sprite *ct::SpriteManager::GetSprite( const char *path, unsigned int g
 
 	// Set up the sprite handle
 	Sprite sprite;
-	sprite.width = PlGetImageWidth( image );
-	sprite.height = PlGetImageHeight( image );
+	sprite.width    = PlGetImageWidth( image );
+	sprite.height   = PlGetImageHeight( image );
 	sprite.hasAlpha = PlImageHasAlpha( image );
 
 	// We're now going to copy the image pixels into our sprite

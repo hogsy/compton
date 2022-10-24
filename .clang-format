@@ -1,13 +1,14 @@
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-#AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveMacros: Consecutive
 AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
+AlignArrayOfStructures: Left
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true

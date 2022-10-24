@@ -13,19 +13,19 @@ namespace ct
 		struct Player
 		{
 			Player( const std::string &sName, bool local ) : name( sName ), isLocal( local ) {}
-			Camera camera;
-			bool isLocal{ true };
+			Camera      camera;
+			bool        isLocal{ true };
 			std::string name;
-			Entity *controlTarget{ nullptr };
+			Entity     *controlTarget{ nullptr };
 		};
 
-		int AddPlayer( const char *name, bool local );
+		int  AddPlayer( const char *name, bool local );
 		void RemovePlayer( int id );
 
 		void HandleInput();
 
 		inline const std::vector< Player > *GetPlayers() const { return &players_; }
-		[[nodiscard]] inline int GetNumPlayers() const { return ( int ) players_.size(); }
+		[[nodiscard]] inline int            GetNumPlayers() const { return ( int ) players_.size(); }
 
 		Player *GetPlayer( int id );
 

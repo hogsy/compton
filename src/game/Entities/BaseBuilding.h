@@ -39,7 +39,7 @@ namespace ct
 	private:
 		uint8_t constructionAmount_{ 0 };
 
-		uint8_t maxOccupants_{ 0 };
+		uint8_t                 maxOccupants_{ 0 };
 		std::vector< Entity * > occupants_;
 	};
-}// namespace vc
+}// namespace ct

@@ -8,4 +8,4 @@ namespace ct
 	class GameModeManager
 	{
 	};
-}
+}// namespace ct

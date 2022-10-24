@@ -5,7 +5,7 @@
 
 #include "BaseSprite.h"
 
-ct::BaseSprite::BaseSprite() = default;
+ct::BaseSprite::BaseSprite()  = default;
 ct::BaseSprite::~BaseSprite() = default;
 
 void ct::BaseSprite::Draw( const ct::Camera &camera )
@@ -18,11 +18,9 @@ void ct::BaseSprite::Draw( const ct::Camera &camera )
 	if ( !ShouldDraw( camera ) )
 		return;
 
-	int tx, ty;
-	render::TransformToIso( origin_.x + offset_.x, origin_.y + offset_.y, &tx, &ty );
+	math::Vector2 iso = origin_.ToIso();
+	iso.x -= ( int ) camera.position.x;
+	iso.y -= ( int ) camera.position.y;
 
-	tx -= camera.position.x;
-	ty -= camera.position.y;
-
-	sprite_->Draw( tx, ty );
+	sprite_->Draw( iso.x, iso.y );
 }

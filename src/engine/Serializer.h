@@ -32,12 +32,12 @@ namespace ct
 		void WriteString( const char *var );
 		void WriteCoordinate( const PLVector2 &var );
 
-		int8_t ReadI8();
-		int16_t ReadI16();
-		int32_t ReadI32();
-		float ReadF32();
+		int8_t      ReadI8();
+		int16_t     ReadI16();
+		int32_t     ReadI32();
+		float       ReadF32();
 		std::string ReadString();
-		PLVector2 ReadCoordinate();
+		PLVector2   ReadCoordinate();
 
 		inline unsigned int GetVersion() const { return version; }
 
@@ -61,6 +61,6 @@ namespace ct
 	{
 	public:
 		virtual void Deserialize( Serializer *read ) = 0;
-		virtual void Serialize( Serializer *write ) = 0;
+		virtual void Serialize( Serializer *write )  = 0;
 	};
 }// namespace ct

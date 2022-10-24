@@ -26,16 +26,16 @@ void ct::BaseCreature::Spawn()
 		sensors_[ i ] = ai::Sensor( ( ai::Sensor::Type )( ( uint8_t ) ai::Sensor::Type::SIGHT + i ), &brain_ );
 
 	// Age
-	age_ = random::GenerateRandomInteger( 1, 50 );
-	maxAge_ = random::GenerateRandomInteger( age_, age_ + 50 );
+	age_        = random::GenerateRandomInteger( 1, 50 );
+	maxAge_     = random::GenerateRandomInteger( age_, age_ + 50 );
 	generation_ = random::GenerateRandomInteger( 1, 10 );
 
 	// Health
-	health_ = random::GenerateRandomInteger( 50, 100 );
+	health_    = random::GenerateRandomInteger( 50, 100 );
 	maxHealth_ = random::GenerateRandomInteger( health_, health_ + 100 );
 
 	// Stamina
-	stamina_ = random::GenerateRandomInteger( 30, 100 );
+	stamina_    = random::GenerateRandomInteger( 30, 100 );
 	maxStamina_ = random::GenerateRandomInteger( stamina_, stamina_ + 100 );
 
 	// Generate a random sex for the creature
@@ -79,16 +79,16 @@ void ct::BaseCreature::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	health_ = read->ReadI32();
+	health_    = read->ReadI32();
 	maxHealth_ = read->ReadI32();
 
-	stamina_ = read->ReadI32();
+	stamina_    = read->ReadI32();
 	maxStamina_ = read->ReadI32();
 
-	experience = read->ReadI32();
-	maxExperience = read->ReadI32();
+	experience    = ( uint32_t ) read->ReadI32();
+	maxExperience = ( uint32_t ) read->ReadI32();
 
-	sex_ = static_cast< Sex >( read->ReadI32() );
+	sex_ = ( Sex ) read->ReadI32();
 }
 
 void ct::BaseCreature::Serialize( ct::Serializer *write )
@@ -101,10 +101,10 @@ void ct::BaseCreature::Serialize( ct::Serializer *write )
 	write->WriteI32( stamina_ );
 	write->WriteI32( maxStamina_ );
 
-	write->WriteI32( experience );
-	write->WriteI32( maxExperience );
+	write->WriteI32( ( int32_t ) experience );
+	write->WriteI32( ( int32_t ) maxExperience );
 
-	write->WriteI32( static_cast< int >( sex_ ) );
+	write->WriteI32( ( int ) sex_ );
 }
 
 void ct::BaseCreature::Draw( const ct::Camera &camera )
@@ -130,11 +130,11 @@ void ct::BaseCreature::Think()
 
 	// Now handle the actions necessary for the current directive
 
-	const ai::Brain::Directive *dir = brain_.GetTopDirective();
-	if ( dir == nullptr || dir->isCompleted )
+	const ai::Brain::Directive *directive = brain_.GetTopDirective();
+	if ( directive == nullptr || directive->isCompleted )
 		return;
 
-	switch ( dir->type )
+	switch ( directive->type )
 	{
 		case ai::MotorAction::USE:
 			Use();
@@ -146,10 +146,10 @@ void ct::BaseCreature::Think()
 		case ai::MotorAction::TALK: break;
 		case ai::MotorAction::ATTACK: break;
 		case ai::MotorAction::APPROACH:
-			StepTowards( dir->targetPosition );
+			StepTowards( directive->targetPosition );
 			break;
 		case ai::MotorAction::RETREAT:
-			StepAway( dir->targetPosition );
+			StepAway( directive->targetPosition );
 			break;
 	}
 }
@@ -182,18 +182,36 @@ ct::ai::FeedbackState ct::BaseCreature::Attack()
 	return ct::ai::FeedbackState();
 }
 
-void ct::BaseCreature::StepTowards( const math::Vector2 &target, float speed )
+void ct::BaseCreature::StepTowards( const math::Vector2 &target, int speed )
 {
-	math::Vector2 vecDist = target - origin_;
+	if ( stepTime_ > GetApp()->GetNumOfTicks() )
+		return;
 
-	//hei::Vector2 d = hei::Vector2( target - origin_ );
-	//origin_ += d * ( speed / ( d.Length() + 1.0f ) );
+	if ( target.x > origin_.x )
+		origin_.x++;
+	else if ( target.x < origin_.x )
+		origin_.x--;
+	if ( target.y > origin_.y )
+		origin_.y++;
+	else if ( target.y < origin_.y )
+		origin_.y--;
+
+	stepTime_ = GetApp()->GetNumOfTicks() + speed;
 }
 
 void ct::BaseCreature::StepAway( const math::Vector2 &target, int speed )
 {
-	math::Vector2 vecDist = target - origin_;
+	if ( stepTime_ > GetApp()->GetNumOfTicks() )
+		return;
 
-	//hei::Vector2 d = hei::Vector2( target - origin_ );
-	//origin_ -= d * ( speed / ( d.Length() + 1.0f ) );
+	if ( target.x >= origin_.x )
+		origin_.x--;
+	else if ( target.x <= origin_.x )
+		origin_.x++;
+	if ( target.y >= origin_.y )
+		origin_.y--;
+	else if ( target.y <= origin_.y )
+		origin_.y++;
+
+	stepTime_ = GetApp()->GetNumOfTicks() + speed;
 }

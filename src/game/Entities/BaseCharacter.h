@@ -29,19 +29,11 @@ namespace ct
 	protected:
 	private:
 		static constexpr unsigned int MAX_CHARACTER_NAME = 64;
-		char name[ MAX_CHARACTER_NAME ];
+		char                          name[ MAX_CHARACTER_NAME ];
 
-		static constexpr unsigned int NUM_SPRITES = 5;
-
-		int controllingPlayer_{ -1 };
+		int  controllingPlayer_{ -1 };
 		bool isPossessed_{ false };
-
-		hei::Vector2 debugGoal;
-		hei::Vector2 debugRoutes[ 16 ];
-		unsigned int debugNumRoutes{ 0 };
-		unsigned int debugCurRoute{ 0 };
-		unsigned int debugGoalDelay{ 2000 };
 
 		float influence_{ 0.0f };
 	};
-}// namespace vc
+}// namespace ct

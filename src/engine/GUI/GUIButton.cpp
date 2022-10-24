@@ -6,7 +6,7 @@
 #include "GUIButton.h"
 
 ct::GUIButton::GUIButton( ct::GUIPanel *parent, const char *label, int x, int y, int w, int h )
-	: GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
+    : GUIPanel( parent, x, y, w, h, Background::DEFAULT, Border::OUTSET )
 {
 	label_ = new GUILabel( this, label, x, y, w, h );
 }

@@ -11,7 +11,7 @@
 #include "game/DSGameMode.h"
 #include "engine/Editors/SpriteSheetEditor.h"
 
-ct::SpriteManager       *ct::spriteManager = nullptr;
+ct::SpriteManager       *ct::spriteManager       = nullptr;
 ct::input::InputManager *ct::input::inputManager = nullptr;
 
 static double oldTime;
@@ -93,7 +93,7 @@ ct::App::App( int argc, char **argv )
 	PlMountLocalLocation( appDataPath );
 
 	bool        mountLocalData = PlHasCommandLineArgument( "--mount-local-data" );
-	const char *localDataPath = PlGetCommandLineArgumentValue( "--local-data-path" );
+	const char *localDataPath  = PlGetCommandLineArgumentValue( "--local-data-path" );
 
 	if ( !PlLocalFileExists( "./data0.pkg" ) )
 	{
@@ -122,8 +122,8 @@ ct::App::App( int argc, char **argv )
 	// And now initialize Allegro
 
 	uint32_t version = al_get_allegro_version();
-	uint32_t major = version >> 24;
-	uint32_t minor = ( version >> 16 ) & 255;
+	uint32_t major   = version >> 24;
+	uint32_t minor   = ( version >> 16 ) & 255;
 	Print( "Initializing Allegro %d.%d\n", major, minor );
 	if ( !al_init() )
 		Error( "Failed to initialize Allegro library!\n" );
@@ -156,7 +156,7 @@ ct::App::App( int argc, char **argv )
 	srand( ( unsigned ) time( nullptr ) );
 
 	input::inputManager = new input::InputManager();
-	spriteManager = new SpriteManager( argc, argv );
+	spriteManager       = new SpriteManager( argc, argv );
 
 	PlRegisterConsoleVariable( "showfps", "Display the current average FPS.", "0", PL_VAR_BOOL, &debugFPS_, nullptr, false );
 	PlRegisterConsoleVariable( "showprof", "Display profiler results.", "0", PL_VAR_BOOL, &debugProfiler_, nullptr, false );
@@ -260,7 +260,7 @@ void ct::App::InitializeDisplay()
 	Print( "Initializing display...\n" );
 
 #ifdef ENABLE_SCALING
-	windowWidth = DISPLAY_WIDTH * 2;
+	windowWidth  = DISPLAY_WIDTH * 2;
 	windowHeight = DISPLAY_HEIGHT * 2;
 #else
 	windowWidth = DISPLAY_WIDTH;
@@ -282,7 +282,7 @@ void ct::App::InitializeDisplay()
 		Error( "Failed to initialize display!\n" );
 
 	// Get the actual width and height
-	windowWidth = al_get_display_width( alDisplay );
+	windowWidth  = al_get_display_width( alDisplay );
 	windowHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
@@ -294,8 +294,8 @@ void ct::App::InitializeDisplay()
 	if ( screenBitmap_ == nullptr )
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
 
-	int sx = windowWidth / DISPLAY_WIDTH;
-	int sy = windowHeight / DISPLAY_HEIGHT;
+	int sx    = windowWidth / DISPLAY_WIDTH;
+	int sy    = windowHeight / DISPLAY_HEIGHT;
 	int scale = std::min( sx, sy );
 
 	scaleW = DISPLAY_WIDTH * scale;
@@ -317,9 +317,11 @@ void ct::App::Draw()
 
 	START_MEASURE();
 
+	ct::render::BeginDraw();
+
 	double              newTime = PlGetCurrentSeconds();
-	static unsigned int ci = 0;
-	fps_[ ci++ ] = 1.0 / ( newTime - oldTime );
+	static unsigned int ci      = 0;
+	fps_[ ci++ ]                = 1.0 / ( newTime - oldTime );
 	if ( ci >= MAX_FPS_READINGS ) ci = 0;
 	oldTime = newTime;
 
@@ -338,6 +340,8 @@ void ct::App::Draw()
 	END_MEASURE();
 
 	// Draw our debug data
+	BitmapFont *font = GetDefaultFont();
+	if ( font != nullptr )
 	{
 		char buf[ 256 ];
 		int  x = 8, y = 8;
@@ -355,7 +359,7 @@ void ct::App::Draw()
 			else
 				colour = hei::Colour( 0, 255, 0 );
 
-			defaultBitmapFont_->DrawString( &x, &y, buf, colour );
+			font->DrawString( &x, &y, buf, colour );
 		}
 
 		if ( debugProfiler_ )
@@ -363,7 +367,18 @@ void ct::App::Draw()
 			for ( auto const &i : performanceTimers )
 			{
 				snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
-				defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+				font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+			}
+		}
+
+		if ( debugDrawStats )
+		{
+			for ( unsigned int i = 0; i < render::DrawStats::Type::MAX_DRAW_STATS_TYPES; ++i )
+			{
+				snprintf( buf, sizeof( buf ), "%s: %d\n",
+				          render::DrawStats::GetDescription( ( render::DrawStats::Type ) i ),
+				          render::drawStats.stats[ i ] );
+				font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
 			}
 		}
 	}
@@ -386,6 +401,8 @@ void ct::App::Draw()
 #endif
 
 	al_flip_display();
+
+	ct::render::EndDraw();
 
 	redraw = false;
 }
@@ -566,6 +583,9 @@ void ct::App::GrabCursor( bool status )
 
 void ct::App::StartPerformanceTimer( const char *identifier )
 {
+	if ( !debugProfiler_ )
+		return;
+
 	auto i = performanceTimers.find( identifier );
 	if ( i == performanceTimers.end() )
 	{
@@ -578,6 +598,9 @@ void ct::App::StartPerformanceTimer( const char *identifier )
 
 void ct::App::EndPerformanceTimer( const char *identifier )
 {
+	if ( !debugProfiler_ )
+		return;
+
 	auto i = performanceTimers.find( identifier );
 	if ( i == performanceTimers.end() )
 	{

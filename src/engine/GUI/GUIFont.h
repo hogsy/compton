@@ -5,12 +5,14 @@
 
 #include <vector>
 
+#include "../Renderer/BitmapFont.h"
+
 namespace ct
 {
 	class GUIFont
 	{
 	public:
-		inline GUIFont() = default;
+		inline GUIFont()  = default;
 		inline ~GUIFont() = default;
 
 		bool LoadFile( const char *path, float scale );
@@ -20,14 +22,14 @@ namespace ct
 
 		struct Glyph
 		{
-			int w, h;
-			int bw, bh;
+			int                          w, h;
+			int                          bw, bh;
 			std::vector< unsigned char > buffer;
 		};
 
 		bool GetCharacterSize( int c, int *w, int *h, int *bw, int *bh ) const;
 
 	private:
-		std::vector< Glyph > glyphs_;
+		BitmapFont *font;
 	};
 }// namespace ct

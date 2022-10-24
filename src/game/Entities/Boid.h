@@ -44,10 +44,10 @@ namespace vc
 
 	private:
 		static constexpr unsigned int NUM_FRAMES[ ( unsigned int ) Type::NUM_TYPES ] =
-				{
-						6,// small bird
-						8 // big bird
-				};
+		        {
+		                6,// small bird
+		                8 // big bird
+		        };
 		ImageManager::Sprite *sprites_[ ( unsigned int ) Type::NUM_TYPES ];
 
 		Type type_{ Type::SMALL_BIRD };

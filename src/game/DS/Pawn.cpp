@@ -20,13 +20,18 @@ namespace ct::game::ds
 		static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ];
 
 		static constexpr const char *ANIMATION_PATH = "sprites/pawns/pawn_basic.ani";
-		static constexpr const char *SPRITE_PATH = "sprites/pawns/pawn_basic.spr";
+		static constexpr const char *SPRITE_PATH    = "sprites/pawns/pawn_basic.spr";
 	};
 
 	const SpriteAnimation *Pawn::idleAnimation = nullptr;
 	const SpriteAnimation *Pawn::runAnimations[];
 
-	Pawn::Pawn() {}
+	Pawn::Pawn()
+	{
+		bounds_.x = 10;
+		bounds_.y = 8;
+	}
+
 	Pawn::~Pawn() {}
 
 	void Pawn::Precache()
@@ -44,7 +49,7 @@ namespace ct::game::ds
 		{
 			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
 			{
-				std::string name = "pawn_run_" + std::string( DIRECTIONS[ i ] );
+				std::string name   = "pawn_run_" + std::string( DIRECTIONS[ i ] );
 				runAnimations[ i ] = SpriteAnimator::GetAnimation( ANIMATION_PATH, name );
 			}
 		}

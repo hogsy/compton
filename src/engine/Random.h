@@ -27,4 +27,4 @@ namespace ct
 			static int permutation[];
 		};
 	}// namespace random
-}// namespace vc
+}// namespace ct

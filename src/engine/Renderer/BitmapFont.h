@@ -34,4 +34,4 @@ namespace ct
 		};
 		std::vector< Glyph > glyphs_;
 	};
-}// namespace vc
+}// namespace ct

@@ -38,15 +38,15 @@ long c_caller( long number, void *args )
 	return 0;
 }
 
-void *l_obj_get(long number) // exten lisp function switches on number
+void *l_obj_get( long number )// exten lisp function switches on number
 {
 	return nullptr;
 }
 
-void l_obj_set(long number, void *arg)  // exten lisp function switches on number
+void l_obj_set( long number, void *arg )// exten lisp function switches on number
 {
 }
 
-void l_obj_print(long number)  // exten lisp function switches on number
+void l_obj_print( long number )// exten lisp function switches on number
 {
 }

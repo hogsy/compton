@@ -32,4 +32,4 @@ namespace ct
 	private:
 		unsigned int itemType_{ ITEM_TYPE_INVALID };
 	};
-}
+}// namespace ct

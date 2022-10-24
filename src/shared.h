@@ -42,8 +42,8 @@
 
 #define DISPLAY_WIDTH  320
 #define DISPLAY_HEIGHT 240
-#define ENABLE_SCALING
 
+//#define ENABLE_SCALING
 #define ENABLE_MOUSE 1
 
 namespace ct
@@ -117,6 +117,9 @@ namespace ct
 			FLIP_VERTICAL,
 		};
 
+		void BeginDraw();
+		void EndDraw();
+
 		void ClearDisplay();
 		void DrawPixel( int x, int y, const hei::Colour &colour );
 		void DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour );
@@ -124,15 +127,45 @@ namespace ct
 		void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
 		void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 
+		void DrawPanel( int x, int y, int w, int h, const hei::Colour &colour );
+
 		void SetScissor( int x, int y, int w, int h );
 
 		bool IsVolumeVisible( int x, int y, int w, int h );
 
-		inline void TransformToIso( int ox, int oy, int *dx, int *dy )
+		struct DrawStats
 		{
-			*dx = ( ox - oy );
-			*dy = ( ox + oy ) / 2;
-		}
+			enum Type : uint8_t
+			{
+				DRAW_STATS_ENTITY,
+				DRAW_STATS_TILE,
+
+				MAX_DRAW_STATS_TYPES
+			};
+
+			unsigned int              stats[ Type::MAX_DRAW_STATS_TYPES ];
+			inline static const char *GetDescription( Type type )
+			{
+				switch ( type )
+				{
+					case DRAW_STATS_ENTITY:
+						return "entities";
+					case DRAW_STATS_TILE:
+						return "tiles";
+					default:
+						break;
+				}
+
+				assert( 0 );
+				return "unnamed";
+			}
+
+			inline void Clear()
+			{
+				PL_ZERO( this, sizeof( DrawStats ) );
+			}
+		};
+		extern DrawStats drawStats;
 	}// namespace render
 
 	// Common misc types
@@ -151,7 +184,7 @@ namespace ct
 		static constexpr unsigned int MAX_FPS = 60;
 
 		static IGameMode *GetGameMode();
-		void SetGameMode( IGameMode *gameMode );
+		void              SetGameMode( IGameMode *gameMode );
 
 		void Precache();
 
@@ -208,17 +241,17 @@ namespace ct
 
 		std::map< std::string, Timer > performanceTimers;
 
-		ALLEGRO_DISPLAY *alDisplay;
+		ALLEGRO_DISPLAY     *alDisplay;
 		ALLEGRO_EVENT_QUEUE *alEventQueue;
-		ALLEGRO_TIMER *alTimer;
-		ALLEGRO_TEXTLOG *alLog;
+		ALLEGRO_TIMER       *alTimer;
+		ALLEGRO_TEXTLOG     *alLog;
 
 		// Game state
 		IGameMode *gameMode_{ nullptr };
 
 		// Resources
-		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;// todo: make obsolete
-		BitmapFont *defaultBitmapFont_{ nullptr };                  // todo: this should replace the above...
+		std::unordered_map< std::string, ALLEGRO_SAMPLE * > samples;                      // todo: make obsolete
+		BitmapFont                                         *defaultBitmapFont_{ nullptr };// todo: this should replace the above...
 
 		bool redraw;
 
@@ -226,13 +259,13 @@ namespace ct
 		bool debugProfiler_{ false };
 		bool debugDrawStats{ false };
 
-		int windowWidth, windowHeight;
+		int   windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;
 
 		unsigned int numTicks;
 
 		static constexpr unsigned int MAX_FPS_READINGS = 64;
-		double fps_[ MAX_FPS_READINGS ]{};
+		double                        fps_[ MAX_FPS_READINGS ]{};
 
 	public:
 		inline unsigned int GetAverageFPS() const

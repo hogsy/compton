@@ -15,4 +15,4 @@ namespace ct::game::ds
 		void Spawn() override;
 		void Precache() override;
 	};
-}// namespace vc
+}// namespace ct::game::ds

@@ -33,4 +33,4 @@ namespace ct
 	private:
 		std::map< std::string, Sprite > elements_;
 	};
-}// namespace vc
+}// namespace ct

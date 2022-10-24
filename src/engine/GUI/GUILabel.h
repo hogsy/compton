@@ -26,4 +26,4 @@ namespace ct
 
 		BitmapFont *bitmapFont_;
 	};
-}
+}// namespace ct

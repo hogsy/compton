@@ -36,4 +36,4 @@ namespace ct::ai
 
 		Type type_{ Type::SIGHT };
 	};
-}// namespace vc::ai
+}// namespace ct::ai

@@ -14,11 +14,11 @@ namespace ct::input
 	class Action
 	{
 	public:
-		inline Action( const std::string &description ) : description_( description ) {}
+		inline explicit Action( const std::string &description ) : description_( description ) {}
 
-		bool IsPressed();
+		bool CheckStatus( State state ) const;
 
-		inline const char *GetDescription() const { return description_.c_str(); }
+		[[nodiscard]] inline const char *GetDescription() const { return description_.c_str(); }
 
 	private:
 		std::string description_;
@@ -32,9 +32,7 @@ namespace ct::input
 			// Check it's not been bound already
 			auto i = std::find( keyboardBindings_.begin(), keyboardBindings_.end(), key );
 			if ( i != keyboardBindings_.end() )
-			{
 				return;
-			}
 
 			keyboardBindings_.push_back( key );
 		}
@@ -43,9 +41,7 @@ namespace ct::input
 			// Check it's not been bound already
 			auto i = std::find( buttonBindings_.begin(), buttonBindings_.end(), button );
 			if ( i != buttonBindings_.end() )
-			{
 				return;
-			}
 
 			buttonBindings_.push_back( button );
 		}

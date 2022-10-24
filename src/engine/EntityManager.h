@@ -19,18 +19,18 @@ namespace ct
 		EntityManager();
 		~EntityManager();
 
-		ct::Entity *CreateEntity( const std::string &className );
-		void        DestroyEntity( Entity *entity );
-		void        DestroyEntities();
+		static ct::Entity *CreateEntity( const std::string &className );
+		static void               DestroyEntity( Entity *entity );
+		static void               DestroyEntities();
 
-		void Tick();
+		static void        Tick();
 		static void Draw( const Camera &camera );
 
 		static void SerializeEntities( Serializer *write );
-		void DeserializeEntities( Serializer *read );
+		void        DeserializeEntities( Serializer *read );
 
 		static void SpawnEntities();
-		void PrecacheEntities();
+		static void        PrecacheEntities();
 
 		struct EntitySlot
 		{
@@ -39,9 +39,9 @@ namespace ct
 			ct::Entity  *entity;
 			unsigned int num;
 		};
-		EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) const;
+		static EntitySlot FindEntityByClassName( const char *className, const EntitySlot *curSlot = nullptr ) ;
 
-		std::vector< Entity * > GetEntitiesInRange( const hei::Vector2 &origin, float range );
+		static std::vector< Entity * > GetEntitiesInRange( const hei::Vector2 &origin, float range );
 
 		class EntityClassRegistration
 		{
@@ -53,13 +53,15 @@ namespace ct
 		};
 
 	private:
-		typedef std::vector< Entity * > EntityVector;
-		static EntityVector             entities;
-		static EntityVector             destructionQueue;
+		static std::vector< Entity * > entities;
+		static std::vector< Entity * > destructionQueue;
 	};
-}// namespace vc
+}// namespace ct
 
 #define REGISTER_ENTITY( NAME, CLASS )                                                           \
-	static ct::Entity *NAME##_make() { return new CLASS(); }                                     \
+	static ct::Entity *NAME##_make()                                                             \
+	{                                                                                            \
+		return new CLASS();                                                                      \
+	}                                                                                            \
 	static ct::EntityManager::EntityClassRegistration __attribute__( ( init_priority( 2100 ) ) ) \
 	_reg_actor_##NAME##_name( ( #NAME ), NAME##_make );// NOLINT(cert-err58-cpp)

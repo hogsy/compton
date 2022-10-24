@@ -25,4 +25,4 @@ namespace ct::game
 	};
 
 	static constexpr unsigned int MAX_SPRITE_DIR = 4;// N, NE, E, SE, S - then mirror
-}// namespace vc::game
+}// namespace ct::game

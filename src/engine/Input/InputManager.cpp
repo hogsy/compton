@@ -8,19 +8,14 @@
 
 using namespace ct;
 
-input::Action *input::InputManager::PushAction( const char *description )
+input::Action *input::InputManager::CreateAction( const char *description )
 {
-	// Could've probably used a std::map for this...
-	for ( auto &i : actions_ )
-	{
-		if ( strcmp( i.GetDescription(), description ) != 0 )
-			continue;
+	auto i = actions_.find( description );
+	if ( i != actions_.end() )
+		return &i->second;
 
-		return &i;
-	}
-
-	actions_.push_back( Action( description ) );
-	return &actions_[ actions_.size() - 1 ];
+	auto j = actions_.insert( std::make_pair< std::string, Action >( description, Action( description ) ) );
+	return &j.first->second;
 }
 
 bool input::InputManager::HandleKeyboardEvent( int key, bool keyUp )

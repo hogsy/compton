@@ -24,4 +24,4 @@ namespace ct
 
 		GUILabel *label_;
 	};
-}// namespace vc
+}// namespace ct

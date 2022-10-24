@@ -8,11 +8,11 @@
 #include "GUIStyleSheet.h"
 #include "GUILabel.h"
 
-const hei::Colour ct::GUIPanel::INSET_COLOUR = { 122, 122, 122, 255 };
+const hei::Colour ct::GUIPanel::INSET_COLOUR  = { 122, 122, 122, 255 };
 const hei::Colour ct::GUIPanel::OUTSET_COLOUR = { 192, 192, 192, 255 };
 
 ct::GUIPanel::GUIPanel( ct::GUIPanel *parent, int x, int y, int w, int h, ct::GUIPanel::Background background, ct::GUIPanel::Border border )
-	: background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
+    : background_( background ), border_( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
 		return;
@@ -117,14 +117,14 @@ void ct::GUIPanel::DrawBorder()
 		case Border::NONE:
 			return;
 	}
-	
+
 	int dx, dy;
 	GetPosition( &dx, &dy );
 
 	DrawBorderEdge( dx, dy, w, 0, u );                                             // top
 	DrawBorderEdge( dx, dy + h - styleSheet_->frameSprites[ d ]->height, w, 0, d );// bottom
-	DrawBorderEdge( dx, dy, 0, h, l );// left
-	DrawBorderEdge( dx + w - styleSheet_->frameSprites[ r ]->width, dy, 0, h, r );// right
+	DrawBorderEdge( dx, dy, 0, h, l );                                             // left
+	DrawBorderEdge( dx + w - styleSheet_->frameSprites[ r ]->width, dy, 0, h, r ); // right
 
 	DrawBorderCorner( dx, dy, ul );
 	DrawBorderCorner( dx + w - styleSheet_->frameSprites[ ur ]->width, dy, ur );

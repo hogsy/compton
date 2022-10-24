@@ -35,4 +35,4 @@ namespace ct
 	private:
 		GUICursorMode currentCursorMode{ GUICursorMode::GUI_MOUSE_DEFAULT };
 	};
-}// namespace vc
+}// namespace ct

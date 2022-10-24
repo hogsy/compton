@@ -29,10 +29,10 @@ namespace ct
 
 		inline void Deserialize( Serializer *read ) override
 		{
-			oldPosition = read->ReadCoordinate();
-			position = read->ReadCoordinate();
-			oldVelocity = read->ReadCoordinate();
-			velocity = read->ReadCoordinate();
+			oldPosition  = read->ReadCoordinate();
+			position     = read->ReadCoordinate();
+			oldVelocity  = read->ReadCoordinate();
+			velocity     = read->ReadCoordinate();
 			movementMode = ( MoveMode ) read->ReadI32();
 		}
 		inline void Serialize( Serializer *write ) override

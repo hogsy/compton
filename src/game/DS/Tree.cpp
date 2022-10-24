@@ -14,14 +14,14 @@ using namespace ct::game;
 
 REGISTER_ENTITY( Tree, ds::Tree )
 
-ds::Tree::Tree() = default;
+ds::Tree::Tree()  = default;
 ds::Tree::~Tree() = default;
 
 void ds::Tree::Spawn()
 {
 	SuperClass::Spawn();
 
-	health_ = random::GenerateRandomInteger( 1, 100 );
+	health_    = random::GenerateRandomInteger( 1, 100 );
 	maxHealth_ = random::GenerateRandomInteger( health_, 200 );
 
 	sprite_ = ct::spriteManager->GetSprite( "sprites/environment/tree00.gif", SpriteManager::SPRITE_GROUP_ENTITY );

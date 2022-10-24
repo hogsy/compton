@@ -10,11 +10,30 @@ static int scissorY = 0;
 static int scissorW = DISPLAY_WIDTH;
 static int scissorH = DISPLAY_HEIGHT;
 
+ct::render::DrawStats        ct::render::drawStats;
+static ct::render::DrawStats lastDrawStats;
+
+/**
+ * Should be called before anything else is drawn.
+ */
+void ct::render::BeginDraw()
+{
+	drawStats.Clear();
+}
+
+/**
+ * And this should be called after everything has drawn.
+ */
+void ct::render::EndDraw()
+{
+	//lastDrawStats = drawStats;
+}
+
 void ct::render::ClearDisplay()
 {
 	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
-	PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
-	//memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	//PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
+	memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
 void ct::render::DrawPixel( int x, int y, const hei::Colour &colour )
@@ -104,9 +123,9 @@ void ct::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, in
 	if ( y + dh > scissorH )
 		dh = scissorH - y;
 
-	bool hasAlpha = ( pixelSize == 4 );
-	ALLEGRO_LOCKED_REGION *region = ct::GetApp()->region_;
-	uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
+	bool                   hasAlpha = ( pixelSize == 4 );
+	ALLEGRO_LOCKED_REGION *region   = ct::GetApp()->region_;
+	uint8_t               *dst      = ( uint8_t                    *) region->data + x * region->pixel_size + region->pitch * y;
 	for ( unsigned int row = 0; row < dh; ++row )
 	{
 		if ( y + row > scissorH )
@@ -156,6 +175,27 @@ void ct::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Col
 			DrawPixel( x + row, y + column, colour );
 }
 
+void ct::render::DrawPanel( int x, int y, int w, int h, const hei::Colour &colour )
+{
+	static constexpr unsigned int BORDER_WIDTH = 3;
+
+	// draw top border
+
+	// draw body
+	DrawFilledRectangle( x + BORDER_WIDTH, y + BORDER_WIDTH, w - ( BORDER_WIDTH * 2 ), h - ( BORDER_WIDTH * 2 ), colour );
+
+	// draw bottom border
+	hei::Colour darkSide;
+	if ( ( ( int ) colour.r ) - 5 > 0 )
+		darkSide.r = colour.r - 5;
+	if ( ( ( int ) colour.g ) - 5 > 0 )
+		darkSide.g = colour.g - 5;
+	if ( ( ( int ) colour.b ) - 5 > 0 )
+		darkSide.b = colour.b - 5;
+	for ( unsigned int row = 0; row < BORDER_WIDTH; ++row )
+		DrawFilledRectangle( x - row, y + ( h - BORDER_WIDTH ) + row, w + row * 2, 1, darkSide );
+}
+
 void ct::render::SetScissor( int x, int y, int w, int h )
 {
 	scissorX = x;
@@ -171,5 +211,5 @@ void ct::render::SetScissor( int x, int y, int w, int h )
  */
 bool ct::render::IsVolumeVisible( int x, int y, int w, int h )
 {
-	return !( x > scissorW || x + w < 0 || y > scissorH || y + h < 0 );
+	return !( x > scissorW || x + w < scissorX || y > scissorH || y + h < scissorY );
 }

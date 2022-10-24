@@ -23,19 +23,17 @@ namespace ct
 
 		void Generate( int seed );
 
-		bool IsWater( int x, int y );
+		static constexpr int          NUM_TILES_ROW    = 64;
+		static constexpr int          NUM_TILES_COLUMN = 64;
+		static constexpr unsigned int NUM_TILES        = NUM_TILES_ROW * NUM_TILES_COLUMN;
 
-		static constexpr unsigned int NUM_TILES_ROW = 64;
-		static constexpr unsigned int NUM_TILES_COLUMN = 64;
-		static constexpr unsigned int NUM_TILES = NUM_TILES_ROW * NUM_TILES_COLUMN;
-
-		static constexpr int TILE_WIDTH = 16;
-		static constexpr int TILE_HEIGHT = 16;
+		static constexpr int          TILE_WIDTH      = 16;
+		static constexpr int          TILE_HEIGHT     = 16;
 		static constexpr unsigned int TILE_PIXEL_SIZE = TILE_WIDTH * TILE_HEIGHT;
 
-		static constexpr unsigned int PIXEL_WIDTH = TILE_WIDTH * NUM_TILES_COLUMN;
+		static constexpr unsigned int PIXEL_WIDTH  = TILE_WIDTH * NUM_TILES_COLUMN;
 		static constexpr unsigned int PIXEL_HEIGHT = TILE_HEIGHT * NUM_TILES_ROW;
-		static constexpr unsigned int PIXEL_SIZE = PIXEL_WIDTH * PIXEL_HEIGHT;
+		static constexpr unsigned int PIXEL_SIZE   = PIXEL_WIDTH * PIXEL_HEIGHT;
 
 		enum TerrainType
 		{
@@ -53,18 +51,24 @@ namespace ct
 			TerrainType terrainType{ TERRAIN_GRASS };
 		};
 
-		struct TerrainTile
+		struct Tile
 		{
 			TerrainTileCorner corners[ 2 ];
-			float height[ 4 ];
+
+			double height[ 4 ];
+
+			TerrainType type{ TERRAIN_GRASS };
 
 			std::vector< unsigned char > heightBuffer;
 			std::vector< unsigned char > colourBuffer;
 
-			void Draw( const Camera &camera, int offsetX, int offsetY );
+			void Draw( const Camera &camera, int offsetX, int offsetY, unsigned int num );
 		};
 
+		const Tile *GetTile( int x, int y ) const;
+		const Tile *GetTile( const math::Vector2 &pos ) const;
+
 	private:
-		TerrainTile tiles[ NUM_TILES ];
+		Tile tiles[ NUM_TILES ];
 	};
-}// namespace vc
+}// namespace ct

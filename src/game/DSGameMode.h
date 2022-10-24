@@ -62,23 +62,22 @@ namespace ct
 		GameState gameState_{ GameState::ACTIVE };
 
 		GUIStyleSheet *uiDefaultStyleSheet;
-		GUIPanel *baseGuiPanel_{ nullptr };
-		GUIPieMenu *uiPieMenu{ nullptr };
+		GUIPanel      *baseGuiPanel_{ nullptr };
+		GUIPieMenu    *uiPieMenu{ nullptr };
+		GUILabel      *dayLabel{ nullptr };
 
 		World *world_{ nullptr };
 
 	public:
-		World *GetWorld() const
+		[[nodiscard]] World *GetWorld() const
 		{
 			return world_;
 		}
 
-	private:
-
 		////////////////////////////////////////////////
 		// Actions
 
-		enum
+		enum Action
 		{
 			ACTION_MOVE_UP,
 			ACTION_MOVE_DOWN,
@@ -91,10 +90,15 @@ namespace ct
 			MAX_ACTIONS
 		};
 
-	public:
 		void RegisterActions() override;
 
 	private:
-		input::Action *actions_[ MAX_ACTIONS ];
+		input::Action *actions_[ Action::MAX_ACTIONS ];
+
+	public:
+		[[nodiscard]] inline const input::Action *GetAction( Action slot ) const
+		{
+			return actions_[ slot ];
+		}
 	};
 }// namespace ct

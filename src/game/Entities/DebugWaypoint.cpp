@@ -28,7 +28,7 @@ namespace ct::entity
 
 		void Draw( const Camera &camera ) override;
 	};
-}// namespace vc::entity
+}// namespace ct::entity
 
 REGISTER_ENTITY( DebugWaypoint, ct::entity::DebugWaypoint )
 

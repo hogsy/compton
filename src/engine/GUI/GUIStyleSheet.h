@@ -15,7 +15,7 @@ namespace ct
 		GUIStyleSheet() = default;
 
 		static constexpr unsigned int GUI_MAX_BACKGROUNDS = 8;
-		static constexpr unsigned int GUI_BORDER_SIZE = 2;
+		static constexpr unsigned int GUI_BORDER_SIZE     = 2;
 
 		enum
 		{
@@ -95,4 +95,4 @@ namespace ct
 			mouseSprites[ GUI_MOUSE_SIZER3 ]  = LookupElement( "gui_mouse_sizer3" );
 		}
 	};
-}// namespace vc
+}// namespace ct

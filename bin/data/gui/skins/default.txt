@@ -32,7 +32,7 @@ $sprite gui_bg1 16 16 32 0
 $sprite gui_bg2 16 16 48 0
 
 ; cursors
-$sprite gui_mouse_pointer 11 19 0 16
+$sprite gui_mouse_pointer 9 13 0 47
 $sprite gui_mouse_deny 23 28 11 16
 $sprite gui_mouse_move 22 22 34 16
 $sprite gui_mouse_sizer0 15 15 56 16

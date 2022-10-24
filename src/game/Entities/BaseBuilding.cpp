@@ -13,7 +13,7 @@ void ct::BaseBuilding::Deserialize( Serializer *read )
 	SuperClass::Deserialize( read );
 
 	maxConstructionAmount_ = read->ReadI32();
-	constructionAmount_ = read->ReadI32();
+	constructionAmount_    = read->ReadI32();
 }
 
 void ct::BaseBuilding::Serialize( ct::Serializer *write )

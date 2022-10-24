@@ -23,7 +23,7 @@ void *Pkg_OpenFile( PLFile *file, PLPackageIndex *index )
 
 static PLPackage *ParsePackage( PLFile *file, const char *path )
 {
-	uint32_t magic = PlReadInt32( file, false, NULL );
+	uint32_t                      magic    = PlReadInt32( file, false, NULL );
 	static constexpr unsigned int pkgMagic = PL_MAGIC_TO_NUM( 'P', 'K', 'G', '1' );
 	if ( magic != pkgMagic )
 	{
@@ -31,7 +31,7 @@ static PLPackage *ParsePackage( PLFile *file, const char *path )
 		return nullptr;
 	}
 
-	bool status;
+	bool     status;
 	uint32_t numFiles = PlReadInt32( file, false, &status );
 	if ( !status )
 	{

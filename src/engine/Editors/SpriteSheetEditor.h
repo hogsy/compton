@@ -43,7 +43,7 @@ namespace ct
 		bool lmState_{ false };
 		bool rmState_{ false };
 
-		GUIPanel *basePanel_;
+		GUIPanel      *basePanel_;
 		GUIStyleSheet *styleSheet_;
 
 		static constexpr unsigned int LIST_W = DISPLAY_WIDTH;
@@ -55,4 +55,4 @@ namespace ct
 		static constexpr unsigned int VIEWPORT_W = DISPLAY_WIDTH;
 		static constexpr unsigned int VIEWPORT_H = DISPLAY_HEIGHT - LIST_H;
 	};
-}
+}// namespace ct

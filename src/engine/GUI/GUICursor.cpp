@@ -8,7 +8,7 @@
 #include "GUIStyleSheet.h"
 
 ct::GUICursor::GUICursor( GUIPanel *parent, int x, int y, int w, int h )
-	: GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}
+    : GUIPanel( parent, x, y, w, h, Background::NONE, Border::NONE ) {}
 
 ct::GUICursor::~GUICursor()
 {

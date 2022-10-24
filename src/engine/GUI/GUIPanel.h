@@ -46,10 +46,10 @@ namespace ct
 
 		virtual void Tick();
 
-		void SetStyleSheet( GUIStyleSheet *styleSheet );
+		void           SetStyleSheet( GUIStyleSheet *styleSheet );
 		GUIStyleSheet *GetStyle() const { return styleSheet_; }
 
-		inline void SetBackgroundColour( const hei::Colour &colour ) { backgroundColour_ = colour; }
+		inline void        SetBackgroundColour( const hei::Colour &colour ) { backgroundColour_ = colour; }
 		inline hei::Colour GetBackgroundColour() const { return backgroundColour_; }
 
 		inline void SetBorder( Border border ) { border_ = border; }
@@ -66,7 +66,7 @@ namespace ct
 			*xd = px + x;
 			*yd = py + y;
 		}
-		void GetContentPosition( int *xd, int *yd ) const;
+		void        GetContentPosition( int *xd, int *yd ) const;
 		inline void GetSize( int *wd, int *hd ) const
 		{
 			*wd = w;
@@ -110,7 +110,7 @@ namespace ct
 		void DrawBorderEdge( int dx, int dy, int dw, int dh, unsigned int index );
 
 		Background background_{ Background::NONE };
-		Border border_{ Border::NONE };
+		Border     border_{ Border::NONE };
 
 		static const hei::Colour INSET_COLOUR;
 		static const hei::Colour OUTSET_COLOUR;
@@ -119,12 +119,12 @@ namespace ct
 
 		GUIPanel *parentPtr{ nullptr };
 
-		char tooltipDescription_[ 32 ];
-		GUIPanel *tooltip_{ nullptr };
-		unsigned int tooltipHoverTime_{ 0 };
+		char                          tooltipDescription_[ 32 ];
+		GUIPanel                     *tooltip_{ nullptr };
+		unsigned int                  tooltipHoverTime_{ 0 };
 		static constexpr unsigned int TOOLTIP_MAX_HOVER = 100;
 
 	public:
 		void SetTooltip( const char *description );
 	};
-}// namespace vc
+}// namespace ct

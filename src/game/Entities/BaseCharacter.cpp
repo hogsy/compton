@@ -8,23 +8,6 @@
 #include "BaseCharacter.h"
 #include "../Terrain.h"
 
-namespace ct
-{
-	/*
-	enum class CharacterDirective {
-		IDLE, // Do nothing
-		EAT,  // Search for a food source
-		DRINK,// Search for water or source of drink
-		DEAD, // Do nothing
-		CHAT, // Chat with other characters
-		MOURN,// Cry over a character that died
-		SLEEP,// Find somewhere to sleep
-
-		MAX_DIRECTIVES
-	};
-	 */
-}// namespace vc
-
 REGISTER_ENTITY( BaseCharacter, ct::BaseCharacter )
 
 void ct::BaseCharacter::Spawn()
@@ -42,7 +25,8 @@ void ct::BaseCharacter::Deserialize( ct::Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
-	//name = read->ReadString();
+	std::string str = read->ReadString();
+	snprintf( name, sizeof( name ), "%s", str.c_str() );
 }
 
 void ct::BaseCharacter::Serialize( ct::Serializer *write )
@@ -61,47 +45,37 @@ void ct::BaseCharacter::Tick()
 {
 	SuperClass::Tick();
 
-#if 0
-	Terrain *terrainManager = App::GetGameMode()->GetTerrainManager();
-	if ( terrainManager == nullptr )
-	{
+	auto *gameMode = ( DSGameMode * ) App::GetGameMode();
+	if ( gameMode == nullptr )
 		return;
-	}
 
-	// Setup a goal for us to move to.
-	if ( ( debugGoal.x == 0.0f && debugGoal.y == 0.0f ) ||
-	     hei::Vector2( origin ) == debugGoal ||
-	     debugGoalDelay < GetApp()->GetNumOfTicks() )
+	static constexpr int SPEED = 2;
+
+	if ( isPossessed_ )
 	{
-		// Attempt to find a debug waypoint
-		EntityManager::EntitySlot slot = GameMode::GetEntityManager()->FindEntityByClassName( "DebugWaypoint", nullptr );
-		if ( slot.entity != nullptr )
-		{
-			debugGoal.x = random::GenerateRandomInteger( slot.entity->origin.x - 64, slot.entity->origin.x + 64 );
-			debugGoal.y = random::GenerateRandomInteger( slot.entity->origin.y - 64, slot.entity->origin.y + 64 );
-		}
-		else
-		{// otherwise fallback
-			debugGoal.x = random::GenerateRandomInteger( origin.x - 64, origin.x + 64 );
-			debugGoal.y = random::GenerateRandomInteger( origin.y - 64, origin.y + 64 );
-		}
+		math::Vector2 desiredMove = origin_;
+		if ( gameMode->GetAction( DSGameMode::Action::ACTION_MOVE_UP )->CheckStatus( input::State::DOWN ) )
+			desiredMove.y -= SPEED;
+		else if ( gameMode->GetAction( DSGameMode::Action::ACTION_MOVE_DOWN )->CheckStatus( input::State::DOWN ) )
+			desiredMove.y += SPEED;
 
-		// If our goal is in water, return so we can try again next tick
-		if ( terrainManager->IsWater( debugGoal.x, debugGoal.y ) )
-		{
-			debugGoalDelay = 0;
+		if ( gameMode->GetAction( DSGameMode::Action::ACTION_MOVE_LEFT )->CheckStatus( input::State::DOWN ) )
+			desiredMove.x -= SPEED;
+		else if ( gameMode->GetAction( DSGameMode::Action::ACTION_MOVE_RIGHT )->CheckStatus( input::State::DOWN ) )
+			desiredMove.x += SPEED;
+
+		if ( stepTime_ > GetApp()->GetNumOfTicks() )
 			return;
-		}
 
-		debugGoalDelay = GetApp()->GetNumOfTicks() + random::GenerateRandomInteger( 50, 200 );
+		// Check if the move is valid before committing to it
+		const Terrain::Tile *tile = gameMode->GetWorld()->GetTerrain()->GetTile( desiredMove.x, desiredMove.y );
+		if ( tile != nullptr && tile->corners[ 0 ].terrainType == Terrain::TERRAIN_WATER )
+			return;
+
+		origin_ = desiredMove;
+
+		stepTime_ = GetApp()->GetNumOfTicks() + 5;
 	}
-
-	hei::Vector2 direction = debugGoal - origin;
-	velocity += direction * direction.Length();
-	velocity = PlClampVector2( &velocity, -1.0f, 1.0f );
-
-	origin += velocity;
-#endif
 }
 
 /**
@@ -130,6 +104,8 @@ bool ct::BaseCharacter::TakeControl( int playerNum )
 
 	isPossessed_ = true;
 
+	brain_.active = false;
+
 	player->controlTarget = this;
 	return isPossessed_;
 }
@@ -139,8 +115,10 @@ bool ct::BaseCharacter::TakeControl( int playerNum )
  */
 void ct::BaseCharacter::ReleaseControl()
 {
-	isPossessed_ = false;
+	isPossessed_       = false;
+	controllingPlayer_ = -1;
+
+	brain_.active = true;
 
 	// Ensure that the player is no longer controlling
-
 }

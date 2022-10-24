@@ -33,7 +33,7 @@ bool ct::SpriteSheet::LoadFile( const char *path )
 	else
 	{
 		unsigned int length;
-		char *buffer = fs::LoadFileIntoBuffer( path, &length );
+		char        *buffer = fs::LoadFileIntoBuffer( path, &length );
 		if ( buffer == nullptr )
 			return false;
 
@@ -66,16 +66,16 @@ void ct::SpriteSheet::ExtractSprite( const PLImage *image, const std::string &na
 		return;
 	}
 
-	PLImageFormat format = PlGetImageFormat( image );
-	unsigned int pixelSize = PlGetImageFormatPixelSize( format );
+	PLImageFormat format    = PlGetImageFormat( image );
+	unsigned int  pixelSize = PlGetImageFormatPixelSize( format );
 
 	Sprite sprite( w, h );
 	sprite.pixels.resize( w * h * pixelSize );
 	sprite.hasAlpha = PlImageHasAlpha( image );
 
 	// We're now going to copy the image pixels into our sprite
-	unsigned int imageW = PlGetImageWidth( image );
-	const uint8_t *src = PlGetImageData( image, 0 );
+	unsigned int   imageW = PlGetImageWidth( image );
+	const uint8_t *src    = PlGetImageData( image, 0 );
 	src += ( x + y * imageW ) * pixelSize;
 	for ( unsigned int py = 0; py < h; ++py )
 	{
@@ -176,9 +176,9 @@ bool ct::SpriteSheet::ParseGroup( const char **p, const PLImage *image )
 
 bool ct::SpriteSheet::ParseFile( const char *buffer )
 {
-	bool status = false;
-	PLImage *image = nullptr;
-	const char *p = buffer;
+	bool        status = false;
+	PLImage    *image  = nullptr;
+	const char *p      = buffer;
 	while ( true )
 	{
 		if ( *p == '\0' )
@@ -263,4 +263,3 @@ const ct::Sprite *ct::SpriteSheet::LookupElement( const char *spriteName ) const
 
 	return &key->second;
 }
-

@@ -27,9 +27,9 @@ using namespace ct::game;
 REGISTER_ENTITY( HumanCreature, ds::HumanCreature )
 
 static const SpriteAnimation *idleAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ] = { nullptr };
-static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ] = { nullptr };
+static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ]  = { nullptr };
 
-ds::HumanCreature::HumanCreature() = default;
+ds::HumanCreature::HumanCreature()  = default;
 ds::HumanCreature::~HumanCreature() = default;
 
 void ds::HumanCreature::Precache()
@@ -44,7 +44,7 @@ void ds::HumanCreature::Precache()
 		{
 			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
 			{
-				std::string name = "human_idle_" + std::string( DIRECTIONS[ i ] );
+				std::string name    = "human_idle_" + std::string( DIRECTIONS[ i ] );
 				idleAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
 			}
 		}
@@ -52,7 +52,7 @@ void ds::HumanCreature::Precache()
 		{
 			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
 			{
-				std::string name = "human_run_" + std::string( DIRECTIONS[ i ] );
+				std::string name   = "human_run_" + std::string( DIRECTIONS[ i ] );
 				runAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
 			}
 		}

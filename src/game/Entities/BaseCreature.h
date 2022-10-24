@@ -67,13 +67,13 @@ namespace ct
 		virtual ai::FeedbackState Talk();
 		virtual ai::FeedbackState Attack();
 
-		virtual void StepTowards( const math::Vector2 &target, float speed = 1.0f );
+		virtual void StepTowards( const math::Vector2 &target, int speed = 5 );
 		virtual void StepAway( const math::Vector2 &target, int speed = 1.0f );
 
 	protected:
 		Sex sex_{ Sex::INTERSEX };
 
-		ai::Brain brain_;
+		ai::Brain  brain_;
 		ai::Sensor sensors_[ ai::Sensor::MAX_SENSOR_TYPES ];
 
 		hei::Vector2 goal_;
@@ -95,12 +95,12 @@ namespace ct
 		};
 
 	protected:
-		LifePhase phase_{ LifePhase::LIFE_PHASE_BABYHOOD };
+		LifePhase    phase_{ LifePhase::LIFE_PHASE_BABYHOOD };
 		unsigned int age_{ 0 };
 		unsigned int maxAge_{ 100 };
 		unsigned int generation_{ 0 };
 
-		bool isPregnant_{ false };
+		bool         isPregnant_{ false };
 		unsigned int timePregnant_{ 0 };
 
 		int stamina_{ 100 };
@@ -108,6 +108,8 @@ namespace ct
 
 		int hunger_{ 0 };
 		int thirst_{ 0 };
+
+		unsigned int stepTime_{ 0 };
 
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };

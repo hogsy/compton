@@ -21,7 +21,7 @@ namespace ct::gui
 		RectEditor( int x, int y, int w, int h ) : GUIPanel( nullptr, x, y, w, h )
 		{
 			background_ = new GUIImage( this, nullptr, x, y, w, BG_H );
-			newButton_ = new GUIButton( this, "NEW", 10, 10, 32, 16 );
+			newButton_  = new GUIButton( this, "NEW", 10, 10, 32, 16 );
 			saveButton_ = new GUIButton( this, "SAVE", 52, 10, 32, 16 );
 		}
 		~RectEditor() = default;
@@ -36,17 +36,17 @@ namespace ct::gui
 			{
 				if ( selection.dragging )
 				{
-					selection.x = cursor.position.x;
-					selection.y = cursor.position.y;
-					selection.w = 0;
-					selection.h = 0;
+					selection.x        = cursor.position.x;
+					selection.y        = cursor.position.y;
+					selection.w        = 0;
+					selection.h        = 0;
 					selection.dragging = false;
 				}
 				else
 				{
 					selection.dragging = true;
-					selection.x = cursor.position.x;
-					selection.y = cursor.position.y;
+					selection.x        = cursor.position.x;
+					selection.y        = cursor.position.y;
 				}
 			}
 
@@ -69,7 +69,7 @@ namespace ct::gui
 		}
 
 	private:
-		GUIImage *background_;
+		GUIImage  *background_;
 		GUIButton *newButton_;
 		GUIButton *saveButton_;
 

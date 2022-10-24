@@ -12,6 +12,7 @@
 #include "engine/GUI/GUICursor.h"
 #include "engine/GUI/GUIStyleSheet.h"
 #include "engine/GUI/GUIPieMenu.h"
+#include "engine/GUI/GUILabel.h"
 
 #include "engine/Input/InputManager.h"
 #include "engine/LispInterface.h"
@@ -58,35 +59,34 @@ void ct::DSGameMode::SetupDesktop()
 	auto *statusBar_ = new GUIPanel( baseGuiPanel_, 0, 0, DISPLAY_WIDTH, 16, GUIPanel::Background::DEFAULT, GUIPanel::Border::OUTSET );
 	statusBar_->SetBackgroundColour( hei::Colour( 0, 0, 0, 255 ) );
 
+	dayLabel = new GUILabel( statusBar_, "", 4, 4, 150, 8 );
+	dayLabel->SetBorder( GUIPanel::Border::INSET );
+
 	//new GUIButton( baseGuiPanel_, "Hello World", 2, 2, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", 34, 2, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
 	//new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
 
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 22, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 44, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 76, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 108, 32, 32 );
-
 #if 1
-#	define MINIMAP_WIDTH  64
-#	define MINIMAP_HEIGHT 64
+#	define MINIMAP_WIDTH  48
+#	define MINIMAP_HEIGHT 48
 	auto *minimapPanel = new GUIPanel(
-			baseGuiPanel_,
-			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
-			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
-			MINIMAP_WIDTH, MINIMAP_HEIGHT,
-			GUIPanel::Background::DEFAULT,
-			GUIPanel::Border::OUTSET );
+	        baseGuiPanel_,
+	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
+	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
+	        GUIPanel::Background::SOLID,
+	        GUIPanel::Border::OUTSET );
 	minimapPanel->SetTooltip( "Minimap" );
-	minimapPanel->SetBackground( GUIPanel::Background::NONE );
-	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
+	minimapPanel->SetBackgroundColour( hei::Colour( 0, 0, 0 ) );
+	//minimapPanel->SetBackground( GUIPanel::Background::NONE );
+	//minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
 	new GUIPanel(
-			minimapPanel,
-			2, 2,
-			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
-			GUIPanel::Background::SOLID,
-			GUIPanel::Border::INSET );
+	        minimapPanel,
+	        0, 0,
+	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
+	        GUIPanel::Background::SOLID,
+	        GUIPanel::Border::INSET );
 #endif
 
 	// Create the UI cursor
@@ -117,6 +117,8 @@ void ct::DSGameMode::Tick()
 	for ( int i = 0; i < playerManager_.GetNumPlayers(); ++i )
 	{
 		PlayerManager::Player *player = playerManager_.GetPlayer( i );
+
+		player->camera.oldPosition = player->camera.position;
 		switch ( player->camera.movementMode )
 		{
 			case Camera::MoveMode::FOLLOWING:
@@ -127,62 +129,61 @@ void ct::DSGameMode::Tick()
 				//hei::Vector2 sub = player->camera.position - player->controlTarget->origin_;
 				//float distance = sub.Length();
 
-				player->camera.position.x = player->controlTarget->origin_.x;
-				player->camera.position.y = player->controlTarget->origin_.y;
-
+				math::Vector2 iso         = player->controlTarget->origin_.ToIso();
+				player->camera.position.x = iso.x - ( DISPLAY_WIDTH / 2 );
+				player->camera.position.y = iso.y - ( DISPLAY_HEIGHT / 2 );
 				break;
 			}
 			case Camera::MoveMode::FREE:
 			{
-				if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_UP ) )
+				if ( actions_[ ACTION_MOVE_UP ]->CheckStatus( input::State::DOWN ) )
 				{
 					player->camera.velocity.y -= CAMERA_ACCELERATION;
 					if ( player->camera.velocity.y > CAMERA_MAXSPEED )
 						player->camera.velocity.y = CAMERA_MAXSPEED;
 				}
-				else if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_DOWN ) )
+				else if ( actions_[ ACTION_MOVE_DOWN ]->CheckStatus( input::State::DOWN ) )
 				{
 					player->camera.velocity.y += CAMERA_ACCELERATION;
 					if ( player->camera.velocity.y < -CAMERA_MAXSPEED )
 						player->camera.velocity.y = -CAMERA_MAXSPEED;
 				}
 
-				if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_LEFT ) )
+				if ( actions_[ ACTION_MOVE_LEFT ]->CheckStatus( input::State::DOWN ) )
 				{
 					player->camera.velocity.x -= CAMERA_ACCELERATION;
 					if ( player->camera.velocity.x > CAMERA_MAXSPEED )
 						player->camera.velocity.x = CAMERA_MAXSPEED;
 				}
-				else if ( input::inputManager->IsKeyDown( ALLEGRO_KEY_RIGHT ) )
+				else if ( actions_[ ACTION_MOVE_RIGHT ]->CheckStatus( input::State::DOWN ) )
 				{
 					player->camera.velocity.x += CAMERA_ACCELERATION;
 					if ( player->camera.velocity.x < -CAMERA_MAXSPEED )
 						player->camera.velocity.x = -CAMERA_MAXSPEED;
 				}
+
+				player->camera.position += player->camera.velocity;
+
+				// Restrict the camera to the world bounds
+				if ( player->camera.position.x + DISPLAY_WIDTH < 0.0f )
+					player->camera.position.x = Terrain::PIXEL_HEIGHT - DISPLAY_WIDTH;
+				else if ( player->camera.position.x > Terrain::PIXEL_WIDTH )
+					player->camera.position.x = Terrain::PIXEL_WIDTH;
+
+				if ( player->camera.position.y < 0.0f )
+					player->camera.position.y = 0.0f;
+				else if ( player->camera.position.y + DISPLAY_HEIGHT > Terrain::PIXEL_HEIGHT )
+					player->camera.position.y = Terrain::PIXEL_HEIGHT - DISPLAY_HEIGHT;
+
+				// And add drift
+				if ( player->camera.velocity.x != 0 || player->camera.velocity.y != 0 )
+					player->camera.velocity -= ( player->camera.velocity / CAMERA_FRICTION );
 				break;
 			}
 			case Camera::MoveMode::OTHER:
 				// TODO: explicit coordinates?
 				break;
 		}
-
-		player->camera.oldPosition = player->camera.position;
-		player->camera.position += player->camera.velocity;
-
-		// Restrict the camera to the world bounds
-		if ( player->camera.position.x + DISPLAY_WIDTH < 0.0f )
-			player->camera.position.x = Terrain::PIXEL_HEIGHT - DISPLAY_WIDTH;
-		else if ( player->camera.position.x > Terrain::PIXEL_WIDTH )
-			player->camera.position.x = Terrain::PIXEL_WIDTH;
-
-		if ( player->camera.position.y < 0.0f )
-			player->camera.position.y = 0.0f;
-		else if ( player->camera.position.y + DISPLAY_HEIGHT > Terrain::PIXEL_HEIGHT )
-			player->camera.position.y = Terrain::PIXEL_HEIGHT - DISPLAY_HEIGHT;
-
-		// And add drift
-		if ( player->camera.velocity.x != 0 || player->camera.velocity.y != 0 )
-			player->camera.velocity -= ( player->camera.velocity / CAMERA_FRICTION );
 	}
 
 	if ( world_ != nullptr )
@@ -234,15 +235,16 @@ void ct::DSGameMode::Draw()
 	if ( world_ != nullptr )
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "DAY %u\nH%02u:M%02u:S%02u\n",
+		snprintf( buf, sizeof( buf ), "DAY %u H%02u:M%02u:S%02u",
 		          world_->GetTotalDays(),
 		          world_->GetCurrentHour(),
 		          world_->GetCurrentMinute(),
 		          world_->GetCurrentSecond() );
 
-		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
-		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
+		dayLabel->SetText( buf );
 	}
+
+	//render::DrawPanel( 10, 10, 100, 100, hei::Colour( 128, 0, 128 ) );
 
 #if 0
 	//////////////////////////////////////////////////////////////////////
@@ -376,7 +378,7 @@ void ct::DSGameMode::RestoreGame( const std::string &path )
 {
 	delete world_;
 
-	entityManager_.DestroyEntities();
+	ct::EntityManager::DestroyEntities();
 
 	Serializer serializer( path, Serializer::Mode::READ );
 
@@ -384,7 +386,7 @@ void ct::DSGameMode::RestoreGame( const std::string &path )
 	entityManager_.DeserializeEntities( &serializer );
 
 	std::string name = serializer.ReadString();
-	world_ = new World( name.c_str() );
+	world_           = new World( name.c_str() );
 	world_->Deserialize( &serializer );
 
 	// Now restore the camera data
@@ -397,7 +399,7 @@ void ct::DSGameMode::RestoreGame( const std::string &path )
 	for ( int i = 0; i < numPlayers; ++i )
 	{
 		Camera camera;
-		camera.position = serializer.ReadCoordinate();
+		camera.position     = serializer.ReadCoordinate();
 		camera.movementMode = static_cast< Camera::MoveMode >( serializer.ReadI32() );
 		cameras.push_back( camera );
 	}
@@ -492,22 +494,22 @@ bool ct::DSGameMode::HandleKeyboardEvent( int button, bool buttonUp )
 
 void ct::DSGameMode::RegisterActions()
 {
-	actions_[ ACTION_MOVE_UP ] = input::inputManager->PushAction( "Move Up" );
+	actions_[ ACTION_MOVE_UP ] = input::inputManager->CreateAction( "Move Up" );
 	actions_[ ACTION_MOVE_UP ]->BindKey( ALLEGRO_KEY_UP );
 
-	actions_[ ACTION_MOVE_DOWN ] = input::inputManager->PushAction( "Move Down" );
+	actions_[ ACTION_MOVE_DOWN ] = input::inputManager->CreateAction( "Move Down" );
 	actions_[ ACTION_MOVE_DOWN ]->BindKey( ALLEGRO_KEY_DOWN );
 
-	actions_[ ACTION_MOVE_LEFT ] = input::inputManager->PushAction( "Move Left" );
+	actions_[ ACTION_MOVE_LEFT ] = input::inputManager->CreateAction( "Move Left" );
 	actions_[ ACTION_MOVE_LEFT ]->BindKey( ALLEGRO_KEY_LEFT );
 
-	actions_[ ACTION_MOVE_RIGHT ] = input::inputManager->PushAction( "Move Right" );
+	actions_[ ACTION_MOVE_RIGHT ] = input::inputManager->CreateAction( "Move Right" );
 	actions_[ ACTION_MOVE_RIGHT ]->BindKey( ALLEGRO_KEY_RIGHT );
 
-	actions_[ ACTION_USE ] = input::inputManager->PushAction( "Use" );
+	actions_[ ACTION_USE ] = input::inputManager->CreateAction( "Use" );
 	actions_[ ACTION_USE ]->BindKey( ALLEGRO_KEY_V );
 
-	actions_[ ACTION_ATTACK ] = input::inputManager->PushAction( "Attack" );
+	actions_[ ACTION_ATTACK ] = input::inputManager->CreateAction( "Attack" );
 	actions_[ ACTION_ATTACK ]->BindKey( ALLEGRO_KEY_SPACE );
 }
 

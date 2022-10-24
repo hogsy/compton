@@ -14,7 +14,6 @@ namespace ct
 		 */
 		struct Descriptor
 		{
-
 		};
-	}
-}
+	}// namespace ai
+}// namespace ct

@@ -18,4 +18,4 @@ namespace ct
 	protected:
 		const Sprite *sprite_{ nullptr };
 	};
-}
+}// namespace ct

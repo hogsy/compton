@@ -70,13 +70,15 @@ namespace ct
 		////////////////////////////////////////////
 		// Territory
 
-		struct Territory
+		struct Settlement
 		{
 			std::string   name{ "unnamed" };
 			math::Vector2 origin;
 			PLGPolygon   *border{ nullptr };
+
+			static constexpr int MAX_BOUNDARY = 256;
 		};
-		std::vector< Territory > territories_;
+		std::vector< Settlement > settlements;
 
 		////////////////////////////////////////////
 
@@ -102,12 +104,12 @@ namespace ct
 			std::vector< Entity * > occupiers{};
 		};
 
-		static constexpr unsigned int QUADRANT_WIDTH = 256;
+		static constexpr unsigned int QUADRANT_WIDTH  = 256;
 		static constexpr unsigned int QUADRANT_HEIGHT = 256;
 
 		static constexpr unsigned int NUM_QUADRANTS_ROW = Terrain::PIXEL_WIDTH / QUADRANT_WIDTH;
 		static constexpr unsigned int NUM_QUADRANTS_COL = Terrain::PIXEL_HEIGHT / QUADRANT_HEIGHT;
-		static constexpr unsigned int NUM_QUADRANTS = NUM_QUADRANTS_ROW * NUM_QUADRANTS_COL;
+		static constexpr unsigned int NUM_QUADRANTS     = NUM_QUADRANTS_ROW * NUM_QUADRANTS_COL;
 
 	private:
 		Quadrant quadrants_[ NUM_QUADRANTS ];
@@ -125,7 +127,7 @@ namespace ct
 
 			unsigned int xw = x / QUADRANT_WIDTH;
 			unsigned int yh = y / QUADRANT_HEIGHT;
-			unsigned int i = xw + yh * NUM_QUADRANTS_ROW;
+			unsigned int i  = xw + yh * NUM_QUADRANTS_ROW;
 			assert( i >= 0 && i < NUM_QUADRANTS );
 
 			return &quadrants_[ i ];

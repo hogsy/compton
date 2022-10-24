@@ -87,19 +87,19 @@ static off_t FS_fsize( ALLEGRO_FILE *f )
 }
 
 ALLEGRO_FILE_INTERFACE g_fsIOInterface = {
-		FS_fopen,
-		FS_fclose,
-		FS_fread,
-		nullptr, /* fwrite */
-		nullptr, /* fflush */
-		FS_ftell,
-		FS_fseek,
-		FS_feof,
-		FS_ferror,
-		FS_ferrmsg,
-		FS_fclearerr,
-		FS_fungetc,
-		FS_fsize,
+        FS_fopen,
+        FS_fclose,
+        FS_fread,
+        nullptr, /* fwrite */
+        nullptr, /* fflush */
+        FS_ftell,
+        FS_fseek,
+        FS_feof,
+        FS_ferror,
+        FS_ferrmsg,
+        FS_fclearerr,
+        FS_fungetc,
+        FS_fsize,
 };
 
 /////////////////////////////////////////////////////////////////
@@ -116,8 +116,8 @@ char *ct::fs::LoadFileIntoBuffer( const char *path, unsigned int *length )
 		return nullptr;
 	}
 
-	unsigned int fileSize = PlGetFileSize( file );
-	char *buffer = new char[ fileSize + 1 ];
+	unsigned int fileSize  = PlGetFileSize( file );
+	char        *buffer    = new char[ fileSize + 1 ];
 	unsigned int bytesRead = PlReadFile( file, buffer, 1, fileSize );
 	if ( bytesRead != fileSize )
 	{
@@ -147,7 +147,7 @@ const char *ct::fs::GetDataLocation()
 		return "../../data";
 
 	return ".";
-#else // probably overengineered solution...
+#else// probably overengineered solution...
 	static char *buf = nullptr;
 	if ( buf != nullptr )
 		return buf;
@@ -168,7 +168,7 @@ const char *ct::fs::GetDataLocation()
 	}
 
 	size_t l = strlen( wd ) + 1;
-	buf = PL_NEW_( char, l );
+	buf      = PL_NEW_( char, l );
 	memcpy( buf, wd, l - 1 );
 
 	// Clean it up

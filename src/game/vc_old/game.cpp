@@ -139,7 +139,7 @@ public:
 
                 int nxpos = engine_vars.mouse_state.x - static_cast<int>(old_position_.x);
                 int nypos = engine_vars.mouse_state.y - static_cast<int>(old_position_.y);
-#if 0
+#	if 0
                 float dir = (plCreateVector2D(nxpos, nypos) -
                         plCreateVector2D(position.x, position_.y)).Length() * 180 / PL_PI;
 
@@ -148,7 +148,7 @@ public:
                     m_MoveTime = 0;
                 }
                 m_TargetAngle = angle;
-#endif
+#	endif
                 game.camera_x += (nxpos / 100);
                 game.camera_y += (nypos / 100);
 
@@ -197,7 +197,7 @@ void DrawMenu()
   //DrawBitmap(background0, 0 - game.camera_x, 128 - game.camera_y, 1088, 416);
 
   // Time counter
-#if 0
+#	if 0
   static float x_scroll = 0;
   static bool scroll_rotation = true;
   if(scroll_rotation) {
@@ -218,10 +218,10 @@ void DrawMenu()
            World::Get()->GetDay()
   );
   DrawShadowString(game.font_small, static_cast<int>(x_scroll), 10, al_map_rgb(255, 255, 255), monthstr);
-#else
+#	else
   std::string cur_day = "DAY " + std::to_string(World::Get()->GetTotalDays() + 1);
   DrawShadowString(game.font_small, 2, 10, al_map_rgb(255, 255, 255), cur_day.c_str());
-#endif
+#	endif
 
   char timestr[10] = {0};
   static char blink = ':', blink_delay = 0;

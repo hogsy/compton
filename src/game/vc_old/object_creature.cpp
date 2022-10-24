@@ -25,9 +25,9 @@ public:
 	void Draw() override
 	{
 		al_draw_bitmap_region(
-				GetBitmap(), 0, 72, 5, 5,
-				( position_.x - origin_.x ), ( position_.y - origin_.y ),
-				0 );
+		        GetBitmap(), 0, 72, 5, 5,
+		        ( position_.x - origin_.x ), ( position_.y - origin_.y ),
+		        0 );
 	}
 
 	void Simulate()
@@ -40,9 +40,9 @@ public:
 void CreatureObject::Draw()
 {
 	al_draw_bitmap_region(
-			GetBitmap(), s_x_, s_y_, s_w_, s_h_,
-			( position_.x - origin_.x ), ( position_.y - origin_.y ),
-			0 );
+	        GetBitmap(), s_x_, s_y_, s_w_, s_h_,
+	        ( position_.x - origin_.x ), ( position_.y - origin_.y ),
+	        0 );
 }
 
 void CreatureObject::Simulate()
@@ -170,13 +170,13 @@ Creature::Creature() : Sprite( engine::LoadImage( "sprites" ) )
 	delay_lastmove = 100;
 
 	delay_sleep_ =
-			delay_play_ =
-					delay_drink_ = 10;
+	        delay_play_ =
+	                delay_drink_ = 10;
 
 	////////////////////////////////////////////
 
 	thirst_ =
-			health_ = 100;
+	        health_ = 100;
 
 	memset( emotions_, 0, sizeof( double ) * EMO_END );
 
@@ -341,9 +341,9 @@ void Creature::Draw()
 	}
 
 	al_draw_bitmap_region(
-			GetBitmap(), s_x, s_y, CREATURE_BOUND, CREATURE_BOUND,
-			( position_.x - origin_.x ), ( position_.y - origin_.y ),
-			0 );
+	        GetBitmap(), s_x, s_y, CREATURE_BOUND, CREATURE_BOUND,
+	        ( position_.x - origin_.x ), ( position_.y - origin_.y ),
+	        0 );
 }
 
 /*
@@ -492,14 +492,14 @@ void Creature::Simulate()
 
   switch(directive_) {
       default: {
-#if 1
+#	if 1
 
 
           delay_movement--;
           if (delay_movement < -500) {
               delay_movement = rand() % 500 + 500;
           }
-#endif
+#	endif
 
           if((thirst_ < 50) && (delay_drink_ < World::GetInstance()->GetTotalSeconds())) {
               SetDirective(DIR_DRINK);
@@ -826,8 +826,8 @@ void Creature::Simulate()
 		}
 	}
 
-#define relative_pos_x( p ) ( p->position_.x - p->origin_.x )
-#define relative_pos_y( p ) ( p->position_.y - p->origin_.y )
+#	define relative_pos_x( p ) ( p->position_.x - p->origin_.x )
+#	define relative_pos_y( p ) ( p->position_.y - p->origin_.y )
 
 	if ( delay_movement < World::Get()->GetTotalSeconds() )
 	{// movement
@@ -1073,12 +1073,12 @@ void Creature::Impact()
 	}
 
 	al_play_sample(
-			game.sample_land,
-			( ( ( velocity_.Length() ) / 1000 ) + 0.5f ),
-			ALLEGRO_AUDIO_PAN_NONE,
-			static_cast< float >( ( ( rand() % 50 ) / 100 ) + 0.5 ),
-			ALLEGRO_PLAYMODE_ONCE,
-			nullptr );
+	        game.sample_land,
+	        ( ( ( velocity_.Length() ) / 1000 ) + 0.5f ),
+	        ALLEGRO_AUDIO_PAN_NONE,
+	        static_cast< float >( ( ( rand() % 50 ) / 100 ) + 0.5 ),
+	        ALLEGRO_PLAYMODE_ONCE,
+	        nullptr );
 }
 
 void Creature::WakeUp()

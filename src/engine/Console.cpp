@@ -8,7 +8,7 @@
 
 // A very primitive console interface!
 
-ct::Console::Console() = default;
+ct::Console::Console()  = default;
 ct::Console::~Console() = default;
 
 void ct::Console::Open()
@@ -28,7 +28,7 @@ void ct::Console::Draw()
 		return;
 
 	static constexpr unsigned int CONSOLE_PANE_HEIGHT = 16;
-	static constexpr unsigned int CONSOLE_PANE_Y = DISPLAY_HEIGHT - CONSOLE_PANE_HEIGHT;
+	static constexpr unsigned int CONSOLE_PANE_Y      = DISPLAY_HEIGHT - CONSOLE_PANE_HEIGHT;
 
 	render::DrawFilledRectangle( 0, CONSOLE_PANE_Y, DISPLAY_WIDTH, CONSOLE_PANE_HEIGHT, hei::Colour( 0, 0, 0 ) );
 	render::DrawLine( 2, CONSOLE_PANE_Y + 2, 8, CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ), hei::Colour( 0, 255, 255 ) );

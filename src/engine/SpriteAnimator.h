@@ -15,13 +15,13 @@ namespace ct
 		struct Frame
 		{
 			const Sprite *sprite{ nullptr };
-			bool mirror{ false };
-			hei::Vector2 origin;
+			bool          mirror{ false };
+			hei::Vector2  origin;
 		};
 
 		std::vector< Frame > frames;
-		unsigned int playbackSpeed{ 0 };
-		bool loop{ false };
+		unsigned int         playbackSpeed{ 0 };
+		bool                 loop{ false };
 	};
 
 	class SpriteAnimator
@@ -29,7 +29,7 @@ namespace ct
 	public:
 		SpriteAnimator() = default;
 
-		static bool CacheAnimationSet( const char *path );
+		static bool                          CacheAnimationSet( const char *path );
 		static inline const SpriteAnimation *GetAnimation( const char *path, const std::string &animationName )
 		{
 			auto i = animationSets_.find( path );
@@ -75,7 +75,7 @@ namespace ct
 		static std::map< std::string, std::map< std::string, SpriteAnimation > > animationSets_;
 
 		const SpriteAnimation *animation_{ nullptr };
-		unsigned int nextFrameTime_{ 0 };
-		unsigned int frame_{ 0 };
+		unsigned int           nextFrameTime_{ 0 };
+		unsigned int           frame_{ 0 };
 	};
 }// namespace ct

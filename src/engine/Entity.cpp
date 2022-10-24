@@ -6,7 +6,7 @@
 #include "Serializer.h"
 #include "GameMode.h"
 
-ct::Entity::Entity() = default;
+ct::Entity::Entity()  = default;
 ct::Entity::~Entity() = default;
 
 /**
@@ -35,19 +35,19 @@ void ct::Entity::Tick()
 
 void ct::Entity::Draw( const Camera &camera )
 {
-	int x, y;
-	render::TransformToIso( ( int ) origin_.x, ( int ) origin_.y, &x, &y );
+	math::Vector2 iso = origin_.ToIso();
+	iso.x -= ( int ) camera.position.x;
+	iso.y -= ( int ) camera.position.y;
 
-	x -= ( int ) camera.position.x;
-	y -= ( int ) camera.position.y;
+	if ( !ShouldDraw( camera ) )
+	{
+		render::DrawFilledRectangle( iso.x - bounds_.x, iso.y - bounds_.y, bounds_.x * 2, bounds_.y * 2, hei::Colour( 255, 0, 0, 255 ) );
+		return;
+	}
 
-	render::DrawPixel( x, y, hei::Colour( 255, 0, 0, 255 ) );
-	render::DrawPixel( x + ( int ) offset_.x, y + ( int ) offset_.y, hei::Colour( 0, 255, 0, 255 ) );
+	render::DrawFilledRectangle( iso.x - bounds_.x, iso.y - bounds_.y, bounds_.x * 2, bounds_.y * 2, hei::Colour( 0, 255, 0, 255 ) );
 
-	render::DrawPixel( x - bounds_.x, y, hei::Colour( 0, 0, 255, 255 ) );
-	render::DrawPixel( x + bounds_.x, y, hei::Colour( 0, 0, 255, 255 ) );
-	render::DrawPixel( x, y - bounds_.y, hei::Colour( 0, 0, 255, 255 ) );
-	render::DrawPixel( x, y + bounds_.y, hei::Colour( 0, 0, 255, 255 ) );
+	render::drawStats.stats[ render::DrawStats::Type::DRAW_STATS_ENTITY ]++;
 }
 
 /**
@@ -78,8 +78,8 @@ void ct::Entity::Serialize( Serializer *write )
 bool ct::Entity::ShouldDraw( const ct::Camera &camera ) const
 {
 	math::Vector2 iso = origin_.ToIso();
-	iso.x -= camera.position.x;
-	iso.y -= camera.position.y;
+	iso.x -= ( int ) camera.position.x;
+	iso.y -= ( int ) camera.position.y;
 
 	return render::IsVolumeVisible( iso.x - bounds_.x, iso.y - bounds_.y, bounds_.x * 2, bounds_.y * 2 );
 }

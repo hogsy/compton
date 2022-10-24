@@ -20,7 +20,7 @@ namespace ct
 	private:
 		struct Slot
 		{
-			BaseItem *items[ MAX_STACK ];
+			BaseItem    *items[ MAX_STACK ];
 			unsigned int numItems{ 0 };
 		};
 		Slot items_[ MAX_SLOTS ];

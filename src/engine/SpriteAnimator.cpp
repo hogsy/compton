@@ -7,7 +7,7 @@
 #include "SpriteSheet.h"
 
 std::map< std::string, std::map< std::string, ct::SpriteAnimation > >
-		ct::SpriteAnimator::animationSets_;
+        ct::SpriteAnimator::animationSets_;
 
 bool ct::SpriteAnimator::CacheAnimationSet( const char *path )
 {
@@ -17,12 +17,12 @@ bool ct::SpriteAnimator::CacheAnimationSet( const char *path )
 		return true;
 
 	unsigned int length;
-	char *buffer = fs::LoadFileIntoBuffer( path, &length );
+	char        *buffer = fs::LoadFileIntoBuffer( path, &length );
 	if ( buffer == nullptr )
 		return false;
 
 	auto animations = ParseFile( buffer );
-	bool status = !animations.empty();
+	bool status     = !animations.empty();
 	if ( status )
 	{
 		animationSets_.emplace( path, animations );
@@ -41,15 +41,15 @@ std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( cons
 	std::map< std::string, SpriteAnimation > animations;
 
 	const SpriteSheet *spriteSheet = nullptr;
-	SpriteAnimation animation;
-	const char *p = buffer;
+	SpriteAnimation    animation;
+	const char        *p = buffer;
 	while ( true )
 	{
 		if ( *p == '\0' )
 			return animations;
 
 		static constexpr unsigned int MAX_TOKEN = 256;
-		char token[ MAX_TOKEN ];
+		char                          token[ MAX_TOKEN ];
 		if ( PlParseToken( &p, token, MAX_TOKEN ) == nullptr )
 			break;
 
@@ -106,7 +106,7 @@ std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( cons
 				break;
 			}
 
-			frame.mirror = ( PlParseInteger( &p, nullptr ) == 1 );
+			frame.mirror   = ( PlParseInteger( &p, nullptr ) == 1 );
 			frame.origin.x = PlParseFloat( &p, nullptr );
 			frame.origin.y = PlParseFloat( &p, nullptr );
 
@@ -138,7 +138,7 @@ std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( cons
 
 void ct::SpriteAnimator::SetAnimation( const SpriteAnimation *animation )
 {
-	frame_ = 0;
+	frame_     = 0;
 	animation_ = animation;
 }
 

@@ -62,8 +62,8 @@ bool ct::BitmapFont::LoadFromImage( uint8_t cw, uint8_t ch, uint16_t start, cons
 	}
 
 	// Determine how many glyphs the image could support
-	unsigned int w = PlGetImageWidth( image );
-	unsigned int h = PlGetImageHeight( image );
+	unsigned int w         = PlGetImageWidth( image );
+	unsigned int h         = PlGetImageHeight( image );
 	unsigned int numGlyphs = ( w / cw ) * ( h / ch );
 	glyphs_.resize( numGlyphs );
 
@@ -150,7 +150,11 @@ void ct::BitmapFont::DrawCharacter( int x, int y, unsigned char c, const hei::Co
 			if ( pixel == 0 )
 				continue;
 
+#if 0
+			render::DrawPixel( x + row, y + column, hei::Colour( pixel * colour.r, pixel * colour.g, pixel * colour.b ) );
+#else
 			render::DrawPixel( x + row, y + column, hei::Colour( colour.r, colour.g, colour.b ) );
+#endif
 		}
 	}
 }
@@ -163,8 +167,8 @@ void ct::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei
 		DrawString( &xx, &yy, sentence, hei::Colour( 0, 0, 0 ), false );
 	}
 
-	int ox = *x;
-	const unsigned char *p = ( unsigned char * ) sentence;
+	int                  ox = *x;
+	const unsigned char *p  = ( unsigned char  *) sentence;
 	while ( *p != '\0' )
 	{
 		if ( *p == '\n' )

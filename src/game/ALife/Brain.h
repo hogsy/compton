@@ -31,7 +31,7 @@ namespace ct::ai
 		struct Need
 		{
 			const char *description;
-			double value;
+			double      value;
 		};
 		Need food{ "food", 0.0 };
 		Need water{ "water", 0.0 };
@@ -53,7 +53,7 @@ namespace ct::ai
 		};
 		Disposition genericDisposition{ Disposition::NEUTRAL };
 
-		unsigned int curResponses{ 0 };
+		unsigned int  curResponses{ 0 };
 		FeedbackState mappedResponses[ 8 ];
 		FeedbackState averageResponse;
 	};
@@ -63,6 +63,8 @@ namespace ct::ai
 	public:
 		Brain();
 		~Brain();
+
+		bool active{ true };// if false, brain will not 'tick'
 
 		// Mood indicator, provided as a generic reflectance
 		// of internal state - not necessarily accurately either
@@ -122,11 +124,11 @@ namespace ct::ai
 
 		struct Directive
 		{
-			MotorAction type;
-			double weight{ 0 };
-			bool isCompleted{ false };
-			math::Vector2 targetPosition;
-			std::string description;
+			MotorAction              type;
+			double                   weight{ 0 };
+			bool                     isCompleted{ false };
+			math::Vector2            targetPosition;
+			std::string              description;
 			std::vector< Directive > subDirectives;
 		};
 

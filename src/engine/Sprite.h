@@ -19,4 +19,4 @@ namespace ct
 
 		bool hasAlpha{ false };
 	};
-}// namespace vc
+}// namespace ct

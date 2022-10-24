@@ -8,14 +8,12 @@
 
 using namespace ct;
 
-bool input::Action::IsPressed()
+bool input::Action::CheckStatus( State state ) const
 {
 	for ( auto i : keyboardBindings_ )
 	{
-		if ( inputManager->GetKeyState( i ) != State::PRESSED )
-		{
+		if ( inputManager->GetKeyState( i ) != state )
 			continue;
-		}
 
 		return true;
 	}

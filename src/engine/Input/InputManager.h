@@ -17,7 +17,7 @@ namespace ct::input
 	class InputManager
 	{
 	public:
-		InputManager() = default;
+		InputManager()  = default;
 		~InputManager() = default;
 
 		[[nodiscard]] inline State GetKeyState( int key ) const { return keys_[ key ]; }
@@ -46,9 +46,7 @@ namespace ct::input
 		// Called at the end of a frame; update the state from PRESSED to DOWN
 		inline void EndFrame()
 		{
-			START_MEASURE();
-
-			for (auto & key : keys_)
+			for ( auto &key : keys_ )
 			{
 				if ( key != State::PRESSED )
 					continue;
@@ -56,7 +54,7 @@ namespace ct::input
 				key = State::DOWN;
 			}
 
-			for (auto & mouseButton : mouseButtons_)
+			for ( auto &mouseButton : mouseButtons_ )
 			{
 				if ( mouseButton != State::PRESSED )
 					continue;
@@ -64,9 +62,9 @@ namespace ct::input
 				mouseButton = State::DOWN;
 			}
 
-			for (auto & controller : controllers_)
+			for ( auto &controller : controllers_ )
 			{
-				for (auto & buttonState : controller.buttonStates)
+				for ( auto &buttonState : controller.buttonStates )
 				{
 					if ( buttonState != State::PRESSED )
 						continue;
@@ -76,8 +74,6 @@ namespace ct::input
 			}
 
 			locked_ = false;
-
-			END_MEASURE();
 		}
 
 		inline void GetMousePosition( int *x, int *y ) const
@@ -99,27 +95,28 @@ namespace ct::input
 
 	private:
 		// Mouse coordinates, xy - z is wheel
-		int mx_{ 0 }, my_{ 0 }, mz_{ 0 };
-		int ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
-		int dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
+		int   mx_{ 0 }, my_{ 0 }, mz_{ 0 };
+		int   ox_{ 0 }, oy_{ 0 }, oz_{ 0 };
+		int   dx_{ 0 }, dy_{ 0 }, dz_{ 0 };
 		State mouseButtons_[ MAX_MOUSE_BUTTONS ];
 
 		State keys_[ ALLEGRO_KEY_MAX ];
 
 		// Actions
 	public:
-		Action *PushAction( const char *description );
+		Action *CreateAction( const char *description );
+
 	private:
-		std::vector< Action > actions_;
+		std::map< std::string, Action > actions_;
 
 	public:
 		static constexpr unsigned int MAX_CONTROLLERS = 4;
+
 	private:
 		Controller controllers_[ MAX_CONTROLLERS ];
 
 		inline Controller *GetControllerForSlot( unsigned int slot )
 		{
-			assert( slot < MAX_CONTROLLERS );
 			return &controllers_[ slot ];
 		}
 

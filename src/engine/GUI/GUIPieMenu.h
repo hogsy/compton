@@ -14,8 +14,8 @@ namespace ct
 		GUIPieMenu( GUIPanel *parent = nullptr );
 		~GUIPieMenu();
 
-		void Show() override {};
-		void Hide() override {};
+		void Show() override{};
+		void Hide() override{};
 
 		typedef void ( *OptionCallback )( void *userData );
 		void PushOption( const char *label, OptionCallback callback );
@@ -32,4 +32,4 @@ namespace ct
 
 		std::vector< GUIButton * > buttons_;
 	};
-}// namespace vc
+}// namespace ct

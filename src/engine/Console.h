@@ -25,8 +25,8 @@ namespace ct
 	private:
 		bool isOpen_{ false };
 
-		std::string buffer_;
+		std::string                buffer_;
 		std::vector< std::string > history_;
-		unsigned int historyPosition_{ 0 };
+		unsigned int               historyPosition_{ 0 };
 	};
-}
+}// namespace ct

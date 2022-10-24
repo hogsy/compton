@@ -9,10 +9,10 @@
 
 std::map< std::string, ct::EntityManager::EntityConstructorFunction > ct::EntityManager::entityClasses __attribute__( ( init_priority( 2000 ) ) );
 
-ct::EntityManager::EntityVector ct::EntityManager::entities;
-ct::EntityManager::EntityVector ct::EntityManager::destructionQueue;
+std::vector< ct::Entity * > ct::EntityManager::entities;
+std::vector< ct::Entity * > ct::EntityManager::destructionQueue;
 
-ct::EntityManager::EntityManager() = default;
+ct::EntityManager::EntityManager()  = default;
 ct::EntityManager::~EntityManager() = default;
 
 ct::Entity *ct::EntityManager::CreateEntity( const std::string &className )
@@ -82,7 +82,7 @@ void ct::EntityManager::Draw( const Camera &camera )
 			continue;
 
 		// Allow the entity to override the z order if z member is set
-		entityDrawOrder.emplace( ( entity->z_ != 0 ) ? entity->z_ : entity->origin_.y, entity );
+		entityDrawOrder.emplace( ( entity->z_ != 0 ) ? entity->z_ : entity->origin_.ToIso().y, entity );
 	}
 
 	// And now this has the benefit of drawing everything in order *and* only if it's visible!
@@ -136,11 +136,12 @@ void ct::EntityManager::PrecacheEntities()
 	{
 		Entity *entity = CreateEntity( i.first );
 		entity->Precache();
-		DestroyEntity( entity );
 	}
+
+	DestroyEntities();
 }
 
-ct::EntityManager::EntitySlot ct::EntityManager::FindEntityByClassName( const char *className, const ct::EntityManager::EntitySlot *curSlot ) const
+ct::EntityManager::EntitySlot ct::EntityManager::FindEntityByClassName( const char *className, const ct::EntityManager::EntitySlot *curSlot )
 {
 	// Allow us to iterate from a previous position if desired
 	unsigned int i = 0;
@@ -164,7 +165,7 @@ std::vector< ct::Entity * > ct::EntityManager::GetEntitiesInRange( const hei::Ve
 	for ( auto i : entities )
 	{
 		hei::Vector2 sv = hei::Vector2( i->origin_.x, i->origin_.y ) - origin;
-		float dv = sv.Length();
+		float        dv = sv.Length();
 		if ( dv > range )
 			continue;
 
@@ -175,7 +176,7 @@ std::vector< ct::Entity * > ct::EntityManager::GetEntitiesInRange( const hei::Ve
 }
 
 ct::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
-	: myIdentifier( identifier )
+    : myIdentifier( identifier )
 {
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;
 }

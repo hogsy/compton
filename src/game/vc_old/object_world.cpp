@@ -156,9 +156,9 @@ public:
         );
 #else
 		al_draw_bitmap(
-				current_background,
-				0, 0,
-				0 );
+		        current_background,
+		        0, 0,
+		        0 );
 #endif
 	}
 
@@ -184,22 +184,22 @@ typedef struct SkyColourCycle
 } SkyColourCycle;
 
 SkyColourCycle sky_colourcycle[] =
-		{
-				// 	TOP					BOTTOM
-				{ { 20, 20, 20 }, { 0.33, 85, 85 }, 0 },     // MIDNIGHT
-				{ { 29, 38, 55 }, { 0.96, 140, 72 }, 6 },    // SUNRISE
-				{ { 118, 139, 156 }, { 0.96, 167, 80 }, 12 },// MIDDAY
-				{ { 99, 166, 253 }, { 0.87, 142, 109 }, 18 },// SUNSET
+        {
+  // 	TOP					BOTTOM
+                {{ 20, 20, 20 },     { 0.33, 85, 85 },   0 }, // MIDNIGHT
+                { { 29, 38, 55 },    { 0.96, 140, 72 },  6 }, // SUNRISE
+                { { 118, 139, 156 }, { 0.96, 167, 80 },  12}, // MIDDAY
+                { { 99, 166, 253 },  { 0.87, 142, 109 }, 18}, // SUNSET
 };
 
 const char *sky_days[] = {
-		"Monday",
-		"Tuesday",
-		"Wednesday",
-		"Thursday",
-		"Friday",
-		"Saturday",
-		"Sunday" };
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday" };
 
 typedef struct Month
 {
@@ -209,11 +209,11 @@ typedef struct Month
 } Month;
 
 Month months[] = {
-		{ 0, "Aurora" },// Dawn
-		{ 75, "Febriarius" },
-		{ 150, "Martius" },
-		{ 225, "Aprilis" },
-		{ 300, "Umbra" },// Darkness
+        {0,    "Aurora"    }, // Dawn
+        { 75,  "Febriarius"},
+        { 150, "Martius"   },
+        { 225, "Aprilis"   },
+        { 300, "Umbra"     }, // Darkness
 };
 
 /*	todo
@@ -228,10 +228,10 @@ Month months[] = {
 #include "object_creature.h"
 
 World::World() : wind_speed_( DEFAULT_WIND_SPEED ),
-				 time_( 0 ), year_( 0 ), m_Month( 0 ), _day( 0 ), _hour( 0 ), _minute( 0 ), _second( 0 ),
-				 width_( 4000 ), height_( 4000 ),
-				 cloud_density_( 8 ),
-				 temperature_( 20 )
+                 time_( 0 ), year_( 0 ), m_Month( 0 ), _day( 0 ), _hour( 0 ), _minute( 0 ), _second( 0 ),
+                 width_( 4000 ), height_( 4000 ),
+                 cloud_density_( 8 ),
+                 temperature_( 20 )
 {
 	env_background = new EnvironmentBackground();
 
@@ -340,24 +340,24 @@ void World::Tick()
 #define INTERP ( float ) ( ( time_ / 60 ) / 4 )
 	// BOTTOM
 	sky_bottom_.r = plCosineInterpolate(
-			sky_bottom_.r, sky_bottomtarget_.r,
-			INTERP );
+	        sky_bottom_.r, sky_bottomtarget_.r,
+	        INTERP );
 	sky_bottom_.g = plCosineInterpolate(
-			sky_bottom_.g, sky_bottomtarget_.g,
-			INTERP );
+	        sky_bottom_.g, sky_bottomtarget_.g,
+	        INTERP );
 	sky_bottom_.b = plCosineInterpolate(
-			sky_bottom_.b, sky_bottomtarget_.b,
-			INTERP );
+	        sky_bottom_.b, sky_bottomtarget_.b,
+	        INTERP );
 	// TOP
 	sky_top_.r = plCosineInterpolate(
-			sky_top_.r, sky_toptarget_.r,
-			INTERP );
+	        sky_top_.r, sky_toptarget_.r,
+	        INTERP );
 	sky_top_.g = plCosineInterpolate(
-			sky_top_.g, sky_toptarget_.g,
-			INTERP );
+	        sky_top_.g, sky_toptarget_.g,
+	        INTERP );
 	sky_top_.b = plCosineInterpolate(
-			sky_top_.b, sky_toptarget_.b,
-			INTERP );
+	        sky_top_.b, sky_toptarget_.b,
+	        INTERP );
 }
 
 void World::Draw()

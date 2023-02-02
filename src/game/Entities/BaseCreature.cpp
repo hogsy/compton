@@ -215,3 +215,12 @@ void ct::BaseCreature::StepAway( const math::Vector2 &target, int speed )
 
 	stepTime_ = GetApp()->GetNumOfTicks() + speed;
 }
+
+bool ct::BaseCreature::IsMoving() const
+{
+	const ai::Brain::Directive *directive = brain_.GetTopDirective();
+	if ( directive == nullptr )
+		return false;
+
+	return ( directive->type == ai::MotorAction::APPROACH || directive->type == ai::MotorAction::RETREAT );
+}

@@ -6,6 +6,8 @@
 #include "engine/Entity.h"
 #include "engine/SpriteAnimator.h"
 
+#include "../Game.h"
+
 namespace ct
 {
 	class BaseAnimated : public Entity
@@ -13,17 +15,16 @@ namespace ct
 	public:
 		IMPLEMENT_SUPER( Entity );
 
-		static constexpr unsigned int MAX_SPRITE_DIRECTIONS               = 4;// n, ne, e, se, s, sw, w, nw
-		static constexpr const char  *DIRECTIONS[ MAX_SPRITE_DIRECTIONS ] = {
-                "n",
-                //"ne",
-                "e",
-                //"se",
-                "s",
-                //"sw",
-                "w",
-                //"nw",
-        };
+		static constexpr const char *DIRECTIONS[ game::MAX_SPRITE_DIR ] = {
+		        "n",
+		        //"ne",
+		        "e",
+		        //"se",
+		        "s",
+		        //"sw",
+		        "w",
+		        //"nw",
+		};
 
 		virtual void Tick() override;
 		virtual void Draw( const Camera &camera ) override;

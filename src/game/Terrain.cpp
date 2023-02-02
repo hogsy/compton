@@ -159,7 +159,7 @@ void ct::Terrain::Generate( int seed )
 
 const ct::Terrain::Tile *ct::Terrain::GetTile( int x, int y ) const
 {
-	if ( x < 0 || y < 0 )
+	if ( x < 0 || x >= PIXEL_WIDTH || y < 0 || y >= PIXEL_HEIGHT )
 		return nullptr;
 
 	unsigned int tile = x + y * NUM_TILES_ROW;

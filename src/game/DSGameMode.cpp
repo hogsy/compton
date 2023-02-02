@@ -409,11 +409,13 @@ void ct::DSGameMode::RestoreGame( const std::string &path )
 	Print( "Game restored from \"%s\"\n", path.c_str() );
 }
 
-hei::Vector2 ct::DSGameMode::MousePosToWorld( int x, int y )
+ct::math::Vector2 ct::DSGameMode::MousePosToWorld( int x, int y )
 {
 	// When it comes to mice/kb, we'll always just assume it's the first player
 	PlayerManager::Player *player = playerManager_.GetPlayer( 0 );
-	return { ( player->camera.position.x - DISPLAY_WIDTH / 2 ) + x, ( player->camera.position.y - DISPLAY_HEIGHT / 2 ) + y };
+	return {
+	        ( int ) ( player->camera.position.x - DISPLAY_WIDTH / 2 ) + x,
+	        ( int ) ( player->camera.position.y - DISPLAY_HEIGHT / 2 ) + y };
 }
 
 bool ct::DSGameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -421,6 +423,28 @@ bool ct::DSGameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool
 	// Push input through to GUI first, so that can do whatever it needs to
 	if ( baseGuiPanel_ != nullptr && baseGuiPanel_->HandleMouseEvent( x, y, wheel, button, buttonUp ) )
 		return true;
+
+	if ( world_ == nullptr )
+		return false;
+
+	const Terrain *terrain = world_->GetTerrain();
+	if ( terrain == nullptr )
+		return false;
+
+	math::Vector2 worldPos = MousePosToWorld( x, y );
+
+	const Terrain::Tile *tile = terrain->GetTile( worldPos.x, worldPos.y );
+	if ( tile == nullptr || tile->type == Terrain::TERRAIN_WATER )
+		return false;
+
+	if ( !buttonUp )
+	{
+		Entity *entity = ct::EntityManager::CreateEntity( "Pawn" );
+		if ( entity == nullptr )
+			return false;
+
+		entity->origin_ = worldPos;
+	}
 
 #if 0
 	static Entity *waypoint = nullptr;

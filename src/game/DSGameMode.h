@@ -42,7 +42,7 @@ namespace ct
 		void SaveGame( const char *path ) override;
 		void RestoreGame( const std::string &path ) override;
 
-		hei::Vector2 MousePosToWorld( int x, int y );
+		math::Vector2 MousePosToWorld( int x, int y );
 
 		bool HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp ) override;
 		bool HandleKeyboardEvent( int button, bool buttonUp ) override;

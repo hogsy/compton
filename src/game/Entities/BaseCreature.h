@@ -114,5 +114,8 @@ namespace ct
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };
 		unsigned int currentLevel{ 0 };
+
+	public:
+		[[nodiscard]] virtual bool IsMoving() const;
 	};
 }// namespace ct

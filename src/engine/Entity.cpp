@@ -35,6 +35,7 @@ void ct::Entity::Tick()
 
 void ct::Entity::Draw( const Camera &camera )
 {
+#if 0
 	math::Vector2 iso = origin_.ToIso();
 	iso.x -= ( int ) camera.position.x;
 	iso.y -= ( int ) camera.position.y;
@@ -46,6 +47,7 @@ void ct::Entity::Draw( const Camera &camera )
 	}
 
 	render::DrawFilledRectangle( iso.x - bounds_.x, iso.y - bounds_.y, bounds_.x * 2, bounds_.y * 2, hei::Colour( 0, 255, 0, 255 ) );
+#endif
 
 	render::drawStats.stats[ render::DrawStats::Type::DRAW_STATS_ENTITY ]++;
 }

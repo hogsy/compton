@@ -155,10 +155,12 @@ void ct::World::Generate( unsigned int seed )
 	test->origin_.x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
 	test->origin_.y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
 
-	for ( unsigned int i = 0; i < 100; ++i )
+#if 1
+	for ( unsigned int i = 0; i < 1000; ++i )
 	{
-		Entity *test    = gameMode->GetEntityManager()->CreateEntity( "HumanCreature" );
+		Entity *test    = gameMode->GetEntityManager()->CreateEntity( "Pawn" );
 		test->origin_.x = random::GenerateRandomInteger( 0, Terrain::PIXEL_WIDTH );
 		test->origin_.y = random::GenerateRandomInteger( 0, Terrain::PIXEL_HEIGHT );
 	}
+#endif
 }

@@ -26,8 +26,8 @@ using namespace ct::game;
 
 REGISTER_ENTITY( HumanCreature, ds::HumanCreature )
 
-static const SpriteAnimation *idleAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ] = { nullptr };
-static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ]  = { nullptr };
+static const SpriteAnimation *idleAnimations[ ct::game::MAX_DIRECTIONS ] = { nullptr };
+static const SpriteAnimation *runAnimations[ ct::game::MAX_DIRECTIONS ]  = { nullptr };
 
 ds::HumanCreature::HumanCreature()  = default;
 ds::HumanCreature::~HumanCreature() = default;
@@ -42,7 +42,7 @@ void ds::HumanCreature::Precache()
 	{
 		if ( idleAnimations[ 0 ] == nullptr )
 		{
-			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
+			for ( unsigned int i = 0; i < MAX_DIRECTIONS; ++i )
 			{
 				std::string name    = "human_idle_" + std::string( DIRECTIONS[ i ] );
 				idleAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
@@ -50,7 +50,7 @@ void ds::HumanCreature::Precache()
 		}
 		if ( runAnimations[ 0 ] == nullptr )
 		{
-			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
+			for ( unsigned int i = 0; i < MAX_DIRECTIONS; ++i )
 			{
 				std::string name   = "human_run_" + std::string( DIRECTIONS[ i ] );
 				runAnimations[ i ] = SpriteAnimator::GetAnimation( "sprites/creatures/human/human.ani", name );
@@ -73,7 +73,7 @@ void ds::HumanCreature::Tick()
 	if ( maxTicksTest <= GetApp()->GetNumOfTicks() )
 	{
 		SetAnimation( idleAnimations[ currentAnimation_++ ] );
-		if ( currentAnimation_ >= MAX_SPRITE_DIRECTIONS )
+		if ( currentAnimation_ >= MAX_DIRECTIONS )
 			currentAnimation_ = 0;
 
 		maxTicksTest = GetApp()->GetNumOfTicks() + 50;

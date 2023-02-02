@@ -138,6 +138,9 @@ std::map< std::string, ct::SpriteAnimation > ct::SpriteAnimator::ParseFile( cons
 
 void ct::SpriteAnimator::SetAnimation( const SpriteAnimation *animation )
 {
+	if ( animation_ == animation )
+		return;
+
 	frame_     = 0;
 	animation_ = animation;
 }

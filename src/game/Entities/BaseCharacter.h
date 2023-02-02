@@ -35,5 +35,8 @@ namespace ct
 		bool isPossessed_{ false };
 
 		float influence_{ 0.0f };
+
+	public:
+		bool IsMoving() const override;
 	};
 }// namespace ct

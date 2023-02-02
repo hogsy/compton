@@ -15,14 +15,12 @@ namespace ct::game
 	enum Direction
 	{
 		DIR_NORTH,
-		DIR_NORTH_EAST,
 		DIR_EAST,
-		DIR_SOUTH_EAST,
 		DIR_SOUTH,
-		DIR_SOUTH_WEST,
 		DIR_WEST,
-		DIR_NORTH_WEST,
+
+		MAX_DIRECTIONS
 	};
 
-	static constexpr unsigned int MAX_SPRITE_DIR = 4;// N, NE, E, SE, S - then mirror
+	static constexpr unsigned int MAX_SPRITE_DIR = MAX_DIRECTIONS;// N, NE, E, SE, S - then mirror
 }// namespace ct::game

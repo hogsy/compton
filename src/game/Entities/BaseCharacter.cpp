@@ -122,3 +122,11 @@ void ct::BaseCharacter::ReleaseControl()
 
 	// Ensure that the player is no longer controlling
 }
+
+bool ct::BaseCharacter::IsMoving() const
+{
+	if ( !isPossessed_ )
+		return SuperClass::IsMoving();
+
+
+}

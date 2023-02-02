@@ -77,5 +77,8 @@ namespace ct
 		const SpriteAnimation *animation_{ nullptr };
 		unsigned int           nextFrameTime_{ 0 };
 		unsigned int           frame_{ 0 };
+
+	public:
+		[[nodiscard]] const SpriteAnimation *GetCurrentAnimation() const { return animation_; }
 	};
 }// namespace ct

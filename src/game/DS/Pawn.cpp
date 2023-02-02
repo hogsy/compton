@@ -17,7 +17,7 @@ namespace ct::game::ds
 
 	private:
 		static const SpriteAnimation *idleAnimation;
-		static const SpriteAnimation *runAnimations[ ct::BaseAnimated::MAX_SPRITE_DIRECTIONS ];
+		static const SpriteAnimation *runAnimations[ ct::game::MAX_DIRECTIONS ];
 
 		static constexpr const char *ANIMATION_PATH = "sprites/pawns/pawn_basic.ani";
 		static constexpr const char *SPRITE_PATH    = "sprites/pawns/pawn_basic.spr";
@@ -47,10 +47,11 @@ namespace ct::game::ds
 		idleAnimation = SpriteAnimator::GetAnimation( ANIMATION_PATH, "pawn_idle" );
 		if ( runAnimations[ 0 ] == nullptr )
 		{
-			for ( unsigned int i = 0; i < MAX_SPRITE_DIRECTIONS; ++i )
+			for ( unsigned int i = 0; i < MAX_DIRECTIONS; ++i )
 			{
 				std::string name   = "pawn_run_" + std::string( DIRECTIONS[ i ] );
 				runAnimations[ i ] = SpriteAnimator::GetAnimation( ANIMATION_PATH, name );
+				runAnimations[ i ]->playbackSpeed;
 			}
 		}
 	}
@@ -64,7 +65,24 @@ namespace ct::game::ds
 
 	void Pawn::Tick()
 	{
+		math::Vector2 oldOrigin = origin_;
+
 		SuperClass::Tick();
+
+		if ( IsMoving() )
+		{
+			if ( origin_.x > oldOrigin.x )
+				SetAnimation( runAnimations[ DIR_WEST ] );
+			else if ( origin_.x < oldOrigin.x )
+				SetAnimation( runAnimations[ DIR_EAST ] );
+			else if ( origin_.y > oldOrigin.y )
+				SetAnimation( runAnimations[ DIR_SOUTH ] );
+			else if ( origin_.y < oldOrigin.y )
+				SetAnimation( runAnimations[ DIR_NORTH ] );
+		}
+		else
+			SetAnimation( idleAnimation );
+
 	}
 }// namespace ct::game::ds
 

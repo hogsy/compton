@@ -1,10 +1,10 @@
 ; sprite = identifier w h x y
 ; group = identifier w h x y nx ny
 
-$image sprites/pawns/pawn_basic_placeholder.png
+$image textures/characters.png
 
-$group idle 72 9 0 0 8 1
-$group run_w 72 9 72 0 8 1
-$group run_n 72 9 144 0 8 1
-$group run_s 72 9 216 0 8 1
-$group die 36 9 360 0 4 1
+$group idle 32 16 0 16 2 1
+$group run_w 32 16 81 0 2 1
+$group run_n 32 16 144 16 2 1
+$group run_s 32 16 32 16 2 1
+$group die 80 16 192 16 5 1

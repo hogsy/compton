@@ -136,7 +136,7 @@ namespace ct::ai
 		std::vector< Directive > directives_;
 
 	public:
-		const Directive *GetTopDirective()
+		[[nodiscard]] const Directive *GetTopDirective() const
 		{
 			return &directives_[ 0 ];
 		}

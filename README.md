@@ -1,7 +1,9 @@
 # Compton, 2D Game Engine
 
-Compton is a small open-source 2D game engine using Allegro 5 and written in C++.
+Compton was a small isometric open-source 2D game engine using Allegro 5 and written in C++.
 It's purposefully designed to be simplistic with as few dependencies as possible.
+
+I've since opted to retire the engine to focus my efforts elsewhere and the code is left here in an unfinished state.
 
 If you decide to use it for anything [then I'd love to hear from you](mailto:hogsy@oldtimes-software.com)! ❤️
 

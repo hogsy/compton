@@ -55,9 +55,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define GAME_TYPE_SFC
 
-void DrawPixel( int x, int y, const hei::Colour &colour );
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest = false );
-void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
+//void DrawPixel( int x, int y, const hei::Colour &colour );
+//void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest = false );
+//void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
 
 enum InputMouseButton
 {
@@ -72,6 +72,7 @@ namespace vc
 {
 	class GameMode;
 	class EntityManager;
+	class ImageManager;
 	class BitmapFont;
 	class Background;
 
@@ -91,7 +92,6 @@ namespace vc
 		bool IsRunning();
 		void Loop();
 
-		ALLEGRO_FONT   *CacheFont( const char *path, unsigned int size );
 		ALLEGRO_SAMPLE *CacheSample( const char *path );
 		ALLEGRO_BITMAP *CacheImage( const char *path );
 
@@ -190,11 +190,11 @@ namespace vc
 }// namespace vc
 
 #if defined( DEBUG_BUILD )
-#define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
-#define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
+#	define START_MEASURE() vc::GetApp()->StartPerformanceTimer( __PRETTY_FUNCTION__ )
+#	define END_MEASURE()   vc::GetApp()->EndPerformanceTimer( __PRETTY_FUNCTION__ )
 #else
-#define START_MEASURE()
-#define END_MEASURE()
+#	define START_MEASURE()
+#	define END_MEASURE()
 #endif
 
 /*	Game	*/

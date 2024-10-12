@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "ImageManager.h"
 #include "Background.h"
 #include "GameMode.h"
+#include "render.h"
 
 static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
 {
@@ -184,7 +185,7 @@ void vc::ImageManager::CachePalettes()
 		}
 
 		bool status;
-		for (auto & colour : colourGroups_[ i ].colours)
+		for ( auto &colour : colourGroups_[ i ].colours )
 		{
 			// Convert the palette from 6-bit to 8-bit as we load it
 			colour.r = ( PlReadInt8( file, &status ) * 255 ) / 63;
@@ -299,6 +300,6 @@ void vc::ImageManager::Sprite::Draw( int x, int y, bool alphaTest ) const
 		}
 	}
 #else
-	DrawBitmap( pixels.data(), x, y, width, height, palette, alphaTest );
+	vc::render::DrawBitmap( pixels.data(), 3, palette, x, y, width, height, alphaTest );
 #endif
 }

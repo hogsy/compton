@@ -23,109 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "EntityManager.h"
 #include "BitmapFont.h"
 
-// Draw Routines
-
-void DrawPixel( int x, int y, const hei::Colour &colour )
-{
-	if ( x < 0 || x > DISPLAY_WIDTH )
-	{
-		return;
-	}
-
-	if ( y < 0 || y > DISPLAY_HEIGHT )
-	{
-		return;
-	}
-
-	if ( colour.a != 255 )
-	{
-		al_put_blended_pixel( x, y, al_map_rgba( colour.r, colour.g, colour.b, colour.a ) );
-	}
-	else
-	{
-		al_put_pixel( x, y, al_map_rgb( colour.r, colour.g, colour.b ) );
-	}
-}
-
-void DrawBitmap( const uint8_t *pixels, int x, int y, int w, int h, const vc::ImageManager::Palette *palette, bool alphaTest )
-{
-	if ( ( x + w < 0 || x >= DISPLAY_WIDTH ) || ( y + h < 0 || y >= DISPLAY_HEIGHT ) )
-	{
-		return;
-	}
-
-	if ( alphaTest )
-	{
-		for ( unsigned int row = 0; row < w; ++row )
-		{
-			for ( unsigned int column = 0; column < h; ++column )
-			{
-				uint8_t pixel = pixels[ row + column * w ];
-				if ( pixel == 0 )
-				{
-					continue;
-				}
-
-				DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
-			}
-		}
-	}
-	else
-	{
-		int dw = w;
-		if ( x + dw > DISPLAY_WIDTH )
-		{
-			dw = DISPLAY_WIDTH - x;
-		}
-		int dh = h;
-		if ( y + dh > DISPLAY_HEIGHT )
-		{
-			dh = DISPLAY_HEIGHT - y;
-		}
-
-		ALLEGRO_LOCKED_REGION *region = vc::GetApp()->region_;
-		if ( region == nullptr )
-		{
-			return;
-		}
-
-		unsigned int rw   = dw * region->pixel_size;// total byte width of row
-		uint8_t     *rowb = new uint8_t[ rw ];
-		uint8_t     *dst  = ( uint8_t      *) region->data + x * region->pixel_size + region->pitch * y;
-		for ( unsigned int row = 0; row < dh; ++row )
-		{
-			for ( unsigned int column = 0; column < dw; ++column )
-			{
-				uint8_t pixel          = pixels[ column + row * w ];
-				rowb[ column * 3 + 0 ] = palette->colours[ pixel ].b;
-				rowb[ column * 3 + 1 ] = palette->colours[ pixel ].g;
-				rowb[ column * 3 + 2 ] = palette->colours[ pixel ].r;
-			}
-
-			memcpy( dst, rowb, rw );
-
-			dst += DISPLAY_WIDTH * region->pixel_size;
-		}
-		delete[] rowb;
-	}
-}
-
-void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
-{
-	if ( colour.a == 0 )
-	{
-		return;
-	}
-
-	for ( int row = 0; row < w; ++row )
-	{
-		for ( int column = 0; column < h; ++column )
-		{
-			DrawPixel( x + row, y + column, colour );
-		}
-	}
-}
-
 ////////////////////////////////
 // App Class
 
@@ -143,8 +40,8 @@ extern ALLEGRO_FILE_INTERFACE g_fsIOInterface;
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PlMAllocA( size ); }
 void *operator new[]( size_t size ) { return PlMAllocA( size ); }
-void  operator delete( void *p ) throw() { PlFree( p ); }
-void  operator delete[]( void *p ) throw() { PlFree( p ); }
+void  operator delete( void *p ) noexcept { PlFree( p ); }
+void  operator delete[]( void *p ) noexcept { PlFree( p ); }
 // And below is a wrapper for Allegro, so we can do the same there
 static void *AlMAlloc( size_t n, int, const char *, const char * ) { return PlMAllocA( n ); }
 static void  AlFree( void *p, int, const char *, const char  *) { PlFree( p ); }
@@ -225,10 +122,10 @@ vc::App::App( int argc, char **argv )
 	}
 
 	static ALLEGRO_MEMORY_INTERFACE memoryInterface = {
-			AlMAlloc,
-			AlFree,
-			AlReAlloc,
-			AlCAlloc };
+	        AlMAlloc,
+	        AlFree,
+	        AlReAlloc,
+	        AlCAlloc };
 	al_set_memory_interface( &memoryInterface );
 
 	if ( !al_install_mouse() )
@@ -291,28 +188,6 @@ void vc::App::Loop()
 	performanceTimers.clear();
 }
 
-ALLEGRO_FONT *vc::App::CacheFont( const char *path, unsigned int size )
-{
-	std::string fullName = std::string( path ) + ":" + std::to_string( size );
-	auto        i        = fonts.find( fullName );
-	if ( i != fonts.end() )
-	{
-		return i->second;
-	}
-
-	Print( "Caching font, \"%s\" size %d\n", fullName.c_str(), size );
-
-	ALLEGRO_FONT *font = al_load_ttf_font( path, size, 0 );
-	if ( font == nullptr )
-	{
-		Error( "Failed to load font, \"%s\"!\n", path );
-	}
-
-	fonts.emplace( fullName, font );
-
-	return font;
-}
-
 ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 {
 	auto i = samples.find( path );
@@ -358,12 +233,12 @@ ALLEGRO_BITMAP *vc::App::CacheImage( const char *path )
 void vc::App::ShowMessageBox( const char *title, const char *message, bool error )
 {
 	al_show_native_message_box(
-			nullptr,
-			VC_TITLE,
-			title,
-			message,
-			nullptr,
-			error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
+	        nullptr,
+	        VC_TITLE,
+	        title,
+	        message,
+	        nullptr,
+	        error ? ALLEGRO_MESSAGEBOX_ERROR : ALLEGRO_MESSAGEBOX_WARN );
 }
 
 void vc::App::Shutdown()
@@ -483,12 +358,12 @@ void vc::App::Draw()
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
 	al_draw_scaled_bitmap(
-			screenBitmap_,
-			0, 0,
-			DISPLAY_WIDTH, DISPLAY_HEIGHT,
-			scaleX, scaleY,
-			scaleW, scaleH,
-			0 );
+	        screenBitmap_,
+	        0, 0,
+	        DISPLAY_WIDTH, DISPLAY_HEIGHT,
+	        scaleX, scaleY,
+	        scaleW, scaleH,
+	        0 );
 
 	al_flip_display();
 

@@ -21,7 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "BaseCharacter.h"
 #include "Random.h"
 #include "Serializer.h"
-#include "Utility.h"
 #include "Terrain.h"
 
 namespace vc
@@ -46,11 +45,6 @@ REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
 void vc::BaseCharacter::Spawn()
 {
 	SuperClass::Spawn();
-
-	char firstName[ 8 ], lastName[ 8 ];
-	random::GenerateRandomName( firstName, sizeof( firstName ) );
-	random::GenerateRandomName( lastName, sizeof( lastName ) );
-	snprintf( name, sizeof( name ), "%s %s %s", firstName, lastName, UTIL_GetRomanNumeralForNum( generation ) );
 }
 
 void vc::BaseCharacter::Deserialize( vc::Serializer *read )

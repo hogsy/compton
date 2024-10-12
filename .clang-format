@@ -1,14 +1,14 @@
-# Generated from CLion C/C++ Code Style settings
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: Consecutive
-AlignConsecutiveBitFields: Consecutive
-AlignConsecutiveMacros: Consecutive
-AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveMacros: true
+AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
+AlignArrayOfStructures: Left
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -43,7 +43,7 @@ ColumnLimit: 0
 CompactNamespaces: false
 ContinuationIndentWidth: 8
 IndentCaseLabels: true
-IndentPPDirectives: None
+IndentPPDirectives: AfterHash
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
@@ -69,5 +69,5 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
 TabWidth: 4
-UseTab: AlignWithSpaces
+UseTab: ForIndentation
 SortIncludes: Never

@@ -57,10 +57,10 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
         src/engine/ImageManager.cpp
-        src/engine/JsonReader.cpp
         src/engine/LoaderPkg.cpp
         src/engine/PlayerManager.cpp
         src/engine/Random.cpp
+        src/engine/render.cpp
         src/engine/ScriptParser.cpp
         src/engine/Serializer.cpp
         src/engine/SpriteSheet.cpp
@@ -77,10 +77,6 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Background.cpp
         src/game/GameMode.cpp
         src/game/Terrain.cpp
-        src/game/Utility.cpp
-
-        # duktape
-        src/3rdparty/duktape-2.2.0/src/duktape.c
         )
 
 set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)

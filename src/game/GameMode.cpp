@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Serializer.h"
 #include "BitmapFont.h"
 #include "Background.h"
+#include "render.h"
 
 #include "Entities/BaseCharacter.h"
 
@@ -81,23 +82,23 @@ void vc::GameMode::SetupUserInterface()
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
 	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
 
-#define MINIMAP_WIDTH  128
-#define MINIMAP_HEIGHT 128
+#	define MINIMAP_WIDTH  128
+#	define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
-			baseGuiPanel_,
-			DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
-			DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
-			MINIMAP_WIDTH, MINIMAP_HEIGHT,
-			GUIPanel::Background::TEXTURE,
-			GUIPanel::Border::OUTSET );
+	        baseGuiPanel_,
+	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
+	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
+	        GUIPanel::Background::TEXTURE,
+	        GUIPanel::Border::OUTSET );
 	minimapPanel->SetBackground( GUIPanel::Background::NONE );
 	minimapPanel->SetBorder( GUIPanel::Border::OUTSET );
 	new GUIPanel(
-			minimapPanel,
-			2, 2,
-			MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
-			GUIPanel::Background::SOLID,
-			GUIPanel::Border::INSET );
+	        minimapPanel,
+	        2, 2,
+	        MINIMAP_WIDTH - 4, MINIMAP_HEIGHT - 4,
+	        GUIPanel::Background::SOLID,
+	        GUIPanel::Border::INSET );
 #endif
 
 	// Create the UI cursor
@@ -270,7 +271,7 @@ void vc::GameMode::NewGame( const char *path )
 		Entity *hub = entityManager_->CreateEntity( "StoreHouse" );
 		hub->origin = hei::Vector2( x, y );
 
-#define TERRITORY_BOUNDS 256
+#	define TERRITORY_BOUNDS 256
 
 		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
 		for ( unsigned int j = 0; j < numAbodes; ++j )
@@ -455,12 +456,12 @@ void vc::GameMode::LoadRooms()
 	for ( unsigned int i = 0; i < numRooms; ++i )
 	{
 		rooms_.push_back( {
-				PlReadInt16( file, false, nullptr ),             // x
-				PlReadInt16( file, false, nullptr ),             // w
-				PlReadInt16( file, false, nullptr ),             // y
-				PlReadInt16( file, false, nullptr ),             // h
-				( uint16_t ) PlReadInt16( file, false, nullptr ),// type
-				i                                                // id
+		        PlReadInt16( file, false, nullptr ),             // x
+		        PlReadInt16( file, false, nullptr ),             // w
+		        PlReadInt16( file, false, nullptr ),             // y
+		        PlReadInt16( file, false, nullptr ),             // h
+		        ( uint16_t ) PlReadInt16( file, false, nullptr ),// type
+		        i                                                // id
 		} );
 	}
 
@@ -480,11 +481,11 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 
 	for ( auto room : rooms_ )
 	{
-		DrawFilledRectangle( room.x - ( int ) camera.position.x,
-		                     room.y - ( int ) camera.position.y,
-		                     room.w - room.x,
-		                     room.h - room.y,
-		                     hei::Colour( 0, 0, 128, 100 ) );
+		render::DrawFilledRectangle( room.x - ( int ) camera.position.x,
+		                             room.y - ( int ) camera.position.y,
+		                             room.w - room.x,
+		                             room.h - room.y,
+		                             hei::Colour( 0, 0, 128, 100 ) );
 
 		int tx = room.x - ( int ) camera.position.x;
 		int ty = room.y - ( int ) camera.position.y;
@@ -507,8 +508,8 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 		ty = ( ( room.h - room.y ) / 2 ) + room.y - ( int ) camera.position.y;
 
 		static const char *roomType[] = {
-				"INTERIOR",
-				"EXTERIOR",
+		        "INTERIOR",
+		        "EXTERIOR",
 		};
 
 		char buf[ 32 ];

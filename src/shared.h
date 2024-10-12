@@ -172,7 +172,7 @@ namespace vc
 		int   windowWidth, windowHeight;
 		float scaleX, scaleY, scaleW, scaleH;
 
-		double numTicks;
+		double numTicks{};
 
 		char appDataPath[ PL_SYSTEM_MAX_PATH ];
 

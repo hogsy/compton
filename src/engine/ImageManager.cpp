@@ -146,7 +146,7 @@ void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNu
 
 	const Sprite *sprite = &spriteGroups_[ set ].sprites[ sNum ];
 
-	PLImage *image = PlCreateImage( nullptr, sprite->width, sprite->height, PL_COLOURFORMAT_RGBA, PL_IMAGEFORMAT_RGBA8 );
+	PLImage *image = PlCreateImage( nullptr, sprite->width, sprite->height, 0, PL_COLOURFORMAT_RGBA, PL_IMAGEFORMAT_RGBA8 );
 	if ( image == nullptr )
 	{
 		Warning( "Failed to create image for export: %s\n", PlGetError() );
@@ -162,7 +162,7 @@ void vc::ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNu
 		image->data[ 0 ][ i + 3 ] = ( sprite->pixels[ j ] == 0 ) ? 0 : 255;
 	}
 
-	PlWriteImage( image, path.c_str() );
+	PlWriteImage( image, path.c_str(), 100 );
 
 	PlDestroyImage( image );
 }
@@ -184,12 +184,12 @@ void vc::ImageManager::CachePalettes()
 		}
 
 		bool status;
-		for ( unsigned int j = 0; j < 256; ++j )
+		for (auto & colour : colourGroups_[ i ].colours)
 		{
 			// Convert the palette from 6-bit to 8-bit as we load it
-			colourGroups_[ i ].colours[ j ].r = ( PlReadInt8( file, &status ) * 255 ) / 63;
-			colourGroups_[ i ].colours[ j ].g = ( PlReadInt8( file, &status ) * 255 ) / 63;
-			colourGroups_[ i ].colours[ j ].b = ( PlReadInt8( file, &status ) * 255 ) / 63;
+			colour.r = ( PlReadInt8( file, &status ) * 255 ) / 63;
+			colour.g = ( PlReadInt8( file, &status ) * 255 ) / 63;
+			colour.b = ( PlReadInt8( file, &status ) * 255 ) / 63;
 			if ( !status )
 			{
 				Warning( "io error: %s\n", PlGetError() );
@@ -243,7 +243,7 @@ void vc::ImageManager::CacheSprites()
 			group.sprites[ j ].pixels.resize( bufferSize );
 
 			// Now save, read in pixels and restore
-			size_t p = PlGetFileOffset( file );
+			PLFileOffset p = PlGetFileOffset( file );
 			if ( !PlFileSeek( file, offset, PL_SEEK_SET ) )
 			{
 				Warning( "failed to seek to offset: %s\n", PlGetError() );

@@ -45,7 +45,7 @@ vc::ScriptParser::ScriptParser( const char *path )
 		length = MAX_SCRIPT_LENGTH;
 	}
 
-	const uint8_t *fileDataPtr = PlGetFileData( filePtr );
+	const uint8_t *fileDataPtr = ( uint8_t * ) PlGetFileData( filePtr );
 	memcpy( scriptBuffer, fileDataPtr, length );
 
 	// Fetch the starting position

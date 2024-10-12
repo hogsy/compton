@@ -130,7 +130,7 @@ void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour 
 // App Class
 
 static vc::App *appInstance;
-vc::App		*vc::GetApp()
+vc::App        *vc::GetApp()
 {
 	return appInstance;
 }
@@ -172,8 +172,17 @@ vc::App::App( int argc, char **argv )
 
 	pl_memory_abort_cb = MemoryAbortCallback;
 
-	PlInitialize( argc, argv );
-	PlInitializeSubSystems( PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IO );
+	if ( PlInitialize( argc, argv ) != PL_RESULT_SUCCESS )
+	{
+		std::string msg = "Failed to initialize Hei: " + std::string( PlGetError() ) + "\n";
+		throw std::runtime_error( msg );
+	}
+
+	if ( PlInitializeSubSystems( PL_SUBSYSTEM_IO ) != PL_RESULT_SUCCESS )
+	{
+		std::string msg = "Failed to initialize Hei: " + std::string( PlGetError() ) + "\n";
+		throw std::runtime_error( msg );
+	}
 
 	PlGetApplicationDataDirectory( VC_TITLE, appDataPath, sizeof( appDataPath ) );
 	PlCreateDirectory( appDataPath );
@@ -188,7 +197,7 @@ vc::App::App( int argc, char **argv )
 
 	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
-	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage );
+	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage, nullptr );
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
 	PlMountLocalLocation( appDataPath );
@@ -542,7 +551,7 @@ void vc::App::Tick()
 		default: break;
 
 		case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
-			al_hide_mouse_cursor( alDisplay );
+			//al_hide_mouse_cursor( alDisplay );
 			break;
 		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
 			al_show_mouse_cursor( alDisplay );
@@ -657,8 +666,8 @@ void vc::App::GrabCursor( bool status )
 {
 	if ( status )
 	{
-		al_grab_mouse( alDisplay );
-		al_hide_mouse_cursor( alDisplay );
+		//al_grab_mouse( alDisplay );
+		//al_hide_mouse_cursor( alDisplay );
 		return;
 	}
 

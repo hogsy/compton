@@ -68,25 +68,24 @@ static bool FS_feof( ALLEGRO_FILE *f )
 	return PlIsEndOfFile( file );
 }
 
-static int FS_ferror( ALLEGRO_FILE *f )
+static int FS_ferror( PL_UNUSED ALLEGRO_FILE *f )
 {
 	//DebugMsg( "%s\n", __FUNCTION__ );
 	return PlGetFunctionResult();
 }
 
-static const char *FS_ferrmsg( ALLEGRO_FILE *f )
+static const char *FS_ferrmsg( PL_UNUSED ALLEGRO_FILE *f )
 {
 	//DebugMsg( "%s\n", __FUNCTION__ );
 	return PlGetError();
 }
 
-static void FS_fclearerr( ALLEGRO_FILE *f )
+static void FS_fclearerr( PL_UNUSED ALLEGRO_FILE *f )
 {
 	DebugMsg( "%s\n", __FUNCTION__ );
-	PlUnused( f );
 }
 
-static int FS_fungetc( ALLEGRO_FILE *f, int c )
+static int FS_fungetc( PL_UNUSED ALLEGRO_FILE *f, int c )
 {
 	//DebugMsg( "%s\n", __FUNCTION__ );
 	return c;

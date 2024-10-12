@@ -17,15 +17,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_primitives.h>
 
 #include "Compton.h"
 #include "GUIPanel.h"
 
 #include "../../shared.h"
+#include "render.h"
 
 vc::GUIPanel::GUIPanel( vc::GUIPanel *parent, int x, int y, int w, int h, vc::GUIPanel::Background background, vc::GUIPanel::Border border )
-	: myBackground( background ), myBorder( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
+    : myBackground( background ), myBorder( border ), parentPtr( parent ), x( x ), y( y ), w( w ), h( h )
 {
 	if ( parent == nullptr )
 	{
@@ -76,7 +76,7 @@ void vc::GUIPanel::DrawBackground()
 	{
 		default: break;
 		case Background::SOLID:
-			al_draw_filled_rectangle( dx, dy, dx + dw, dy + dh, al_map_rgba( backgroundColour.r, backgroundColour.g, backgroundColour.b, backgroundColour.a ) );
+			render::DrawFilledRectangle( dx, dy, dw, dh, backgroundColour );
 			break;
 		case Background::TEXTURE:
 		{
@@ -98,18 +98,18 @@ void vc::GUIPanel::DrawBackground()
 			sh = myStyleSheet->backgrounds[ 0 ].h;
 
 			al_draw_tinted_scaled_rotated_bitmap_region(
-					bmp,
-					sx, sy,
-					sw, sh,
-					al_map_rgba(
-							backgroundColour.r,
-							backgroundColour.g,
-							backgroundColour.b,
-							backgroundColour.a ),
-					0.0f, 0.0f,
-					dx, dy, dw / sw, dh / sh,
-					0.0f,
-					0 );
+			        bmp,
+			        sx, sy,
+			        sw, sh,
+			        al_map_rgba(
+			                backgroundColour.r,
+			                backgroundColour.g,
+			                backgroundColour.b,
+			                backgroundColour.a ),
+			        0.0f, 0.0f,
+			        dx, dy, dw / sw, dh / sh,
+			        0.0f,
+			        0 );
 			break;
 		}
 	}
@@ -154,11 +154,11 @@ void vc::GUIPanel::DrawBorderCorner( int dx, int dy, const vc::RectangleCoord &t
 	}
 
 	al_draw_bitmap_region(
-			bmp,
-			tileCoord.x, tileCoord.y,
-			tileCoord.w, tileCoord.h,
-			dx, dy,
-			0 );
+	        bmp,
+	        tileCoord.x, tileCoord.y,
+	        tileCoord.w, tileCoord.h,
+	        dx, dy,
+	        0 );
 }
 
 void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::RectangleCoord &tileCoord )
@@ -170,18 +170,18 @@ void vc::GUIPanel::DrawBorderEdge( int dx, int dy, int dw, int dh, const vc::Rec
 	}
 
 	al_draw_tinted_scaled_rotated_bitmap_region(
-			bmp,
-			tileCoord.x, tileCoord.y,
-			tileCoord.w, tileCoord.h,
-			al_map_rgba(
-					backgroundColour.r,
-					backgroundColour.g,
-					backgroundColour.b,
-					backgroundColour.a ),
-			0.0f, 0.0f,
-			dx, dy, dw / tileCoord.w, dh / tileCoord.h,
-			0.0f,
-			0 );
+	        bmp,
+	        tileCoord.x, tileCoord.y,
+	        tileCoord.w, tileCoord.h,
+	        al_map_rgba(
+	                backgroundColour.r,
+	                backgroundColour.g,
+	                backgroundColour.b,
+	                backgroundColour.a ),
+	        0.0f, 0.0f,
+	        dx, dy, dw / tileCoord.w, dh / tileCoord.h,
+	        0.0f,
+	        0 );
 }
 
 void vc::GUIPanel::Tick()

@@ -45,9 +45,11 @@ add_definitions(-DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 add_definitions(-DGIT_COMMIT_COUNT="${GIT_COMMIT_COUNT}")
 add_definitions(-DGIT_BRANCH="${GIT_BRANCH}")
 
+add_subdirectory(src/lisp)
+
 file(GLOB SOURCE_FILES
         src/engine/GUI/*.cpp
-        )
+)
 
 add_executable(Compton ${SOURCE_FILES}
         # engine
@@ -57,10 +59,10 @@ add_executable(Compton ${SOURCE_FILES}
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp
         src/engine/ImageManager.cpp
-        src/engine/LoaderPkg.cpp
         src/engine/PlayerManager.cpp
         src/engine/Random.cpp
         src/engine/render.cpp
+        src/engine/script.cpp
         src/engine/ScriptParser.cpp
         src/engine/Serializer.cpp
         src/engine/SpriteSheet.cpp
@@ -76,8 +78,7 @@ add_executable(Compton ${SOURCE_FILES}
         src/game/Entities/DebugWaypoint.cpp
         src/game/Background.cpp
         src/game/GameMode.cpp
-        src/game/Terrain.cpp
-        )
+)
 
 set_target_properties(Compton PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/)
 
@@ -89,7 +90,7 @@ target_include_directories(Compton PRIVATE
         src/3rdparty/
         src/3rdparty/miniz/
         src/3rdparty/duktape-2.2.0/src/
-        )
+)
 if (WIN32)
     target_include_directories(Compton PRIVATE src/3rdparty/allegro/include/)
     target_link_directories(Compton PRIVATE src/3rdparty/allegro/lib/)
@@ -101,9 +102,9 @@ target_link_libraries(Compton
 
         allegro
         allegro_dialog
-        allegro_font
-        allegro_ttf
-        allegro_primitives
+        #allegro_primitives
         allegro_audio
         allegro_acodec
-        )
+
+        lisp
+)

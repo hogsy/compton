@@ -20,14 +20,14 @@ namespace vc
 		void EndDraw();
 
 		void ClearDisplay();
-		void DrawPixel( int x, int y, const hei::Colour &colour );
+		void DrawPixel( int x, int y, const PLColour &colour );
 		void DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour );
 		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection = vc::render::FlipDirection::FLIP_NONE );
 		void DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, const ImageManager::Palette *palette, int x, int y, int w, int h, bool alphaTest, vc::render::FlipDirection flipDirection = vc::render::FlipDirection::FLIP_NONE );
 		void DrawBitmapRegion( const uint8_t *pixels, int x, int y, int w, int h, int dx, int dy, int dw, int dh, bool alphaTest = false );
-		void DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour );
+		void DrawFilledRectangle( int x, int y, int w, int h, const PLColour &colour );
 
-		void DrawPanel( int x, int y, int w, int h, const hei::Colour &colour );
+		void DrawPanel( int x, int y, int w, int h, const PLColour &colour );
 
 		void SetScissor( int x, int y, int w, int h );
 

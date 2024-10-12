@@ -1,24 +1,10 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+#include "lisp.h"
 
 #include "../shared.h"
 
-#include "LoaderPkg.h"
 #include "GameMode.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
@@ -94,7 +80,7 @@ vc::App::App( int argc, char **argv )
 
 	Print( VC_TITLE " (build " GIT_COMMIT_COUNT " [" GIT_BRANCH ":" GIT_COMMIT_HASH "], compiled " __DATE__ ")\n" );
 
-	PlRegisterPackageLoader( "pkg", Pkg_LoadPackage, nullptr );
+	PlRegisterStandardPackageLoaders( PL_PACKAGE_LOAD_FORMAT_ZIP );
 	PlRegisterStandardImageLoaders( PL_IMAGE_FILEFORMAT_ALL );
 
 	PlMountLocalLocation( appDataPath );
@@ -144,9 +130,6 @@ vc::App::App( int argc, char **argv )
 	}
 
 	al_init_native_dialog_addon();
-	al_init_primitives_addon();
-	al_init_font_addon();
-	al_init_ttf_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
@@ -243,6 +226,8 @@ void vc::App::ShowMessageBox( const char *title, const char *message, bool error
 
 void vc::App::Shutdown()
 {
+	Lisp::Uninit();
+
 	delete gameMode;
 	delete imageManager;
 
@@ -294,13 +279,6 @@ void vc::App::InitializeDisplay()
 	windowHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
-
-	// Load in the default font for displaying debug info
-	defaultFont = al_create_builtin_font();
-	if ( defaultFont == nullptr )
-	{
-		Error( "Failed to create default font!\n" );
-	}
 
 	// Check to see how much we need to scale the buffer.
 	al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
@@ -404,6 +382,8 @@ void vc::App::InitializeEvents()
 
 void vc::App::InitializeGame()
 {
+	Lisp::Init();
+
 	gameMode = new GameMode();
 }
 

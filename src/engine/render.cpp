@@ -40,7 +40,7 @@ void vc::render::ClearDisplay()
 	memset( region->data, 0x8F, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
 }
 
-void vc::render::DrawPixel( int x, int y, const hei::Colour &colour )
+void vc::render::DrawPixel( int x, int y, const PLColour &colour )
 {
 	if ( x < scissorX || x > scissorW || y < scissorY || y > scissorH )
 		return;
@@ -179,9 +179,9 @@ void vc::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, const vc:
 		return;
 	}
 
-	for ( unsigned int row = 0; row < w; ++row )
+	for ( int row = 0; row < w; ++row )
 	{
-		for ( unsigned int column = 0; column < h; ++column )
+		for ( int column = 0; column < h; ++column )
 		{
 			uint8_t pixel = pixels[ row + column * w ];
 			if ( pixel == 0 )
@@ -189,12 +189,18 @@ void vc::render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, const vc:
 				continue;
 			}
 
-			DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
+			PLColour c;
+			c.r = palette->colours[ pixel ].r;
+			c.g = palette->colours[ pixel ].g;
+			c.b = palette->colours[ pixel ].b;
+			c.a = 255;
+
+			DrawPixel( x + row, y + column, c );
 		}
 	}
 }
 
-void vc::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Colour &colour )
+void vc::render::DrawFilledRectangle( int x, int y, int w, int h, const PLColour &colour )
 {
 	if ( colour.a == 0 )
 		return;
@@ -211,7 +217,7 @@ void vc::render::DrawFilledRectangle( int x, int y, int w, int h, const hei::Col
 	}
 }
 
-void vc::render::DrawPanel( int x, int y, int w, int h, const hei::Colour &colour )
+void vc::render::DrawPanel( int x, int y, int w, int h, const PLColour &colour )
 {
 	static constexpr unsigned int BORDER_WIDTH = 3;
 
@@ -221,7 +227,7 @@ void vc::render::DrawPanel( int x, int y, int w, int h, const hei::Colour &colou
 	DrawFilledRectangle( x + BORDER_WIDTH, y + BORDER_WIDTH, w - ( BORDER_WIDTH * 2 ), h - ( BORDER_WIDTH * 2 ), colour );
 
 	// draw bottom border
-	hei::Colour darkSide;
+	PLColour darkSide;
 	if ( ( ( int ) colour.r ) - 5 > 0 )
 		darkSide.r = colour.r - 5;
 	if ( ( ( int ) colour.g ) - 5 > 0 )

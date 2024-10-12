@@ -20,16 +20,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "GameMode.h"
 #include "GUI/GUIButton.h"
 #include "GUI/GUICursor.h"
-#include "Terrain.h"
 #include "EntityManager.h"
 #include "Entity.h"
-#include "Random.h"
 #include "Serializer.h"
 #include "BitmapFont.h"
 #include "Background.h"
 #include "render.h"
-
-#include "Entities/BaseCharacter.h"
 
 vc::GameMode::GameMode()
 {
@@ -48,8 +44,7 @@ vc::GameMode::GameMode()
 
 	SetupUserInterface();
 
-	terrainManager_ = new Terrain();
-	entityManager_  = new EntityManager();
+	entityManager_ = new EntityManager();
 
 	NewGame( "default.save" );
 }
@@ -57,7 +52,6 @@ vc::GameMode::GameMode()
 vc::GameMode::~GameMode()
 {
 	delete entityManager_;
-	delete terrainManager_;
 	delete backgroundManager_;
 	delete baseGuiPanel_;
 }
@@ -438,7 +432,6 @@ void vc::GameMode::HandleKeyboardEvent( int button, bool buttonUp )
 
 vc::PlayerManager *vc::GameMode::GetPlayerManager() { return App::GetGameMode()->playerManager; }
 vc::EntityManager *vc::GameMode::GetEntityManager() { return App::GetGameMode()->entityManager_; }
-vc::Terrain       *vc::GameMode::GetTerrainManager() { return App::GetGameMode()->terrainManager_; }
 vc::Background    *vc::GameMode::GetBackgroundManager() { return App::GetGameMode()->backgroundManager_; }
 
 void vc::GameMode::LoadRooms()

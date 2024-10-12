@@ -139,8 +139,6 @@ namespace vc
 		PlayerManager *playerManager{ nullptr };
 		EntityManager *entityManager_{ nullptr };
 
-		SpriteSheet *terrainSheet;
-		Terrain     *terrainManager_;
 		Background  *backgroundManager_;
 
 		// Rooms

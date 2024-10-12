@@ -29,19 +29,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 vc::GameMode::GameMode()
 {
-	// Cache all the data we're going to use...
-#if 0
-	vc::GetApp()->CacheSample( "sounds/00.wav" );
-	vc::GetApp()->CacheSample( "sounds/01.wav" );
-	vc::GetApp()->CacheSample( "sounds/02.wav" );
-	vc::GetApp()->CacheSample( "sounds/03.wav" );
-	vc::GetApp()->CacheSample( "sounds/04.wav" );
-	vc::GetApp()->CacheSample( "sounds/05.wav" );
-	vc::GetApp()->CacheSample( "sounds/06.wav" );
-
-	terrainSheet = new SpriteSheet( "sheets/terrain.sdf", vc::GetApp()->CacheImage( "sheets/terrain.png" ) );
-#endif
-
 	SetupUserInterface();
 
 	entityManager_ = new EntityManager();
@@ -180,9 +167,6 @@ void vc::GameMode::Tick()
 
 	numSeconds += 15;
 
-#if !defined( GAME_TYPE_SFC )
-	terrainManager_->Tick();
-#endif
 	entityManager_->Tick();
 
 	END_MEASURE();
@@ -229,71 +213,6 @@ void vc::GameMode::Draw()
 
 void vc::GameMode::NewGame( const char *path )
 {
-#if !defined( GAME_TYPE_SFC )
-	Print( "Generating terrain...\n" );
-	terrainManager_->Generate();
-
-	Print( "Generating territories...\n" );
-	unsigned int n = random::GenerateRandomInteger( 4, 8 );
-	for ( unsigned int i = 0; i < n; ++i )
-	{
-		// Pick a random point in the world
-		float x, y;
-		for ( unsigned int j = 0; j < 16; ++j )
-		{
-			// Try at least 16 times before we give up
-			x = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_WIDTH );
-			y = random::GenerateRandomInteger( 0, TERRAIN_PIXEL_HEIGHT );
-			if ( !terrainManager_->IsWater( x, y ) )
-			{
-				break;
-			}
-
-			x = y = -1.0f;
-		}
-
-		// Never found a point without water, give up...
-		if ( x == -1.0f && y == -1.0f )
-		{
-			continue;
-		}
-
-		// Now attempt to spawn in the territory
-		Territory territory( hei::Vector2( x, y ) );
-
-		// Spawn one Storehouse at the center
-		Entity *hub = entityManager_->CreateEntity( "StoreHouse" );
-		hub->origin = hei::Vector2( x, y );
-
-#	define TERRITORY_BOUNDS 256
-
-		unsigned int numAbodes = random::GenerateRandomInteger( 4, 16 );
-		for ( unsigned int j = 0; j < numAbodes; ++j )
-		{
-			x = random::GenerateRandomInteger( territory.origin.x - TERRITORY_BOUNDS, territory.origin.x + TERRITORY_BOUNDS );
-			y = random::GenerateRandomInteger( territory.origin.y - TERRITORY_BOUNDS, territory.origin.y + TERRITORY_BOUNDS );
-			if ( terrainManager_->IsWater( x, y ) )
-			{
-				continue;
-			}
-
-			// Assign some citizens to the abode.
-			int numCitizens = random::GenerateRandomInteger( 0, 4 );
-			for ( unsigned int k = 0; k < numCitizens; ++k )
-			{
-				BaseCharacter *citizen = dynamic_cast< BaseCharacter * >( entityManager_->CreateEntity( "BaseCharacter" ) );
-				if ( citizen == nullptr )
-				{
-					continue;
-				}
-
-				citizen->origin = hei::Vector2( x, y );
-				citizen->Spawn();
-			}
-		}
-	}
-#endif
-
 	LoadRooms();
 
 	playerCamera.position.x = 450;
@@ -480,25 +399,8 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 		                             room.h - room.y,
 		                             hei::Colour( 0, 0, 128, 100 ) );
 
-		int tx = room.x - ( int ) camera.position.x;
-		int ty = room.y - ( int ) camera.position.y;
-		for ( unsigned int i = 0; i < 16; ++i )
-		{
-			al_put_pixel( tx, ty + i, al_map_rgb( 0, 0, 255 ) );
-			al_put_pixel( tx + i, ty, al_map_rgb( 0, 0, 255 ) );
-		}
-
-		// w/h are explicit
-		tx = room.w - ( int ) camera.position.x;
-		ty = room.h - ( int ) camera.position.y;
-		for ( unsigned int i = 0; i < 16; ++i )
-		{
-			al_put_pixel( tx, ty - i, al_map_rgb( 0, 0, 255 ) );
-			al_put_pixel( tx - i, ty, al_map_rgb( 0, 0, 255 ) );
-		}
-
-		tx = ( ( room.w - room.x ) / 2 ) + room.x - ( int ) camera.position.x;
-		ty = ( ( room.h - room.y ) / 2 ) + room.y - ( int ) camera.position.y;
+		int tx = ( ( room.w - room.x ) / 2 ) + room.x - ( int ) camera.position.x;
+		int ty = ( ( room.h - room.y ) / 2 ) + room.y - ( int ) camera.position.y;
 
 		static const char *roomType[] = {
 		        "INTERIOR",

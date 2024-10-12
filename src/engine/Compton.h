@@ -16,12 +16,12 @@ extern int VC_LOG_WAR;// warning
 extern int VC_LOG_ERR;// error (kills application)
 
 #define VC_LOG   "debug"
-#define VC_TITLE "Compton"
+#define VC_TITLE "BitCritters"
 
 #ifdef DEBUG_BUILD
-#define WINDOW_TITLE VC_TITLE " [DEBUG]"
+#	define WINDOW_TITLE VC_TITLE " [DEBUG]"
 #else
-#define WINDOW_TITLE VC_TITLE
+#	define WINDOW_TITLE VC_TITLE
 #endif
 
 #define Print( ... ) \
@@ -34,10 +34,10 @@ extern int VC_LOG_ERR;// error (kills application)
 		abort();                                 \
 	}
 #if defined( DEBUG_BUILD )
-#define DebugMsg( ... ) \
-	PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
+#	define DebugMsg( ... ) \
+		PlLogMessage( VC_LOG_DEB, __VA_ARGS__ )
 #else
-#define DebugMsg( ... )
+#	define DebugMsg( ... )
 #endif
 
 #define IMPLEMENT_SUPER( CLASS ) typedef CLASS SuperClass;

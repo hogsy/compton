@@ -219,8 +219,8 @@ void vc::ImageManager::CacheSprites()
 		{
 			uint16_t offset    = ( uint16_t ) PlReadInt16( file, false, &status );
 			group.sprites[ j ] = {
-					( uint8_t ) PlReadInt8( file, &status ),// width
-					( uint8_t ) PlReadInt8( file, &status ) // height
+			        ( uint8_t ) PlReadInt8( file, &status ),// width
+			        ( uint8_t ) PlReadInt8( file, &status ) // height
 			};
 
 			// Reserve pixel buffer size (w*h)
@@ -269,22 +269,7 @@ void vc::ImageManager::Sprite::Draw( int x, int y, bool alphaTest ) const
 {
 	// todo: this api sucks balls
 	const Palette *palette = GetApp()->GetImageManager()->GetPalette(
-			( unsigned int ) GetApp()->GetGameMode()->GetTimeOfDay() );
-#if 0
-	for ( unsigned int row = 0; row < width; ++row )
-	{
-		for ( unsigned int column = 0; column < height; ++column )
-		{
-			uint8_t pixel = pixels[ row + column * width ];
-			if ( pixel == 0 )
-			{
-				continue;
-			}
+	        ( unsigned int ) GetApp()->GetGameMode()->GetTimeOfDay() );
 
-			DrawPixel( x + row, y + column, { palette->colours[ pixel ].r, palette->colours[ pixel ].g, palette->colours[ pixel ].b } );
-		}
-	}
-#else
-	vc::render::DrawBitmap( pixels.data(), 3, palette, x, y, width, height, alphaTest );
-#endif
+	engine::render::DrawBitmap( pixels.data(), 3, palette, x, y, width, height, alphaTest );
 }

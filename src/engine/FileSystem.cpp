@@ -81,8 +81,8 @@ static int FS_fungetc( PL_UNUSED ALLEGRO_FILE *f, int c )
 static off_t FS_fsize( ALLEGRO_FILE *f )
 {
 	//DebugMsg( "%s\n", __FUNCTION__ );
-	PLFile *file = static_cast< PLFile * >( al_get_file_userdata( f ) );
-	return PlGetFileSize( file );
+	PLFile *file = ( PLFile * ) al_get_file_userdata( f );
+	return ( off_t ) PlGetFileSize( file );
 }
 
 ALLEGRO_FILE_INTERFACE g_fsIOInterface = {

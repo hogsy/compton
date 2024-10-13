@@ -49,19 +49,22 @@ void vc::Entity::Serialize( Serializer *write )
  */
 bool vc::Entity::ShouldDraw( const vc::Camera &camera ) const
 {
-	if ( origin.x - bounds.x > camera.position.x + DISPLAY_WIDTH )
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+
+	if ( origin.x - bounds.x > camera.position.x + sw )
 	{
 		return false;
 	}
-	else if ( origin.y - bounds.y > camera.position.y + DISPLAY_HEIGHT )
+	else if ( origin.y - bounds.y > camera.position.y + sh )
 	{
 		return false;
 	}
-	else if ( origin.x + bounds.x < camera.position.x - DISPLAY_WIDTH )
+	else if ( origin.x + bounds.x < camera.position.x - sw )
 	{
 		return false;
 	}
-	else if ( origin.y + bounds.y < camera.position.y - DISPLAY_HEIGHT )
+	else if ( origin.y + bounds.y < camera.position.y - sh )
 	{
 		return false;
 	}

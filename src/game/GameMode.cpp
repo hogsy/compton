@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "Compton.h"
 #include "GameMode.h"
@@ -47,7 +32,10 @@ void vc::GameMode::SetupUserInterface()
 {
 	// Now create the base GUI panels
 
-	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT );
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+
+	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, sw, sh );
 
 #if !defined( GAME_TYPE_SFC )
 	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", vc::GetApp()->CacheImage( "sheets/interface.png" ) );
@@ -141,23 +129,26 @@ void vc::GameMode::Tick()
 	playerCamera.oldPosition = playerCamera.position;
 	playerCamera.position += playerCamera.velocity;
 
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+
 	// Restrict the camera to the world bounds
-	if ( playerCamera.position.x + DISPLAY_WIDTH < 0.0f )
+	if ( playerCamera.position.x + sw < 0.0f )
 	{
 		playerCamera.position.x = Background::PIXEL_WIDTH;
 	}
 	else if ( playerCamera.position.x > Background::PIXEL_WIDTH )
 	{
-		playerCamera.position.x = -DISPLAY_WIDTH;
+		playerCamera.position.x = -sw;
 	}
 
 	if ( playerCamera.position.y < 0.0f )
 	{
 		playerCamera.position.y = 0.0f;
 	}
-	else if ( playerCamera.position.y + DISPLAY_HEIGHT > Background::PIXEL_HEIGHT )
+	else if ( playerCamera.position.y + sh > Background::PIXEL_HEIGHT )
 	{
-		playerCamera.position.y = Background::PIXEL_HEIGHT - DISPLAY_HEIGHT;
+		playerCamera.position.y = Background::PIXEL_HEIGHT - sh;
 	}
 
 	if ( playerCamera.velocity.x != 0 || playerCamera.velocity.y != 0 )
@@ -176,6 +167,10 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+	engine::render::SetScissor( 0, 0, sw, sh );
+
 	backgroundManager_->Draw( playerCamera );
 	entityManager_->Draw( playerCamera );
 
@@ -191,7 +186,7 @@ void vc::GameMode::Draw()
 	if ( enableHelpPrompt_ )
 	{
 		int x = 10;
-		int y = DISPLAY_HEIGHT / 2;
+		int y = sh / 2;
 		font->DrawString( &x, &y, "HELP INFO:\n"
 		                          "Press R to display room volumes\n"
 		                          "Press H to toggle this help\n"
@@ -204,7 +199,7 @@ void vc::GameMode::Draw()
 		          GetTotalDays(),
 		          GetCurrentHour(), GetCurrentMinute(), GetCurrentSecond() );
 
-		int x = 10, y = ( DISPLAY_HEIGHT - font->GetCharacterHeight() ) - 20;
+		int x = 10, y = ( sh - font->GetCharacterHeight() ) - 20;
 		font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 255 ), true );
 	}
 
@@ -215,8 +210,11 @@ void vc::GameMode::NewGame( const char *path )
 {
 	LoadRooms();
 
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+
 	playerCamera.position.x = 450;
-	playerCamera.position.y = Background::CENTER_Y - ( DISPLAY_HEIGHT / 2 );
+	playerCamera.position.y = Background::CENTER_Y - ( sh / 2 );
 
 	entityManager_->CreateEntity( "BoidManager" );
 
@@ -262,7 +260,10 @@ void vc::GameMode::RestoreGame( const char *path )
 
 hei::Vector2 vc::GameMode::MousePosToWorld( int x, int y ) const
 {
-	return hei::Vector2( ( playerCamera.position.x - DISPLAY_WIDTH / 2 ) + x, ( playerCamera.position.y - DISPLAY_HEIGHT / 2 ) + y );
+	int sw = vc::GetApp()->GetDrawWidth();
+	int sh = vc::GetApp()->GetDrawHeight();
+
+	return hei::Vector2( ( playerCamera.position.x - sw / 2 ) + x, ( playerCamera.position.y - sh / 2 ) + y );
 }
 
 void vc::GameMode::HandleMouseEvent( int x, int y, int wheel, int button, bool buttonUp )
@@ -393,11 +394,11 @@ void vc::GameMode::DrawRoomsDebug( const vc::Camera &camera )
 
 	for ( auto room : rooms_ )
 	{
-		render::DrawFilledRectangle( room.x - ( int ) camera.position.x,
-		                             room.y - ( int ) camera.position.y,
-		                             room.w - room.x,
-		                             room.h - room.y,
-		                             hei::Colour( 0, 0, 128, 100 ) );
+		engine::render::DrawFilledRectangle( room.x - ( int ) camera.position.x,
+		                                     room.y - ( int ) camera.position.y,
+		                                     room.w - room.x,
+		                                     room.h - room.y,
+		                                     hei::Colour( 0, 0, 128, 100 ) );
 
 		int tx = ( ( room.w - room.x ) / 2 ) + room.x - ( int ) camera.position.x;
 		int ty = ( ( room.h - room.y ) / 2 ) + room.y - ( int ) camera.position.y;

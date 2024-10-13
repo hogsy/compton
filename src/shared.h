@@ -50,9 +50,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "engine/Timer.h"
 #include "engine/ImageManager.h"
 
-#define DISPLAY_WIDTH  640
-#define DISPLAY_HEIGHT 480
-
 #define GAME_TYPE_SFC
 
 //void DrawPixel( int x, int y, const hei::Colour &colour );
@@ -106,17 +103,8 @@ namespace vc
 
 		unsigned int GetNumOfTicks() { return numTicks; }
 
-		inline void GetWindowSize( int *dW, int *dH ) const
-		{
-			*dW = windowWidth;
-			*dH = windowHeight;
-		}
-
-		inline void GetScaledSize( int *dW, int *dH ) const
-		{
-			*dW = scaleW;
-			*dH = scaleH;
-		}
+		inline int GetDrawWidth() const { return drawWidth; }
+		inline int GetDrawHeight() const { return drawHeight; }
 
 		void GetCursorPosition( int *dX, int *dY ) const;
 		bool GetKeyState( int key ) const;
@@ -143,7 +131,7 @@ namespace vc
 		void Draw();
 		void Tick();
 
-		std::map< std::string, Timer > performanceTimers;
+		std::map< std::string, engine::Timer > performanceTimers;
 
 		ALLEGRO_DISPLAY     *alDisplay;
 		ALLEGRO_EVENT_QUEUE *alEventQueue;
@@ -168,8 +156,9 @@ namespace vc
 		bool redraw;
 		bool running;
 
-		int   windowWidth, windowHeight;
-		float scaleX, scaleY, scaleW, scaleH;
+		int                  displayWidth, displayHeight;
+		int                  drawWidth, drawHeight;
+		static constexpr int scale = 4;
 
 		double numTicks{};
 

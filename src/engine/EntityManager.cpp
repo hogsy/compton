@@ -12,13 +12,8 @@ std::map< std::string, vc::EntityManager::EntityConstructorFunction > vc::Entity
 vc::EntityManager::EntityVector vc::EntityManager::entities;
 vc::EntityManager::EntityVector vc::EntityManager::destructionQueue;
 
-vc::EntityManager::EntityManager()
-{
-}
-
-vc::EntityManager::~EntityManager()
-{
-}
+vc::EntityManager::EntityManager()  = default;
+vc::EntityManager::~EntityManager() = default;
 
 vc::Entity *vc::EntityManager::CreateEntity( const std::string &className )
 {
@@ -153,7 +148,7 @@ vc::EntityManager::EntitySlot vc::EntityManager::FindEntityByClassName( const ch
 }
 
 vc::EntityManager::EntityClassRegistration::EntityClassRegistration( const std::string &identifier, EntityConstructorFunction constructorFunction )
-	: myIdentifier( identifier )
+    : myIdentifier( identifier )
 {
 	EntityManager::entityClasses[ myIdentifier ] = constructorFunction;
 }

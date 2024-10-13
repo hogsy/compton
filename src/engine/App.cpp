@@ -49,6 +49,9 @@ int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
 int VC_LOG_WAR;// warning
 int VC_LOG_ERR;// error (kills application)
 
+static constexpr int DISPLAY_WIDTH  = 640;
+static constexpr int DISPLAY_HEIGHT = 360;
+
 vc::App::App( int argc, char **argv )
 {
 	// Initialize the platform library
@@ -264,19 +267,19 @@ void vc::App::InitializeDisplay()
 {
 	Print( "Initializing display...\n" );
 
-	windowWidth  = DISPLAY_WIDTH;
-	windowHeight = DISPLAY_HEIGHT;
+	displayWidth  = DISPLAY_WIDTH;
+	displayHeight = DISPLAY_HEIGHT;
 
-	//al_set_new_display_flags( ALLEGRO_FULLSCREEN_WINDOW );
-	alDisplay = al_create_display( windowWidth, windowHeight );
+	al_set_new_display_flags( ALLEGRO_RESIZABLE );
+	alDisplay = al_create_display( displayWidth, displayHeight );
 	if ( alDisplay == nullptr )
 	{
 		Error( "Failed to initialize display!\n" );
 	}
 
 	// Get the actual width and height
-	windowWidth  = al_get_display_width( alDisplay );
-	windowHeight = al_get_display_height( alDisplay );
+	displayWidth  = al_get_display_width( alDisplay );
+	displayHeight = al_get_display_height( alDisplay );
 
 	al_set_window_title( alDisplay, WINDOW_TITLE );
 
@@ -289,18 +292,10 @@ void vc::App::InitializeDisplay()
 		Error( "Failed to create screen buffer: %u\n", al_get_errno() );
 	}
 
-	int sx    = windowWidth / DISPLAY_WIDTH;
-	int sy    = windowHeight / DISPLAY_HEIGHT;
-	int scale = std::min( sx, sy );
-
-	scaleW = DISPLAY_WIDTH * scale;
-	scaleH = DISPLAY_HEIGHT * scale;
-	scaleX = ( windowWidth - scaleW ) / 2;
-	scaleY = ( windowHeight - scaleH ) / 2;
+	drawWidth  = DISPLAY_WIDTH;
+	drawHeight = DISPLAY_HEIGHT;
 
 	al_inhibit_screensaver( true );
-
-	al_set_clipping_rectangle( 0, 0, windowWidth, windowHeight );
 
 	redraw = true;
 }
@@ -312,11 +307,28 @@ void vc::App::Draw()
 		return;
 	}
 
-	// Setup the target buffer and then clear it to red
-	al_set_target_bitmap( screenBitmap_ );
-	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
-
 	// Now draw everything we want
+
+	drawWidth  = displayWidth / scale;
+	drawHeight = displayHeight / scale;
+
+	if ( al_get_bitmap_width( screenBitmap_ ) != drawWidth || al_get_bitmap_height( screenBitmap_ ) != drawHeight )
+	{
+		al_destroy_bitmap( screenBitmap_ );
+
+		al_set_new_bitmap_flags( ALLEGRO_MEMORY_BITMAP );
+		al_set_new_bitmap_format( ALLEGRO_PIXEL_FORMAT_RGB_888 );
+		screenBitmap_ = al_create_bitmap( drawWidth, drawHeight );
+		if ( screenBitmap_ == nullptr )
+		{
+			Error( "Failed to create screen buffer: %u\n", al_get_errno() );
+		}
+
+		al_set_clipping_rectangle( 0, 0, displayWidth, displayHeight );
+	}
+
+	// Setup the target buffer
+	al_set_target_bitmap( screenBitmap_ );
 
 	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
 
@@ -333,14 +345,32 @@ void vc::App::Draw()
 
 	al_unlock_bitmap( screenBitmap_ );
 
+	double ba = ( double ) drawWidth / drawHeight;
+	double da = ( double ) displayWidth / displayHeight;
+
+	int nw, nh;
+	if ( da > ba )
+	{
+		nh = displayHeight;
+		nw = displayHeight * ba;
+	}
+	else
+	{
+		nw = displayWidth;
+		nh = displayWidth / ba;
+	}
+
+	int ox = ( displayWidth - nw ) / scale;
+	int oy = ( displayHeight - nh ) / scale;
+
 	// And finally, handle the scaling
 	al_set_target_backbuffer( alDisplay );
 	al_draw_scaled_bitmap(
 	        screenBitmap_,
 	        0, 0,
-	        DISPLAY_WIDTH, DISPLAY_HEIGHT,
-	        scaleX, scaleY,
-	        scaleW, scaleH,
+	        drawWidth, drawHeight,
+	        ox, oy,
+	        nw, nh,
 	        0 );
 
 	al_flip_display();
@@ -354,7 +384,7 @@ void vc::App::InitializeEvents()
 {
 	Print( "Initialize events...\n" );
 
-	if ( ( alTimer = al_create_timer( 1.0 / 60 ) ) == nullptr )
+	if ( ( alTimer = al_create_timer( 1.0 / 30 ) ) == nullptr )
 	{
 		Error( "Failed to initialize timer!\n" );
 	}
@@ -406,7 +436,9 @@ void vc::App::Tick()
 		default: break;
 
 		case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
-			//al_hide_mouse_cursor( alDisplay );
+#if defined( NDEBUG )
+			al_hide_mouse_cursor( alDisplay );
+#endif
 			break;
 		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
 			al_show_mouse_cursor( alDisplay );
@@ -434,6 +466,12 @@ void vc::App::Tick()
 			running = false;
 			break;
 
+		case ALLEGRO_EVENT_DISPLAY_RESIZE:
+			al_acknowledge_resize( alDisplay );
+			displayWidth  = event.display.width;
+			displayHeight = event.display.height;
+			break;
+
 		case ALLEGRO_EVENT_MOUSE_AXES:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
@@ -457,8 +495,8 @@ void vc::App::Tick()
 				button = MOUSE_BUTTON_MIDDLE;
 			}
 
-			int aX = event.mouse.x * DISPLAY_WIDTH / windowWidth;
-			int aY = event.mouse.y * DISPLAY_HEIGHT / windowHeight;
+			int aX = event.mouse.x * drawWidth / displayWidth;
+			int aY = event.mouse.y * drawHeight / displayHeight;
 			gameMode->HandleMouseEvent( aX, aY, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
 		}
@@ -497,8 +535,8 @@ void vc::App::GetCursorPosition( int *dX, int *dY ) const
 	ALLEGRO_MOUSE_STATE state;
 	al_get_mouse_state( &state );
 
-	*dX = state.x * DISPLAY_WIDTH / windowWidth;
-	*dY = state.y * DISPLAY_HEIGHT / windowHeight;
+	*dX = state.x * drawWidth / displayWidth;
+	*dY = state.y * drawHeight / displayHeight;
 }
 
 bool vc::App::GetKeyState( int key ) const
@@ -521,8 +559,10 @@ void vc::App::GrabCursor( bool status )
 {
 	if ( status )
 	{
-		//al_grab_mouse( alDisplay );
-		//al_hide_mouse_cursor( alDisplay );
+#if defined( NDEBUG )
+		al_grab_mouse( alDisplay );
+		al_hide_mouse_cursor( alDisplay );
+#endif
 		return;
 	}
 
@@ -535,7 +575,7 @@ void vc::App::GrabCursor( bool status )
 
 void vc::App::StartPerformanceTimer( const char *identifier )
 {
-	performanceTimers.insert( std::pair< std::string, Timer >( identifier, Timer() ) );
+	performanceTimers.insert( std::pair< std::string, engine::Timer >( identifier, engine::Timer() ) );
 }
 
 void vc::App::EndPerformanceTimer( const char *identifier )

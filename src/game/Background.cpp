@@ -1,20 +1,5 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 /*--------------------------------------------------------------------------------------
  * Background.cpp
  *  Drawing SFC style background.
@@ -23,7 +8,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Background.h"
 #include "Camera.h"
 
-vc::Background::Background() = default;
+vc::Background::Background()  = default;
 vc::Background::~Background() = default;
 
 void vc::Background::Draw( const Camera &camera )
@@ -39,8 +24,11 @@ void vc::Background::Draw( const Camera &camera )
 
 void vc::Background::DrawBlock( const Camera &camera, unsigned int block, int x, int y )
 {
-	if ( x > camera.position.x + DISPLAY_WIDTH || x + BLOCK_WIDTH < camera.position.x - DISPLAY_WIDTH ||
-	     y > camera.position.y + DISPLAY_HEIGHT || y + BLOCK_HEIGHT < camera.position.y - DISPLAY_HEIGHT )
+	int sw = GetApp()->GetDrawWidth();
+	int sh = GetApp()->GetDrawHeight();
+
+	if ( x > camera.position.x + sw || x + BLOCK_WIDTH < camera.position.x - sw ||
+	     y > camera.position.y + sh || y + BLOCK_HEIGHT < camera.position.y - sh )
 	{
 		return;
 	}

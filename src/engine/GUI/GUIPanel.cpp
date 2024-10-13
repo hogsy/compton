@@ -76,7 +76,7 @@ void vc::GUIPanel::DrawBackground()
 	{
 		default: break;
 		case Background::SOLID:
-			render::DrawFilledRectangle( dx, dy, dw, dh, backgroundColour );
+			engine::render::DrawFilledRectangle( dx, dy, dw, dh, backgroundColour );
 			break;
 		case Background::TEXTURE:
 		{

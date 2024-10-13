@@ -8,7 +8,7 @@ add_library(game STATIC
         Entities/ai/Brain.cpp
         Entities/ai/Sensor.cpp
 
-        Entities/BaseBuilding.cpp
+        #Entities/BaseBuilding.cpp
         Entities/BaseCharacter.cpp
         Entities/BaseCreature.cpp
         Entities/DebugWaypoint.cpp

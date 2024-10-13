@@ -18,41 +18,43 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <time.h>
+#include <ctime>
 
-class Timer
+namespace engine
 {
-public:
-	Timer()
+	class Timer
 	{
-		clock_gettime( CLOCK_MONOTONIC, &clock );
-	}
+	public:
+		Timer()
+		{
+			clock_gettime( CLOCK_MONOTONIC, &clock );
+		}
 
-	void End()
-	{
-		struct timespec end;
-		clock_gettime( CLOCK_MONOTONIC, &end );
-		timeTaken = TimespecToDouble( TimespecSub( end, clock ) );
-	}
+		void End()
+		{
+			struct timespec end;
+			clock_gettime( CLOCK_MONOTONIC, &end );
+			timeTaken = TimespecToDouble( TimespecSub( end, clock ) );
+		}
 
-	double GetTimeTaken() const
-	{
-		return timeTaken;
-	}
+		double GetTimeTaken() const
+		{
+			return timeTaken;
+		}
 
-private:
+	private:
 #define NSEC_PER_SEC 1000000000
 
-	/** \fn double timespec_to_double(struct timespec ts)
+		/** \fn double timespec_to_double(struct timespec ts)
  	 *  \brief Converts a timespec to a fractional number of seconds.
  	 *  Originally written by Daniel Collins (2017)
 	 */
-	static double TimespecToDouble( struct timespec ts )
-	{
-		return ( ( double ) ( ts.tv_sec ) + ( ( double ) ( ts.tv_nsec ) / NSEC_PER_SEC ) );
-	}
+		static double TimespecToDouble( struct timespec ts )
+		{
+			return ( ( double ) ( ts.tv_sec ) + ( ( double ) ( ts.tv_nsec ) / NSEC_PER_SEC ) );
+		}
 
-	/** \fn struct timespec timespec_normalise(struct timespec ts)
+		/** \fn struct timespec timespec_normalise(struct timespec ts)
 	 *  \brief Normalises a timespec structure.
 	 *
 	 * Returns a normalised version of a timespec structure, according to the
@@ -69,60 +71,61 @@ private:
 	 *
 	 * Originally written by Daniel Collins (2017)
 	 */
-	static struct timespec TimespecNormalise( struct timespec ts )
-	{
-		while ( ts.tv_nsec >= NSEC_PER_SEC )
+		static struct timespec TimespecNormalise( struct timespec ts )
 		{
-			++( ts.tv_sec );
-			ts.tv_nsec -= NSEC_PER_SEC;
-		}
+			while ( ts.tv_nsec >= NSEC_PER_SEC )
+			{
+				++( ts.tv_sec );
+				ts.tv_nsec -= NSEC_PER_SEC;
+			}
 
-		while ( ts.tv_nsec <= -NSEC_PER_SEC )
-		{
-			--( ts.tv_sec );
-			ts.tv_nsec += NSEC_PER_SEC;
-		}
+			while ( ts.tv_nsec <= -NSEC_PER_SEC )
+			{
+				--( ts.tv_sec );
+				ts.tv_nsec += NSEC_PER_SEC;
+			}
 
-		if ( ts.tv_nsec < 0 && ts.tv_sec > 0 )
-		{
-			/* Negative nanoseconds while seconds is positive.
+			if ( ts.tv_nsec < 0 && ts.tv_sec > 0 )
+			{
+				/* Negative nanoseconds while seconds is positive.
 			 * Decrement tv_sec and roll tv_nsec over.
 			*/
 
-			--( ts.tv_sec );
-			ts.tv_nsec = NSEC_PER_SEC - ( -1 * ts.tv_nsec );
-		}
-		else if ( ts.tv_nsec > 0 && ts.tv_sec < 0 )
-		{
-			/* Positive nanoseconds while seconds is negative.
+				--( ts.tv_sec );
+				ts.tv_nsec = NSEC_PER_SEC - ( -1 * ts.tv_nsec );
+			}
+			else if ( ts.tv_nsec > 0 && ts.tv_sec < 0 )
+			{
+				/* Positive nanoseconds while seconds is negative.
 			 * Increment tv_sec and roll tv_nsec over.
 			*/
 
-			++( ts.tv_sec );
-			ts.tv_nsec = -NSEC_PER_SEC - ( -1 * ts.tv_nsec );
+				++( ts.tv_sec );
+				ts.tv_nsec = -NSEC_PER_SEC - ( -1 * ts.tv_nsec );
+			}
+
+			return ts;
 		}
 
-		return ts;
-	}
-
-	/** \fn struct timespec timespec_sub(struct timespec ts1, struct timespec ts2)
+		/** \fn struct timespec timespec_sub(struct timespec ts1, struct timespec ts2)
  	 *  \brief Returns the result of subtracting ts2 from ts1.
  	 *  Originally written by Daniel Collins (2017)
 	 */
-	static struct timespec TimespecSub( struct timespec ts1, struct timespec ts2 )
-	{
-		/* Normalise inputs to prevent tv_nsec rollover if whole-second values
+		static struct timespec TimespecSub( struct timespec ts1, struct timespec ts2 )
+		{
+			/* Normalise inputs to prevent tv_nsec rollover if whole-second values
 		 * are packed in it.
 		*/
-		ts1 = TimespecNormalise( ts1 );
-		ts2 = TimespecNormalise( ts2 );
+			ts1 = TimespecNormalise( ts1 );
+			ts2 = TimespecNormalise( ts2 );
 
-		ts1.tv_sec -= ts2.tv_sec;
-		ts1.tv_nsec -= ts2.tv_nsec;
+			ts1.tv_sec -= ts2.tv_sec;
+			ts1.tv_nsec -= ts2.tv_nsec;
 
-		return TimespecNormalise( ts1 );
-	}
+			return TimespecNormalise( ts1 );
+		}
 
-	struct timespec clock;
-	double          timeTaken{ 0.0 };
-};
+		struct timespec clock;
+		double          timeTaken{ 0.0 };
+	};
+}// namespace engine

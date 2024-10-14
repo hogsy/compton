@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -42,8 +42,8 @@ namespace vc
 		hei::Vector2 origin{ 0.0f, 0.0f };
 
 	protected:
-		int myHealth{ 100 };
-		int myMaxHealth{ 100 };
+		int health{ 100 };
+		int maxHealth{ 100 };
 
 		bool isVisible{ false };
 	};

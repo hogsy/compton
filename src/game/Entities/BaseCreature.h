@@ -1,26 +1,13 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
-#include "Entity.h"
-#include "Entities/ai/Brain.h"
-#include "Entities/ai/Sensor.h"
+#include "../../engine/Entity.h"
+#include "../../engine/Random.h"
+
+#include "../Entities/ai/Brain.h"
+#include "../Entities/ai/Sensor.h"
 
 namespace vc
 {
@@ -42,17 +29,67 @@ namespace vc
 
 		bool CanBreed( BaseCreature *other );
 
-		virtual void Deserialize( Serializer *read ) override;
-		virtual void Serialize( Serializer *write ) override;
+		/**
+		 * Let's us know whether this particular
+		 * creature can actually get pregnant in
+		 * it's current state.
+		 */
+		inline bool CanBecomePregnant()
+		{
+			if ( sex == Sex::MALE || isPregnant )
+			{
+				return false;
+			}
 
-		virtual void Draw( const Camera &camera ) override;
-		virtual void Tick() override;
+			// Only adults can make babies
+			if ( phase != LifePhase::LIFE_PHASE_ADULTHOOD )
+			{
+				return false;
+			}
+
+			return ( random::GenerateRandomInteger( 0, age / MAX_LIFE_PHASES ) == 0 );
+		}
+
+		void Deserialize( Serializer *read ) override;
+		void Serialize( Serializer *write ) override;
+
+		void Draw( const Camera &camera ) override;
+		void Tick() override;
+
+	private:
+		void Think();
+
+	public:
+		// Actions
+		virtual ai::FeedbackState Use();
+		virtual ai::FeedbackState Drink();
+		virtual ai::FeedbackState Eat();
+		virtual ai::FeedbackState Talk();
+		virtual ai::FeedbackState Attack();
+
+		virtual void StepTowards( const PLVector2 &target, int speed = 5 );
+		virtual void StepAway( const PLVector2 &target, int speed = 1.0f );
+
+	public:
+		enum LifePhase
+		{
+			LIFE_PHASE_BABYHOOD, // immobile and weak
+			LIFE_PHASE_CHILDHOOD,// mobile but weak
+			LIFE_PHASE_ADULTHOOD,// mobile
+			LIFE_PHASE_ELDERLY,  // slower and weaker
+			LIFE_PHASE_EXPIRED,  // dead
+
+			MAX_LIFE_PHASES
+		};
 
 	protected:
-		Sex mySex{ Sex::INTERSEX };
+		LifePhase phase{ LifePhase::LIFE_PHASE_BABYHOOD };
+		Sex       sex{ Sex::INTERSEX };
 
-		ai::Brain  myBrain;
-		ai::Sensor mySensors[ ai::Sensor::MAX_SENSOR_TYPES ];
+		ai::Brain  brain;
+		ai::Sensor sensors[ ai::Sensor::MAX_SENSOR_TYPES ];
+
+		Entity *targetEntity{};
 
 		unsigned int age{ 0 };
 		unsigned int maxAge{ 100 };
@@ -67,8 +104,13 @@ namespace vc
 		int myHunger{ 0 };
 		int myThirst{ 0 };
 
+		unsigned int stepTime{};
+
 		unsigned int experience{ 0 };
 		unsigned int maxExperience{ 100 };
 		unsigned int currentLevel{ 0 };
+
+	public:
+		[[nodiscard]] virtual bool IsMoving() const;
 	};
 }// namespace vc

@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
+#include "../../engine/Compton.h"
+#include "../../engine/GUI/GUIButton.h"
+#include "../../engine/GUI/GUICursor.h"
+#include "../../engine/EntityManager.h"
+#include "../../engine/Entity.h"
+#include "../../engine/Serializer.h"
+#include "../../engine/BitmapFont.h"
+#include "../../engine/render.h"
+
 #include "GameMode.h"
-#include "GUI/GUIButton.h"
-#include "GUI/GUICursor.h"
-#include "EntityManager.h"
-#include "Entity.h"
-#include "Serializer.h"
-#include "BitmapFont.h"
 #include "Background.h"
-#include "render.h"
 
 vc::GameMode::GameMode()
 {

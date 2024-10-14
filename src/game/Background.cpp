@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 /*--------------------------------------------------------------------------------------
  * Background.cpp
  *  Drawing SFC style background.
  *------------------------------------------------------------------------------------*/
 
 #include "Background.h"
-#include "Camera.h"
+
+#include "../../engine/Camera.h"
 
 vc::Background::Background()  = default;
 vc::Background::~Background() = default;

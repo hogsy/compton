@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
 #include "../shared.h"
 
-#include "GUI/GUIPanel.h"
-#include "GUI/GUIPieMenu.h"
+#include "../engine/GUI/GUIPanel.h"
+#include "../engine/GUI/GUIPieMenu.h"
 
-#include "SpriteSheet.h"
-#include "Camera.h"
+#include "../engine/SpriteSheet.h"
+#include "../engine/Camera.h"
 
 namespace vc
 {
@@ -123,7 +123,7 @@ namespace vc
 		PlayerManager *playerManager{ nullptr };
 		EntityManager *entityManager_{ nullptr };
 
-		Background  *backgroundManager_;
+		Background *backgroundManager_;
 
 		// Rooms
 
@@ -136,10 +136,10 @@ namespace vc
 				ROOM_TYPE_EXTERIOR,
 			};
 
-			int x;
-			int w;
-			int y;
-			int h;
+			int      x;
+			int      w;
+			int      y;
+			int      h;
 			uint16_t type;
 
 			unsigned int id;
@@ -157,7 +157,6 @@ namespace vc
 		const Room *GetRoomByIndex( unsigned int index ) const;
 
 	private:
-
 		bool enableRoomDraw_{ false };
 		bool enableHelpPrompt_{ true };
 

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "../shared.h"
 
 #include "ImageManager.h"
-#include "Background.h"
-#include "GameMode.h"
 #include "render.h"
+
+#include "../game/Background.h"
+#include "../game/GameMode.h"
 
 static int ImageBitmap_PlatformPixelFormatToAllegroPixelFormat( PLImageFormat imageFormat )
 {

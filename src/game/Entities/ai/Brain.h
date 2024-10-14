@@ -1,141 +1,144 @@
-/*
-Compton, 2D Game Engine
-Copyright (C) 2016-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
-namespace vc
+#include "../../engine/Entity.h"
+
+namespace vc::ai
 {
-	namespace ai
+	enum class MotorAction
 	{
-		enum class Verb
+		USE,
+		DRINK,
+		EAT,
+		TALK,
+		ATTACK,
+		APPROACH,
+		RETREAT,
+	};
+
+	struct DecisionTree
+	{
+	};
+
+	class Concept
+	{
+	};
+
+	struct FeedbackState
+	{
+		struct Need
 		{
-			VERB_USE,
-			VERB_DRINK,
-			VERB_EAT,
-			VERB_TALK,
-			VERB_APPROACH,
+			const char *description;
+			double      value;
+		};
+		Need food{ "food", 0.0 };
+		Need water{ "water", 0.0 };
+		Need health{ "health", 0.0 };
+		Need movement{ "movement", 0.0 };
+		Need pleasure{ "pleasure", 0.0 };
+		Need safety{ "safety", 0.0 };
+		Need rest{ "rest", 0.0 };
+		Need shelter{ "shelter", 0.0 };
+	};
+
+	struct Memory
+	{
+		enum class Disposition : uint8_t
+		{
+			NEUTRAL,
+			POSITIVE,
+			NEGATIVE,
+		};
+		Disposition genericDisposition{ Disposition::NEUTRAL };
+
+		unsigned int  curResponses{ 0 };
+		FeedbackState mappedResponses[ 8 ];
+		FeedbackState averageResponse;
+	};
+
+	class Brain
+	{
+	public:
+		Brain();
+		~Brain();
+
+		bool active{ true };// if false, brain will not 'tick'
+
+		// Mood indicator, provided as a generic reflectance
+		// of internal state - not necessarily accurately either
+
+		enum class Mood
+		{
+			SAD,
+			NEUTRAL,
+			HAPPY,
+
+			MAX_MOODS
 		};
 
-		struct DecisionTree
-		{
-		};
+		inline Mood GetCurrentMood() const { return mood_; }
 
-		class Concept
-		{
-		};
+		void Tick();
 
-		struct FeedbackState
-		{
-			struct Need
-			{
-				const char *description;
-				double      value;
-			};
-			Need food{ "food", 0.0 };
-			Need water{ "water", 0.0 };
-			Need health{ "health", 0.0 };
-			Need movement{ "movement", 0.0 };
-			Need pleasure{ "pleasure", 0.0 };
-			Need safety{ "safety", 0.0 };
-			Need rest{ "rest", 0.0 };
-			Need shelter{ "shelter", 0.0 };
-		};
+		//======================================================
+		// MEMORY
 
-		struct Memory
-		{
-			enum class Disposition : uint8_t
-			{
-				NEUTRAL,
-				POSITIVE,
-				NEGATIVE,
-			};
-			Disposition genericDisposition{ Disposition::NEUTRAL };
+	private:
+		Mood mood_{ Mood::NEUTRAL };
 
-			unsigned int  curResponses{ 0 };
-			FeedbackState mappedResponses[ 8 ];
-			FeedbackState averageResponse;
-		};
+		FeedbackState feedbackState_;
 
-		class Brain
+		class MemoryManager
 		{
 		public:
-			Brain();
-			~Brain();
-
-			enum class Mood
-			{
-				SAD,
-				NEUTRAL,
-				HAPPY,
-
-				MAX_MOODS
-			};
-
-			inline Mood GetCurrentMood() const { return myMood; }
-
-			void Tick();
-
-			//======================================================
-			// MEMORY
-
-			inline void AddMemory()
+			inline void AddMemory( const std::string &descriptor, const Memory &memory )
 			{
 			}
 
-			inline void WipeMemory()
+			inline void Wipe()
 			{
-				myMemoryManager.Wipe();
+				memories_.clear();
 			}
 
 		private:
-			Mood myMood{ Mood::NEUTRAL };
-
-			FeedbackState myState;
-
-			class MemoryManager
-			{
-			public:
-				inline void AddMemory( const std::string &descriptor, const Memory &memory )
-				{
-				}
-
-				inline void Wipe()
-				{
-					myMemories.clear();
-				}
-
-			private:
-				std::map< std::string, Memory > myMemories;
-				// the above is used for carrying identifications for
-				// each agent in the world. each agent carries a unique
-				// descriptor for it's "classification", e.g. honey, water, ice, gremlin
-				// which we use to fetch our disposition
-			};
-			MemoryManager myMemoryManager;
-
-			struct Directive
-			{
-				double       weight{ 0 };
-				bool         isCompleted{ false };
-				hei::Vector2 targetPosition;
-				std::string  description;
-			};
-			std::vector< Directive > myDirectives;
+			std::map< std::string, Memory > memories_;
+			// the above is used for carrying identifications for
+			// each agent in the world. each agent carries a unique
+			// descriptor for its "classification", e.g. honey, water, ice, gremlin
+			// which we use to fetch our disposition
 		};
-	}// namespace ai
-}// namespace vc
+		MemoryManager memoryManager_;
+
+	public:
+		MemoryManager *GetMemoryManager() { return &memoryManager_; }
+
+		//======================================================
+
+	public:
+		Entity *owner_{ nullptr };
+
+		//======================================================
+		// DIRECTIVES
+
+		struct Directive
+		{
+			MotorAction              type;
+			double                   weight{ 0 };
+			bool                     isCompleted{ false };
+			PLVector2                targetPosition;
+			std::string              description;
+			std::vector< Directive > subDirectives;
+		};
+
+	private:
+		std::vector< Directive > directives_;
+
+	public:
+		[[nodiscard]] const Directive *GetTopDirective() const
+		{
+			return &directives_[ 0 ];
+		}
+	};
+}// namespace vc::ai

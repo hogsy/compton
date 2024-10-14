@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "Compton.h"
+#include "../../engine/Compton.h"
+#include "../../engine/Serializer.h"
+
 #include "BaseCharacter.h"
-#include "Serializer.h"
 
 namespace vc
 {

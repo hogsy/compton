@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright (C) 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "lisp.h"
 
 #include "../shared.h"
+#include "../game/GameMode.h"
 
-#include "GameMode.h"
 #include "EntityManager.h"
 #include "BitmapFont.h"
 
@@ -122,6 +122,7 @@ vc::App::App( int argc, char **argv )
 		Error( "Failed to install mouse through Allegro!\n" );
 	}
 
+#if !defined( EDITOR )
 	if ( !al_install_audio() )
 	{
 		Error( "Failed to install audio through Allegro!\n" );
@@ -132,14 +133,15 @@ vc::App::App( int argc, char **argv )
 		Error( "Failed to install audio codecs through Allegro!\n" );
 	}
 
+	al_reserve_samples( 512 );
+#endif
+
 	al_init_native_dialog_addon();
 
 	al_set_new_file_interface( &g_fsIOInterface );
 	al_register_bitmap_loader( ".png", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".bmp", ImageBitmap_LoadGeneric );
 	al_register_bitmap_loader( ".tga", ImageBitmap_LoadGeneric );
-
-	al_reserve_samples( 512 );
 
 #if 0
 	ALLEGRO_PATH *path = al_get_standard_path( ALLEGRO_RESOURCES_PATH );
@@ -176,6 +178,7 @@ void vc::App::Loop()
 
 ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 {
+#if !defined( EDITOR )
 	auto i = samples.find( path );
 	if ( i != samples.end() )
 	{
@@ -193,27 +196,9 @@ ALLEGRO_SAMPLE *vc::App::CacheSample( const char *path )
 	samples.emplace( path, sample );
 
 	return sample;
-}
-
-ALLEGRO_BITMAP *vc::App::CacheImage( const char *path )
-{
-	auto i = bitmaps.find( path );
-	if ( i != bitmaps.end() )
-	{
-		return i->second;
-	}
-
-	Print( "Caching image, \"%s\"\n", path );
-
-	ALLEGRO_BITMAP *bitmap = al_load_bitmap( path );
-	if ( bitmap == nullptr )
-	{
-		Error( "Failed to load bitmap, \"%s\"!\n", path );
-	}
-
-	bitmaps.emplace( path, bitmap );
-
-	return bitmap;
+#else
+	return nullptr;
+#endif
 }
 
 void vc::App::ShowMessageBox( const char *title, const char *message, bool error )
@@ -258,7 +243,7 @@ void vc::App::Shutdown()
 		alTimer = nullptr;
 	}
 
-	exit( 0 );
+	exit( EXIT_SUCCESS );
 }
 
 // Display

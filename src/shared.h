@@ -34,6 +34,7 @@
 #include "engine/Compton.h"
 #include "engine/Timer.h"
 #include "engine/ImageManager.h"
+#include "engine/console.h"
 
 #define GAME_TYPE_SFC
 
@@ -137,6 +138,11 @@ namespace vc
 		bool mouseStatus[ MAX_MOUSE_BUTTONS ];// left, right, middle
 
 		bool redraw;
+
+		bool debugFPS_{};
+		bool debugProfiler_{};
+		bool debugDrawStats{};
+
 		bool running;
 
 		int                  displayWidth, displayHeight;
@@ -145,6 +151,18 @@ namespace vc
 
 		double numTicks{};
 
+		static constexpr unsigned int MAX_FPS_READINGS = 64;
+		double                        fps_[ MAX_FPS_READINGS ]{};
+
+	public:
+		inline unsigned int GetAverageFPS() const
+		{
+			double t = 0.0;
+			for ( double fp : fps_ ) t += fp;
+			return ( unsigned int ) ( t / MAX_FPS_READINGS );
+		}
+
+	private:
 		char appDataPath[ PL_SYSTEM_MAX_PATH ];
 
 		// Sub-Systems
@@ -155,6 +173,8 @@ namespace vc
 
 	private:
 		ALLEGRO_BITMAP *screenBitmap_{ nullptr };
+
+		engine::Console console{};
 	};
 
 	App *GetApp();

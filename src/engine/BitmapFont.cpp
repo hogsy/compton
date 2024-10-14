@@ -29,7 +29,7 @@ bool vc::BitmapFont::LoadFromFile( uint8_t cw, uint8_t ch, const char *path )
 	return true;
 }
 
-void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &colour )
+void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &colour ) const
 {
 	if ( c < 0 )
 	{
@@ -60,7 +60,7 @@ void vc::BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &col
 	}
 }
 
-void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow )
+void vc::BitmapFont::DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour, bool shadow ) const
 {
 	if ( shadow )
 	{

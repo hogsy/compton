@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
+#include <plcore/pl_timer.h>
+
 #include "lisp.h"
 
 #include "../shared.h"
@@ -8,6 +10,7 @@
 
 #include "EntityManager.h"
 #include "BitmapFont.h"
+#include "render.h"
 
 ////////////////////////////////
 // App Class
@@ -92,7 +95,7 @@ vc::App::App( int argc, char **argv )
 	for ( unsigned int i = 0; i < 100; ++i )
 	{
 		char packageName[ 64 ];
-		snprintf( packageName, sizeof( packageName ), "data%d.pkg", i );
+		snprintf( packageName, sizeof( packageName ), "data%d.zip", i );
 		if ( PlMountLocation( packageName ) == nullptr )
 		{
 			break;
@@ -157,6 +160,10 @@ vc::App::App( int argc, char **argv )
 	imageManager = new ImageManager( argc, argv );
 
 	running = true;
+
+	PlRegisterConsoleVariable( "showfps", "Display the current average FPS.", "true", PL_VAR_BOOL, &debugFPS_, nullptr, false );
+	PlRegisterConsoleVariable( "showprof", "Display profiler results.", "1", PL_VAR_BOOL, &debugProfiler_, nullptr, false );
+	PlRegisterConsoleVariable( "showstat", "Display draw stats.", "1", PL_VAR_BOOL, &debugDrawStats, nullptr, false );
 }
 
 vc::App::~App() = default;
@@ -292,6 +299,8 @@ void vc::App::Draw()
 		return;
 	}
 
+	START_MEASURE();
+
 	// Now draw everything we want
 
 	drawWidth  = displayWidth / scale;
@@ -317,15 +326,77 @@ void vc::App::Draw()
 
 	region_ = al_lock_bitmap( screenBitmap_, al_get_bitmap_format( screenBitmap_ ), ALLEGRO_LOCK_READWRITE );
 
+	engine::render::BeginDraw();
+
+	static double       oldTime;
+	double              newTime = PlGetCurrentSeconds();
+	static unsigned int ci      = 0;
+	fps_[ ci++ ]                = 1.0 / ( newTime - oldTime );
+	if ( ci >= MAX_FPS_READINGS )
+	{
+		ci = 0;
+	}
+	oldTime = newTime;
+
+	engine::render::SetScissor( 0, 0, drawWidth, drawHeight );
+	engine::render::ClearDisplay();
+
 	gameMode->Draw();
 
+	console.Draw();
+
+	engine::render::EndDraw();
+
+	END_MEASURE();
+
 	// Draw our debug data
-	int x = 8, y = 8;
-	for ( auto const &i : performanceTimers )
+	BitmapFont *font = GetDefaultFont();
+	if ( font != nullptr )
 	{
 		char buf[ 256 ];
-		snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
-		defaultBitmapFont_->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+		int  x = 8, y = 8;
+
+		if ( debugFPS_ )
+		{
+			unsigned int fps = GetAverageFPS();
+
+			snprintf( buf, sizeof( buf ), "FPS = %u\n", fps );
+			hei::Colour colour;
+			if ( fps <= 10 )
+			{
+				colour = hei::Colour( 255, 0, 0 );
+			}
+			else if ( fps <= 20 )
+			{
+				colour = hei::Colour( 255, 255, 0 );
+			}
+			else
+			{
+				colour = hei::Colour( 0, 255, 0 );
+			}
+
+			font->DrawString( &x, &y, buf, colour );
+		}
+
+		if ( debugProfiler_ )
+		{
+			for ( auto const &i : performanceTimers )
+			{
+				snprintf( buf, sizeof( buf ), "%s: %f\n", i.first.c_str(), i.second.GetTimeTaken() );
+				font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+			}
+		}
+
+		if ( debugDrawStats )
+		{
+			for ( unsigned int i = 0; i < engine::render::DrawStats::Type::MAX_DRAW_STATS_TYPES; ++i )
+			{
+				snprintf( buf, sizeof( buf ), "%s: %d\n",
+				          engine::render::DrawStats::GetDescription( ( engine::render::DrawStats::Type ) i ),
+				          engine::render::drawStats.stats[ i ] );
+				font->DrawString( &x, &y, buf, hei::Colour( 255, 128, 50 ) );
+			}
+		}
 	}
 
 	al_unlock_bitmap( screenBitmap_ );
@@ -461,7 +532,7 @@ void vc::App::Tick()
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 		{
-			if ( gameMode == nullptr )
+			if ( console.IsOpen() && ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN ) )
 			{
 				break;
 			}
@@ -486,22 +557,50 @@ void vc::App::Tick()
 			break;
 		}
 
+		case ALLEGRO_EVENT_KEY_CHAR:
+		{
+			if ( !console.IsOpen() )
+			{
+				break;
+			}
+
+			console.PushCharacter( event.keyboard.unichar );
+			break;
+		}
+
 		case ALLEGRO_EVENT_KEY_DOWN:
-			if ( gameMode == nullptr )
-			{
-				break;
-			}
-			keyStatus[ event.keyboard.keycode ] = true;
-			gameMode->HandleKeyboardEvent( event.keyboard.keycode, false );
-			break;
 		case ALLEGRO_EVENT_KEY_UP:
-			if ( gameMode == nullptr )
+		{
+			if ( console.IsOpen() )
 			{
+				if ( event.type != ALLEGRO_EVENT_KEY_DOWN )
+				{
+					break;
+				}
+
+				if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+				{
+					console.Close();
+				}
+				else if ( event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_DOWN )
+				{
+					console.ScrollHistory( event.keyboard.keycode == ALLEGRO_KEY_UP );
+				}
+
 				break;
 			}
-			keyStatus[ event.keyboard.keycode ] = false;
-			gameMode->HandleKeyboardEvent( event.keyboard.keycode, true );
+
+			if ( event.type == ALLEGRO_EVENT_KEY_DOWN && ( event.keyboard.keycode == ALLEGRO_KEY_TILDE ||
+			                                               event.keyboard.keycode == ALLEGRO_KEY_ENTER ) )
+			{
+				console.Open();
+				break;
+			}
+
+			keyStatus[ event.keyboard.keycode ] = ( event.type == ALLEGRO_EVENT_KEY_UP );
+			gameMode->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
 			break;
+		}
 	}
 
 	if ( !al_is_event_queue_empty( alEventQueue ) )

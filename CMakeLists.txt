@@ -53,6 +53,7 @@ file(GLOB ENGINE_SOURCE_FILES
         src/engine/GUI/*.cpp
         src/engine/App.cpp
         src/engine/BitmapFont.cpp
+        src/engine/console.cpp
         src/engine/Entity.cpp
         src/engine/EntityManager.cpp
         src/engine/FileSystem.cpp

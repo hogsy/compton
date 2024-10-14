@@ -15,8 +15,8 @@ namespace vc
 
 		bool LoadFromFile( uint8_t cw, uint8_t ch, const char *path );
 
-		void DrawCharacter( int x, int y, char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) );
-		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false );
+		void DrawCharacter( int x, int y, char c, const hei::Colour &colour = hei::Colour( 255, 255, 255 ) ) const;
+		void DrawString( int *x, int *y, const char *sentence, const hei::Colour &colour = hei::Colour( 255, 255, 255 ), bool shadow = false ) const;
 
 	private:
 		static constexpr unsigned int MAX_CHARS = 128;

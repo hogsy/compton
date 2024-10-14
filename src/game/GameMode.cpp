@@ -168,9 +168,7 @@ void vc::GameMode::Draw()
 {
 	START_MEASURE();
 
-	int sw = vc::GetApp()->GetDrawWidth();
 	int sh = vc::GetApp()->GetDrawHeight();
-	engine::render::SetScissor( 0, 0, sw, sh );
 
 	backgroundManager_->Draw( playerCamera );
 	entityManager_->Draw( playerCamera );

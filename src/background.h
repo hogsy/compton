@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "image_manager.h"
+
 class Camera;
 class Background
 {
@@ -10,32 +12,24 @@ public:
 	Background();
 	~Background();
 
-	static constexpr unsigned int SPRITE_SETS = 128;
+	bool load( const std::string &path );
+	void draw( const Camera &camera );
 
-	// If a sprite doesn't match this size, it's invalid
-	static constexpr unsigned int SPRITE_WIDTH  = 80;
-	static constexpr unsigned int SPRITE_HEIGHT = 40;
-
-	// How many sprites make up a block
-	static constexpr unsigned int NUM_BLOCK_SPRITE_COLUMNS = 4;
-	static constexpr unsigned int NUM_BLOCK_SPRITE_ROWS    = 4;
-	static constexpr unsigned int NUM_BLOCK_SPRITES        = NUM_BLOCK_SPRITE_COLUMNS * NUM_BLOCK_SPRITE_ROWS;
-
-	// Background is handled as "blocks", made up of tiles
-	static constexpr unsigned int BLOCK_WIDTH       = 320;
-	static constexpr unsigned int BLOCK_HEIGHT      = 160;
-	static constexpr unsigned int NUM_BLOCK_COLUMNS = 32;
-	static constexpr unsigned int NUM_BLOCK_ROWS    = 4;
-	static constexpr unsigned int NUM_BLOCKS        = NUM_BLOCK_COLUMNS * NUM_BLOCK_ROWS;
-
-	// Total size of the background in pixels
-	static constexpr unsigned int PIXEL_WIDTH  = BLOCK_WIDTH * NUM_BLOCK_COLUMNS;
-	static constexpr unsigned int PIXEL_HEIGHT = BLOCK_HEIGHT * NUM_BLOCK_ROWS;
-	static constexpr unsigned int CENTER_X     = PIXEL_WIDTH / 2;
-	static constexpr unsigned int CENTER_Y     = PIXEL_HEIGHT / 2;
-
-	void Draw( const Camera &camera );
+	[[nodiscard]] unsigned int get_width() const { return width; }
+	[[nodiscard]] unsigned int get_height() const { return height; }
 
 private:
-	void DrawBlock( const Camera &camera, unsigned int block, int x, int y );
+	enum
+	{
+		BACKGROUND_LAYER_BACK,
+		BACKGROUND_LAYER_FRONT,
+		BACKGROUND_LAYER_COLLISION,
+
+		BACKGROUND_LAYER_MAX
+	};
+
+	ImageManager::Sprite *layers[ BACKGROUND_LAYER_MAX ];
+
+	unsigned int width;
+	unsigned int height;
 };

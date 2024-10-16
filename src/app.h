@@ -19,6 +19,7 @@
 
 #include "timer.h"
 #include "console.h"
+#include "input/input.h"
 
 extern int VC_LOG_MSG;// generic message
 extern int VC_LOG_DEB;// debug message (won't be displayed in shipped build)
@@ -119,7 +120,8 @@ public:
 	void StartPerformanceTimer( const char *identifier );
 	void EndPerformanceTimer( const char *identifier );
 
-	inline ImageManager *GetImageManager() { return imageManager; }
+	inline input::InputManager *GetInputManager() { return inputManager; }
+	inline ImageManager        *GetImageManager() { return imageManager; }
 
 protected:
 private:
@@ -177,7 +179,8 @@ private:
 	char appDataPath[ PL_SYSTEM_MAX_PATH ];
 
 	// Sub-Systems
-	ImageManager *imageManager{ nullptr };
+	ImageManager        *imageManager{};
+	input::InputManager *inputManager{};
 
 public:
 	ALLEGRO_LOCKED_REGION *region_{ nullptr };

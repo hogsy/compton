@@ -125,84 +125,49 @@ void render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, int x, int y,
 		uint8_t r{ 255 }, g{ 255 }, b{ 255 }, a{ 255 };
 	};
 
-	int dw = w;
-	if ( x + dw > scissorW )
-	{
-		dw = scissorW - x;
-	}
-
-	int dh = h;
-	if ( y + dh > scissorH )
-	{
-		dh = scissorH - y;
-	}
-
-	int sw = GetApp()->GetDrawWidth();
-
 	bool                   hasAlpha = ( pixelSize == 4 );
 	ALLEGRO_LOCKED_REGION *region   = GetApp()->region_;
-	uint8_t               *dst      = ( uint8_t                    *) region->data + x * region->pixel_size + region->pitch * y;
-	for ( unsigned int row = 0; row < dh; ++row )
-	{
-		if ( y + row > scissorH )
-			break;
 
-		for ( unsigned int column = 0; column < dw; ++column )
+	uint8_t *dst = ( uint8_t * ) region->data + x * region->pixel_size + region->pitch * y;
+	for ( unsigned int row = 0; row < h; ++row )
+	{
+		if ( y + row >= scissorY && y + row < scissorY + scissorH )
 		{
-			if ( x + column > scissorW )
-				continue;
-
-			RGBA8 pixel;
-			if ( flipDirection == FlipDirection::FLIP_VERTICAL )
-				pixel = ( const struct RGBA8 & ) pixels[ ( ( ( h - 1 ) - row ) * w + column ) * pixelSize ];
-			else if ( flipDirection == FlipDirection::FLIP_HORIZONTAL )
-				pixel = ( const struct RGBA8 & ) pixels[ ( ( w - 1 - column ) + row * w ) * pixelSize ];
-			else
-				pixel = ( const struct RGBA8 & ) pixels[ ( column + row * w ) * pixelSize ];
-
-			if ( alphaTest && hasAlpha && ( pixel.a != 255 ) )
+			for ( unsigned int column = 0; column < w; ++column )
 			{
-				if ( pixel.a == 0 )
-					continue;
+				if ( x + column >= scissorX && x + column < scissorX + scissorW )
+				{
+					RGBA8 pixel;
+					if ( flipDirection == FlipDirection::FLIP_VERTICAL )
+					{
+						pixel = ( const struct RGBA8 & ) pixels[ ( ( h - 1 - row ) * w + column ) * pixelSize ];
+					}
+					else if ( flipDirection == FlipDirection::FLIP_HORIZONTAL )
+					{
+						pixel = ( const struct RGBA8 & ) pixels[ ( ( w - 1 - column ) + row * w ) * pixelSize ];
+					}
+					else
+					{
+						pixel = ( const struct RGBA8 & ) pixels[ ( column + row * w ) * pixelSize ];
+					}
 
-				al_put_blended_pixel( x, y, al_map_rgba( pixel.r, pixel.g, pixel.b, pixel.a ) );
-				continue;
+					if ( alphaTest && hasAlpha && ( pixel.a != 255 ) )
+					{
+						if ( pixel.a == 0 )
+						{
+							continue;
+						}
+						al_put_blended_pixel( x + column, y + row, al_map_rgba( pixel.r, pixel.g, pixel.b, pixel.a ) );
+						continue;
+					}
+
+					dst[ column * 3 + 0 ] = pixel.b;
+					dst[ column * 3 + 1 ] = pixel.g;
+					dst[ column * 3 + 2 ] = pixel.r;
+				}
 			}
-
-			dst[ column * 3 + 0 ] = pixel.b;
-			dst[ column * 3 + 1 ] = pixel.g;
-			dst[ column * 3 + 2 ] = pixel.r;
 		}
-
-		dst += sw * region->pixel_size;
-	}
-}
-
-void render::DrawBitmap( const uint8_t *pixels, uint8_t pixelSize, const ImageManager::Palette *palette, int x, int y, int w, int h, bool alphaTest, FlipDirection flipDirection )
-{
-	if ( !render::IsVolumeVisible( x, y, w, h ) )
-	{
-		return;
-	}
-
-	for ( int row = 0; row < w; ++row )
-	{
-		for ( int column = 0; column < h; ++column )
-		{
-			uint8_t pixel = pixels[ row + column * w ];
-			if ( alphaTest && pixel == 0 )
-			{
-				continue;
-			}
-
-			PLColour c;
-			c.r = palette->colours[ pixel ].r;
-			c.g = palette->colours[ pixel ].g;
-			c.b = palette->colours[ pixel ].b;
-			c.a = 255;
-
-			DrawPixel( x + row, y + column, c );
-		}
+		dst += GetApp()->GetDrawWidth() * region->pixel_size;
 	}
 }
 

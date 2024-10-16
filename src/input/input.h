@@ -179,6 +179,4 @@ namespace input
 
 		bool locked{ false };
 	};
-
-	extern InputManager *manager;
 }// namespace input

@@ -62,8 +62,6 @@ int VC_LOG_ERR;// error (kills application)
 static constexpr int DISPLAY_WIDTH  = 640;
 static constexpr int DISPLAY_HEIGHT = 360;
 
-input::InputManager *input::manager = nullptr;
-
 App::App( int argc, char **argv )
 {
 	// Initialize the platform library
@@ -166,8 +164,8 @@ App::App( int argc, char **argv )
 	// in the same places every time.
 	srand( ( unsigned ) time( nullptr ) );
 
-	input::manager = new input::InputManager();
-	imageManager   = new ImageManager( argc, argv );
+	inputManager = new input::InputManager();
+	imageManager = new ImageManager( argc, argv );
 
 	running = true;
 
@@ -563,7 +561,7 @@ void App::Tick()
 
 			int aX = event.mouse.x * drawWidth / displayWidth;
 			int aY = event.mouse.y * drawHeight / displayHeight;
-			input::manager->HandleMouseEvent( aX, aY, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
+			inputManager->HandleMouseEvent( aX, aY, event.mouse.dz, button, ( event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ) );
 			break;
 		}
 
@@ -581,6 +579,8 @@ void App::Tick()
 		case ALLEGRO_EVENT_KEY_DOWN:
 		case ALLEGRO_EVENT_KEY_UP:
 		{
+			printf( "key is %s\n", ( event.type == ALLEGRO_EVENT_KEY_DOWN ) ? "down" : "up" );
+
 			if ( console.IsOpen() )
 			{
 				if ( event.type != ALLEGRO_EVENT_KEY_DOWN )
@@ -607,8 +607,10 @@ void App::Tick()
 				break;
 			}
 
-			keyStatus[ event.keyboard.keycode ] = ( event.type == ALLEGRO_EVENT_KEY_UP );
-			input::manager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
+			keyStatus[ event.keyboard.keycode ] = ( event.type != ALLEGRO_EVENT_KEY_UP );
+			printf( "status is %s\n", keyStatus[ event.keyboard.keycode ] ? "true" : "false" );
+
+			inputManager->HandleKeyboardEvent( event.keyboard.keycode, ( event.type == ALLEGRO_EVENT_KEY_UP ) );
 			break;
 		}
 	}

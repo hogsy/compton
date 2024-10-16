@@ -8,47 +8,37 @@
 #include "app.h"
 #include "background.h"
 #include "camera.h"
-#include "image_manager.h"
 
 Background::Background()  = default;
 Background::~Background() = default;
 
-void Background::Draw( const Camera &camera )
+bool Background::load( const std::string &path )
 {
-	for ( unsigned int i = 0, block = 0; i < NUM_BLOCK_ROWS; ++i )
+	if ( ( layers[ BACKGROUND_LAYER_COLLISION ] = ImageManager::CacheSprite( path + "_c.png" ) ) == nullptr )
 	{
-		for ( unsigned int j = 0; j < NUM_BLOCK_COLUMNS; ++j )
-		{
-			DrawBlock( camera, block++, BLOCK_WIDTH * j, BLOCK_HEIGHT * i );
-		}
+		return false;
 	}
+
+	// use collision as the baseline w/h
+	width  = layers[ BACKGROUND_LAYER_COLLISION ]->width;
+	height = layers[ BACKGROUND_LAYER_COLLISION ]->height;
+
+	layers[ BACKGROUND_LAYER_BACK ]  = ImageManager::CacheSprite( path + "_b.png" );
+	layers[ BACKGROUND_LAYER_FRONT ] = ImageManager::CacheSprite( path + "_f.png" );
+
+	return true;
 }
 
-void Background::DrawBlock( const Camera &camera, unsigned int block, int x, int y )
+void Background::draw( const Camera &camera )
 {
-	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
-
-	if ( x > camera.position.x + sw || x + BLOCK_WIDTH < camera.position.x - sw ||
-	     y > camera.position.y + sh || y + BLOCK_HEIGHT < camera.position.y - sh )
+	if ( layers[ BACKGROUND_LAYER_COLLISION ] == nullptr )
 	{
 		return;
 	}
 
 	// Transform
-	x -= ( int ) camera.position.x;
-	y -= ( int ) camera.position.y;
+	int x = 0 - ( int ) camera.position.x;
+	int y = 0 - ( int ) camera.position.y;
 
-	int nx = x;
-	int ny = y;
-	for ( unsigned int i = 0, sprite = 0; i < NUM_BLOCK_SPRITE_ROWS; ++i )
-	{
-		for ( unsigned int j = 0; j < NUM_BLOCK_SPRITE_COLUMNS; ++j )
-		{
-			GetApp()->GetImageManager()->DrawSprite( block, sprite++, nx, ny );
-			nx += SPRITE_WIDTH;
-		}
-		nx = x;
-		ny += SPRITE_HEIGHT;
-	}
+	layers[ BACKGROUND_LAYER_COLLISION ]->Draw( x, y, true );
 }

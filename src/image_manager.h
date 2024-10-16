@@ -11,47 +11,6 @@ public:
 
 	void PrecacheResources();
 
-	void ConvertAndExportImage( unsigned int set, unsigned int sNum, const std::string &path );
-
-	enum
-	{
-		// Backgrounds
-		SPR_GROUP_BACKGROUND_START = 0,
-		SPR_GROUP_BACKGROUND_END   = 127,
-
-		// Creatures
-		SPR_GROUP_NORN_DEFAULT    = 128,
-		SPR_GROUP_GRENDAL_DEFAULT = 135,
-
-		// Other
-		SPR_GROUP_OBJECTS_0 = 130,
-		SPR_GROUP_FRONTEND  = 133,
-		SPR_GROUP_BALLOON   = 134,
-	};
-
-	enum
-	{
-		SPR_CREATURE_HEAD_START        = 0,
-		SPR_CREATURE_HEAD_END          = 23,
-		SPR_CREATURE_TORSO_RIGHT_START = 24,
-		SPR_CREATURE_TORSO_RIGHT_END   = 27,
-		SPR_CREATURE_TORSO_LEFT_START  = 28,
-		SPR_CREATURE_TORSO_LEFT_END    = 31,
-		SPR_CREATURE_TORSO_START       = 24,
-		SPR_CREATURE_TORSO_END         = 33,
-
-		SPR_CURSOR = 0,
-
-		SPR_BALLOON_HANDLE_UP   = 2,
-		SPR_BALLOON_HANDLE_DOWN = 3,
-	};
-
-	enum
-	{
-		COLOUR_GROUP_DAWN,
-		COLOUR_GROUP_DAY,
-	};
-
 private:
 	void CachePalettes();
 	void CacheSprites();
@@ -89,35 +48,15 @@ private:
 public:
 	struct Sprite
 	{
-		uint8_t                width{ 0 };
-		uint8_t                height{ 0 };
+		unsigned int           width{ 0 };
+		unsigned int           height{ 0 };
 		std::vector< uint8_t > pixels;
+		bool                   palette;
 
 		void Draw( int x, int y, bool alphaTest ) const;
 	};
 
-	/**
-		 * Fetch a sprite from the cache.
-		 * If it doesn't exist, returns null.
-		 */
-	inline const Sprite *GetSprite( uint16_t group, uint16_t id )
-	{
-		if ( group >= spriteGroups_.size() )
-		{
-			Warning( "Invalid sprite group %su specified!\n", group );
-			return nullptr;
-		}
-
-		if ( id >= spriteGroups_[ group ].numSprites )
-		{
-			Warning( "Invalid sprite index %su specified!\n", id );
-			return nullptr;
-		}
-
-		return &spriteGroups_[ group ].sprites[ id ];
-	}
-
-	void DrawSprite( uint16_t group, uint16_t id, int x, int y, bool alphaTest = false );
+	static Sprite *CacheSprite( const std::string &path );
 
 private:
 	static constexpr const char  *SPRITE_EXTENSION  = ".SPR";
@@ -130,5 +69,4 @@ private:
 	std::vector< SpriteGroup > spriteGroups_;
 };
 
-ALLEGRO_BITMAP *ImageBitmap_LoadPacked( const char *path, int flags );
 ALLEGRO_BITMAP *ImageBitmap_LoadGeneric( const char *path, int flags );

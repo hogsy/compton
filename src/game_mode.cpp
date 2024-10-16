@@ -34,7 +34,8 @@ GameMode::GameMode()
 {
 	SetupUserInterface();
 
-	entityManager_ = new EntityManager();
+	entityManager_     = new EntityManager();
+	backgroundManager_ = new Background();
 
 	NewGame( "default.save" );
 }
@@ -54,8 +55,7 @@ void GameMode::SetupUserInterface()
 	int sh = GetApp()->GetDrawHeight();
 
 	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, sw, sh );
-
-#if !defined( GAME_TYPE_SFC )
+#if 0
 	uiDefaultStyleSheet = new GUIStyleSheet( "sheets/interface.sdf", GetApp()->CacheImage( "sheets/interface.png" ) );
 	baseGuiPanel_->SetStyleSheet( uiDefaultStyleSheet );
 
@@ -64,17 +64,17 @@ void GameMode::SetupUserInterface()
 	new GUIButton( baseGuiPanel_, "Hello World", 66, 2, 32, 32 );
 	new GUIButton( baseGuiPanel_, "Hello World", 2, 34, 96, 32 );
 
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 2, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 66, 32, 32 );
-	new GUIButton( baseGuiPanel_, "Hello World", DISPLAY_WIDTH - 34, 34, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", sw - 34, 2, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", sw - 34, 34, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", sw - 34, 66, 32, 32 );
+	new GUIButton( baseGuiPanel_, "Hello World", sw - 34, 34, 32, 32 );
 
 #	define MINIMAP_WIDTH  128
 #	define MINIMAP_HEIGHT 128
 	GUIPanel *minimapPanel = new GUIPanel(
 	        baseGuiPanel_,
-	        DISPLAY_WIDTH - MINIMAP_WIDTH - 2,
-	        DISPLAY_HEIGHT - MINIMAP_HEIGHT - 2,
+	        sw - MINIMAP_WIDTH - 2,
+	        sh - MINIMAP_HEIGHT - 2,
 	        MINIMAP_WIDTH, MINIMAP_HEIGHT,
 	        GUIPanel::Background::TEXTURE,
 	        GUIPanel::Border::OUTSET );
@@ -155,23 +155,8 @@ void GameMode::Tick()
 	int sh = GetApp()->GetDrawHeight();
 
 	// Restrict the camera to the world bounds
-	if ( playerCamera.position.x + sw < 0.0f )
-	{
-		playerCamera.position.x = Background::PIXEL_WIDTH;
-	}
-	else if ( playerCamera.position.x > Background::PIXEL_WIDTH )
-	{
-		playerCamera.position.x = -sw;
-	}
-
-	if ( playerCamera.position.y < 0.0f )
-	{
-		playerCamera.position.y = 0.0f;
-	}
-	else if ( playerCamera.position.y + sh > Background::PIXEL_HEIGHT )
-	{
-		playerCamera.position.y = Background::PIXEL_HEIGHT - sh;
-	}
+	playerCamera.position.x = PlClamp( 0.0f, playerCamera.position.x, backgroundManager_->get_width() - sw );
+	playerCamera.position.y = PlClamp( 0.0f, playerCamera.position.y, backgroundManager_->get_height() - sh );
 
 	if ( playerCamera.velocity.x != 0 || playerCamera.velocity.y != 0 )
 	{
@@ -191,7 +176,7 @@ void GameMode::Draw()
 
 	int sh = GetApp()->GetDrawHeight();
 
-	backgroundManager_->Draw( playerCamera );
+	backgroundManager_->draw( playerCamera );
 	entityManager_->Draw( playerCamera );
 
 	DrawRoomsDebug( playerCamera );
@@ -230,11 +215,9 @@ void GameMode::NewGame( const char *path )
 {
 	LoadRooms();
 
-	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
-
+	int sh                  = GetApp()->GetDrawHeight();
 	playerCamera.position.x = 450;
-	playerCamera.position.y = Background::CENTER_Y - ( sh / 2 );
+	playerCamera.position.y = ( backgroundManager_->get_height() / 2 ) - ( sh / 2 );
 
 	entityManager_->CreateEntity( "BoidManager" );
 
@@ -380,6 +363,11 @@ Background    *GameMode::GetBackgroundManager() { return ( ( GameMode    *) App:
 
 void GameMode::LoadRooms()
 {
+	if ( !backgroundManager_->load( "sprites/background" ) )
+	{
+		Error( "Failed to load collision background!\n" );
+	}
+
 	Print( "Loading rooms...\n" );
 
 	PLFile *file = PlOpenFile( "ROOMS.DTA", false );

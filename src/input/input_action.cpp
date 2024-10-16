@@ -9,7 +9,7 @@ bool input::Action::CheckStatus( input::State state ) const
 {
 	for ( auto i : keyboardBindings )
 	{
-		if ( manager->GetKeyState( i ) != state )
+		if ( GetApp()->GetInputManager()->GetKeyState( i ) != state )
 		{
 			continue;
 		}

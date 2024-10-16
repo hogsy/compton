@@ -105,53 +105,6 @@ void ImageManager::PrecacheResources()
 {
 	CachePalettes();
 	CacheSprites();
-
-#if 0
-	for ( unsigned int i = 0; i < NUM_SPRITE_GROUPS; ++i )
-	{
-		for ( unsigned int j = 0; j < spriteGroups_[ i ].numSprites; ++j )
-		{
-			ConvertAndExportImage( i, j, "sprites/spr" + std::to_string( i ) + "_" + std::to_string( j ) + ".png" );
-		}
-	}
-#endif
-}
-
-void ImageManager::ConvertAndExportImage( unsigned int set, unsigned int sNum, const std::string &path )
-{
-	if ( set >= spriteGroups_.size() )
-	{
-		Warning( "Invalid image set: %lu/%lu\n", set, NUM_SPRITE_GROUPS );
-		return;
-	}
-
-	if ( sNum >= spriteGroups_[ set ].numSprites )
-	{
-		Warning( "Invalid sprite: %lu/%lu\n", sNum, spriteGroups_[ set ].numSprites );
-		return;
-	}
-
-	const Sprite *sprite = &spriteGroups_[ set ].sprites[ sNum ];
-
-	PLImage *image = PlCreateImage( nullptr, sprite->width, sprite->height, 0, PL_COLOURFORMAT_RGBA, PL_IMAGEFORMAT_RGBA8 );
-	if ( image == nullptr )
-	{
-		Warning( "Failed to create image for export: %s\n", PlGetError() );
-		return;
-	}
-
-	unsigned int size = sprite->width * sprite->height;
-	for ( unsigned int i = 0, j = 0; j < size; i += 4, j++ )
-	{
-		image->data[ 0 ][ i ]     = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].r;
-		image->data[ 0 ][ i + 1 ] = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].g;
-		image->data[ 0 ][ i + 2 ] = colourGroups_[ 0 ].colours[ sprite->pixels[ j ] ].b;
-		image->data[ 0 ][ i + 3 ] = ( sprite->pixels[ j ] == 0 ) ? 0 : 255;
-	}
-
-	PlWriteImage( image, path.c_str(), 100 );
-
-	PlDestroyImage( image );
 }
 
 /**
@@ -228,6 +181,7 @@ void ImageManager::CacheSprites()
 			unsigned int bufferSize = group.sprites[ j ].width *
 			                          group.sprites[ j ].height;
 			group.sprites[ j ].pixels.resize( bufferSize );
+			group.sprites[ j ].palette = true;
 
 			// Now save, read in pixels and restore
 			PLFileOffset p = PlGetFileOffset( file );
@@ -248,29 +202,32 @@ void ImageManager::CacheSprites()
 
 		PlCloseFile( file );
 	}
-
-#if 0
-	if ( spriteGroups_.size() <= Background::SPRITE_SETS )
-	{
-		Warning( "Failed to load in all background tiles!\n" );
-	}
-#endif
 }
 
-void ImageManager::DrawSprite( uint16_t group, uint16_t id, int x, int y, bool alphaTest )
+ImageManager::Sprite *ImageManager::CacheSprite( const std::string &path )
 {
-	const Sprite *sprite = GetSprite( group, id );
-	if ( sprite == nullptr )
+	PLImage *image = PlLoadImage( path.c_str() );
+	if ( image == nullptr )
 	{
-		return;
+		Warning( "Failed to load image: %s\n", PlGetError() );
+		return nullptr;
 	}
 
-	sprite->Draw( x, y, alphaTest );
+	unsigned int bufferSize = PlGetImageDataSize( image );
+
+	Sprite *sprite = new Sprite();
+	sprite->width  = image->width;
+	sprite->height = image->height;
+	sprite->pixels.resize( bufferSize );
+
+	memcpy( sprite->pixels.data(), image->data[ 0 ], bufferSize );
+
+	PlDestroyImage( image );
+
+	return sprite;
 }
 
 void ImageManager::Sprite::Draw( int x, int y, bool alphaTest ) const
 {
-	// todo: this api sucks balls
-	const Palette *palette = GetApp()->GetImageManager()->GetPalette( 0 );
-	render::DrawBitmap( pixels.data(), 3, palette, x, y, width, height, alphaTest );
+	render::DrawBitmap( pixels.data(), 4, x, y, width, height, alphaTest );
 }

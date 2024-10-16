@@ -75,7 +75,7 @@ void EntityManager::Tick()
 	END_MEASURE();
 }
 
-void EntityManager::Draw( const Camera &camera )
+void EntityManager::draw( const Camera &camera )
 {
 	START_MEASURE();
 

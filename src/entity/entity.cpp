@@ -51,7 +51,7 @@ void Entity::Serialize( Serializer *write )
 bool Entity::ShouldDraw( const Camera &camera ) const
 {
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	if ( origin.x - bounds.x > camera.position.x + sw )
 	{

@@ -358,7 +358,7 @@ void App::Draw()
 	END_MEASURE();
 
 	// Draw our debug data
-	BitmapFont *font = GetDefaultFont();
+	BitmapFont *font = get_default_font();
 	if ( font != nullptr )
 	{
 		char buf[ 256 ];

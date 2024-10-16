@@ -90,7 +90,7 @@ public:
 	ALLEGRO_SAMPLE *CacheSample( const char *path );
 	ALLEGRO_BITMAP *CacheImage( const char *path );
 
-	inline BitmapFont *GetDefaultFont()
+	inline BitmapFont *get_default_font()
 	{
 		return defaultBitmapFont_;
 	}
@@ -102,7 +102,7 @@ public:
 	unsigned int GetNumOfTicks() { return numTicks; }
 
 	inline int GetDrawWidth() const { return drawWidth; }
-	inline int GetDrawHeight() const { return drawHeight; }
+	inline int get_draw_height() const { return drawHeight; }
 
 	void GetCursorPosition( int *dX, int *dY ) const;
 	bool GetKeyState( int key ) const;

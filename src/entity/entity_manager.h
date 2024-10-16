@@ -22,7 +22,7 @@ public:
 	void    DestroyEntities();
 
 	void Tick();
-	void Draw( const Camera &camera );
+	void draw( const Camera &camera );
 
 	void SerializeEntities( Serializer *write );
 	void DeserializeEntities( Serializer *read );

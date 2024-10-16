@@ -52,7 +52,7 @@ void GameMode::SetupUserInterface()
 	// Now create the base GUI panels
 
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	baseGuiPanel_ = new GUIPanel( nullptr, 0, 0, sw, sh );
 #if 0
@@ -152,7 +152,7 @@ void GameMode::Tick()
 	playerCamera.position += playerCamera.velocity;
 
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	// Restrict the camera to the world bounds
 	playerCamera.position.x = PlClamp( 0.0f, playerCamera.position.x, backgroundManager_->get_width() - sw );
@@ -174,10 +174,11 @@ void GameMode::Draw()
 {
 	START_MEASURE();
 
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
-	backgroundManager_->draw( playerCamera );
-	entityManager_->Draw( playerCamera );
+	backgroundManager_->draw( playerCamera, false );
+	entityManager_->draw( playerCamera );
+	backgroundManager_->draw( playerCamera, true );
 
 	DrawRoomsDebug( playerCamera );
 
@@ -187,7 +188,7 @@ void GameMode::Draw()
 		baseGuiPanel_->Draw();
 	}
 
-	BitmapFont *font = GetApp()->GetDefaultFont();
+	BitmapFont *font = GetApp()->get_default_font();
 	if ( enableHelpPrompt_ )
 	{
 		int x = 10;
@@ -215,7 +216,7 @@ void GameMode::NewGame( const char *path )
 {
 	LoadRooms();
 
-	int sh                  = GetApp()->GetDrawHeight();
+	int sh                  = GetApp()->get_draw_height();
 	playerCamera.position.x = 450;
 	playerCamera.position.y = ( backgroundManager_->get_height() / 2 ) - ( sh / 2 );
 
@@ -264,7 +265,7 @@ void GameMode::RestoreGame( const char *path )
 hei::Vector2 GameMode::MousePosToWorld( int x, int y ) const
 {
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	return hei::Vector2( ( playerCamera.position.x - sw / 2 ) + x, ( playerCamera.position.y - sh / 2 ) + y );
 }
@@ -402,7 +403,7 @@ void GameMode::DrawRoomsDebug( const Camera &camera )
 		return;
 	}
 
-	BitmapFont *font = GetApp()->GetDefaultFont();
+	BitmapFont *font = GetApp()->get_default_font();
 
 	for ( auto room : rooms_ )
 	{

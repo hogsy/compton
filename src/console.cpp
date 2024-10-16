@@ -28,7 +28,7 @@ void Console::Draw()
 		return;
 	}
 
-	unsigned int sh = GetApp()->GetDrawHeight();
+	unsigned int sh = GetApp()->get_draw_height();
 	unsigned int sw = GetApp()->GetDrawWidth();
 
 	static constexpr unsigned int CONSOLE_PANE_HEIGHT = 16;
@@ -38,7 +38,7 @@ void Console::Draw()
 	render::DrawLine( 2, CONSOLE_PANE_Y + 2, 8, CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ), hei::Colour( 0, 255, 255 ) );
 	render::DrawLine( 2, sh - 2, 8, CONSOLE_PANE_Y + ( CONSOLE_PANE_HEIGHT / 2 ), hei::Colour( 0, 255, 255 ) );
 
-	const BitmapFont *font = GetApp()->GetDefaultFont();
+	const BitmapFont *font = GetApp()->get_default_font();
 	assert( font != nullptr );
 
 	int x = 10;

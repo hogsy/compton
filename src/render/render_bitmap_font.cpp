@@ -41,7 +41,7 @@ void BitmapFont::DrawCharacter( int x, int y, char c, const hei::Colour &colour 
 	}
 
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	// Don't bother drawing it if it's outside visible bounds
 	if ( x + cw_ < 0 || x > sw || y + ch_ < 0 || y > sh )

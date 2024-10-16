@@ -13,7 +13,7 @@ public:
 	~Background();
 
 	bool load( const std::string &path );
-	void draw( const Camera &camera );
+	void draw( const Camera &camera, bool front );
 
 	[[nodiscard]] unsigned int get_width() const { return width; }
 	[[nodiscard]] unsigned int get_height() const { return height; }

@@ -34,11 +34,11 @@ void render::EndDraw()
 void render::ClearDisplay()
 {
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	ALLEGRO_LOCKED_REGION *region = GetApp()->region_;
 	//PL_ZERO( region->data, DISPLAY_HEIGHT * DISPLAY_WIDTH * region->pixel_size );
-	memset( region->data, 0x8F, sh * sw * region->pixel_size );
+	memset( region->data, 0x0, sh * sw * region->pixel_size );
 }
 
 void render::DrawPixel( int x, int y, const PLColour &colour )
@@ -55,7 +55,7 @@ void render::DrawPixel( int x, int y, const PLColour &colour )
 void render::DrawLine( int sx, int sy, int ex, int ey, const hei::Colour &colour )
 {
 	int sw = GetApp()->GetDrawWidth();
-	int sh = GetApp()->GetDrawHeight();
+	int sh = GetApp()->get_draw_height();
 
 	if ( sx < scissorX && ex < scissorX || sx > sw && ex > sw )
 		return;

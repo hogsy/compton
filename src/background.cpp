@@ -29,16 +29,18 @@ bool Background::load( const std::string &path )
 	return true;
 }
 
-void Background::draw( const Camera &camera )
+void Background::draw( const Camera &camera, bool front )
 {
-	if ( layers[ BACKGROUND_LAYER_COLLISION ] == nullptr )
-	{
-		return;
-	}
-
-	// Transform
+	// transform
 	int x = 0 - ( int ) camera.position.x;
 	int y = 0 - ( int ) camera.position.y;
 
-	layers[ BACKGROUND_LAYER_COLLISION ]->Draw( x, y, true );
+	if ( !front && layers[ BACKGROUND_LAYER_BACK ] != nullptr )
+	{
+		layers[ BACKGROUND_LAYER_BACK ]->Draw( x, y, true );
+	}
+	if ( front && layers[ BACKGROUND_LAYER_FRONT ] != nullptr )
+	{
+		layers[ BACKGROUND_LAYER_FRONT ]->Draw( x, y, true );
+	}
 }

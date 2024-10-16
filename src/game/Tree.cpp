@@ -5,24 +5,25 @@
  *  Grows around the world, can be planted by characters.
  *------------------------------------------------------------------------------------*/
 
-#include "engine_private.h"
+#include "../app.h"
+#include "../random.h"
+
 #include "Tree.h"
-#include "Random.h"
 
-REGISTER_ENTITY( Tree, vc::Tree )
+REGISTER_ENTITY( Tree, Tree )
 
-vc::Tree::Tree() {}
-vc::Tree::~Tree() {}
+Tree::Tree()  = default;
+Tree::~Tree() = default;
 
-void vc::Tree::Spawn()
+void Tree::Spawn()
 {
 	SuperClass::Spawn();
 
-	myHealth    = random::GenerateRandomInteger( 1, 100 );
-	myMaxHealth = random::GenerateRandomInteger( myHealth, 200 );
+	health    = GenerateRandomInteger( 1, 100 );
+	maxHealth = GenerateRandomInteger( health, 200 );
 }
 
-void vc::Tree::Draw( const vc::Camera &camera )
+void Tree::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
 

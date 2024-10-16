@@ -5,41 +5,41 @@
  *  Dumb replicant of Boid's in SFC, only possibly a bit more fleshed out.
  *------------------------------------------------------------------------------------*/
 
-#include "engine_private.h"
-#include "../../engine/Serializer.h"
+#include "../app.h"
+#include "../serializer.h"
 
 #include "Boid.h"
 
-REGISTER_ENTITY( Boid, vc::Boid )
+REGISTER_ENTITY( Boid, Boid )
 
-vc::Boid::Boid() = default;
-vc::Boid::~Boid() = default;
+Boid::Boid()  = default;
+Boid::~Boid() = default;
 
-void vc::Boid::Spawn()
+void Boid::Spawn()
 {
 	SuperClass::Spawn();
 }
 
-void vc::Boid::Draw( const vc::Camera &camera )
+void Boid::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
 
-	GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, 6,
-	                                         ( int ) origin.x, ( int ) origin.y, true );
+	//GetApp()->GetImageManager()->DrawSprite( ImageManager::SPR_GROUP_OBJECTS_0, 6,
+	//                                        ( int ) origin.x, ( int ) origin.y, true );
 }
 
-void vc::Boid::Tick()
+void Boid::Tick()
 {
 }
 
-void vc::Boid::Deserialize( vc::Serializer *read )
+void Boid::Deserialize( Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
 	type_ = ( Type ) read->ReadInteger();
 }
 
-void vc::Boid::Serialize( vc::Serializer *write )
+void Boid::Serialize( Serializer *write )
 {
 	SuperClass::Serialize( write );
 

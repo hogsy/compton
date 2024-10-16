@@ -5,15 +5,14 @@
  *  For simple detection of external elements. Passes any information back to brain.
  *------------------------------------------------------------------------------------*/
 
-#include "engine_private.h"
-
-#include "game_mode.h"
+#include "../../app.h"
+#include "../../game_mode.h"
 
 #include "Sensor.h"
 
-void vc::ai::Sensor::Tick()
+void Sensor::Tick()
 {
-	GameMode *gameMode = ( ( vc::GameMode * ) App::GetGameMode() );
+	GameMode *gameMode = App::GetGameMode();
 	assert( gameMode != nullptr );
 	if ( gameMode == nullptr )
 	{

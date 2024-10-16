@@ -5,45 +5,45 @@
  *  Foundation of everything with intelligence.
  *------------------------------------------------------------------------------------*/
 
-#include "engine_private.h"
-#include "../../engine/Random.h"
-#include "../../engine/Serializer.h"
+#include "../app.h"
+#include "../random.h"
+#include "../serializer.h"
 
 #include "BaseCreature.h"
 
-vc::BaseCreature::BaseCreature()  = default;
-vc::BaseCreature::~BaseCreature() = default;
+BaseCreature::BaseCreature()  = default;
+BaseCreature::~BaseCreature() = default;
 
-void vc::BaseCreature::Spawn()
+void BaseCreature::Spawn()
 {
 	SuperClass::Spawn();
 
-	for ( unsigned int i = 0; i < ai::Sensor::MAX_SENSOR_TYPES; ++i )
+	for ( unsigned int i = 0; i < Sensor::MAX_SENSOR_TYPES; ++i )
 	{
-		sensors[ i ] = ai::Sensor( ( ai::Sensor::Type )( ( uint8_t ) ai::Sensor::Type::SIGHT + i ), &brain );
+		sensors[ i ] = Sensor( ( Sensor::Type )( ( uint8_t ) Sensor::Type::SIGHT + i ), &brain );
 	}
 
 	// Age
-	age        = random::GenerateRandomInteger( 1, 50 );
-	maxAge     = random::GenerateRandomInteger( age, age + 50 );
-	generation = random::GenerateRandomInteger( 1, 10 );
+	age        = GenerateRandomInteger( 1, 50 );
+	maxAge     = GenerateRandomInteger( age, age + 50 );
+	generation = GenerateRandomInteger( 1, 10 );
 
 	// Health
-	health    = random::GenerateRandomInteger( 50, 100 );
-	maxHealth = random::GenerateRandomInteger( health, health + 100 );
+	health    = GenerateRandomInteger( 50, 100 );
+	maxHealth = GenerateRandomInteger( health, health + 100 );
 
 	// Stamina
-	stamina    = random::GenerateRandomInteger( 30, 100 );
-	maxStamina = random::GenerateRandomInteger( stamina, stamina + 100 );
+	stamina    = GenerateRandomInteger( 30, 100 );
+	maxStamina = GenerateRandomInteger( stamina, stamina + 100 );
 
 	// Generate a random sex for the creature
-	sex = static_cast< Sex >( random::GenerateRandomInteger( 0, static_cast< int >( Sex::MAX_SEXES ) ) );
+	sex = static_cast< Sex >( GenerateRandomInteger( 0, static_cast< int >( Sex::MAX_SEXES ) ) );
 }
 
 /**
  * Determines whether or not this character can breed with the other.
  */
-bool vc::BaseCreature::CanBreed( BaseCreature *other )
+bool BaseCreature::CanBreed( BaseCreature *other )
 {
 	// Can't get pregnant if we're already pregnant!
 	if ( isPregnant || other->isPregnant )
@@ -79,7 +79,7 @@ bool vc::BaseCreature::CanBreed( BaseCreature *other )
 	return false;
 }
 
-void vc::BaseCreature::Deserialize( vc::Serializer *read )
+void BaseCreature::Deserialize( Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
@@ -95,7 +95,7 @@ void vc::BaseCreature::Deserialize( vc::Serializer *read )
 	sex = static_cast< Sex >( read->ReadInteger() );
 }
 
-void vc::BaseCreature::Serialize( vc::Serializer *write )
+void BaseCreature::Serialize( Serializer *write )
 {
 	SuperClass::Serialize( write );
 
@@ -111,7 +111,7 @@ void vc::BaseCreature::Serialize( vc::Serializer *write )
 	write->WriteInteger( static_cast< int >( sex ) );
 }
 
-void vc::BaseCreature::Draw( const vc::Camera &camera )
+void BaseCreature::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
 
@@ -124,7 +124,7 @@ void vc::BaseCreature::Draw( const vc::Camera &camera )
 	//al_draw_pixel( origin.x, origin.y, al_map_rgb( 0, 255, 0 ) );
 }
 
-void vc::BaseCreature::Tick()
+void BaseCreature::Tick()
 {
 	SuperClass::Tick();
 
@@ -139,7 +139,7 @@ void vc::BaseCreature::Tick()
 
 	// Now handle the actions necessary for the current directive
 
-	const ai::Brain::Directive *directive = brain.GetTopDirective();
+	const Brain::Directive *directive = brain.GetTopDirective();
 	if ( directive == nullptr || directive->isCompleted )
 	{
 		return;
@@ -147,25 +147,25 @@ void vc::BaseCreature::Tick()
 
 	switch ( directive->type )
 	{
-		case ai::MotorAction::USE:
+		case MotorAction::USE:
 			Use();
 			break;
-		case ai::MotorAction::DRINK:
+		case MotorAction::DRINK:
 			Drink();
 			break;
-		case ai::MotorAction::EAT: break;
-		case ai::MotorAction::TALK: break;
-		case ai::MotorAction::ATTACK: break;
-		case ai::MotorAction::APPROACH:
+		case MotorAction::EAT: break;
+		case MotorAction::TALK: break;
+		case MotorAction::ATTACK: break;
+		case MotorAction::APPROACH:
 			StepTowards( directive->targetPosition );
 			break;
-		case ai::MotorAction::RETREAT:
+		case MotorAction::RETREAT:
 			StepAway( directive->targetPosition );
 			break;
 	}
 }
 
-vc::ai::FeedbackState vc::BaseCreature::Use()
+FeedbackState BaseCreature::Use()
 {
 	if ( targetEntity == nullptr )
 	{
@@ -175,27 +175,27 @@ vc::ai::FeedbackState vc::BaseCreature::Use()
 	return {};
 }
 
-vc::ai::FeedbackState vc::BaseCreature::Drink()
+FeedbackState BaseCreature::Drink()
 {
-	return vc::ai::FeedbackState();
+	return FeedbackState();
 }
 
-vc::ai::FeedbackState vc::BaseCreature::Eat()
+FeedbackState BaseCreature::Eat()
 {
-	return vc::ai::FeedbackState();
+	return FeedbackState();
 }
 
-vc::ai::FeedbackState vc::BaseCreature::Talk()
+FeedbackState BaseCreature::Talk()
 {
-	return vc::ai::FeedbackState();
+	return FeedbackState();
 }
 
-vc::ai::FeedbackState vc::BaseCreature::Attack()
+FeedbackState BaseCreature::Attack()
 {
-	return vc::ai::FeedbackState();
+	return FeedbackState();
 }
 
-void vc::BaseCreature::StepTowards( const PLVector2 &target, int speed )
+void BaseCreature::StepTowards( const PLVector2 &target, int speed )
 {
 	if ( stepTime > GetApp()->GetNumOfTicks() )
 	{
@@ -222,7 +222,7 @@ void vc::BaseCreature::StepTowards( const PLVector2 &target, int speed )
 	stepTime = GetApp()->GetNumOfTicks() + speed;
 }
 
-void vc::BaseCreature::StepAway( const PLVector2 &target, int speed )
+void BaseCreature::StepAway( const PLVector2 &target, int speed )
 {
 	if ( stepTime > GetApp()->GetNumOfTicks() )
 	{
@@ -249,13 +249,13 @@ void vc::BaseCreature::StepAway( const PLVector2 &target, int speed )
 	stepTime = GetApp()->GetNumOfTicks() + speed;
 }
 
-bool vc::BaseCreature::IsMoving() const
+bool BaseCreature::IsMoving() const
 {
-	const ai::Brain::Directive *directive = brain.GetTopDirective();
+	const Brain::Directive *directive = brain.GetTopDirective();
 	if ( directive == nullptr )
 	{
 		return false;
 	}
 
-	return ( directive->type == ai::MotorAction::APPROACH || directive->type == ai::MotorAction::RETREAT );
+	return ( directive->type == MotorAction::APPROACH || directive->type == MotorAction::RETREAT );
 }

@@ -1,23 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "game_mode.h"
+#include "../app.h"
+#include "../game_mode.h"
+#include "../entity/entity.h"
 
-#include "engine_entity.h"
-
-namespace vc::entity
+class DebugWaypoint : public Entity
 {
-	class DebugWaypoint : public Entity
-	{
-		DECLARE_ENTITY_CLASS( DebugWaypoint, Entity )
+	DECLARE_ENTITY_CLASS( DebugWaypoint, Entity )
 
-		void Draw( const Camera &camera ) override;
-	};
-}// namespace vc::entity
+	void Draw( const Camera &camera ) override;
+};
 
-REGISTER_ENTITY( DebugWaypoint, vc::entity::DebugWaypoint )
-
-using namespace vc::entity;
+REGISTER_ENTITY( DebugWaypoint, DebugWaypoint )
 
 DebugWaypoint::DebugWaypoint() {}
 DebugWaypoint::~DebugWaypoint() {}

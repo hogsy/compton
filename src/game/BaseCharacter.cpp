@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "engine_private.h"
-#include "../../engine/Serializer.h"
+#include "../app.h"
+#include "../serializer.h"
 
 #include "BaseCharacter.h"
 
@@ -23,28 +23,28 @@ namespace vc
 	 */
 }// namespace vc
 
-REGISTER_ENTITY( BaseCharacter, vc::BaseCharacter )
+REGISTER_ENTITY( BaseCharacter, BaseCharacter )
 
-void vc::BaseCharacter::Spawn()
+void BaseCharacter::Spawn()
 {
 	SuperClass::Spawn();
 }
 
-void vc::BaseCharacter::Deserialize( vc::Serializer *read )
+void BaseCharacter::Deserialize( Serializer *read )
 {
 	SuperClass::Deserialize( read );
 
 	read->ReadString( name, sizeof( name ) );
 }
 
-void vc::BaseCharacter::Serialize( vc::Serializer *write )
+void BaseCharacter::Serialize( Serializer *write )
 {
 	SuperClass::Serialize( write );
 
 	write->WriteString( name );
 }
 
-void vc::BaseCharacter::Draw( const Camera &camera )
+void BaseCharacter::Draw( const Camera &camera )
 {
 	SuperClass::Draw( camera );
 
@@ -54,7 +54,7 @@ void vc::BaseCharacter::Draw( const Camera &camera )
 	}
 }
 
-void vc::BaseCharacter::Tick()
+void BaseCharacter::Tick()
 {
 	SuperClass::Tick();
 }

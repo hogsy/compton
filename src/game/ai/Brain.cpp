@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "engine_private.h"
+#include "../../app.h"
 
 #include "Brain.h"
 
-vc::ai::Brain::Brain()  = default;
-vc::ai::Brain::~Brain() = default;
+Brain::Brain()  = default;
+Brain::~Brain() = default;
 
-void vc::ai::Brain::Tick()
+void Brain::Tick()
 {
 	if ( !active )
+	{
 		return;
+	}
 
 	assert( owner_ != nullptr );
 
@@ -26,11 +28,15 @@ void vc::ai::Brain::Tick()
 		directives_.push_back( idle );
 	}
 	else if ( rand() % 100 == 50 )
+	{
 		directives_.clear();
+	}
 
-	const ai::Brain::Directive *directive = GetTopDirective();
+	const Brain::Directive *directive = GetTopDirective();
 	if ( directive == nullptr || directive->isCompleted )
+	{
 		return;
+	}
 
 	switch ( directive->type )
 	{

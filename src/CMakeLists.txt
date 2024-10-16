@@ -2,6 +2,15 @@ add_executable(chorizo WIN32
         entity/entity.cpp
         entity/entity_manager.cpp
 
+        game/ai/Brain.cpp
+        game/ai/Sensor.cpp
+        game/BaseCharacter.cpp
+        game/BaseCreature.cpp
+        game/Boid.cpp
+        game/BoidManager.cpp
+        game/DebugWaypoint.cpp
+        game/Tree.cpp
+
         GUI/GUIButton.cpp
         GUI/GUICursor.cpp
         GUI/GUIPanel.cpp

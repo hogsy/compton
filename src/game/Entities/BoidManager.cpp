@@ -5,10 +5,10 @@
  *  It manages boids...
  *------------------------------------------------------------------------------------*/
 
-#include "../../engine/Compton.h"
+#include "engine_private.h"
 #include "../../engine/Serializer.h"
 
-#include "../GameMode.h"
+#include "game_mode.h"
 
 #include "Boid.h"
 
@@ -56,7 +56,7 @@ void vc::BoidManager::Spawn()
 	// Go ahead and determine where each flock will be spawned
 	unsigned int          i = 0;
 	const GameMode::Room *room;
-	while ( ( room = App::GetGameMode()->GetRoomByType( GameMode::Room::Type::ROOM_TYPE_EXTERIOR, i++ ) ) != nullptr )
+	while ( ( room = ( ( vc::GameMode * ) App::GetGameMode() )->GetRoomByType( GameMode::Room::Type::ROOM_TYPE_EXTERIOR, i++ ) ) != nullptr )
 	{
 		// Spawn the flock
 		SpawnFlock( room );

@@ -5,7 +5,7 @@
  *  Dumb replicant of Boid's in SFC, only possibly a bit more fleshed out.
  *------------------------------------------------------------------------------------*/
 
-#include "../../engine/Compton.h"
+#include "engine_private.h"
 #include "../../engine/Serializer.h"
 
 #include "Boid.h"

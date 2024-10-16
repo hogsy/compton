@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright © 2016-2024 Mark E Sowden <hogsy@oldtimes-software.com>
 
-#include "../GameMode.h"
+#include "game_mode.h"
 
-#include "../../engine/Entity.h"
+#include "engine_entity.h"
 
 namespace vc::entity
 {

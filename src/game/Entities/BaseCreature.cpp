@@ -5,7 +5,7 @@
  *  Foundation of everything with intelligence.
  *------------------------------------------------------------------------------------*/
 
-#include "../../engine/Compton.h"
+#include "engine_private.h"
 #include "../../engine/Random.h"
 #include "../../engine/Serializer.h"
 

@@ -5,7 +5,7 @@
  *  Grows around the world, can be planted by characters.
  *------------------------------------------------------------------------------------*/
 
-#include "Compton.h"
+#include "engine_private.h"
 #include "Tree.h"
 #include "Random.h"
 

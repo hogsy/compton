@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Entity.h"
+#include "engine_entity.h"
 
 namespace vc
 {

@@ -1,3 +1,5 @@
+[Project has been migrated to Codeberg!](https://codeberg.org/hogsy/Compton)
+
 # Compton, 2D Game Engine
 
 Compton was a small isometric open-source 2D game engine using Allegro 5 and written in C++.
